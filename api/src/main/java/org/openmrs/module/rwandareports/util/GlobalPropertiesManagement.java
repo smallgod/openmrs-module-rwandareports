@@ -741,6 +741,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String HEART_FAILURE_ENCOUNTER = "reports.HeartFailureEncounterType";
 	
+	public final static String PATIENT_TRANSFER_ENCOUNTER = "reports.PatientTransferEncounterType";
+	
 	
 	//RelationshipTypes
 	public final static String ACCOMPAGNATUER_RELATIONSHIP = "reports.accompagnatuerRelationship";
@@ -764,6 +766,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String ADULT_FLOW_VISIT = "rwandaadulthivflowsheet.Form_NewVisit";
 	
+	public final static String PEDI_FLOW_VISIT="rwandapedihivflowsheet.Form_NewVisit";
+	
 	public final static String TRANSFER_TO_PMTCT = "reports.transferToPMTCTFormID";
 	
 	public final static String TRANSFER_TO_CC = "reports.transferToCCFormID";
@@ -779,6 +783,12 @@ public class GlobalPropertiesManagement {
 	public final static String EPILEPSY_DDB = "reports.epilepsyDDBformId";
 	
 	public final static String EPILEPSY_RENDEVOUS_VISIT_FORM="reports.epilepsyRendevousVisitForm";
+	
+    public final static String PEDI_ALLERGY = "reports.Form_NewAlergypedi";
+	
+	public final static String ADULT_ALLERGY="reports.Form_NewAlergyadult";
+	
+	public final static String HIV_TRANSFER_FORM="reports.tranferinForm";
 	
 	
 	//Drug concepts
@@ -821,6 +831,16 @@ public class GlobalPropertiesManagement {
 	public final static String BECLOMETHASONE_DRUG="reports.beclomethasoneConcept";
 	
 	public final static String HYDROCHLOROTHIAZIDE_DRUG="reports.hydrochlorothiazide";
+	
+    public final static String ADVERSE_MED_EFFECT="reports.adversemed";
+	
+	public final static String RIFAMPICIN_DRUG="reports.rifampicin";
+	
+	public final static String ETHAMBUTOL_DRUG="reports.ethambutol";
+	
+	public final static String ISONIAZID_DRUG="reports.isoniazid";
+	
+	public final static String KALETRA_DRUG="reports.kaletra";
 	
 	//Drug set concepts
 	public final static String ART_DRUGS_SET = "reports.allArtDrugsConceptSet";

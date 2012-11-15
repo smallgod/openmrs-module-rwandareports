@@ -60,6 +60,7 @@ import org.openmrs.module.rwandareports.reporting.SetupQuarterlyCrossSiteIndicat
 import org.openmrs.module.rwandareports.reporting.SetupQuarterlyViralLoadReport;
 import org.openmrs.module.rwandareports.reporting.SetupRwandaPrimaryCareReport;
 import org.openmrs.module.rwandareports.reporting.SetupTBConsultationSheet;
+import org.openmrs.module.rwandareports.reporting.SetupTracNetRwandaReportBySite;
 
 
 /**
@@ -140,7 +141,7 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupPediatricLateVisitAndCD4Report().setup();
 			
 			
-			////new SetupTracNetRwandaReportBySite().setup();
+			new SetupTracNetRwandaReportBySite().setup();
 			new SetupPMTCTCombinedClinicMotherMonthlyReport().setup();
 			new SetupPMTCTPregnancyMonthlyReport().setup();
 			new SetupExposedClinicInfantMonthly().setup();
@@ -183,5 +184,5 @@ public class CleanReportingTablesAndRegisterAllReports {
 	public static void registerPCReports() throws Exception {
 			new SetupRwandaPrimaryCareReport().setup();
 	}
-
+	
 }

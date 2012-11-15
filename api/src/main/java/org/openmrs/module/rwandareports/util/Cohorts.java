@@ -243,6 +243,25 @@ public class Cohorts {
 		return threeTo5Cohort;
 	}
 	
+	public static AgeCohortDefinition createUnder18monthsCohort(String name) {
+		AgeCohortDefinition at18monthsOfAge = new AgeCohortDefinition();
+		at18monthsOfAge.setName(name);
+		at18monthsOfAge.setMinAge(10);
+		at18monthsOfAge.setMinAgeUnit(DurationUnit.MONTHS);
+		at18monthsOfAge.setMaxAge(18);
+		at18monthsOfAge.setMaxAgeUnit(DurationUnit.MONTHS);
+		at18monthsOfAge.addParameter(new Parameter("effectiveDate", "endDate", Date.class));
+		return at18monthsOfAge;
+	}
+	
+	public static AgeCohortDefinition createUnder5AgeCohort(String name) {
+		AgeCohortDefinition under5Cohort = new AgeCohortDefinition();
+		under5Cohort.setName(name);
+		under5Cohort.setMaxAge(new Integer(4));
+		under5Cohort.addParameter(new Parameter("effectiveDate", "endDate", Date.class));
+		return under5Cohort;
+	}
+	
 	public static AgeCohortDefinition createXtoYAgeCohort(String name,int minAge,int maxAge) {
 		AgeCohortDefinition xToYCohort = new AgeCohortDefinition();
 		xToYCohort.setName(name);
