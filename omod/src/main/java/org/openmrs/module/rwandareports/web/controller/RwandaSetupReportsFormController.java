@@ -571,4 +571,5 @@ public class RwandaSetupReportsFormController {
 		new SetupPrimaryCareRegistrationReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+	
 }
