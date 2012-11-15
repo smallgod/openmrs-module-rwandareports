@@ -1761,6 +1761,66 @@
 		<description>poor adherence concept uuid concept id</description> 	
 		</globalProperty>
 		
+		<globalProperty>
+		<property>reports.Form_NewAlergypedi</property>
+		<defaultValue>8b595f0e-e035-4011-b06a-04515dfc2bd9</defaultValue> 
+		<description>pedi allergy form uuid </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>reports.Form_NewAlergyadult</property>
+		<defaultValue>847d3c57-f095-46ef-992f-455a5969b6d1</defaultValue> 
+		<description>adult allergy form uuid </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>reports.tranferinForm</property>
+		<defaultValue>03c48864-bda7-4d29-8b13-36a5ace886d5</defaultValue> 
+		<description>patient transferIn form uuid </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>rwandapedihivflowsheet.Form_NewVisit</property>
+		<defaultValue>513d44c2-e08a-4c07-93de-b7b7753c7be1</defaultValue> 
+		<description>pedi new visit form uuid </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>reports.ethambutol</property>
+		<defaultValue>745</defaultValue>
+		<description>The concept id of ethambutol drug concept</description>
+	    </globalProperty>
+	    
+	    <globalProperty>
+		<property>reports.isoniazid</property>
+		<defaultValue>656</defaultValue>
+		<description>The concept id of isoniazid drug concept</description>
+	    </globalProperty>
+	    
+	    <globalProperty>
+		<property>reports.rifampicin</property>
+		<defaultValue>767</defaultValue>
+		<description>The concept id of rifampicin drug concept</description>
+	    </globalProperty>
+	    
+	    <globalProperty>
+		<property>reports.adversemed</property>
+		<defaultValue>1296</defaultValue>
+		<description>The concept id of adverse effect medication drug concept</description>
+	    </globalProperty>
+	    
+	     <globalProperty>
+		<property>reports.kaletra</property>
+		<defaultValue>794</defaultValue>
+		<description>The concept id of isoniazid drug concept</description>
+	    </globalProperty>
+	    
+	    <globalProperty>
+		<property>reports.PatientTransferEncounterType</property>
+		<defaultValue>Patient Transfer</defaultValue> 
+		<description>patient transfer encounter type id </description> 		
+		</globalProperty>
+		
 		<!-- ANTENATAL DATA ELEMENT -->
 		<globalProperty>
 		<property>reports.pregnantStatus</property>
