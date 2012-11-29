@@ -1915,7 +1915,7 @@
 		
 		<globalProperty>
 		<property>reports.HeartFailureEncounterType</property>
-		<defaultValue>d889bcb3-c99d-4648-a3ea-b373335b9efd</defaultValue> 
+		<defaultValue>Heart Failure Flowsheet</defaultValue> 
 		<description>Heart Failure encounter type id </description> 		
 		</globalProperty>
 		
