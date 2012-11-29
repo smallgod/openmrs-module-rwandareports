@@ -12,8 +12,10 @@
 	<url>http://openmrs.org</url>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/rwandareports/trunk/</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/rwandareports/trunk/</developerConnection>
+		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/rwandareports/trunk/
+		</connection>
+		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/rwandareports/trunk/
+		</developerConnection>
 		<url>http://svn.openmrs.org/openmrs-modules/rwandareports/trunk/</url>
 	</scm>
 
@@ -152,6 +154,15 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<configuration>
+						<encoding>UTF-8</encoding>
+						<nonFilteredFileExtensions>
+							<nonFilteredFileExtension>xls</nonFilteredFileExtension>
+						</nonFilteredFileExtensions>
+					</configuration>
+				</plugin>
+				<plugin>
 					<groupId>org.openmrs.maven.plugins</groupId>
 					<artifactId>maven-openmrs-plugin</artifactId>
 					<version>1.0.1</version>
@@ -164,7 +175,8 @@
 		<repository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public
+			</url>
 		</repository>
 	</repositories>
 
@@ -172,7 +184,8 @@
 		<pluginRepository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public
+			</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
