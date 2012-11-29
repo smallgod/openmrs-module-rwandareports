@@ -1387,6 +1387,18 @@
 	</globalProperty>
 	
 	<globalProperty>
+		<property>reports.NYHACLASS</property>
+		<defaultValue>e90416ff-65d8-4ab3-9fc6-8e16ae5f2caf</defaultValue>
+		<description>The concept for NYHA CLASS</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.NYHACLASS4</property>
+		<defaultValue>33f45cc0-fe1c-4731-8877-1e6b44dca288</defaultValue>
+		<description>The concept for NYHA CLASS 4</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>reports.tripleTherapyDuringPregnancy</property>
 		<defaultValue>3ce1c328-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>The concept for taking triple therapy during pregnancy</description>
@@ -1941,9 +1953,14 @@
 		<globalProperty>
 		<property>reports.asthmaDDBformId</property>
 		<defaultValue>85</defaultValue> 
-		<description>Astma DDB form id </description> 		
+		<description>Astma DDB form id </description> 	
 		</globalProperty>
 		
+		<globalProperty>
+		<property>reports.heartFailureDDBformId</property>
+		<defaultValue>bcada14a-8e42-4082-8d3e-5685be2f2ce2</defaultValue> 
+		<description>Hear Failure DDB form id </description> 		
+		</globalProperty>		
 		
 		<globalProperty>
 		<property>reports.asthmaTreatmentConceptSet</property>

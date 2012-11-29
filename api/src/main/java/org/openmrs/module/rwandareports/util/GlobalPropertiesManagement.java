@@ -631,6 +631,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String BIRTH_WEIGHT = "reports.birthWeight";
 	
+	public final static String NYHA_CLASS = "reports.NYHACLASS";
+	
+	public final static String NYHA_CLASS_4 = "reports.NYHACLASS4";
+	
 	public final static String TRIPLE_THERAPY_DURING_PREGNANCY = "reports.tripleTherapyDuringPregnancy";
 	
 	public final static String MONO_THERAPY_DURING_PREGNANCY = "reports.monoTherapyDuringPregnancy";
@@ -779,6 +783,8 @@ public class GlobalPropertiesManagement {
 	public final static String HYPERTENSION_DDB = "reports.hypertensionDDBformId";
 	
 	public final static String HYPERTENSION_FLOW_VISIT = "reports.hypertensionFlowVisit";
+	
+	public final static String HEART_FAILURE_DDB = "reports.heartFailureDDBformId";
 	
 	public final static String EPILEPSY_DDB = "reports.epilepsyDDBformId";
 	

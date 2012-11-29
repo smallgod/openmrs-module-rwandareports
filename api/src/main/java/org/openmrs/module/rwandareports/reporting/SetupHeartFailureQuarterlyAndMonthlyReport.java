@@ -18,12 +18,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.openmrs.Concept;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Program;
+import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
+import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -60,6 +67,16 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	List<EncounterType> heartFailureEncounterTypes;
 	
 	private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
+	
+	private Form heartFailureDDBform;
+	
+    private Concept NYHACLASS;
+    
+    private Concept NYHACLASS4;
+	
+	private Concept hypertensiveDisease;  
+	
+	private Concept serumCreatinine;
 	
 	public void setup() throws Exception {
 		
@@ -205,6 +222,85 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    "Total # of new patients enrolled in the last month",
 		    new Mapped(enrolledInHFProgramIndicator, ParameterizableUtil
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================
+		// B4: Of the new patients enrolled in the last month, % with NYHA class IV 
+		//=======================================================
+		
+		SqlCohortDefinition patientsWithNYHAClassIV = Cohorts
+        .getPatientsWithObservationInFormBetweenStartAndEndDate("patientsWithpatientsWithNYHAClassIV",
+        	heartFailureDDBform, NYHACLASS, NYHACLASS4);
+		
+		CompositionCohortDefinition patientsEnrolledAndWithNYHAClassIV = new CompositionCohortDefinition();
+		patientsEnrolledAndWithNYHAClassIV
+		        .setName("patientsEnrolledAndWithNYHAClassIV");
+		patientsEnrolledAndWithNYHAClassIV.addParameter(new Parameter("onOrAfter", "onOrAfter",
+		        Date.class));
+		patientsEnrolledAndWithNYHAClassIV.addParameter(new Parameter("onOrBefore", "onOrBefore",
+		        Date.class));
+
+		patientsEnrolledAndWithNYHAClassIV.addParameter(new Parameter("startDate", "startDate",
+		        Date.class));
+		patientsEnrolledAndWithNYHAClassIV.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsEnrolledAndWithNYHAClassIV.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(patientsWithNYHAClassIV, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientsEnrolledAndWithNYHAClassIV.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(enrolledInHFProgram, ParameterizableUtil
+		            .createParameterMappings("enrolledOnOrAfter=${onOrAfter},enrolledOnOrBefore=${onOrBefore}")));
+		patientsEnrolledAndWithNYHAClassIV.setCompositionString("1 AND 2");
+		
+		CohortIndicator patientsEnrolledAndWithNYHAClassIVIndicator = Indicators
+		        .newCountIndicator(
+		            "patientsEnrolledAndWithNYHAClassIVIndicator",
+		            patientsEnrolledAndWithNYHAClassIV,
+		            ParameterizableUtil
+		                    .createParameterMappings("endDate=${endDate},startDate=${startDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+		dsd.addColumn(
+		    "B4M",
+		    "New patients enrolled in the last month with NYHA class IV ",
+		    new Mapped(patientsEnrolledAndWithNYHAClassIVIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================
+		// B5: Of the patients newly enrolled in month with documented creatinine check in the last month, # and % with first creatinine >200
+		
+		//=======================================================
+		NumericObsCohortDefinition patientsWithCRGreaterThan200 = Cohorts.createNumericObsCohortDefinition(
+		    "patientsWithCRGreaterThan200", onOrAfterOnOrBefore, serumCreatinine, 200,
+		    RangeComparator.GREATER_THAN, TimeModifier.FIRST);
+		
+		CompositionCohortDefinition enrolledWithWithCRGreaterThan200 = new CompositionCohortDefinition();
+		enrolledWithWithCRGreaterThan200.setName("enrolledWithWithCRGreaterThan200");
+		enrolledWithWithCRGreaterThan200.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		enrolledWithWithCRGreaterThan200.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		enrolledWithWithCRGreaterThan200.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(patientsWithCRGreaterThan200, ParameterizableUtil
+		            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+		enrolledWithWithCRGreaterThan200.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(enrolledInHFProgram, ParameterizableUtil
+		            .createParameterMappings("enrolledOnOrAfter=${onOrAfter},enrolledOnOrBefore=${onOrBefore}")));
+		enrolledWithWithCRGreaterThan200
+		        .setCompositionString("1 AND 2");
+		
+		CohortIndicator enrolledWithCRGreaterThan200Indicator = Indicators
+		        .newCountIndicator(
+		            "enrolledWithWithCRGreaterThan200Indicator",
+		            enrolledWithWithCRGreaterThan200,
+		            ParameterizableUtil
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn(
+		    "B5M",
+		    "Newly enrolled in month with documented creatinine check in the last month, with first creatinine >200",
+		    new Mapped(enrolledWithCRGreaterThan200Indicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		           
+		
 	}
 	
 	private void setUpProperties() {
@@ -214,7 +310,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		heartFailureEncounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.CARDIOLOGY_ENCTOUNTER_TYPES);
 		
 		onOrAfterOnOrBefore.add("onOrAfter");
-		onOrAfterOnOrBefore.add("onOrBefore");
+		onOrAfterOnOrBefore.add("onOrBefore");		
+		heartFailureDDBform = gp.getForm(GlobalPropertiesManagement.HEART_FAILURE_DDB);		
+	    NYHACLASS = gp.getConcept(GlobalPropertiesManagement.NYHA_CLASS);
+	    NYHACLASS4 =gp.getConcept(GlobalPropertiesManagement.NYHA_CLASS_4);
+	    serumCreatinine = gp.getConcept(GlobalPropertiesManagement.SERUM_CREATININE);
 		
 	}
 	
