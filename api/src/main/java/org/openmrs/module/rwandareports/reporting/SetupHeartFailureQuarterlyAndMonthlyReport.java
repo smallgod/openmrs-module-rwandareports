@@ -21,6 +21,7 @@ import java.util.Properties;
 import org.openmrs.EncounterType;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
@@ -52,7 +53,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	// properties
-	private Program heartFailure;
+	private Program heartFailureProgram;
 	
 	private List<Program> HFPrograms = new ArrayList<Program>();
 	
@@ -188,11 +189,27 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		dsd.addColumn("A2M", "Total # of patients seen in the last month", new Mapped(patientsSeenIndicator,
 		        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================
+		// A3: Total # of new patients enrolled in the last month
+		//=======================================================
+		ProgramEnrollmentCohortDefinition enrolledInHFProgram = Cohorts
+		        .createProgramEnrollmentParameterizedByStartEndDate("enrolledInHFProgram", heartFailureProgram);
+		
+		CohortIndicator enrolledInHFProgramIndicator = Indicators.newCountIndicator(
+		    "enrolledInHFProgramIndicator", enrolledInHFProgram,
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
+		
+		dsd.addColumn(
+		    "A3M",
+		    "Total # of new patients enrolled in the last month",
+		    new Mapped(enrolledInHFProgramIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 	}
 	
 	private void setUpProperties() {
-		heartFailure = gp.getProgram(GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
-		HFPrograms.add(heartFailure);
+		heartFailureProgram = gp.getProgram(GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
+		HFPrograms.add(heartFailureProgram);
 		
 		heartFailureEncounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.CARDIOLOGY_ENCTOUNTER_TYPES);
 		
