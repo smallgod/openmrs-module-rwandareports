@@ -78,6 +78,12 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
 	private Concept systolicBP;
 	
+	private Concept carvedilol;
+	
+	private Concept atenolol;
+	
+	private List<Concept> carvedilolAndAtenolol = new ArrayList<Concept>();
+	
 	public void setup() throws Exception {
 		
 		setUpProperties();
@@ -348,6 +354,38 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    "Active patients who had Cr checked at a visit within the past 6 months ",
 		    new Mapped(activePatientsWithSRBetweenDatesIndicator, ParameterizableUtil
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================
+		// D1: Of total patients seen in the last month, % on carvedilol or atenolol as of last visit
+		//=======================================================
+		
+		SqlCohortDefinition onCarvedilolOratenolol = Cohorts.getPatientsOnCurrentRegimenBasedOnEndDate("onCarvedilolOratenolol",
+			carvedilolAndAtenolol);
+		
+		CompositionCohortDefinition patientsSeenOnCarvedilolOratenolol = new CompositionCohortDefinition();
+		patientsSeenOnCarvedilolOratenolol.setName("patientsSeenOnCarvedilolOratenolol");
+		patientsSeenOnCarvedilolOratenolol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsSeenOnCarvedilolOratenolol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientsSeenOnCarvedilolOratenolol.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(onCarvedilolOratenolol, ParameterizableUtil
+		            .createParameterMappings("endDate=${onOrBefore}")));
+		patientsSeenOnCarvedilolOratenolol.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		patientsSeenOnCarvedilolOratenolol.setCompositionString("1 AND 2");
+		
+		CohortIndicator patientsSeenOnCarvedilolOratenololIndicator = Indicators.newCountIndicator(
+		    "patientsSeenOnCarvedilolOratenolol",
+		    patientsSeenOnCarvedilolOratenolol,
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn(
+		    "D1M",
+		    "patients seen in the last quarter and are on carvedilol or atenolol",
+		    new Mapped(patientsSeenOnCarvedilolOratenololIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 	}
 	
 	private void setUpProperties() {
@@ -364,6 +402,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	    serumCreatinine = gp.getConcept(GlobalPropertiesManagement.SERUM_CREATININE);
 	    
 	    systolicBP = gp.getConcept(GlobalPropertiesManagement.SYSTOLIC_BLOOD_PRESSURE);
+	    
+	    carvedilol = gp.getConcept(GlobalPropertiesManagement.CARVEDILOL);	    
+	    atenolol = gp.getConcept(GlobalPropertiesManagement.ATENOLOL);
+	    carvedilolAndAtenolol.add(carvedilol);
+	    carvedilolAndAtenolol.add(atenolol);
 		
 	}
 	
