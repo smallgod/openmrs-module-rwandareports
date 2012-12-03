@@ -74,7 +74,9 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
     
     private Concept NYHACLASS4;
 	
-	private Concept serumCreatinine;
+	private Concept serumCreatinine;	
+	
+	private Concept systolicBP;
 	
 	public void setup() throws Exception {
 		
@@ -140,6 +142,25 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${endDate-1m+1d}")));
 		
 		dsd.addColumn(patientVisitsToHFClinicMonthIndicator);
+		
+		//==============================================================
+		// C2: % of Patient visits in the last quarter with documented BP
+		//==============================================================
+		SqlEncounterQuery patientVisitsWithDocumentedBP = new SqlEncounterQuery();
+		
+		patientVisitsWithDocumentedBP
+		.setQuery("select e.encounter_id from encounter e,obs o where o.encounter_id=e.encounter_id and o.concept_id="+systolicBP.getConceptId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 group by e.encounter_datetime, e.patient_id");
+		patientVisitsWithDocumentedBP.setName("patientVisitsToHypertensionClinic");
+		patientVisitsWithDocumentedBP.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientVisitsWithDocumentedBP.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		EncounterIndicator patientVisitsWithDocumentedBPIndicator = new EncounterIndicator();
+		patientVisitsWithDocumentedBPIndicator.setName("patientVisitsWithDocumentedBPIndicator");
+		patientVisitsWithDocumentedBPIndicator.setEncounterQuery(new Mapped<EncounterQuery>(
+				patientVisitsWithDocumentedBP, ParameterizableUtil
+				.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		
+		dsd.addColumn(patientVisitsWithDocumentedBPIndicator);
 		
 	}
 	
@@ -341,6 +362,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	    NYHACLASS = gp.getConcept(GlobalPropertiesManagement.NYHA_CLASS);
 	    NYHACLASS4 =gp.getConcept(GlobalPropertiesManagement.NYHA_CLASS_4);
 	    serumCreatinine = gp.getConcept(GlobalPropertiesManagement.SERUM_CREATININE);
+	    
+	    systolicBP = gp.getConcept(GlobalPropertiesManagement.SYSTOLIC_BLOOD_PRESSURE);
 		
 	}
 	
