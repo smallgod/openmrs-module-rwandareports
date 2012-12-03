@@ -78,11 +78,21 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
 	private Concept systolicBP;
 	
-	private Concept carvedilol;
+	private Concept carvedilol;  
 	
-	private Concept atenolol;
+	private Concept atenolol; 
+	
+    private Concept lisinopril;
+	
+	private Concept captopril;
+	
+	private Concept furosemide;
+	
+	private Concept aldactone;
 	
 	private List<Concept> carvedilolAndAtenolol = new ArrayList<Concept>();
+	
+	private List<Concept> lisinoprilAndCaptopril = new ArrayList<Concept>();
 	
 	public void setup() throws Exception {
 		
@@ -383,8 +393,104 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		dsd.addColumn(
 		    "D1M",
-		    "patients seen in the last quarter and are on carvedilol or atenolol",
+		    "patients seen in the last month and are on carvedilol or atenolol",
 		    new Mapped(patientsSeenOnCarvedilolOratenololIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================
+		// D2: Of total patients seen in the last month, % on lisinopril or captopril as of last visit
+		//=======================================================
+		
+		SqlCohortDefinition onLisinoprilOrCaptopril = Cohorts.getPatientsOnCurrentRegimenBasedOnEndDate("onLisinoprilOrCaptopril",
+			carvedilolAndAtenolol);
+		
+		CompositionCohortDefinition patientsSeenOnLisinoprilOrCaptopril = new CompositionCohortDefinition();
+		patientsSeenOnLisinoprilOrCaptopril.setName("patientsSeenOnLisinoprilOrCaptopril");
+		patientsSeenOnLisinoprilOrCaptopril.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsSeenOnLisinoprilOrCaptopril.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientsSeenOnLisinoprilOrCaptopril.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(onLisinoprilOrCaptopril, ParameterizableUtil
+		            .createParameterMappings("endDate=${onOrBefore}")));
+		patientsSeenOnLisinoprilOrCaptopril.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		patientsSeenOnLisinoprilOrCaptopril.setCompositionString("1 AND 2");
+		
+		CohortIndicator patientsSeenOnLisinoprilOrCaptoprilIndicator = Indicators.newCountIndicator(
+		    "patientsSeenOnLisinoprilOrCaptoprilIndicator",
+		    patientsSeenOnLisinoprilOrCaptopril,
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn(
+		    "D2M",
+		    "patients seen in the last month and are on lisinopril or captopril",
+		    new Mapped(patientsSeenOnLisinoprilOrCaptoprilIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================
+		// D3: Of total patients seen in the last month, % on furosemide as of last visit
+		//=======================================================
+		
+		SqlCohortDefinition onFurosemide = Cohorts.getPatientsOnCurrentRegimenBasedOnEndDate("onFurosemide",
+			furosemide);
+		
+		CompositionCohortDefinition patientsSeenOnFurosemide = new CompositionCohortDefinition();
+		patientsSeenOnFurosemide.setName("patientsSeenOnFurosemide");
+		patientsSeenOnFurosemide.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsSeenOnFurosemide.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientsSeenOnFurosemide.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(onFurosemide, ParameterizableUtil
+		            .createParameterMappings("endDate=${onOrBefore}")));
+		patientsSeenOnFurosemide.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		patientsSeenOnFurosemide.setCompositionString("1 AND 2");
+		
+		CohortIndicator patientsSeenOnFurosemideIndicator = Indicators.newCountIndicator(
+		    "patientsSeenOnFurosemideIndicator",
+		    patientsSeenOnFurosemide,
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn(
+		    "D3M",
+		    "patients seen in the last month and are on furosemide",
+		    new Mapped(patientsSeenOnFurosemideIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================
+		// D4: Of total patients seen in the last month, % on aldactone as of last visit
+		//=======================================================
+		
+		SqlCohortDefinition onAldactone = Cohorts.getPatientsOnCurrentRegimenBasedOnEndDate("onAldactone",
+			aldactone);
+		
+		CompositionCohortDefinition patientsSeenOnAldactone = new CompositionCohortDefinition();
+		patientsSeenOnAldactone.setName("patientsSeenOnAldactone");
+		patientsSeenOnAldactone.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsSeenOnAldactone.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientsSeenOnAldactone.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(onAldactone, ParameterizableUtil
+		            .createParameterMappings("endDate=${onOrBefore}")));
+		patientsSeenOnAldactone.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		patientsSeenOnAldactone.setCompositionString("1 AND 2");
+		
+		CohortIndicator patientsSeenOnAldactoneIndicator = Indicators.newCountIndicator(
+		    "patientsSeenOnAldactoneIndicator",
+		    patientsSeenOnAldactone,
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn(
+		    "D4M",
+		    "patients seen in the last month and are on aldactone",
+		    new Mapped(patientsSeenOnAldactoneIndicator, ParameterizableUtil
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 	}
 	
@@ -407,6 +513,13 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	    atenolol = gp.getConcept(GlobalPropertiesManagement.ATENOLOL);
 	    carvedilolAndAtenolol.add(carvedilol);
 	    carvedilolAndAtenolol.add(atenolol);
+	    lisinopril = gp.getConcept(GlobalPropertiesManagement.LISINOPRIL);
+        captopril = gp.getConcept(GlobalPropertiesManagement.CAPTOPRIL);
+        lisinoprilAndCaptopril.add(lisinopril);
+        lisinoprilAndCaptopril.add(captopril);
+        
+        furosemide = gp.getConcept(GlobalPropertiesManagement.FUROSEMIDE);
+        aldactone = gp.getConcept(GlobalPropertiesManagement.ALDACTONE);
 		
 	}
 	
