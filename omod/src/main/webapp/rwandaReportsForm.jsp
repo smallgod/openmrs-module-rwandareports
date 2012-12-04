@@ -252,11 +252,7 @@ $(document).ready(function(){
 <td> <a href="${pageContext.request.contextPath}/module/rwandareports/remove_tracNetReport.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 <tr>
-<<<<<<< .mine
-<td rowspan="14" class="tabletd">NCD Reports</td>
-=======
-<td rowspan="13" class="tabletd">NCD Reports</td>
->>>>>>> .r29675
+<td rowspan="15" class="tabletd">NCD Reports</td>
 <td>NCD-Diabetes Indicator Report</td>
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_DiabetesQuarterlyAndMonthReport.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -328,7 +324,6 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_epilepsyLateVisit.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_epilepsyLateVisit.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-<<<<<<< .mine
 <tr>
 <td>NCD-Heart Failure Consultation Sheet</td>
 <td>At site</td>
@@ -341,14 +336,12 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_heartFailureLateVisit.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_heartFailureLateVisit.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-=======
 <tr>
 <td>NCD-Heart Failure Report-Monthly</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_heartFailureQuarterlyAndMonthlyReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_heartFailureQuarterlyAndMonthlyReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
->>>>>>> .r29675
 <tr>
 <td rowspan="2" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
