@@ -2124,6 +2124,16 @@
 		<description>The id of the form for visit form of the hypertension flow sheet</description>
 	</globalProperty>
 	
+	<globalProperty>
+	<property>reports.heartfailureDDBformId</property>
+	<defaultValue>c4302c96-94a6-4724-90cf-88cc29409aa5</defaultValue>
+	</globalProperty>
+	
+	<globalProperty>
+	<property>reports.heartfailureFlowVisit</property>
+	<defaultValue>08af7816-f8b1-4b57-a4e7-34f417b55d16</defaultValue>
+	</globalProperty>
+	
 	<!-- start Epilepsy Consultation Sheet Report -->
 		
 		<globalProperty>
@@ -2142,6 +2152,12 @@
 		<property>reports.epilepsyTreatmentConceptSet</property>
 		<defaultValue>9d0d0a7c-da7d-41bd-b637-2606b2bcbd14</defaultValue>
 		<description>The concept id of all the Epilepsy Treatment drug concept set (6867)</description>
+	    </globalProperty>
+	    
+	    <globalProperty>
+		<property>reports.cardiacTreatmentConceptSet</property>
+		<defaultValue>4dde0454-edd2-4e61-b86b-4283b482f453</defaultValue>
+		<description>The concept id of all the cardiac medications drugs concept set (3191)</description>
 	    </globalProperty>
 	    
 	    <globalProperty>
