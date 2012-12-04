@@ -796,10 +796,14 @@ public class GlobalPropertiesManagement {
 	
 	public final static String HIV_TRANSFER_FORM="reports.tranferinForm";
 	
+
+	public final static String POSTOPERATOIRE_CARDIAQUERDV = "reports.Form_PostoperatoireCardiaqueRDV";
+	
+	public final static String INSUFFISANCE_CARDIAQUE_RDV = "reports.Form_InsuffisanceCardiaqueRDV";
+	
     public final static String HEARTFAILURE_FLOW_VISIT="reports.heartfailureFlowVisit";
 	
 	public final static String HEARTFAILURE_DDB = "reports.heartfailureDDBformId";
-	
 	
 	//Drug concepts
 	public final static String FUROSEMIDE= "reports.furosemide";

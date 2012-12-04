@@ -1786,6 +1786,18 @@
 		</globalProperty>
 		
 		<globalProperty>
+		<property>reports.Form_PostoperatoireCardiaqueRDV</property>
+		<defaultValue>ad08f2c3-4661-4e48-b424-bc1d5cc1bbea</defaultValue> 
+		<description>Fiche de Suive Postoperatoire Cardiaque – RENDEZ-VOUS form uuid </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>reports.Form_InsuffisanceCardiaqueRDV</property>
+		<defaultValue>08af7816-f8b1-4b57-a4e7-34f417b55d16</defaultValue> 
+		<description>Fiche de Suive L’insuffisance Cardiaque – RENDEZ-VOUS form uuid </description> 		
+		</globalProperty>
+		
+		<globalProperty>
 		<property>reports.tranferinForm</property>
 		<defaultValue>03c48864-bda7-4d29-8b13-36a5ace886d5</defaultValue> 
 		<description>patient transferIn form uuid </description> 		

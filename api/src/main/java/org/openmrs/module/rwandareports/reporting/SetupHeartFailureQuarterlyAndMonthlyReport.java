@@ -70,6 +70,12 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
 	private Form heartFailureDDBform;
 	
+	private Form postoperatoireCardiaqueRDV;
+	
+	private Form insuffisanceCardiaqueRDV;
+	
+	private List<Form> postoperatoireAndinsuffisanceRDV = new ArrayList<Form>();
+	
     private Concept NYHACLASS;
     
     private Concept NYHACLASS4;
@@ -177,6 +183,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 				.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		
 		dsd.addColumn(patientVisitsWithDocumentedBPIndicator);
+		
 		
 	}
 	
@@ -491,6 +498,40 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    "D4M",
 		    "patients seen in the last month and are on aldactone",
 		    new Mapped(patientsSeenOnAldactoneIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");		
+		
+		//=======================================================
+		// F3: Of total active patients, # and % with NYHA class IV at last visit (not including DDB)
+		//=======================================================
+		SqlCohortDefinition patientsWithPostoperatoireOrInsuffisanceRDV = Cohorts
+        .getPatientsWithObservationInFormBetweenStartAndEndDate("patientsWithPostoperatoireOrInsuffisanceRDV",
+        	postoperatoireAndinsuffisanceRDV, NYHACLASS, NYHACLASS4);
+		
+		CompositionCohortDefinition activePatientsWithPostoperatoireOrInsuffisanceRDV = new CompositionCohortDefinition();
+		activePatientsWithPostoperatoireOrInsuffisanceRDV.setName("activePatientsWithSC");
+		activePatientsWithPostoperatoireOrInsuffisanceRDV.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		activePatientsWithPostoperatoireOrInsuffisanceRDV.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		activePatientsWithPostoperatoireOrInsuffisanceRDV.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(patientsWithPostoperatoireOrInsuffisanceRDV, ParameterizableUtil
+		            .createParameterMappings("startDate=${onOrAfter},endDate=${onOrBefore}")));
+		activePatientsWithPostoperatoireOrInsuffisanceRDV.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		            .createParameterMappings("onOrAfter=${onOrBefore-12m+1d},onOrBefore=${onOrBefore}")));
+		activePatientsWithPostoperatoireOrInsuffisanceRDV.setCompositionString("1 AND 2");
+		
+		CohortIndicator activePatientsWithPostoperatoireOrInsuffisanceRDVIndicator = Indicators
+        .newCountIndicator(
+            "activePatientsWithSRBetweenDatesIndicator",
+            activePatientsWithPostoperatoireOrInsuffisanceRDV,
+            ParameterizableUtil
+                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn(
+		    "F3NM",
+		    "Active patients with NYHA class IV at last visit (not including DDB)",
+		    new Mapped(activePatientsWithPostoperatoireOrInsuffisanceRDVIndicator, ParameterizableUtil
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 	}
 	
@@ -520,6 +561,13 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
         
         furosemide = gp.getConcept(GlobalPropertiesManagement.FUROSEMIDE);
         aldactone = gp.getConcept(GlobalPropertiesManagement.ALDACTONE);
+        
+        postoperatoireCardiaqueRDV = gp.getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUERDV);		
+        insuffisanceCardiaqueRDV = gp.getForm(GlobalPropertiesManagement.INSUFFISANCE_CARDIAQUE_RDV);
+        
+        postoperatoireAndinsuffisanceRDV.add(postoperatoireCardiaqueRDV);
+        postoperatoireAndinsuffisanceRDV.add(insuffisanceCardiaqueRDV);      
+       
 		
 	}
 	
