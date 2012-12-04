@@ -6,11 +6,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jfree.util.Log;
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.EncounterType;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AgeAtDateOfOtherDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllDrugOrdersRestrictedByConcept;
@@ -49,11 +53,13 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilt
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationship;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
+import org.openmrs.module.rwandareports.definition.CurrentPatientDrugOrder;
 import org.openmrs.module.rwandareports.definition.CurrentPatientProgram;
 import org.openmrs.module.rwandareports.definition.DrugRegimenInformation;
 import org.openmrs.module.rwandareports.definition.LastWeekMostRecentObservation;
 import org.openmrs.module.rwandareports.definition.RegimenDateInformation;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
+import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
 
 public class RowPerPatientColumns {
 	
@@ -355,6 +361,10 @@ public class RowPerPatientColumns {
 		return getMostRecent(name, gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE), dateFormat, resultFilter);
 	}
 	
+	public static MostRecentObservation getMostRecentINR(String name, String dateFormat) {
+		return getMostRecent(name, gp.getConcept(GlobalPropertiesManagement.INTERNATIONAL_NORMALIZED_RATIO), dateFormat);
+	}
+	
 	public static LastWeekMostRecentObservation getLastWeekMostRecentReturnVisitDate(String name, String dateFormat,
 	                                                                                 ResultFilter resultFilter) {
 		return getLastWeekMostRecent(name, gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE), dateFormat,
@@ -382,6 +392,12 @@ public class RowPerPatientColumns {
 		return getAllObservationValues(name, gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT), dateFormat,
 		    resultFilter, outputFilter);
 	}
+	
+	public static AllObservationValues getAllINRValues(String name, String dateFormat, ResultFilter resultFilter,
+            ResultFilter outputFilter) {
+         return getAllObservationValues(name, gp.getConcept(GlobalPropertiesManagement.INTERNATIONAL_NORMALIZED_RATIO), dateFormat,
+        resultFilter, outputFilter);
+    }
 	
 	public static AllObservationValues getAllCD4Values(String name, String dateFormat, ResultFilter resultFilter,
 	                                                   ResultFilter outputFilter) {
@@ -472,6 +488,7 @@ public class RowPerPatientColumns {
        return getCurrentOrdersRestrictedByConceptSet(name,
             gp.getConcept(GlobalPropertiesManagement.EPILEPSY_TREATMENT_DRUGS), dateFormat, drugFilter);
        }
+	
 	
 	public static MostRecentObservation getMostRecent(String name, Concept concept, String dateFormat) {
 		MostRecentObservation mostRecent = new MostRecentObservation();
@@ -914,4 +931,28 @@ return oe;
 		}
 		return info;
 	}
+	
+	public static CurrentPatientDrugOrder getCurrentDrugOrders(String name,ResultFilter drugFilter) {
+		CurrentPatientDrugOrder co = new CurrentPatientDrugOrder();
+           if (drugFilter != null) {
+           co.setResultFilter(drugFilter);
+           }
+           co.setName(name);
+           return co;
+        }
+	
+	public static CurrentPatientDrugOrder getPatientCurrentlyActiveOnDrugOrder(String name, ResultFilter drugFilter) {
+          return getCurrentDrugOrders(name, drugFilter);
+     }
+	
+	
+	/*public static CurrentPatientDrugOrder getPatientCurrentlyActiveOnDrugOrders(String name, ResultFilter outputFilter) {
+		CurrentPatientDrugOrder drugOrderquery = new CurrentPatientDrugOrder();
+		drugOrderquery.setName(name);
+		drugOrderquery.setResultFilter(outputFilter);
+		return drugOrderquery;
+		
+      }
+	*/
+	
 }

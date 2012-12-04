@@ -796,6 +796,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String HIV_TRANSFER_FORM="reports.tranferinForm";
 	
+    public final static String HEARTFAILURE_FLOW_VISIT="reports.heartfailureFlowVisit";
+	
+	public final static String HEARTFAILURE_DDB = "reports.heartfailureDDBformId";
+	
 	
 	//Drug concepts
 	public final static String FUROSEMIDE= "reports.furosemide";
@@ -870,6 +874,8 @@ public class GlobalPropertiesManagement {
 	public final static String HYPERTENSION_TREATMENT_DRUGS="reports.hypertensionTreatmentConceptSet";
 		
 	public final static String EPILEPSY_TREATMENT_DRUGS="reports.epilepsyTreatmentConceptSet";
+	
+	public final static String CARDIAC_TREATMENT_DRUGS="reports.cardiacTreatmentConceptSet";
 	
 	//Test concepts
 	public final static String TB_TEST_CONCEPT = "reports.tbTestConcept";
