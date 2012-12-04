@@ -30,6 +30,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAdd
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
 import org.openmrs.module.rwandareports.customcalculator.OnWarfarin;
+import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.AccompagnateurStatusFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -155,7 +156,7 @@ public class SetupHeartFailureLateVisit {
 		PatientAddress address = RowPerPatientColumns.getPatientAddress("Address", true, true, true, true);
 		dataSetDefinition.addColumn(address, new HashMap<String, Object>());
 
-		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Has accompagnateur", new AccompagnateurStatusFilter()), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Has accompagnateur", new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
 		
 		CustomCalculationBasedOnMultiplePatientDataDefinitions onWarfarinOrder = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		onWarfarinOrder.addPatientDataToBeEvaluated(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());
