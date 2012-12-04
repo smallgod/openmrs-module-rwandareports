@@ -801,6 +801,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String INSUFFISANCE_CARDIAQUE_RDV = "reports.Form_InsuffisanceCardiaqueRDV";
 	
+    public final static String POSTOPERATOIRE_CARDIAQUE_HOSPITALISATIONS = "reports.Form_PostoperatoireCardiaqueHospitalisations";
+	
+	public final static String INSUFFISANCE_CARDIAQUE_HOSPITALISATIONS = "reports.Form_InsuffisanceCardiaqueHospitalisations";
+	
     public final static String HEARTFAILURE_FLOW_VISIT="reports.heartfailureFlowVisit";
 	
 	public final static String HEARTFAILURE_DDB = "reports.heartfailureDDBformId";

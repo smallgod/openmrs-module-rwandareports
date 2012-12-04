@@ -76,6 +76,12 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
 	private List<Form> postoperatoireAndinsuffisanceRDV = new ArrayList<Form>();
 	
+    private Form postoperatoireCardiaqueHospitalisations;
+	
+	private Form insuffisanceCardiaqueHospitalisations;
+	
+	private List<Form> postoperatoireAndinsuffisanceHospitalisations = new ArrayList<Form>();
+	
     private Concept NYHACLASS;
     
     private Concept NYHACLASS4;
@@ -498,7 +504,34 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    "D4M",
 		    "patients seen in the last month and are on aldactone",
 		    new Mapped(patientsSeenOnAldactoneIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");		
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");	
+		
+		//=======================================================
+		// F2: Of total active patients, # and  % with at least one hospitalization in the last month
+		//=======================================================
+		EncounterCohortDefinition patientWithPostoperatoireAndinsuffisanceHospitalisations = Cohorts.createEncounterBasedOnForms("patientWithPostoperatoireAndinsuffisanceHospitalisations",
+		    onOrAfterOnOrBefore, postoperatoireAndinsuffisanceHospitalisations);
+		
+		CompositionCohortDefinition patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations = new CompositionCohortDefinition();
+		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.setName("patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations");
+		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(patientWithPostoperatoireAndinsuffisanceHospitalisations, ParameterizableUtil
+		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		            .createParameterMappings("onOrAfter=${onOrBefore-12m+1d},onOrBefore=${onOrBefore}")));
+		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.setCompositionString("1 AND 2");
+		
+		CohortIndicator patientsSeenWithPostoperatoireAndinsuffisanceHospitalisationsIndicator = Indicators.newCountIndicator("patientsSeenWithPostoperatoireAndinsuffisanceHospitalisationsIndicator",
+		    patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations,
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn("F2NM", "Total active patients with at least one hospitalization in the last month", new Mapped(patientsSeenWithPostoperatoireAndinsuffisanceHospitalisationsIndicator,
+	        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 		
 		//=======================================================
 		// F3: Of total active patients, # and % with NYHA class IV at last visit (not including DDB)
@@ -566,7 +599,14 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
         insuffisanceCardiaqueRDV = gp.getForm(GlobalPropertiesManagement.INSUFFISANCE_CARDIAQUE_RDV);
         
         postoperatoireAndinsuffisanceRDV.add(postoperatoireCardiaqueRDV);
-        postoperatoireAndinsuffisanceRDV.add(insuffisanceCardiaqueRDV);      
+        postoperatoireAndinsuffisanceRDV.add(insuffisanceCardiaqueRDV); 
+        
+        postoperatoireCardiaqueHospitalisations = gp.getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUE_HOSPITALISATIONS);		
+        insuffisanceCardiaqueHospitalisations = gp.getForm(GlobalPropertiesManagement.INSUFFISANCE_CARDIAQUE_HOSPITALISATIONS);
+        
+        postoperatoireAndinsuffisanceHospitalisations.add(postoperatoireCardiaqueHospitalisations);
+        postoperatoireAndinsuffisanceHospitalisations.add(insuffisanceCardiaqueHospitalisations);  
+        
        
 		
 	}

@@ -1798,6 +1798,18 @@
 		</globalProperty>
 		
 		<globalProperty>
+		<property>reports.Form_PostoperatoireCardiaqueHospitalisations</property>
+		<defaultValue>b1a6cf6a-da89-4054-af28-0788a7229294</defaultValue> 
+		<description>Fiche de Suive Postoperatoire Cardiaque – HOSPITALISATIONS form uuid </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>reports.Form_InsuffisanceCardiaqueHospitalisations</property>
+		<defaultValue>8f6f610f-1742-42b4-baf4-183c34fd0aec</defaultValue> 
+		<description>Fiche de Suive L’insuffisance Cardiaque – HOSPITALISATIONS form uuid </description> 		
+		</globalProperty>
+		
+		<globalProperty>
 		<property>reports.tranferinForm</property>
 		<defaultValue>03c48864-bda7-4d29-8b13-36a5ace886d5</defaultValue> 
 		<description>patient transferIn form uuid </description> 		
