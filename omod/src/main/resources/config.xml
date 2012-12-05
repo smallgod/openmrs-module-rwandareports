@@ -181,6 +181,14 @@
 	</globalProperty>
 	
 	<globalProperty>
+		<property>reports.heartFailurePatientDiedState</property>
+		<defaultValue>93fec029-bdaa-4105-a459-88359c2d643d</defaultValue>
+		<description>
+			The current state that signifies a patient died
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>report.died</property>
 		<defaultValue>PATIENT DIED</defaultValue>
 		<description>The patient's died workflow state to use in programs </description>
@@ -207,17 +215,23 @@
 	
 	
 		<globalProperty>
-		<property>reports.assistancestatus</property>
-		<defaultValue>ASSISTANCE STATUS</defaultValue>
-		<description>
-			The workflow used for patients in Nutrition program
-		</description>
-	</globalProperty>
+	<property>reports.assistancestatus</property>
+	<defaultValue>ASSISTANCE STATUS</defaultValue>
+	<description>
+		The workflow used for patients in Nutrition program
+	</description>
+</globalProperty>
 	
 	<globalProperty>
 		<property>reports.diabeteworkflow</property>
 		<defaultValue>Diabetes treatment status</defaultValue>
 		<description>The workflow used for patients in Diabete program</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.heartFailureTreatmentStatusWorkflow</property>
+		<defaultValue>6db3cc1b-0d86-458b-ac88-43124fcbf2f7</defaultValue>
+		<description>The workflow used for patients in heart failure program</description>
 	</globalProperty>
 	
 	<globalProperty>

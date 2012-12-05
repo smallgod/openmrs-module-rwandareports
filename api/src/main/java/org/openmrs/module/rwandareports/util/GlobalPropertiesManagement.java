@@ -495,6 +495,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String SURGERY_STATUS_WORKFLOW = "reports.surgeryStatusWorkflow";
 	
+	public final static String HEART_FAILURE_TREATMENT_STATUS_WORKFLOW  = "reports.heartFailureTreatmentStatusWorkflow";
+	
 	
 	//ProgramWorkflowState
 	public final static String ON_ANTIRETROVIRALS_STATE = "reports.hivonartstate";
@@ -526,6 +528,10 @@ public class GlobalPropertiesManagement {
 	public final static String ARTIFICIAL_FEEDING_0_6_MONTHS_STATE="reports.pmtctArtificialfeeding(0to6months)StateName";
 	
 	public final static String POST_OPERATIVE_STATE="reports.postOperativeState";
+	
+	public final static String HEART_FAILURE_PATIENT_DIED_STATE="reports.heartFailurePatientDiedState";
+	
+	
 	
 	
 	//Identifiers

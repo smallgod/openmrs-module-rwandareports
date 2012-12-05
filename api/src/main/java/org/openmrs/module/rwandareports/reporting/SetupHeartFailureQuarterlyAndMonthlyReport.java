@@ -109,6 +109,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
 	private ProgramWorkflowState postOperative;
 	
+	private ProgramWorkflowState patientDied;
+	
 	public void setup() throws Exception {
 		
 		setUpProperties();
@@ -550,6 +552,43 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 		
 		//=======================================================
+		// F1: Number of patients who died in review month
+		//=======================================================
+		ProgramEnrollmentCohortDefinition enrolledInHFProgramAsOfTheSartDate = Cohorts.createProgramEnrollmentParameterizedByStartEndDate(
+		    "enrolledInHFProgram", heartFailureProgram);
+		
+		SqlCohortDefinition patientsInPatientDiedState = Cohorts
+        .createPatientsInStateNotPredatingProgramEnrolment(patientDied);
+		
+		CompositionCohortDefinition patientsEnrolledAndInPatientDiedState = new CompositionCohortDefinition();
+		patientsEnrolledAndInPatientDiedState
+		        .setName("patientsEnrolledAndInPatientDiedState");
+		patientsEnrolledAndInPatientDiedState.addParameter(new Parameter("onOrAfter", "onOrAfter",
+		        Date.class));
+		patientsEnrolledAndInPatientDiedState.addParameter(new Parameter("onOrBefore", "onOrBefore",
+		        Date.class));
+		patientsEnrolledAndInPatientDiedState.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(enrolledInHFProgramAsOfTheSartDate, ParameterizableUtil
+		            .createParameterMappings("enrolledOnOrAfter=${onOrAfter-1d},enrolledOnOrBefore=${onOrBefore}")));
+		patientsEnrolledAndInPatientDiedState.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(patientsInPatientDiedState, ParameterizableUtil
+		            .createParameterMappings("onOrAfter=${onOrBefore},onOrBefore=${onOrBefore}")));
+		patientsEnrolledAndInPatientDiedState.setCompositionString("1 AND 2");
+		
+		CohortIndicator patientsEnrolledAndInPatientDiedStateIndicator = Indicators
+		        .newCountIndicator("patientsSeenAndInPostOperativeStateIndicator",
+		            patientsEnrolledAndInPatientDiedState,
+		            ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn(
+		    "F1M",
+		    "Number of patients who died in review month",
+		    new Mapped(patientsEnrolledAndInPatientDiedStateIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================
 		// F2: Of total active patients, # and  % with at least one hospitalization in the last month
 		//=======================================================
 		EncounterCohortDefinition patientWithPostoperatoireAndinsuffisanceHospitalisations = Cohorts
@@ -658,6 +697,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		postoperatoireAndinsuffisanceHospitalisations.add(postoperatoireCardiaqueHospitalisations);
 		postoperatoireAndinsuffisanceHospitalisations.add(insuffisanceCardiaqueHospitalisations);
 		postOperative = gp.getProgramWorkflowState(GlobalPropertiesManagement.POST_OPERATIVE_STATE, GlobalPropertiesManagement.SURGERY_STATUS_WORKFLOW, GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
+		patientDied = gp.getProgramWorkflowState(GlobalPropertiesManagement.HEART_FAILURE_PATIENT_DIED_STATE, GlobalPropertiesManagement.HEART_FAILURE_TREATMENT_STATUS_WORKFLOW, GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
+	
 		
 	}
 	
