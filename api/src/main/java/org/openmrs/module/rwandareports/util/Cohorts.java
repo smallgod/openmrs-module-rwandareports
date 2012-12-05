@@ -177,6 +177,16 @@ public class Cohorts {
 		return patientsWithBaseLineObservation;
 	}
 	
+	public static SqlCohortDefinition createPatientsInStateNotPredatingProgramEnrolment(ProgramWorkflowState state) {
+		SqlCohortDefinition patientsInState = new SqlCohortDefinition(
+		        "select pp.patient_id from patient_state ps inner join patient_program pp on ps.patient_program_id = pp.patient_program_id inner join patient p on pp.patient_id = p.patient_id where ps.voided = false and pp.voided = false and p.voided = false"
+		                + " and ps.state = "
+		                + state.getId() + " and (ps.end_date is null or ps.end_date >= :onOrAfter) and (ps.start_date is null or ps.start_date <= :onOrBefore) and ps.start_date > pp.date_enrolled");
+		patientsInState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsInState.addParameter(new Parameter("onOrBefore", "onOrBefore", Location.class));
+		return patientsInState;
+	}
+	
 	public static InverseCohortDefinition createPatientsWithoutBaseLineObservation(Concept concept,
 	                                                                               ProgramWorkflowState state,
 	                                                                               Integer daysBefore, Integer daysAfter) {

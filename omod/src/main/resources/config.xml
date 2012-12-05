@@ -173,6 +173,14 @@
 	</globalProperty>
 	
 	<globalProperty>
+		<property>reports.postOperativeState</property>
+		<defaultValue>3fb4ac89-52c3-427c-8127-519f6bb8b6e8</defaultValue>
+		<description>
+			The current state that signifies a patient is in post operative state of heart failure surgery status workflow
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>report.died</property>
 		<defaultValue>PATIENT DIED</defaultValue>
 		<description>The patient's died workflow state to use in programs </description>
@@ -210,6 +218,12 @@
 		<property>reports.diabeteworkflow</property>
 		<defaultValue>Diabetes treatment status</defaultValue>
 		<description>The workflow used for patients in Diabete program</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.surgeryStatusWorkflow</property>
+		<defaultValue>0a09f514-83d2-4997-aa04-7f4be4989f86</defaultValue>
+		<description>The workflow used for patients in Heart Failure program</description>
 	</globalProperty>
 	
 	<globalProperty>

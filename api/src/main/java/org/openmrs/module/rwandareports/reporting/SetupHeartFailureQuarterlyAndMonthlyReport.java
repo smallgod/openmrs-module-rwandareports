@@ -22,6 +22,7 @@ import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
@@ -105,6 +106,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	private List<Concept> carvedilolAndAtenolol = new ArrayList<Concept>();
 	
 	private List<Concept> lisinoprilAndCaptopril = new ArrayList<Concept>();
+	
+	private ProgramWorkflowState postOperative;
 	
 	public void setup() throws Exception {
 		
@@ -512,6 +515,41 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 		
 		//=======================================================
+		// D5: Of total active patients, # of patients who received cardiac surgery in the last month
+		//=======================================================
+		
+		SqlCohortDefinition patientsInPostOperativeState = Cohorts
+        .createPatientsInStateNotPredatingProgramEnrolment(postOperative);
+		
+		CompositionCohortDefinition patientsSeenAndInPostOperativeState = new CompositionCohortDefinition();
+		patientsSeenAndInPostOperativeState
+		        .setName("patientsSeenAndInPostOperativeState");
+		patientsSeenAndInPostOperativeState.addParameter(new Parameter("onOrAfter", "onOrAfter",
+		        Date.class));
+		patientsSeenAndInPostOperativeState.addParameter(new Parameter("onOrBefore", "onOrBefore",
+		        Date.class));
+		patientsSeenAndInPostOperativeState.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(patientsInPostOperativeState, ParameterizableUtil
+		            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+		patientsSeenAndInPostOperativeState.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		            .createParameterMappings("onOrAfter=${onOrBefore-12m+1d},onOrBefore=${onOrBefore}")));
+		patientsSeenAndInPostOperativeState.setCompositionString("1 AND 2");
+		
+		CohortIndicator patientsSeenAndInPostOperativeStateIndicator = Indicators
+		        .newCountIndicator("patientsSeenAndInPostOperativeStateIndicator",
+		            patientsSeenAndInPostOperativeState,
+		            ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn(
+		    "D5NM",
+		    "Total active patients patients who received cardiac surgery in the last month",
+		    new Mapped(patientsSeenAndInPostOperativeStateIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================
 		// F2: Of total active patients, # and  % with at least one hospitalization in the last month
 		//=======================================================
 		EncounterCohortDefinition patientWithPostoperatoireAndinsuffisanceHospitalisations = Cohorts
@@ -619,6 +657,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		postoperatoireAndinsuffisanceHospitalisations.add(postoperatoireCardiaqueHospitalisations);
 		postoperatoireAndinsuffisanceHospitalisations.add(insuffisanceCardiaqueHospitalisations);
+		postOperative = gp.getProgramWorkflowState(GlobalPropertiesManagement.POST_OPERATIVE_STATE, GlobalPropertiesManagement.SURGERY_STATUS_WORKFLOW, GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
 		
 	}
 	
