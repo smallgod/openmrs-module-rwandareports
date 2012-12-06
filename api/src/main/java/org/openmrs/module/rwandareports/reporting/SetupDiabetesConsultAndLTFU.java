@@ -28,6 +28,7 @@ import org.openmrs.module.rwandareports.customcalculator.DiabetesAlerts;
 import org.openmrs.module.rwandareports.customcalculator.OnInsulin;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.AccompagnateurStatusFilter;
+import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -126,7 +127,8 @@ public class SetupDiabetesConsultAndLTFU {
         addCommonColumns(dataSetDefinition);
         
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());
-		dataSetDefinition.addColumn(RowPerPatientColumns.getCurrentDiabetesOrders("Regimen", "dd-MMM-yy", new DrugDosageFrequencyFilter()), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(diabetesEncouters)),
+				new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Has accompagnateur", new AccompagnateurStatusFilter()), new HashMap<String, Object>());
 		
 		//Calculation definitions
