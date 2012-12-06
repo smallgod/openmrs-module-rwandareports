@@ -991,7 +991,6 @@ public class GlobalPropertiesManagement {
 	public final int NINETEEN_MONTHS = 570; 
 	public final static int ON_ART_TREATMENT_STATUS_ID = 1577;
 	public final static int TREATMENT_STATUS_ID = 1484;
-	
 	public final static String DATA_ENTRY_DELAY = "reports.dataEntryDelay";
 	public final static String REPORT_CLASSIFICATION="reports.classifications";
 	public final static String DATA_ENTRY_DELAY_ACCEPTABLE = "reports.dataEntryDelayAccepted";
