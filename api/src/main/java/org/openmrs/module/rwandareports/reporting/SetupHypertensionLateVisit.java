@@ -30,6 +30,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAdd
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
+import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -148,8 +149,9 @@ public class SetupHypertensionLateVisit {
         PatientAddress address1 = RowPerPatientColumns.getPatientAddress("Address", true, true, true, true);
         dataSetDefinition1.addColumn(address1, new HashMap<String, Object>());
         
-        PatientRelationship accompagnateur = RowPerPatientColumns.getAccompRelationship("AccompName");
-        dataSetDefinition1.addColumn(accompagnateur, new HashMap<String, Object>());
+        dataSetDefinition1.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName", 
+        		new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
+		
         
         dataSetDefinition1.addParameter(new Parameter("location", "Location", Location.class));
         dataSetDefinition1.addParameter(new Parameter("endDate", "End Date", Date.class));
