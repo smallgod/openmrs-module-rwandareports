@@ -28,6 +28,7 @@ import org.openmrs.module.rwandareports.customcalculator.DiabetesAlerts;
 import org.openmrs.module.rwandareports.customcalculator.EpilepsyAlerts;
 import org.openmrs.module.rwandareports.customcalculator.HIVAdultAlerts;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
+import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
 import org.openmrs.module.rwandareports.filter.LastTwoObsFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -46,6 +47,7 @@ public class SetupEpilepsyConsultationSheet {
 	private Form epilepsyDDBForm;
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
 	private EncounterType epilepsyVisit;
+	List<EncounterType> epilepsyVisitEncounter;
 	
 	public void setup() throws Exception {
 		
@@ -125,8 +127,8 @@ public class SetupEpilepsyConsultationSheet {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getGender("Sex"), new HashMap<String, Object>());		
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getCurrentEpilepsyOrders("Regimen", "dd-MMM-yy", new DrugDosageFrequencyFilter()),
-		    new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(epilepsyVisitEncounter)),
+				new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
 		
@@ -156,6 +158,7 @@ public class SetupEpilepsyConsultationSheet {
 		DDBAndRendezvousForms.add(epilepsyrendevousForm);
 		DDBAndRendezvousForms.add(epilepsyDDBForm);
 		epilepsyVisit = gp.getEncounterType(GlobalPropertiesManagement.EPILEPSY_VISIT);
+		epilepsyVisitEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.EPILEPSY_VISIT);
 	}
 	
 }
