@@ -86,10 +86,8 @@ public class SetupHeartFailureLateVisit {
 		reportDefinition.addParameter(new Parameter("endDate", "End Date",
 				Date.class));
 
-		reportDefinition.setBaseCohortDefinition(Cohorts
-				.createParameterizedLocationCohort("At Location"),
-				ParameterizableUtil
-						.createParameterMappings("location=${location}"));
+		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
+		ParameterizableUtil.createParameterMappings("location=${location}"));
 
 		createDataSetDefinition(reportDefinition);
 		h.saveReportDefinition(reportDefinition);
