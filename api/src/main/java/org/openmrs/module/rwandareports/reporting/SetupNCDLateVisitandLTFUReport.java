@@ -29,6 +29,7 @@ import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
+import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -127,7 +128,9 @@ public class SetupNCDLateVisitandLTFUReport {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getCurrentPatientProgram("currentProgram", program),
 		    new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName", 
+			new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
+		
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getRecentEncounterType("Last visit type", clinicalEncoutersExcLab,
 		    new LastEncounterFilter()), new HashMap<String, Object>());
