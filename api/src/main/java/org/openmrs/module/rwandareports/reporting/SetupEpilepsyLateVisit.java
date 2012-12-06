@@ -30,6 +30,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAdd
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
+import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -167,11 +168,9 @@ public class SetupEpilepsyLateVisit {
 				"Address", true, true, true, true);
 		dataSetDefinition.addColumn(address, new HashMap<String, Object>());
 
-		PatientRelationship accompagnateur = RowPerPatientColumns
-				.getAccompRelationship("AccompName");
-		dataSetDefinition.addColumn(accompagnateur,
-				new HashMap<String, Object>());
-
+		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName", 
+				new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
+		
 		dataSetDefinition.addParameter(new Parameter("location", "Location",
 				Location.class));
 		dataSetDefinition.addParameter(new Parameter("endDate", "End Date",
