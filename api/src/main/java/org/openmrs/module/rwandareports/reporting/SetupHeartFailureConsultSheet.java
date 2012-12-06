@@ -12,7 +12,6 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -24,16 +23,9 @@ import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientD
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
-import org.openmrs.module.rwandareports.customcalculator.AsthmaClassificationAlerts;
-import org.openmrs.module.rwandareports.customcalculator.DiabetesAlerts;
-import org.openmrs.module.rwandareports.customcalculator.EpilepsyAlerts;
-import org.openmrs.module.rwandareports.customcalculator.HIVAdultAlerts;
 import org.openmrs.module.rwandareports.customcalculator.HeartFailureAlerts;
-import org.openmrs.module.rwandareports.customcalculator.HypertensionAlerts;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
-import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
-import org.openmrs.module.rwandareports.filter.LastThreeObsFilter;
+import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
 import org.openmrs.module.rwandareports.filter.LastTwoObsFilter;
 import org.openmrs.module.rwandareports.filter.ObservationFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -51,6 +43,7 @@ public class SetupHeartFailureConsultSheet {
 	private Form rendevousForm;
 	private Form heartFailureDDBForm;
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
+	List<EncounterType> heartFailureEncounter;
 	
 	public void setup() throws Exception {
 		
@@ -132,11 +125,10 @@ public class SetupHeartFailureConsultSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getGender("Sex"), new HashMap<String, Object>());		
 		
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageFrequencyFilter()),
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(heartFailureEncounter)),
 				new HashMap<String, Object>());
 			
-			
-		
+				
 		MostRecentObservation systolic = RowPerPatientColumns.getMostRecentSystolicPB("systolic", "@ddMMMyy");
 		dataSetDefinition.addColumn(systolic, new HashMap<String, Object>());
 		
@@ -188,6 +180,8 @@ public class SetupHeartFailureConsultSheet {
 		heartFailureDDBForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB);
 		DDBAndRendezvousForms.add(rendevousForm);
 		DDBAndRendezvousForms.add(heartFailureDDBForm);
+		heartFailureEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+		
 		
 	}
 	
