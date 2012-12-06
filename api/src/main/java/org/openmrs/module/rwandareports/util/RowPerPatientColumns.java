@@ -945,14 +945,4 @@ return oe;
           return getCurrentDrugOrders(name, drugFilter);
      }
 	
-	
-	/*public static CurrentPatientDrugOrder getPatientCurrentlyActiveOnDrugOrders(String name, ResultFilter outputFilter) {
-		CurrentPatientDrugOrder drugOrderquery = new CurrentPatientDrugOrder();
-		drugOrderquery.setName(name);
-		drugOrderquery.setResultFilter(outputFilter);
-		return drugOrderquery;
-		
-      }
-	*/
-	
 }
