@@ -34,6 +34,7 @@ import org.openmrs.module.rwandareports.customcalculator.DeclineHighestCD4;
 import org.openmrs.module.rwandareports.customcalculator.HIVAdultAlerts;
 import org.openmrs.module.rwandareports.dataset.comparator.PMTCTDataSetRowComparator;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
+import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
 import org.openmrs.module.rwandareports.filter.DrugNameFilter;
 import org.openmrs.module.rwandareports.filter.LastThreeObsFilter;
@@ -52,8 +53,7 @@ public class SetupAsthmaConsultationSheet {
 	//properties retrieved from global variables
 	private Program asthmaProgram;
 	
-	//private EncounterType flowsheetAsthmas;
-	
+	List<EncounterType> asthmaEncounter;
 	private Form rendevousForm;
 	private Form asthmaDDBForm;
 	
@@ -145,8 +145,8 @@ public class SetupAsthmaConsultationSheet {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentPeakFlow("Last peak flow", "dd-MMM-yyyy"), new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getCurrentAsthmaOrders("Regimen", "dd-MMM-yyyy", new DrugDosageFrequencyFilter()),
-		    new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(asthmaEncounter)),
+				new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
 		
@@ -173,15 +173,9 @@ public class SetupAsthmaConsultationSheet {
 	
 	private void setupProperties() {
 		asthmaProgram = gp.getProgram(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_PROGRAM);
-		
-	//	flowsheetAsthmas = gp.getEncounterType(GlobalPropertiesManagement.ASTHMA_VISIT);
-		
+		asthmaEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.ASTHMA_VISIT);
 		rendevousForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_RENDEVOUS_VISIT_FORM);
-		
 		asthmaDDBForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
-		
-		//returnVisitDate=gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
-		
 		DDBAndRendezvousForms.add(rendevousForm);
 		DDBAndRendezvousForms.add(asthmaDDBForm);
 	}
