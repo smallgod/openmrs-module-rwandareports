@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.openmrs.Concept;
+import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Program;
@@ -25,6 +26,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalc
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rwandareports.customcalculator.HypertensionAlerts;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
+import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
 import org.openmrs.module.rwandareports.filter.LastTwoObsFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -47,6 +49,7 @@ public class SetupHypertensionConsultationSheet {
 	private Concept diastolicBP;
 	
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
+	List<EncounterType> hypertensionEncounter;
 	
 	public void setup() throws Exception {
 		
@@ -130,8 +133,9 @@ public class SetupHypertensionConsultationSheet {
 		MostRecentObservation diastolic = RowPerPatientColumns.getMostRecentDiastolicPB("diastolic", "dd-MMM-yy");
 		dataSetDefinition.addColumn(diastolic, new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getCurrentHypertensionOrders("Regimen", "dd-MMM-yy", new DrugDosageFrequencyFilter()),
-		    new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(hypertensionEncounter)),
+				new HashMap<String, Object>());
+			
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
 		
@@ -171,6 +175,7 @@ public class SetupHypertensionConsultationSheet {
 		
 		DDBAndRendezvousForms.add(rendevousForm);
 		DDBAndRendezvousForms.add(hypertensionDDBForm);
+		hypertensionEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER);
 		
 	}
 }
