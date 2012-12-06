@@ -43,6 +43,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientPro
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
+import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
 import org.openmrs.module.rwandareports.filter.GroupStateFilter;
 import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
@@ -541,7 +542,7 @@ public class SetupPediatricLateVisitAndCD4Report {
 		dataSetDefinition8.addColumn(lateCD4PercentInMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		*/dataSetDefinition10.addColumn(lateCD4PercentInMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
-		PatientRelationship accompagnateur = RowPerPatientColumns.getAccompRelationship("Accompagnateur");
+		PatientRelationship accompagnateur = RowPerPatientColumns.getAccompRelationship("Accompagnateur",new AccompagnateurDisplayFilter());
 		dataSetDefinition1.addColumn(accompagnateur, new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(accompagnateur, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(accompagnateur, new HashMap<String, Object>());
