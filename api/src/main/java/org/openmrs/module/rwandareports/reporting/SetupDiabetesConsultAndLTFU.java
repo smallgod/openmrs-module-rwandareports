@@ -26,6 +26,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalc
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.DateDiffType;
 import org.openmrs.module.rwandareports.customcalculator.DiabetesAlerts;
 import org.openmrs.module.rwandareports.customcalculator.OnInsulin;
+import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.AccompagnateurStatusFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -186,7 +187,8 @@ public class SetupDiabetesConsultAndLTFU {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true), new HashMap<String, Object>());
 						
-		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName", new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
+		
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDifferenceSinceLastEncounter("Days since last Visit", diabetesEncouters, DateDiffType.DAYS), new HashMap<String, Object>());
 		
