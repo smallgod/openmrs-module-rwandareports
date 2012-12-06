@@ -1,5 +1,9 @@
 package org.openmrs.module.rwandareports.definition.evaluator;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -15,8 +19,11 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObserva
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.evaluator.RowPerPatientDataEvaluator;
 import org.openmrs.module.rowperpatientreports.patientdata.result.AllDrugOrdersResult;
+import org.openmrs.module.rowperpatientreports.patientdata.result.ObservationResult;
 import org.openmrs.module.rowperpatientreports.patientdata.result.PatientDataResult;
 import org.openmrs.module.rwandareports.definition.CurrentPatientDrugOrder;
+import org.openmrs.module.rwandareports.definition.result.CurrentDrugOrderResults;
+import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
 @Handler(supports={CurrentPatientDrugOrder.class})
 public class CurrentPatientDrugOrderEvaluator implements RowPerPatientDataEvaluator{
@@ -26,18 +33,16 @@ public class CurrentPatientDrugOrderEvaluator implements RowPerPatientDataEvalua
 	
 	public PatientDataResult evaluate(RowPerPatientData patientData, EvaluationContext context) {
 	    
-		AllDrugOrdersResult par = new AllDrugOrdersResult(patientData, context);
+		CurrentDrugOrderResults par = new CurrentDrugOrderResults(patientData, context);
 		CurrentPatientDrugOrder pd = (CurrentPatientDrugOrder)patientData;
 		par.setDrugFilter(pd.getResultFilter());
-	  
 		List<DrugOrder> orders = Context.getOrderService().getDrugOrdersByPatient(pd.getPatient(),ORDER_STATUS.CURRENT, false);
+		
 		for (DrugOrder drugOrder : orders) {
-             if((drugOrder != null) && ! drugOrder.isDiscontinuedRightNow()){
-            log.info("Neza filter entered");
-             
-         	  par.setValue(orders);
-         	  
-        	   }
+             if((drugOrder != null) && ! drugOrder.isDiscontinuedRightNow()){ 
+            	
+			         par.setValue(orders);
+        	 }
         }
 		return par;
 	}
