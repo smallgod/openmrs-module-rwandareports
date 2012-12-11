@@ -531,6 +531,7 @@ public class GlobalPropertiesManagement {
 	
 	public final static String HEART_FAILURE_PATIENT_DIED_STATE="reports.heartFailurePatientDiedState";
 	
+	public final static String TRANSFERRED_OUT_STATE="reports.patienttransferedoutstate";
 	
 	
 	
