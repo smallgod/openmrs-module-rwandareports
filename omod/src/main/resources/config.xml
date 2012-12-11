@@ -596,6 +596,12 @@
 	</globalProperty>
 	
 	<globalProperty>
+	<property>reports.patienttransferedoutstate</property>
+	<defaultValue>PATIENT TRANSFERRED OUT</defaultValue>
+	<description>the current state used when a patient is transfered out for different purposes</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>reports.hivencountertypes</property>
 		<defaultValue>ADULT INITIAL VISIT:ADULT RETURN VISIT:PEDIATRIC INITIAL VISIT:PEDIATRIC RETURN VISIT:ADULT HIV FLOWSHEET</defaultValue>
 		<description>
