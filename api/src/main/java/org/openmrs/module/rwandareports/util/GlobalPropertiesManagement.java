@@ -758,6 +758,7 @@ public class GlobalPropertiesManagement {
 	
 	public final static String PATIENT_TRANSFER_ENCOUNTER = "reports.PatientTransferEncounterType";
 	
+	public final static String PEDIANDADULTHIV_ENCOUNTER_TYPES = "reports.hivencounterTypeIds";
 	
 	//RelationshipTypes
 	public final static String ACCOMPAGNATUER_RELATIONSHIP = "reports.accompagnatuerRelationship";
