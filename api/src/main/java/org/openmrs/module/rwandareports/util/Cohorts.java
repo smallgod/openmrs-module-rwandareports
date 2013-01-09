@@ -334,6 +334,19 @@ public class Cohorts {
 		return patientsUnder18monthsAtEnrollementDate;
 	 }
 	
+	public static SqlCohortDefinition createUnder18monthsAtStartOfArtbyStartEndDate(String name, Program program,ProgramWorkflowState state){
+		SqlCohortDefinition under18AtstartOfART=new SqlCohortDefinition(
+				"select DISTINCT pp.patient_id FROM person p,patient_program pp,patient pa,patient_state ps " +
+				"WHERE p.person_id=pp.patient_id AND ps.patient_program_id = pp.patient_program_id AND pp.patient_id = pa.patient_id " +
+				"AND pp.program_id="+program.getProgramId()+" AND ps.state="+state.getId()+" AND DATEDIFF(ps.start_date,p.birthdate)<=547 " +
+				"AND (ps.start_date>= :startDate and ps.start_date<= :endDate and ps.end_date is null) AND p.voided=0 AND pp.voided=0 AND pa.voided=0 AND ps.voided=0");
+		under18AtstartOfART.setName(name);
+		under18AtstartOfART.addParameter(new Parameter("startDate", "startDate", Date.class));
+		under18AtstartOfART.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		return under18AtstartOfART;
+	}
+	
 	public static SqlCohortDefinition createUnder5AtEnrollmentCohort(String name, Program program) {
 		SqlCohortDefinition patientsUnder5AtEnrollementDate = new SqlCohortDefinition(
 		        "select distinct pp.patient_id from person p,patient_program pp where p.person_id=pp.patient_id and DATEDIFF(pp.date_enrolled,p.birthdate)<=1826 and pp.program_id= "
@@ -341,6 +354,19 @@ public class Cohorts {
 		patientsUnder5AtEnrollementDate.setName(name);
 		
 		return patientsUnder5AtEnrollementDate;
+	}
+	
+	public static SqlCohortDefinition createUnder5yrsAtStartOfArtbyStartEndDate(String name, Program program,ProgramWorkflowState state){
+		SqlCohortDefinition under18AtstartOfART=new SqlCohortDefinition(
+				"select DISTINCT pp.patient_id FROM person p,patient_program pp,patient pa,patient_state ps " +
+				"WHERE p.person_id=pp.patient_id AND ps.patient_program_id = pp.patient_program_id AND pp.patient_id = pa.patient_id " +
+				"AND pp.program_id="+program.getProgramId()+" AND ps.state="+state.getId()+" AND DATEDIFF(ps.start_date,p.birthdate)<=1826 " +
+				"AND (ps.start_date>= :startDate and ps.start_date<= :endDate AND ps.end_date is null) AND p.voided=0 AND pp.voided=0 AND pa.voided=0 AND ps.voided=0");
+		under18AtstartOfART.setName(name);
+		under18AtstartOfART.addParameter(new Parameter("startDate", "startDate", Date.class));
+		under18AtstartOfART.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		return under18AtstartOfART;
 	}
 	
 	public static InProgramCohortDefinition createInProgram(String name, Program program) {
@@ -1331,5 +1357,82 @@ public static SqlCohortDefinition getPatientsWithNTimesOrMoreEncountersByStartAn
 	nTimesEncounter.addParameter(new Parameter("endDate","endDate",Date.class));
 	return nTimesEncounter;
 }
+
+public static SqlCohortDefinition getPatientsEnrolledFortheFirstTimeinHIvProgram(String name,Program program,int times){
+	SqlCohortDefinition nTimesEncounter=new SqlCohortDefinition();
+	nTimesEncounter.setName(name);
+	nTimesEncounter.setQuery("select DISTINCT patient_id FROM (select patient_id,count(patient_id) AS times FROM patient_program WHERE program_id="+program.getProgramId()+" AND date_enrolled>= :startDate AND date_enrolled<= :endDate AND date_completed is null AND voided=0 group by patient_id) AS oneprog WHERE times="+times+"");
+	nTimesEncounter.addParameter(new Parameter("startDate","startDate",Date.class));
+	nTimesEncounter.addParameter(new Parameter("endDate","endDate",Date.class));
+	return nTimesEncounter;
+   }
+
+
+public static SqlCohortDefinition getPatientsOnFirstDrugOrderByOnStartDate(String name, List<Concept> conceptSet, int number) {
+	SqlCohortDefinition patientOnFirstRegimen = new SqlCohortDefinition();
+	
+	StringBuilder query = new StringBuilder("select patient_id FROM (select DISTINCT patient_id, count(*) as total_orders FROM orders WHERE concept_id in (");
+	
+	int i = 0;
+	for (Concept c : conceptSet) {
+		if (i > 0) {
+			query.append(",");
+		}
+		query.append(c.getId());
+		i++;
+	}
+	
+	query.append(") AND voided=0 AND (discontinued=0 AND start_date<= :startDate) group by patient_id) as b WHERE b.total_orders ="+ number+" ");
+	patientOnFirstRegimen.setQuery(query.toString());
+	patientOnFirstRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
+	patientOnFirstRegimen.setName(name);
+	
+	return patientOnFirstRegimen;
+}
+public static SqlCohortDefinition getPatientsOnFirstDrugOrderByOnStartEndDate(String name, List<Concept> conceptSet, int number) {
+	SqlCohortDefinition patientOnFirstRegimenDringP = new SqlCohortDefinition();
+	
+	StringBuilder query = new StringBuilder("select patient_id FROM (select DISTINCT patient_id, count(*) as total_orders FROM orders WHERE concept_id in (");
+	
+	int i = 0;
+	for (Concept c : conceptSet) {
+		if (i > 0) {
+			query.append(",");
+		}
+		query.append(c.getId());
+		i++;
+	}
+	
+	query.append(") AND voided=0 AND discontinued=0 AND start_date>= :startDate AND (start_date<= :endDate AND discontinued_date is null) group by patient_id) as b WHERE b.total_orders ="+ number+"");
+	patientOnFirstRegimenDringP.setQuery(query.toString());
+	patientOnFirstRegimenDringP.addParameter(new Parameter("startDate", "startDate", Date.class));
+	patientOnFirstRegimenDringP.addParameter(new Parameter("endDate", "endDate", Date.class));
+	patientOnFirstRegimenDringP.setName(name);
+	
+	return patientOnFirstRegimenDringP;
+} 
+
+public static SqlCohortDefinition getPatientsNeverBeenOntheDrugForTheFirstTime(String name, List<Concept> conceptSet, int number) {
+	SqlCohortDefinition patientOnFirstRegimenDringP = new SqlCohortDefinition();
+	
+	StringBuilder query = new StringBuilder("select patient_id FROM (select DISTINCT patient_id, count(*) as total_orders FROM orders WHERE concept_id in (");
+	
+	int i = 0;
+	for (Concept c : conceptSet) {
+		if (i > 0) {
+			query.append(",");
+		}
+		query.append(c.getId());
+		i++;
+	}
+	
+	query.append(") AND voided=0 AND discontinued=1 AND (discontinued_date is not null) group by patient_id) as b WHERE b.total_orders ="+ number+"");
+	patientOnFirstRegimenDringP.setQuery(query.toString());
+	patientOnFirstRegimenDringP.addParameter(new Parameter("startDate", "startDate", Date.class));
+	patientOnFirstRegimenDringP.setName(name);
+	
+	return patientOnFirstRegimenDringP;
+} 
+
 
 }
