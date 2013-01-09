@@ -813,6 +813,13 @@
 		<description>
 			Clinical Encounter Type to find patients who have have had a clinical encounter (lab test included)		</description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.hivencounterTypeIds</property>
+		<defaultValue>1,2,3,4,24,25</defaultValue>
+		<description>HIV Encounter types used when the patient is in adult or pedi hiv program</description>
+	</globalProperty>
+	
 	<globalProperty>
 		<property>hiv.programid.adult</property>
 		<defaultValue>3</defaultValue>
