@@ -431,7 +431,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		//=======================================================
 		
 		SqlCohortDefinition onLisinoprilOrCaptopril = Cohorts.getPatientsOnCurrentRegimenBasedOnEndDate(
-		    "onLisinoprilOrCaptopril", carvedilolAndAtenolol);
+		    "onLisinoprilOrCaptopril", lisinoprilAndCaptopril);
 		
 		CompositionCohortDefinition patientsSeenOnLisinoprilOrCaptopril = new CompositionCohortDefinition();
 		patientsSeenOnLisinoprilOrCaptopril.setName("patientsSeenOnLisinoprilOrCaptopril");
