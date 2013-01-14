@@ -382,12 +382,12 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		activePatientsWithSC.getSearches().put(
 		    "2",
 		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
-		            .createParameterMappings("onOrAfter=${onOrBefore-12m+1d},onOrBefore=${onOrBefore}")));
+		            .createParameterMappings("onOrAfter=${onOrBefore-6m},onOrBefore=${onOrBefore}")));
 		activePatientsWithSC.setCompositionString("1 AND 2");
 		
 		CohortIndicator activePatientsWithSRBetweenDatesIndicator = Indicators.newCountIndicator(
 		    "activePatientsWithSRBetweenDatesIndicator", activePatientsWithSC,
-		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-6m+1d},onOrBefore=${endDate}"));
 		
 		dsd.addColumn(
 		    "C1NM",
