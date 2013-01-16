@@ -184,7 +184,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		InStateCohortDefinition preArt = Cohorts.createInCurrentState("HIVQ: preArt", preArtWorkflowStates);
 		
 		InStateCohortDefinition artOnOrBefore = Cohorts.createInCurrentState("HIVQ: ever on ART", artWorkflowStates,
-		    "onOrBefore");
+				onOrAfterOnOrBefore);
 		
 		InStateCohortDefinition artCurrently = Cohorts.createInCurrentState("HIVQ: currently on ART", artWorkflowStates);
 		
@@ -260,32 +260,20 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		CompositionCohortDefinition followingOver15 = new CompositionCohortDefinition();
 		followingOver15.setName("HIVQ: preArt in Hiv program in period over 15");
 		followingOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		followingOver15.getSearches().put("1",
-		    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		followingOver15.getSearches().put("2",
-		    new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		followingOver15.getSearches().put("3",
-		    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		followingOver15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		followingOver15.getSearches().put("2",new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		followingOver15.getSearches().put("3",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
 		followingOver15.setCompositionString("1 AND 2 AND 3");
 		
 		CompositionCohortDefinition preArtWithAVisitUnder15 = new CompositionCohortDefinition();
 		preArtWithAVisitUnder15.setName("HIVQ: preArt in Hiv program with a visit in period - 3 months and under 15");
 		preArtWithAVisitUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		preArtWithAVisitUnder15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		preArtWithAVisitUnder15.getSearches().put("1",
-		    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		preArtWithAVisitUnder15.getSearches().put("2",
-		    new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		preArtWithAVisitUnder15.getSearches().put(
-		    "3",
-		    new Mapped(encounter, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
-		preArtWithAVisitUnder15.getSearches().put("4",
-		    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		preArtWithAVisitUnder15.getSearches().put(
-		    "5",
-		    new Mapped(weight, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
+		preArtWithAVisitUnder15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		preArtWithAVisitUnder15.getSearches().put("2",new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		preArtWithAVisitUnder15.getSearches().put("3", new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
+		preArtWithAVisitUnder15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		preArtWithAVisitUnder15.getSearches().put("5", new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
 		preArtWithAVisitUnder15.setCompositionString("NOT 1 AND 2 AND 4 AND(3 OR 5)");
 		
 		CompositionCohortDefinition preArtActiveUnder15 = new CompositionCohortDefinition();
@@ -328,26 +316,6 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		            .createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
 		preArtActiveOver15.setCompositionString("1 AND 2 AND 4 AND(3 OR 5)");
 		
-		CompositionCohortDefinition artActiveOver15 = new CompositionCohortDefinition();
-		artActiveOver15.setName("HIVQ: Active art in Hiv program with a visit in period - 12 months and over 15");
-		artActiveOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		artActiveOver15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		artActiveOver15.getSearches().put("1",
-		    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		artActiveOver15.getSearches().put("2",
-		    new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		artActiveOver15.getSearches().put(
-		    "3",
-		    new Mapped(encounter, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-12m}")));
-		artActiveOver15.getSearches().put("4",
-		    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		artActiveOver15.getSearches().put(
-		    "5",
-		    new Mapped(weight, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
-		artActiveOver15.setCompositionString("1 AND 2 AND 4 AND(3 OR 5)");
-		
 		CompositionCohortDefinition artActiveUnder15 = new CompositionCohortDefinition();
 		artActiveUnder15.setName("HIVQ: Active art in Hiv program with a visit in period - 12 months and under 15");
 		artActiveUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -374,9 +342,9 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		preArtWithAVisitOver15.addParameter(new Parameter("startDate", "startDate", Date.class));
 		preArtWithAVisitOver15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
 		preArtWithAVisitOver15.getSearches().put("2",new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		preArtWithAVisitOver15.getSearches().put("3", new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
+		preArtWithAVisitOver15.getSearches().put("3", new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
 		preArtWithAVisitOver15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		preArtWithAVisitOver15.getSearches().put("5",new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
+		preArtWithAVisitOver15.getSearches().put("5",new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
 		preArtWithAVisitOver15.setCompositionString("1 AND 2 AND 4 AND(3 OR 5)");
 		
 		CompositionCohortDefinition artUnder15 = new CompositionCohortDefinition();
@@ -404,52 +372,39 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		CompositionCohortDefinition currentArtUnder15 = new CompositionCohortDefinition();
 		currentArtUnder15.setName("HIVQ: currently taking ART before end date and under 15");
 		currentArtUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		currentArtUnder15.getSearches().put("1",
-		    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		currentArtUnder15.getSearches().put("2",
-		    new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		currentArtUnder15.getSearches().put("3",
-		    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		currentArtUnder15.setCompositionString("NOT 1 AND 2 AND 3");
+		currentArtUnder15.getSearches().put("1",new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		currentArtUnder15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		currentArtUnder15.getSearches().put("3",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		currentArtUnder15.setCompositionString("1 AND 2 AND 3");
 		
 		CompositionCohortDefinition currentArtOver15 = new CompositionCohortDefinition();
 		currentArtOver15.setName("HIVQ: currently taking ART before end date and over 15");
 		currentArtOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		currentArtOver15.getSearches().put("1",
-		    new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		currentArtOver15.getSearches().put("2",
-		    new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		currentArtOver15.getSearches().put("3",
-		    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		currentArtOver15.setCompositionString("Not 1 AND 2 AND 3");
-		
+		currentArtOver15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		currentArtOver15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		currentArtOver15.getSearches().put("3",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		currentArtOver15.setCompositionString("1 AND 2 AND 3");
+
 		CompositionCohortDefinition artWithAVisitUnder15 = new CompositionCohortDefinition();
 		artWithAVisitUnder15.setName("HIVQ: on ART in Hiv program with a visit in period -3 months and under 15");
 		artWithAVisitUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		artWithAVisitUnder15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		artWithAVisitUnder15.getSearches().put("1",
-		    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		artWithAVisitUnder15.getSearches().put("2",
-		    new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		artWithAVisitUnder15.getSearches().put(
-		    "3",
-		    new Mapped(encounter, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}")));
-		artWithAVisitUnder15.getSearches().put("4",
-		    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		artWithAVisitUnder15.getSearches().put("5",
-		    new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}")));
-		artWithAVisitUnder15.setCompositionString("NOT 1 AND 2 AND 4 AND(3 OR 5)");
+		artWithAVisitUnder15.getSearches().put("1",new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		artWithAVisitUnder15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		artWithAVisitUnder15.getSearches().put("3",new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
+		artWithAVisitUnder15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		artWithAVisitUnder15.getSearches().put("5",new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
+		artWithAVisitUnder15.setCompositionString("1 AND 2 AND 4 AND(3 OR 5)");
 		
 		CompositionCohortDefinition artWithAVisitOver15 = new CompositionCohortDefinition();
-		artWithAVisitOver15.setName("HIVQ: on ART in Hiv program with a visit in period -3 months and over 15");
+		artWithAVisitOver15.setName("HIVQ: preArt in Hiv program with a visit in period -3 months and over 15");
 		artWithAVisitOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		artWithAVisitOver15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		artWithAVisitOver15.getSearches().put("1", new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		artWithAVisitOver15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
 		artWithAVisitOver15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		artWithAVisitOver15.getSearches().put("3",new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}")));
-		artWithAVisitOver15.getSearches().put("5",new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}")));
+		artWithAVisitOver15.getSearches().put("3", new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
 		artWithAVisitOver15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		artWithAVisitOver15.getSearches().put("5",new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
 		artWithAVisitOver15.setCompositionString("1 AND 2 AND 4 AND(3 OR 5)");
 		
 		CompositionCohortDefinition startedArtOver15 = new CompositionCohortDefinition();
@@ -488,15 +443,11 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		preArtWithACD4Under15.setName("HIVQ: preArt in Hiv program with a CD4 count in period -3 months and under 15");
 		preArtWithACD4Under15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		preArtWithACD4Under15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		preArtWithACD4Under15.getSearches().put("1",
-		    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		preArtWithACD4Under15.getSearches().put("2",
-		    new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		preArtWithACD4Under15.getSearches().put("3",
-		    new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
-		preArtWithACD4Under15.getSearches().put("4",
-		    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		preArtWithACD4Under15.setCompositionString("NOT 1 AND 2 AND 3 AND 4");
+		preArtWithACD4Under15.getSearches().put("1",new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		preArtWithACD4Under15.getSearches().put("2",new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		preArtWithACD4Under15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
+		preArtWithACD4Under15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		preArtWithACD4Under15.setCompositionString("1 AND 2 AND 3 AND 4");
 		
 		CompositionCohortDefinition preArtWithACD4Over15 = new CompositionCohortDefinition();
 		preArtWithACD4Over15.setName("HIVQ: preArt in Hiv program with a CD4 count in period -3 months and over 15");
@@ -504,7 +455,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		preArtWithACD4Over15.addParameter(new Parameter("startDate", "startDate", Date.class));
 		preArtWithACD4Over15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
 		preArtWithACD4Over15.getSearches().put("2", new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		preArtWithACD4Over15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
+		preArtWithACD4Over15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
 		preArtWithACD4Over15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
 		preArtWithACD4Over15.setCompositionString("1 AND 2 AND 3 AND 4");
 		
@@ -512,29 +463,21 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		artWithACD4Over15.setName("HIVQ: on Art in Hiv program with a CD4 count in period -3 months and over 15");
 		artWithACD4Over15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		artWithACD4Over15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		artWithACD4Over15.getSearches().put("1",
-		    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		artWithACD4Over15.getSearches().put("2",
-		    new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		artWithACD4Over15.getSearches().put("3",
-		    new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
-		artWithACD4Over15.getSearches().put("4",
-		    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		artWithACD4Over15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		artWithACD4Over15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		artWithACD4Over15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
+		artWithACD4Over15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
 		artWithACD4Over15.setCompositionString("1 AND 2 AND 3 AND 4");
 		
 		CompositionCohortDefinition artWithACD4Under15 = new CompositionCohortDefinition();
 		artWithACD4Under15.setName("HIVQ: on Art in Hiv program with a CD4 count in period - 3 months and under 15");
 		artWithACD4Under15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		artWithACD4Under15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		artWithACD4Under15.getSearches().put("1",
-		    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		artWithACD4Under15.getSearches().put("2",
-		    new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		artWithACD4Under15.getSearches().put("3",
-		    new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
-		artWithACD4Under15.getSearches().put("4",
-		    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		artWithACD4Under15.setCompositionString("NOT 1 AND 2 AND 3 AND 4");
+		artWithACD4Under15.getSearches().put("1",new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		artWithACD4Under15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		artWithACD4Under15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
+		artWithACD4Under15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+		artWithACD4Under15.setCompositionString("1 AND 2 AND 3 AND 4");
 		
 		CompositionCohortDefinition hivWithAWeightUnder15 = new CompositionCohortDefinition();
 		hivWithAWeightUnder15.setName("HIVQ: weight recorded in period under 15");
@@ -632,13 +575,13 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		activePreArtWithVisitOrWeightOver15.getSearches().put("1", new Mapped(activePreArtWithVisitOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
 		activePreArtWithVisitOrWeightOver15.getSearches().put("2",new Mapped(preArtWithAVisitOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 		activePreArtWithVisitOrWeightOver15.setCompositionString("1 AND 2");
-		
+	
 		CompositionCohortDefinition activePreArtWithVisitOrWeightUnder15 = new CompositionCohortDefinition();
 		activePreArtWithVisitOrWeightUnder15.setName("HIVQ: acitve preArt in Hiv program with a visit or weight in period -3 months and under 15");
 		activePreArtWithVisitOrWeightUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		activePreArtWithVisitOrWeightUnder15.addParameter(new Parameter("startDate", "startDate", Date.class));
 		activePreArtWithVisitOrWeightUnder15.getSearches().put("1", new Mapped(activePreArtWithVisitUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		activePreArtWithVisitOrWeightUnder15.getSearches().put("2",new Mapped(preArtWithAVisitUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
+		activePreArtWithVisitOrWeightUnder15.getSearches().put("2", new Mapped(preArtWithAVisitUnder15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 		activePreArtWithVisitOrWeightUnder15.setCompositionString("1 AND 2");
         
 		//Question number 13
@@ -654,13 +597,13 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		activeArtWithVisitUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		activeArtWithVisitUnder15.getSearches().put("1", new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
 		activeArtWithVisitUnder15.getSearches().put("2",new Mapped(currentArtUnder15, null));
-		activeArtWithVisitUnder15.setCompositionString("1 AND 2");
+		activeArtWithVisitUnder15.setCompositionString("1 AND 2"); 
 		
 		CompositionCohortDefinition activeArtWithVisitOrWeightOver15 = new CompositionCohortDefinition();
 		activeArtWithVisitOrWeightOver15.setName("HIVQ: acitve art in Hiv program with a visit or weight in period -3 months and over 15");
 		activeArtWithVisitOrWeightOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		activeArtWithVisitOrWeightOver15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		activeArtWithVisitOrWeightOver15.getSearches().put("1", new Mapped(activePreArtWithVisitOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activeArtWithVisitOrWeightOver15.getSearches().put("1", new Mapped(activeArtWithVisitOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
 		activeArtWithVisitOrWeightOver15.getSearches().put("2",new Mapped(artWithAVisitOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 		activeArtWithVisitOrWeightOver15.setCompositionString("1 AND 2");
 		
@@ -668,11 +611,28 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		activeArtWithVisitOrWeightUnder15.setName("HIVQ: acitve art in Hiv program with a visit or weight in period -3 months and under 15");
 		activeArtWithVisitOrWeightUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
 		activeArtWithVisitOrWeightUnder15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		activeArtWithVisitOrWeightUnder15.getSearches().put("1", new Mapped(activePreArtWithVisitUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activeArtWithVisitOrWeightUnder15.getSearches().put("1", new Mapped(activeArtWithVisitUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
 		activeArtWithVisitOrWeightUnder15.getSearches().put("2",new Mapped(artWithAVisitUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 		activeArtWithVisitOrWeightUnder15.setCompositionString("1 AND 2");
 		
 		//Question 14
+		CompositionCohortDefinition activePreArtWithVisitAndCD4Over15 = new CompositionCohortDefinition();
+		activePreArtWithVisitAndCD4Over15.setName("HIVQ: active PreArt in Hiv program with a visit and CD4 in period -3 months and over 15");
+		activePreArtWithVisitAndCD4Over15.addParameter(new Parameter("endDate", "endDate", Date.class));
+		activePreArtWithVisitAndCD4Over15.addParameter(new Parameter("startDate", "startDate", Date.class));
+		activePreArtWithVisitAndCD4Over15.getSearches().put("1", new Mapped(activePreArtWithVisitOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activePreArtWithVisitAndCD4Over15.getSearches().put("2",new Mapped(preArtWithACD4Over15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
+		activePreArtWithVisitAndCD4Over15.setCompositionString("1 AND 2");
+		
+		CompositionCohortDefinition activePreArtWithVisitAndCD4Under15 = new CompositionCohortDefinition();
+		activePreArtWithVisitAndCD4Under15.setName("HIVQ: active PreArt in Hiv program with a visit and CD4 in period -3 months and under 15");
+		activePreArtWithVisitAndCD4Under15.addParameter(new Parameter("endDate", "endDate", Date.class));
+		activePreArtWithVisitAndCD4Under15.addParameter(new Parameter("startDate", "startDate", Date.class));
+		activePreArtWithVisitAndCD4Under15.getSearches().put("1", new Mapped(activePreArtWithVisitUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activePreArtWithVisitAndCD4Under15.getSearches().put("2",new Mapped(preArtWithACD4Under15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
+		activePreArtWithVisitAndCD4Under15.setCompositionString("1 AND 2");
+		
+		//Question15
 		CompositionCohortDefinition activeArtWithVisitAndCD4Over15 = new CompositionCohortDefinition();
 		activeArtWithVisitAndCD4Over15.setName("HIVQ: active art in Hiv program with a visit and CD4 in period -3 months and over 15");
 		activeArtWithVisitAndCD4Over15.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -681,30 +641,13 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		activeArtWithVisitAndCD4Over15.getSearches().put("2",new Mapped(artWithACD4Over15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 		activeArtWithVisitAndCD4Over15.setCompositionString("1 AND 2");
 		
-		CompositionCohortDefinition activeArtWithVisitAndCD4Under15 = new CompositionCohortDefinition();
-		activeArtWithVisitAndCD4Under15.setName("HIVQ: acitve art in Hiv program with a visit and CD4 in period -3 months and under 15");
-		activeArtWithVisitAndCD4Under15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		activeArtWithVisitAndCD4Under15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		activeArtWithVisitAndCD4Under15.getSearches().put("1", new Mapped(activeArtWithVisitUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		activeArtWithVisitAndCD4Under15.getSearches().put("2",new Mapped(artWithACD4Under15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
-		activeArtWithVisitAndCD4Under15.setCompositionString("1 AND 2");
-		
-		//Question15
-		CompositionCohortDefinition activeprepreArtWithVisitAndCD4Over15 = new CompositionCohortDefinition();
-		activeprepreArtWithVisitAndCD4Over15.setName("HIVQ: active preArt in Hiv program with a visit and CD4 in period -3 months and over 15");
-		activeprepreArtWithVisitAndCD4Over15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		activeprepreArtWithVisitAndCD4Over15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		activeprepreArtWithVisitAndCD4Over15.getSearches().put("1", new Mapped(activePreArtWithVisitOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		activeprepreArtWithVisitAndCD4Over15.getSearches().put("2",new Mapped(preArtWithACD4Over15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
-		activeprepreArtWithVisitAndCD4Over15.setCompositionString("1 AND 2");
-		
-		CompositionCohortDefinition activeprepreArtWithVisitAndCD4Underr15 = new CompositionCohortDefinition();
-		activeprepreArtWithVisitAndCD4Underr15.setName("HIVQ: active preArt in Hiv program with a visit and CD4 in period -3 months and under 15");
-		activeprepreArtWithVisitAndCD4Underr15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		activeprepreArtWithVisitAndCD4Underr15.addParameter(new Parameter("startDate", "startDate", Date.class));
-		activeprepreArtWithVisitAndCD4Underr15.getSearches().put("1", new Mapped(activePreArtWithVisitUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		activeprepreArtWithVisitAndCD4Underr15.getSearches().put("2",new Mapped(preArtWithACD4Under15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
-		activeprepreArtWithVisitAndCD4Underr15.setCompositionString("1 AND 2");
+		CompositionCohortDefinition activeArtWithVisitAndCD4Underr15 = new CompositionCohortDefinition();
+		activeArtWithVisitAndCD4Underr15.setName("HIVQ: active art in Hiv program with a visit and CD4 in period -3 months and under 15");
+		activeArtWithVisitAndCD4Underr15.addParameter(new Parameter("endDate", "endDate", Date.class));
+		activeArtWithVisitAndCD4Underr15.addParameter(new Parameter("startDate", "startDate", Date.class));
+		activeArtWithVisitAndCD4Underr15.getSearches().put("1", new Mapped(activeArtWithVisitUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activeArtWithVisitAndCD4Underr15.getSearches().put("2",new Mapped(artWithACD4Under15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
+		activeArtWithVisitAndCD4Underr15.setCompositionString("1 AND 2");
 		
 		
 		CohortIndicator oneHIV = Indicators.newCountIndicator("HIVQ: In all programs over 15_", inHIVOver15,
@@ -779,14 +722,14 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 				activeArtWithVisitOrWeightOver15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
 		CohortIndicator fourtytwoHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a visit in period -3 months under 15_", 
 				activeArtWithVisitOrWeightUnder15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
-		CohortIndicator fourtythreeHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a CD4 in period -3 months over 15_", 
+		CohortIndicator fourtythreeHIV = Indicators.newCountIndicator("HIVQ: active PreArt in HIV with a CD4 in period -3 months over 15_", 
+				activePreArtWithVisitAndCD4Over15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+		CohortIndicator fourtyfourHIV = Indicators.newCountIndicator("HIVQ: active PreArt in HIV with a CD4 in period -3 months under 15_", 
+				activePreArtWithVisitAndCD4Under15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+		CohortIndicator fourtyfiveHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a CD4 in period -3 months over 15_", 
 				activeArtWithVisitAndCD4Over15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
-		CohortIndicator fourtyfourHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a CD4 in period -3 months under 15_", 
-				activeArtWithVisitAndCD4Under15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
-		CohortIndicator fourtyfiveHIV = Indicators.newCountIndicator("HIVQ: active preArt in HIV with a CD4 in period -3 months over 15_", 
-				activeprepreArtWithVisitAndCD4Over15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
-		CohortIndicator fourtysixHIV = Indicators.newCountIndicator("HIVQ: active preArt in HIV with a CD4 in period -3 months over 15_", 
-				activeprepreArtWithVisitAndCD4Underr15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+		CohortIndicator fourtysixHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a CD4 in period -3 months over 15_", 
+				activeArtWithVisitAndCD4Underr15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
 		
 		
 		dsd.addColumn("HIVQ1A", "In All HIV Programs Over 15",
@@ -866,9 +809,9 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 		dsd.addColumn("HIVQ13C","HIV art visit Under 15 in last 3 months",new Mapped(fourtytwoHIV,
 				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
-		dsd.addColumn("HIVQ14A","HIV art CD4 Over 15 in last 3 months",new Mapped(fourtythreeHIV,
+		dsd.addColumn("HIVQ14A","HIV PreArt CD4 Over 15 in last 3 months",new Mapped(fourtythreeHIV,
 				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
-		dsd.addColumn("HIVQ14C","HIV art CD4 Under 15 in last 3 months",new Mapped(fourtyfourHIV,
+		dsd.addColumn("HIVQ14C","HIV PreArt CD4 Under 15 in last 3 months",new Mapped(fourtyfourHIV,
 				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 		dsd.addColumn("HIVQ15A","HIV preArt CD4 Over 15 in last 3 months",new Mapped(fourtyfiveHIV,
 				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
@@ -1097,55 +1040,46 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		patientsInPMTCTInfantTurned13WeeksByStartAndEndDate.getSearches().put("3", new Mapped(over13Weeks, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
 		patientsInPMTCTInfantTurned13WeeksByStartAndEndDate.setCompositionString("1 AND 2 AND 3");
 		
-		CodedObsCohortDefinition patientsWithHivPCRObs = Cohorts.createCodedObsCohortDefinition(
-		    "patientsWithHivPCRObs", onOrAfterOnOrBefore, hivPCR, null, SetComparator.IN,
-		    TimeModifier.ANY);
+		CodedObsCohortDefinition patientsWithHivPCRObs = Cohorts.createCodedObsCohortDefinition("patientsWithHivPCRObs", onOrAfterOnOrBefore, hivPCR, null, SetComparator.IN,TimeModifier.ANY);
+		CodedObsCohortDefinition patientsWithHivPCRObsAndValuePositive = Cohorts.createCodedObsCohortDefinition("patientsWithPosHivPCRObs", onOrAfterOnOrBefore, hivPCR, hivPositive, SetComparator.IN,TimeModifier.LAST);	
 		
-		CompositionCohortDefinition patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs = new CompositionCohortDefinition();
+		/*CompositionCohortDefinition patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs = new CompositionCohortDefinition();
 		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.setName("patients In PMTCT infant turned but not enrolled between startdate and enddate with HIV PCR");
 		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.addParameter(new Parameter("onDate", "onDate",Date.class));
 		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.getSearches().put( "1",new Mapped(patientsInPMTCTInfantTurned13WeeksByStartAndEndDate, ParameterizableUtil .createParameterMappings("onDate=${onDate}")));
-		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.getSearches().put("2",new Mapped(patientsWithHivPCRObs, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.getSearches().put("2",new Mapped(patientsWithHivPCRObs, null));
 		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.setCompositionString("1 AND 2");		
+		*/
+		//Question number EIQ6
+		CompositionCohortDefinition patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs = new CompositionCohortDefinition();
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.setName("patients In PMTCT infant turned 13 but not enrolled between startdate and enddate");
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.addParameter(new Parameter("effectiveDate", "effectiveDate",Date.class));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.addParameter(new Parameter("onDate", "onDate", Date.class));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.getSearches().put("1", new Mapped(inPMTCTInfantOnEndDate, ParameterizableUtil.createParameterMappings("onDate=${onDate}")));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.getSearches().put("2", new Mapped(over13Weeks, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.getSearches().put("3", new Mapped(patientsWithHivPCRObs, null));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs.setCompositionString("1 AND 2 AND 3");
 		
-		CodedObsCohortDefinition patientsWithHivPCRObsAndValuePositive = Cohorts.createCodedObsCohortDefinition(
-		    "patientsWithHivPCRObsAndValuePositive", onOrAfterOnOrBefore, hivPCR, hivPositive, SetComparator.IN,
-		    TimeModifier.ANY);	
-		//NEW
+		//Question number EIQ7D
 		CompositionCohortDefinition patientsWithHivPCREnrolledInPMTCTInfantProg = new CompositionCohortDefinition();
-		patientsWithHivPCREnrolledInPMTCTInfantProg.setName("HIVQ: in Exposed Infant Program with PCR during period");
+		patientsWithHivPCREnrolledInPMTCTInfantProg.setName("EIQ: in Exposed Infant Program with PCR during period");
 		patientsWithHivPCREnrolledInPMTCTInfantProg.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
-		patientsWithHivPCREnrolledInPMTCTInfantProg.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientsWithHivPCREnrolledInPMTCTInfantProg.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithHivPCREnrolledInPMTCTInfantProg.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		patientsWithHivPCREnrolledInPMTCTInfantProg.getSearches().put("1", new Mapped(enrolledInPMTCTInfantOnOrBeforeEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
 		patientsWithHivPCREnrolledInPMTCTInfantProg.getSearches().put("2",new Mapped(patientsWithHivPCRObs, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		patientsWithHivPCREnrolledInPMTCTInfantProg.setCompositionString("1 AND 2");      
-		
+		//Question EIQ7
 		CompositionCohortDefinition patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive = new CompositionCohortDefinition();
-		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive
-		        .setName("patients In PMTCT infant turned but not enrolled between startdate and enddate with HIV PCR Positive");
-		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.addParameter(new Parameter("onDate", "onDate",
-		        Date.class));
-		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.addParameter(new Parameter("onOrBefore",
-		        "onOrBefore", Date.class));
-		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.addParameter(new Parameter("onOrAfter",
-		        "onOrAfter", Date.class));
-		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.getSearches().put(
-		    "1",
-		    new Mapped(patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs, ParameterizableUtil
-		            .createParameterMappings("onDate=${onDate},onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.getSearches().put(
-		    "2",
-		    new Mapped(patientsWithHivPCRObsAndValuePositive, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.setName("patients In PMTCT infant turned but not enrolled between startDate and endDate with HIV PCR Positive");
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore",Date.class));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.getSearches().put("1",new Mapped(enrolledInPMTCTInfantOnOrBeforeEndDate, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
+		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.getSearches().put( "2", new Mapped(patientsWithHivPCRObsAndValuePositive, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive.setCompositionString("1 AND 2");	
-		
-		
-		
-		
 		
 		AgeCohortDefinition under18Monthss = new AgeCohortDefinition();
 		under18Monthss.setName("under18Months");
@@ -1159,57 +1093,48 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		over18Mothns.setMinAgeUnit(DurationUnit.MONTHS);
 		over18Mothns.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		
+		//EIQ8D
 		CompositionCohortDefinition patientsInPMTCTInfantTurned18MonthssByStartAndEndDate = new CompositionCohortDefinition();
 		patientsInPMTCTInfantTurned18MonthssByStartAndEndDate.setName("patients In PMTCT infant turned 18 month but not enrolled between startdate and enddate");
 		patientsInPMTCTInfantTurned18MonthssByStartAndEndDate.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore",Date.class));
 		patientsInPMTCTInfantTurned18MonthssByStartAndEndDate.addParameter(new Parameter("effectiveDate", "effectiveDate",Date.class));
 		patientsInPMTCTInfantTurned18MonthssByStartAndEndDate.getSearches().put("1",new Mapped(enrolledInPMTCTInfantOnOrBeforeEndDate, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
-		patientsInPMTCTInfantTurned18MonthssByStartAndEndDate.getSearches().put("2",new Mapped(under18Monthss, ParameterizableUtil.createParameterMappings("effectiveDate=${startDate}")));
-		patientsInPMTCTInfantTurned18MonthssByStartAndEndDate.getSearches().put("3",new Mapped(over18Mothns, ParameterizableUtil.createParameterMappings("effectiveDate=${startDate}")));
-		patientsInPMTCTInfantTurned18MonthssByStartAndEndDate.setCompositionString("1 AND 2 AND 3");
+		patientsInPMTCTInfantTurned18MonthssByStartAndEndDate.getSearches().put("2",new Mapped(over18Mothns, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		patientsInPMTCTInfantTurned18MonthssByStartAndEndDate.setCompositionString("1 AND 2 ");
 		
-
-		SqlCohortDefinition serotestAfter16MonthsOfAge=new SqlCohortDefinition();
-		serotestAfter16MonthsOfAge.setName("serotestAfter16MonthsOfAge");
-		serotestAfter16MonthsOfAge.setQuery("SELECT distinct o.person_id FROM person p, obs o where o.person_id=p.person_id and o.concept_id= "+seroTest.getConceptId()+" and DATEDIFF(o.obs_datetime,p.birthdate)>480 and p.birthdate is not null and o.voided=0 and p.voided=0");
+		//EIQ8
+		CodedObsCohortDefinition patientsWithSerotestObs = Cohorts.createCodedObsCohortDefinition("patientsWithHivPCRObs", onOrAfterOnOrBefore, seroTest, null, SetComparator.IN,TimeModifier.ANY);
+		CodedObsCohortDefinition patientsPosSerotestObs = Cohorts.createCodedObsCohortDefinition("patientsWithPosHivPCRObs", onOrAfterOnOrBefore, seroTest, hivPositive, SetComparator.IN,TimeModifier.LAST);	
 		
+		CompositionCohortDefinition patientsInPMTCTInfantTurned18MonthsByStartWithserotestEver = new CompositionCohortDefinition();
+		patientsInPMTCTInfantTurned18MonthsByStartWithserotestEver.setName("patients In PMTCT infant turned 18 months but not enrolled between startdate and enddate");
+		patientsInPMTCTInfantTurned18MonthsByStartWithserotestEver.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore",Date.class));
+		patientsInPMTCTInfantTurned18MonthsByStartWithserotestEver.addParameter(new Parameter("effectiveDate", "effectiveDate",Date.class));
+		patientsInPMTCTInfantTurned18MonthsByStartWithserotestEver.getSearches().put("1",new Mapped(enrolledInPMTCTInfantOnOrBeforeEndDate, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
+		patientsInPMTCTInfantTurned18MonthsByStartWithserotestEver.getSearches().put("2",new Mapped(over18Mothns, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		patientsInPMTCTInfantTurned18MonthsByStartWithserotestEver.getSearches().put("3",new Mapped(patientsWithSerotestObs, null));
+		patientsInPMTCTInfantTurned18MonthsByStartWithserotestEver.setCompositionString("1 AND 2 AND 3");
 		
-		CompositionCohortDefinition patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestAfter16MonthsOfAge = new CompositionCohortDefinition();
-		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestAfter16MonthsOfAge
-		        .setName("patients In PMTCT infant turned 18 months but not enrolled between startdate and enddate");
-		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestAfter16MonthsOfAge.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore",
-	        Date.class));
-		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestAfter16MonthsOfAge.getSearches().put("1",
-		    new Mapped(patientsInPMTCTInfantTurned18MonthssByStartAndEndDate, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
-		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestAfter16MonthsOfAge.getSearches().put("2",new Mapped(serotestAfter16MonthsOfAge, null));
-		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestAfter16MonthsOfAge.setCompositionString("1 AND 2");
-		
-		
-		SqlCohortDefinition serotestPositiveAfter16MonthsOfAge=new SqlCohortDefinition();
-		serotestPositiveAfter16MonthsOfAge.setName("serotestPositiveAfter16MonthsOfAge");
-		serotestPositiveAfter16MonthsOfAge.setQuery("SELECT distinct o.person_id FROM person p, obs o where o.person_id=p.person_id and o.concept_id= "+seroTest.getConceptId()+" and o.value_coded="+hivPositive+" and DATEDIFF(o.obs_datetime,p.birthdate)>480 and p.birthdate is not null and o.voided=0 and p.voided=0");
-		
-		//NEW
-		CodedObsCohortDefinition patientsWithSeroTestObs = Cohorts.createCodedObsCohortDefinition("patientsWithSeroTestObs", onOrAfterOnOrBefore, seroTest, null, SetComparator.IN,TimeModifier.ANY);
+		//EIQ9D
 		CompositionCohortDefinition patientsWithSerotestEnrolledInPMTCTInfantProg = new CompositionCohortDefinition();
 		patientsWithSerotestEnrolledInPMTCTInfantProg.setName("HIVQ: in Exposed Infant Program with SeroTest during period");
 		patientsWithSerotestEnrolledInPMTCTInfantProg.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithSerotestEnrolledInPMTCTInfantProg.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		patientsWithSerotestEnrolledInPMTCTInfantProg.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
 		patientsWithSerotestEnrolledInPMTCTInfantProg.getSearches().put("1", new Mapped(enrolledInPMTCTInfantOnOrBeforeEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
-		patientsWithSerotestEnrolledInPMTCTInfantProg.getSearches().put("2",new Mapped(patientsWithSeroTestObs, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		patientsWithSerotestEnrolledInPMTCTInfantProg.getSearches().put("2",new Mapped(patientsWithSerotestObs, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrBefore=${onOrBefore}")));
 		patientsWithSerotestEnrolledInPMTCTInfantProg.setCompositionString("1 AND 2");      
 		
+		//EIQ9
 		CompositionCohortDefinition patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge = new CompositionCohortDefinition();
-		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge
-		        .setName("patients In PMTCT infant turned 18 months but not enrolled between startdate and enddate");
-		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore",
-	        Date.class));
-		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.getSearches().put("1",
-		    new Mapped(patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestAfter16MonthsOfAge, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
-		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.getSearches().put("2",new Mapped(serotestPositiveAfter16MonthsOfAge, null));
+		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.setName("patients In PMTCT infant turned 18 months but not enrolled between startdate and enddate");
+		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.getSearches().put("1",new Mapped(enrolledInPMTCTInfantOnOrBeforeEndDate, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
+		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.getSearches().put("2",new Mapped(patientsPosSerotestObs, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge.setCompositionString("1 AND 2");
-		
+		//EIQ10
 		AgeCohortDefinition over6Weeks = new AgeCohortDefinition();
 		over6Weeks.setName("over6Weeks");
 		over6Weeks.setMinAge(6);
@@ -1218,32 +1143,25 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		
 		SqlCohortDefinition patientEverOnCTX=new SqlCohortDefinition();
 		patientEverOnCTX.setName("patientEverOnCTX");
-		patientEverOnCTX.addParameter(new Parameter("startDate","startDate",Date.class));
-		patientEverOnCTX.addParameter(new Parameter("endDate","endDate",Date.class));
 		patientEverOnCTX.setQuery("select distinct patient_id from orders where concept_id="+ctx.getConceptId()+" and voided=0");
 		
-		
 		CompositionCohortDefinition patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate = new CompositionCohortDefinition();
-		patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate
-		        .setName("patient Over 6 Weeks On CTX And in PMTCT Infant OnEndDate");
+		patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate.setName("patient Over 6 Weeks On CTX And in PMTCT Infant OnEndDate");
 		patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate.addParameter(new Parameter("onDate","onDate",Date.class));
-		patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate.getSearches().put("1",new Mapped(over6Weeks, ParameterizableUtil.createParameterMappings("effectiveDate=${startDate}")));
+		patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate.getSearches().put("1",new Mapped(over6Weeks, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
 		patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate.getSearches().put("2",new Mapped(patientEverOnCTX, null));
 		patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate.getSearches().put("3",new Mapped(inPMTCTInfantOnEndDate, ParameterizableUtil.createParameterMappings("onDate=${onDate}")));
 		patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate.setCompositionString("1 AND 2 AND 3");
-		
+		//EIQ10D
 		CompositionCohortDefinition patientOver6WeeksAndInPMTCTInfantOnEndDate = new CompositionCohortDefinition();
-		patientOver6WeeksAndInPMTCTInfantOnEndDate
-		        .setName("patient Over 6 Weeks And in PMTCT Infant OnEndDate");
+		patientOver6WeeksAndInPMTCTInfantOnEndDate.setName("patient Over 6 Weeks And in PMTCT Infant OnEndDate");
 		patientOver6WeeksAndInPMTCTInfantOnEndDate.addParameter(new Parameter("startDate","startDate",Date.class));
 		patientOver6WeeksAndInPMTCTInfantOnEndDate.addParameter(new Parameter("endDate","endDate",Date.class));
 		patientOver6WeeksAndInPMTCTInfantOnEndDate.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		patientOver6WeeksAndInPMTCTInfantOnEndDate.addParameter(new Parameter("onDate","onDate",Date.class));
-		patientOver6WeeksAndInPMTCTInfantOnEndDate.getSearches().put("1",
-		    new Mapped(over6Weeks, ParameterizableUtil.createParameterMappings("effectiveDate=${startDate}")));
-		patientOver6WeeksAndInPMTCTInfantOnEndDate.getSearches().put("3",
-		    new Mapped(inPMTCTInfantOnEndDate, ParameterizableUtil.createParameterMappings("onDate=${onDate}")));
+		patientOver6WeeksAndInPMTCTInfantOnEndDate.getSearches().put("1",new Mapped(over6Weeks, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		patientOver6WeeksAndInPMTCTInfantOnEndDate.getSearches().put("3",new Mapped(inPMTCTInfantOnEndDate, ParameterizableUtil.createParameterMappings("onDate=${onDate}")));
 		patientOver6WeeksAndInPMTCTInfantOnEndDate.setCompositionString("1 AND 3");
 		
 		SqlCohortDefinition patientOnNevirapine=new SqlCohortDefinition();
@@ -1300,30 +1218,28 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		
 		CohortIndicator sixPMTCTInfant = Indicators
 		        .newCountIndicator(
-		            "PMTCTInfantQ: Enrolled in PMTCT Infant on the end date and turned 13 weeks by start and end date with HIV PCR obs",
+		            "PMTCTInfantQ: Enrolled in PMTCT Infant on the end date and turned 13 weeks by the end date with HIV PCR obs",
 		            patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObs, ParameterizableUtil
-		                    .createParameterMappings("onDate=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+		                    .createParameterMappings("onDate=${endDate},effectiveDate=${endDate}"));
 		
 		CohortIndicator sevenPMTCTInfantD = Indicators.newCountIndicator(
-		            "PMTCTInfantQ: Enrolled in PMTCT Infant on the end date with HIV PCR within the period",
-		            patientsWithHivPCREnrolledInPMTCTInfantProg, ParameterizableUtil
-		                    .createParameterMappings("enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+		            "PMTCTInfantQ: Enrolled in PMTCT Infant on the end date with HIV PCR within the period",patientsWithHivPCREnrolledInPMTCTInfantProg, 
+		            ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
 		
-		CohortIndicator sevenPMTCTInfant = Indicators
-        .newCountIndicator(
-            "PMTCTInfantQ: Enrolled in PMTCT Infant on the end date and turned 13 weeks by start and end date with HIV PCR obs positive",
-            patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive, ParameterizableUtil
-                    .createParameterMappings("onDate=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+		CohortIndicator sevenPMTCTInfant = Indicators.newCountIndicator("" +
+				"PMTCTInfantQ: Enrolled in PMTCT Infant on the end date and turned 13 weeks by start and end date with HIV PCR obs positive",
+            patientsInPMTCTInfantTurned13WeeksByStartAndEndDateWithHivPCRObsPositive, 
+             ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
 
 		
 		CohortIndicator eightPMTCTInfantD = Indicators.newCountIndicator(
 		    "PMTCTInfantQ: Enrolled in PMTCT Infant on or before the end date who turned 18 months by start", patientsInPMTCTInfantTurned18MonthssByStartAndEndDate,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
-		
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate},effectiveDate=${startDate}"));
 		
 		CohortIndicator eightPMTCTInfant = Indicators.newCountIndicator(
-		    "PMTCTInfantQ: Enrolled in PMTCT Infant on or before the end date who turned 18 months by start and end date and sero test recorded after 16 months of age", patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestAfter16MonthsOfAge,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
+		    "PMTCTInfantQ: Enrolled in PMTCT Infant on or before the end date who turned 18 months by start and end date and sero test recorded after 16 months of age", 
+		    patientsInPMTCTInfantTurned18MonthsByStartWithserotestEver,
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate},effectiveDate=${startDate}"));
 		
 		CohortIndicator ninePMTCTInfantD = Indicators.newCountIndicator(
 			    "PMTCTInfantQ: Enrolled in PMTCT Infant on or before the end date who turned 18 months by start and sero test recorded within the period", patientsWithSerotestEnrolledInPMTCTInfantProg,
@@ -1331,17 +1247,17 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		
 		CohortIndicator ninePMTCTInfant = Indicators.newCountIndicator(
 		    "PMTCTInfantQ: Enrolled in PMTCT Infant on or before the end date who turned 18 months by start and end date and sero test positive recorded after 16 months of age", patientsInPMTCTInfantTurned18MonthsByStartAndEndDateAndWithserotestPositiveAfter16MonthsOfAge,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
 		
 		
 		
 		CohortIndicator tenPMTCTInfant = Indicators.newCountIndicator(
 		    "PMTCTInfantQ: Patient over 6 week on ctx Enrolled in PMTCT Infant on the end date", patientOver6WeeksOnCTXAndInPMTCTInfantOnEndDate,
-		    ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("onDate=${endDate},effectiveDate=${startDate}"));
 		
 		CohortIndicator tenPMTCTInfantD = Indicators.newCountIndicator(
 		    "PMTCTInfantQ: Patient over 6 week Enrolled in PMTCT Infant on the end date", patientOver6WeeksAndInPMTCTInfantOnEndDate,
-		    ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("onDate=${endDate},effectiveDate=${startDate}"));
 		
 		
 		CohortIndicator elevenPMTCTInfant = Indicators.newCountIndicator("PMTCTInfantQ: Enrolled in PMTCT Infanf ever on Nevirapine",
@@ -1355,11 +1271,8 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		    "Enrolled in PMTCT Infant",
 		    new Mapped(onePMTCTInfant, ParameterizableUtil
 		            .createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
-		dsd.addColumn(
-		    "EIQ2",
-		    "Enrolled in PMTCT Infant on the end date",
-		    new Mapped(twoPMTCTInfant, ParameterizableUtil
-		            .createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+		dsd.addColumn("EIQ2","Enrolled in PMTCT Infant on the end date",new Mapped(twoPMTCTInfant, 
+				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 		dsd.addColumn("EIQ3", "patient in Feeding States On Date And in PMTCT Infant OnEndDate", new Mapped(
 		        threePMTCTInfant, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")),
 		    "");
@@ -1375,9 +1288,9 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		
 		dsd.addColumn(
 		    "EIQ6",
-		    "Enrolled in PMTCT Infant on the end date and turned 13 weeks by start and end date with HIV PCR obs",
+		    "Enrolled in PMTCT Infant on the end date and turned 13 weeks by the end date with HIV PCR obs",
 		    new Mapped(sixPMTCTInfant, ParameterizableUtil
-		            .createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+		            .createParameterMappings("endDate=${endDate}")), "");
 		
 		dsd.addColumn(
 		    "EIQ6D",
@@ -1386,17 +1299,11 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		            .createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 		
 		
-		dsd.addColumn(
-			    "EIQ7D",
-			    "Enrolled in PMTCT Infant on the end date HIV PCR within the period",
-			    new Mapped(sevenPMTCTInfantD, ParameterizableUtil
-			            .createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+		dsd.addColumn("EIQ7D","Enrolled in PMTCT Infant on the end date HIV PCR within the period",
+			    new Mapped(sevenPMTCTInfantD, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 		
-		dsd.addColumn(
-		    "EIQ7",
-		    "Enrolled in PMTCT Infant on the end date and turned 13 weeks by start and end date with HIV PCR obs positive",
-		    new Mapped(sevenPMTCTInfant, ParameterizableUtil
-		            .createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+		dsd.addColumn("EIQ7","Enrolled in PMTCT Infant on the end date and turned 13 weeks by start and end date with HIV PCR obs positive",
+		    new Mapped(sevenPMTCTInfant, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 		
 		dsd.addColumn(
 		    "EIQ8",
@@ -1405,7 +1312,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		            .createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 		dsd.addColumn(
 		    "EIQ8D",
-		    "Enrolled in PMTCT Infant on or before the end date who turned 18 months by start and end date",
+		    "Enrolled in PMTCT Infant on or before the end date who turned 18 months by end date",
 		    new Mapped(eightPMTCTInfantD, ParameterizableUtil
 		            .createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 		dsd.addColumn(
@@ -1508,11 +1415,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		patientsInPMTCTCCMotherUsingMethodOfFamilyPlanning.getSearches().put("2",new Mapped(inPMTCTCCMotherOnEndDate, ParameterizableUtil.createParameterMappings("onDate=${onDate}")));
 		patientsInPMTCTCCMotherUsingMethodOfFamilyPlanning .getSearches().put( "3",new Mapped(patientUsingMethodOfFamilyPlanning, ParameterizableUtil .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		patientsInPMTCTCCMotherUsingMethodOfFamilyPlanning.setCompositionString("2 AND 3");
-		
-		
-		
-		
-		
+				
 		
 		
 		CohortIndicator onePMTCTCCMother = Indicators.newCountIndicator("PMTCTCCMotherQ: Enrolled in PMTCT C C Mother",
@@ -1579,154 +1482,143 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 	    "");
 		
 		
-		
-		
-		//======================================================================================
-		// Viral Load
-		//======================================================================================
-		
-		InProgramCohortDefinition currentlyInAnyHIVProgram = Cohorts.createInProgramParameterizableByDate(
-		    "hivQD: In All HIV Programs", hivPrograms, "onDate");
-		
-		NumericObsCohortDefinition viralLoad = Cohorts.createNumericObsCohortDefinition("obsQD: Viral Load recorded",
-		    onOrAfterOnOrBefore, viralLoadConcept, 0, null, TimeModifier.ANY);;
-		
-		NumericObsCohortDefinition viralLoadFailure = Cohorts.createNumericObsCohortDefinition("obsQD: weight recorded",
-		    onOrAfterOnOrBefore, viralLoadConcept, 10000, RangeComparator.GREATER_EQUAL, TimeModifier.ANY);
-		
-		CompositionCohortDefinition currentlyInHIVUnder15 = new CompositionCohortDefinition();
-		currentlyInHIVUnder15.setName("hivQD: In all programs under 15 and on ART more than 12 months");
-		currentlyInHIVUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		currentlyInHIVUnder15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		currentlyInHIVUnder15.getSearches().put("2",new Mapped(currentlyInAnyHIVProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		currentlyInHIVUnder15.getSearches().put("3",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		currentlyInHIVUnder15.getSearches().put("4",new Mapped(artOnOrBefore, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate-1y}")));
-		currentlyInHIVUnder15.setCompositionString("NOT 1 AND 2 AND 3 AND 4");
-		
-		CompositionCohortDefinition currentlyInHIVOver15 = new CompositionCohortDefinition();
-		currentlyInHIVOver15.setName("hivQD: In all programs over 15 and on ART more than 12 months");
-		currentlyInHIVOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		currentlyInHIVOver15.getSearches().put("1",
-		    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-		currentlyInHIVOver15.getSearches().put("2",
-		    new Mapped(currentlyInAnyHIVProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		currentlyInHIVOver15.getSearches().put("3",
-		    new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		currentlyInHIVOver15.getSearches().put("4",
-		    new Mapped(artOnOrBefore, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate-1y}")));
-		currentlyInHIVOver15.setCompositionString("1 AND 2 AND 3 AND 4");
-		
-		CompositionCohortDefinition eligibleWithViralU15 = new CompositionCohortDefinition();
-		eligibleWithViralU15.setName("hivQD: eligible with viral load under 15");
-		eligibleWithViralU15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		eligibleWithViralU15.getSearches().put("1", new Mapped(currentlyInHIVUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		eligibleWithViralU15.getSearches().put( "2", new Mapped(viralLoad, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
-		eligibleWithViralU15.setCompositionString("1 AND 2");
-		
-		CompositionCohortDefinition eligibleWithViralO15 = new CompositionCohortDefinition();
-		eligibleWithViralO15.setName("hivQD: eligible with viral load over 15");
-		eligibleWithViralO15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		eligibleWithViralO15.getSearches().put("1",
-		    new Mapped(currentlyInHIVOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		eligibleWithViralO15.getSearches().put(
-		    "2",
-		    new Mapped(viralLoad, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
-		eligibleWithViralO15.setCompositionString("1 AND 2");
-		
-		CompositionCohortDefinition eligibleWithViralFailureU15 = new CompositionCohortDefinition();
-		eligibleWithViralFailureU15.setName("hivQD: eligible with viral load failure under 15");
-		eligibleWithViralFailureU15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		eligibleWithViralFailureU15.getSearches().put("1",new Mapped(currentlyInHIVUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		eligibleWithViralFailureU15.getSearches().put( "2",new Mapped(viralLoadFailure, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
-		eligibleWithViralFailureU15.setCompositionString("1 AND 2");
-		
-		CompositionCohortDefinition eligibleWithViralFailureO15 = new CompositionCohortDefinition();
-		eligibleWithViralFailureO15.setName("hivQD: eligible with viral load failure over 15");
-		eligibleWithViralFailureO15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		eligibleWithViralFailureO15.getSearches().put("1",
-		    new Mapped(currentlyInHIVOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		eligibleWithViralFailureO15.getSearches().put(
-		    "2",
-		    new Mapped(viralLoadFailure, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
-		eligibleWithViralFailureO15.setCompositionString("1 AND 2");
-		
-		//NEW
-		CompositionCohortDefinition eligibleActiveInHIVOver15 = new CompositionCohortDefinition();
-		eligibleActiveInHIVOver15.setName("hivQD: eligible active in all programs over 15 and on ART more than 12 months");
-		eligibleActiveInHIVOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		eligibleActiveInHIVOver15.getSearches().put("1",new Mapped(currentlyInHIVOver15,null));
-		eligibleActiveInHIVOver15.getSearches().put("2", new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
-		eligibleActiveInHIVOver15.setCompositionString("1 AND 2");
-		
-		CompositionCohortDefinition eligibleActiveWitViralLoadOver15 = new CompositionCohortDefinition();
-		eligibleActiveWitViralLoadOver15.setName("hivQD: eligible active in all programs with Viral load over 15 ");
-		eligibleActiveWitViralLoadOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		eligibleActiveWitViralLoadOver15.getSearches().put("1",new Mapped(eligibleActiveInHIVOver15,null));
-		eligibleActiveWitViralLoadOver15.getSearches().put("2", new Mapped(eligibleWithViralO15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		eligibleActiveWitViralLoadOver15.setCompositionString("1 AND 2");
-		
-		CompositionCohortDefinition eligibleActiveInHIVUnder15 = new CompositionCohortDefinition();
-		eligibleActiveInHIVUnder15.setName("hivQD: eligible active in all programs under 15 and on ART more than 12 months");
-		eligibleActiveInHIVUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		eligibleActiveInHIVUnder15.getSearches().put("1",new Mapped(currentlyInHIVUnder15,null));
-		eligibleActiveInHIVUnder15.getSearches().put("2", new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
-		eligibleActiveInHIVUnder15.setCompositionString("1 AND 2");
-		
-		CompositionCohortDefinition eligibleActiveWitViralLoadUnder15 = new CompositionCohortDefinition();
-		eligibleActiveWitViralLoadUnder15.setName("hivQD: eligible active in all programs with Viral load under 15 ");
-		eligibleActiveWitViralLoadUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
-		eligibleActiveWitViralLoadUnder15.getSearches().put("1",new Mapped(eligibleActiveInHIVUnder15,null));
-		eligibleActiveWitViralLoadUnder15.getSearches().put("2", new Mapped(eligibleWithViralU15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		eligibleActiveWitViralLoadUnder15.setCompositionString("1 AND 2");
-		
-		
 	
-		CohortIndicator one = Indicators.newCountIndicator("hivQD: In all programs under 15 and on ART more than 12 months_", currentlyInHIVUnder15,
-		    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		CohortIndicator two = Indicators.newCountIndicator("hivQD: In all programs over 15 and on ART more than 12 months_", currentlyInHIVOver15,
-		    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		CohortIndicator three = Indicators.newCountIndicator("hivQD: eligible with viral load under 15_", eligibleWithViralU15,
-		    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		CohortIndicator four = Indicators.newCountIndicator("hivQD: eligible with viral load over 15_", eligibleWithViralO15,
-		    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		CohortIndicator five = Indicators.newCountIndicator("hivQD: eligible with viral load failure under 15_", eligibleWithViralFailureU15,
-		    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		CohortIndicator six = Indicators.newCountIndicator("hivQD: eligible with viral load failure over 15_", eligibleWithViralFailureO15,
-		    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		CohortIndicator seven = Indicators.newCountIndicator("hivQD: actively eligible in all programs over 15_", eligibleActiveInHIVOver15,
-			    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		CohortIndicator eight = Indicators.newCountIndicator("hivQD: actively eligible in all with viral load programs over 15_", eligibleActiveWitViralLoadOver15,
-			    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		CohortIndicator nine = Indicators.newCountIndicator("hivQD: actively eligible in all programs under 15_", eligibleActiveInHIVUnder15,
-			    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		CohortIndicator ten = Indicators.newCountIndicator("hivQD: actively eligible in all with viral load programs under 15_", eligibleActiveWitViralLoadUnder15,
-			    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-			
-			
-		
-		dsd.addColumn("VQ2AD", "Eligible Over 15",
-		    new Mapped(two, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		dsd.addColumn("VQ2CD", "Eligible Under 15",
-		    new Mapped(one, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		dsd.addColumn("VQ2C", "Viral Load Under 15",
-		    new Mapped(three, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		dsd.addColumn("VQ2A", "Viral Load Over 15",
-		    new Mapped(four, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		dsd.addColumn("VQ3C", "Viral Load Failure Over 15",
-		    new Mapped(five, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		dsd.addColumn("VQ3A", "Viral Load Failure Under 15",
-		    new Mapped(six, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		dsd.addColumn("VQ4AD", "Actively Eligible Over 15",
-			    new Mapped(seven, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		dsd.addColumn("VQ4A", "Actively Eligible with Viral load Over 15",
-			    new Mapped(eight, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		dsd.addColumn("VQ4CD", "Actively Eligible Under 15",
-			    new Mapped(nine, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		dsd.addColumn("VQ4C", "Actively Eligible with Viral load Under 15",
-			    new Mapped(ten, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-		
+
+        //======================================================================================
+        // Viral Load
+        //======================================================================================
+        
+        InProgramCohortDefinition currentlyInAnyHIVProgram = Cohorts.createInProgramParameterizableByDate(
+            "hivQD: In All HIV Programs", hivPrograms, "onDate");
+        
+        NumericObsCohortDefinition viralLoad = Cohorts.createNumericObsCohortDefinition("obsQD: Viral Load recorded",
+            onOrAfterOnOrBefore, viralLoadConcept, 0, null, TimeModifier.ANY);;
+        
+        NumericObsCohortDefinition viralLoadFailure = Cohorts.createNumericObsCohortDefinition("obsQD: weight recorded",
+            onOrAfterOnOrBefore, viralLoadConcept, 10000, RangeComparator.GREATER_EQUAL, TimeModifier.ANY);
+        
+        CompositionCohortDefinition currentlyInHIVUnder15 = new CompositionCohortDefinition();
+        currentlyInHIVUnder15.setName("hivQD: In all programs under 15 and on ART more than 12 months");
+        currentlyInHIVUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        currentlyInHIVUnder15.addParameter(new Parameter("startDate", "startDate", Date.class));
+        currentlyInHIVUnder15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+        currentlyInHIVUnder15.getSearches().put("2",new Mapped(currentlyInAnyHIVProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+        currentlyInHIVUnder15.getSearches().put("3",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+        currentlyInHIVUnder15.getSearches().put("4",new Mapped(artOnOrBefore,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-12m},onOrBefore=${startDate}")));
+        currentlyInHIVUnder15.setCompositionString("NOT 1 AND 2 AND 3 AND 4");
+        
+        CompositionCohortDefinition currentlyInHIVOver15 = new CompositionCohortDefinition();
+        currentlyInHIVOver15.setName("hivQD: In all programs over 15 and on ART more than 12 months");
+        currentlyInHIVOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        currentlyInHIVOver15.addParameter(new Parameter("startDate", "startDate", Date.class));
+        currentlyInHIVOver15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+        currentlyInHIVOver15.getSearches().put("2",new Mapped(currentlyInAnyHIVProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+        currentlyInHIVOver15.getSearches().put("3",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+        currentlyInHIVOver15.getSearches().put("4",new Mapped(artOnOrBefore, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-12m},onOrBefore=${startDate}")));
+        currentlyInHIVOver15.setCompositionString("1 AND 2 AND 3 AND 4");
+        
+        CompositionCohortDefinition eligibleWithViralU15 = new CompositionCohortDefinition();
+        eligibleWithViralU15.setName("hivQD: eligible with viral load under 15");
+        eligibleWithViralU15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        eligibleWithViralU15.getSearches().put("1", new Mapped(currentlyInHIVUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+        eligibleWithViralU15.getSearches().put( "2", new Mapped(viralLoad, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
+        eligibleWithViralU15.setCompositionString("1 AND 2");
+        
+        CompositionCohortDefinition eligibleWithViralO15 = new CompositionCohortDefinition();
+        eligibleWithViralO15.setName("hivQD: eligible with viral load over 15");
+        eligibleWithViralO15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        eligibleWithViralO15.getSearches().put("1",new Mapped(currentlyInHIVOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+        eligibleWithViralO15.getSearches().put("2",new Mapped(viralLoad, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
+        eligibleWithViralO15.setCompositionString("1 AND 2");
+        
+        CompositionCohortDefinition eligibleWithViralFailureU15 = new CompositionCohortDefinition();
+        eligibleWithViralFailureU15.setName("hivQD: eligible with viral load failure under 15");
+        eligibleWithViralFailureU15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        eligibleWithViralFailureU15.getSearches().put("1",new Mapped(currentlyInHIVUnder15, null));
+        eligibleWithViralFailureU15.getSearches().put( "2",new Mapped(viralLoadFailure, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
+        eligibleWithViralFailureU15.setCompositionString("1 AND 2");
+        
+        CompositionCohortDefinition eligibleWithViralFailureO15 = new CompositionCohortDefinition();
+        eligibleWithViralFailureO15.setName("hivQD: eligible with viral load failure over 15");
+        eligibleWithViralFailureO15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        eligibleWithViralFailureO15.getSearches().put("1",new Mapped(currentlyInHIVOver15, null));
+        eligibleWithViralFailureO15.getSearches().put("2",new Mapped(viralLoadFailure, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
+        eligibleWithViralFailureO15.setCompositionString("1 AND 2");
+        
+        //NEW
+        //VQ4AD
+        CompositionCohortDefinition eligibleActiveInHIVOver15 = new CompositionCohortDefinition();
+        eligibleActiveInHIVOver15.setName("hivQD: eligible active in all programs over 15 and on ART more than 12 months");
+        eligibleActiveInHIVOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        eligibleActiveInHIVOver15.getSearches().put("1",new Mapped(currentlyInHIVOver15,null));
+        eligibleActiveInHIVOver15.getSearches().put("2", new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
+        eligibleActiveInHIVOver15.setCompositionString("1 AND 2");
+        //VQ4A
+        CompositionCohortDefinition eligibleActiveWitViralLoadOver15 = new CompositionCohortDefinition();
+        eligibleActiveWitViralLoadOver15.setName("hivQD: eligible active in all programs with Viral load over 15 ");
+        eligibleActiveWitViralLoadOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        eligibleActiveWitViralLoadOver15.getSearches().put("1",new Mapped(eligibleActiveInHIVOver15,null));
+        eligibleActiveWitViralLoadOver15.getSearches().put("2", new Mapped(viralLoad, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
+        eligibleActiveWitViralLoadOver15.setCompositionString("1 AND 2");
+        //VQ4CD
+        CompositionCohortDefinition eligibleActiveInHIVUnder15 = new CompositionCohortDefinition();
+        eligibleActiveInHIVUnder15.setName("hivQD: eligible active in all programs under 15 and on ART more than 12 months");
+        eligibleActiveInHIVUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        eligibleActiveInHIVUnder15.getSearches().put("1",new Mapped(currentlyInHIVUnder15,null));
+        eligibleActiveInHIVUnder15.getSearches().put("2", new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
+        eligibleActiveInHIVUnder15.setCompositionString("1 AND 2");
+        //VQ4C
+        CompositionCohortDefinition eligibleActiveWitViralLoadUnder15 = new CompositionCohortDefinition();
+        eligibleActiveWitViralLoadUnder15.setName("hivQD: eligible active in all programs with Viral load under 15 ");
+        eligibleActiveWitViralLoadUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
+        eligibleActiveWitViralLoadUnder15.getSearches().put("1",new Mapped(eligibleActiveInHIVUnder15,null));
+        eligibleActiveWitViralLoadUnder15.getSearches().put("2", new Mapped(viralLoad, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}")));
+        eligibleActiveWitViralLoadUnder15.setCompositionString("1 AND 2");
+        
+       
+        CohortIndicator one = Indicators.newCountIndicator("hivQD: In all programs under 15 and on ART more than 12 months_", currentlyInHIVUnder15,
+            ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+        CohortIndicator two = Indicators.newCountIndicator("hivQD: In all programs over 15 and on ART more than 12 months_", currentlyInHIVOver15,
+            ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+        CohortIndicator three = Indicators.newCountIndicator("hivQD: eligible with viral load under 15_", eligibleWithViralU15,
+            ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+        CohortIndicator four = Indicators.newCountIndicator("hivQD: eligible with viral load over 15_", eligibleWithViralO15,
+            ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+        CohortIndicator five = Indicators.newCountIndicator("hivQD: eligible with viral load failure under 15_", eligibleWithViralFailureU15,
+            ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+        CohortIndicator six = Indicators.newCountIndicator("hivQD: eligible with viral load failure over 15_", eligibleWithViralFailureO15,
+            ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+        CohortIndicator seven = Indicators.newCountIndicator("hivQD: actively eligible in all programs over 15_", eligibleActiveInHIVOver15,
+        	ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+        CohortIndicator eight = Indicators.newCountIndicator("hivQD: actively eligible in all with viral load programs over 15_", eligibleActiveWitViralLoadOver15,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+        CohortIndicator nine = Indicators.newCountIndicator("hivQD: actively eligible in all programs under 15_", eligibleActiveInHIVUnder15,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+        CohortIndicator ten = Indicators.newCountIndicator("hivQD: actively eligible in all with viral load programs under 15_", eligibleActiveWitViralLoadUnder15,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+               
+                
+        
+        dsd.addColumn("VQ2AD", "Eligible Over 15",
+            new Mapped(two, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        dsd.addColumn("VQ2CD", "Eligible Under 15",
+            new Mapped(one, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        dsd.addColumn("VQ2C", "Viral Load Under 15",
+            new Mapped(three, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+        dsd.addColumn("VQ2A", "Viral Load Over 15",
+            new Mapped(four, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+        dsd.addColumn("VQ3C", "Viral Load Failure Over 15",
+            new Mapped(five, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+        dsd.addColumn("VQ3A", "Viral Load Failure Under 15",
+            new Mapped(six, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+        dsd.addColumn("VQ4AD", "Actively Eligible Over 15",
+        	new Mapped(seven, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+        dsd.addColumn("VQ4A", "Actively Eligible with Viral load Over 15",
+                    new Mapped(eight, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+        dsd.addColumn("VQ4CD", "Actively Eligible Under 15",
+                    new Mapped(nine, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+        dsd.addColumn("VQ4C", "Actively Eligible with Viral load Under 15",
+                    new Mapped(ten, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
 	}
 	
 	private void setUpProperties() {
