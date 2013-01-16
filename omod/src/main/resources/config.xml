@@ -603,7 +603,7 @@
 	
 	<globalProperty>
 		<property>reports.hivencountertypes</property>
-		<defaultValue>ADULT INITIAL VISIT:ADULT RETURN VISIT:PEDIATRIC INITIAL VISIT:PEDIATRIC RETURN VISIT:ADULT HIV FLOWSHEET</defaultValue>
+		<defaultValue>ADULT INITIAL VISIT:ADULT RETURN VISIT:PEDIATRIC INITIAL VISIT:PEDIATRIC RETURN VISIT:ADULT HIV FLOWSHEET:Adult HIV:Pediatric HIV</defaultValue>
 		<description>
 			All of the encounter types that signify a HIV visit
 		</description>
