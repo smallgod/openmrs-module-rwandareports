@@ -83,6 +83,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
 	private List<Form> postoperatoireAndinsuffisanceHospitalisations = new ArrayList<Form>();
 	
+	private List<Form> postoperatoire = new ArrayList<Form>();
+	
 	private Concept NYHACLASS;
 	
 	private Concept NYHACLASS4;
@@ -630,6 +632,10 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		        .createEncounterBasedOnForms("patientWithPostoperatoireAndinsuffisanceHospitalisations",
 		            onOrAfterOnOrBefore, postoperatoireAndinsuffisanceHospitalisations);
 		
+		EncounterCohortDefinition patientWithPostoperatoireHospitalisations = Cohorts
+        .createEncounterBasedOnForms("patientWithPostoperatoireAndinsuffisanceHospitalisations",
+            onOrAfterOnOrBefore, postoperatoire);
+		
 		CompositionCohortDefinition patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations = new CompositionCohortDefinition();
 		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations
 		        .setName("patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations");
@@ -645,7 +651,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    "2",
 		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 		            .createParameterMappings("onOrAfter=${onOrBefore-12m+1d},onOrBefore=${onOrBefore}")));
-		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.setCompositionString("1 AND 2");
+		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.getSearches().put(
+		    "3",
+		    new Mapped<CohortDefinition>(patientWithPostoperatoireHospitalisations, ParameterizableUtil
+		            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.setCompositionString("(1 AND 2) OR 3");
 		
 		CohortIndicator patientsSeenWithPostoperatoireAndinsuffisanceHospitalisationsIndicator = Indicators
 		        .newCountIndicator("patientsSeenWithPostoperatoireAndinsuffisanceHospitalisationsIndicator",
@@ -728,6 +738,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		        .getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUE_HOSPITALISATIONS);
 		insuffisanceCardiaqueHospitalisations = gp
 		        .getForm(GlobalPropertiesManagement.INSUFFISANCE_CARDIAQUE_HOSPITALISATIONS);
+		
+		postoperatoire.add(postoperatoireCardiaqueHospitalisations);
 		
 		postoperatoireAndinsuffisanceHospitalisations.add(postoperatoireCardiaqueHospitalisations);
 		postoperatoireAndinsuffisanceHospitalisations.add(insuffisanceCardiaqueHospitalisations);
