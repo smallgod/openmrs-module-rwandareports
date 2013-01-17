@@ -311,6 +311,14 @@
 	</globalProperty>
 	
 	<globalProperty>
+		<property>reports.ddb_echocardiograph_comment</property>
+		<defaultValue>5c052224-aeaf-4a17-8dca-8255eef79644</defaultValue>
+		<description>
+			The concept id of the ddb echocardiograph comment
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>reports.notDone</property>
 		<defaultValue>3cd75550-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>

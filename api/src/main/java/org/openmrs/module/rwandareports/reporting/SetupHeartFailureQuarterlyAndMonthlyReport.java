@@ -264,6 +264,41 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 		
 		//=======================================================
+		// B1: Of the new patients enrolled in the last month, % with echocardiography documented
+		//=======================================================
+
+		SqlCohortDefinition patientsWithEchocardiographyDocumented = Cohorts.getPatientsWithEchocardiographyDocumented(
+		    "patientsWithEchocardiographyDocumented");
+		
+		CompositionCohortDefinition patientsEnrolledAndWithEchocardiographyDocumented = new CompositionCohortDefinition();
+		patientsEnrolledAndWithEchocardiographyDocumented.setName("patientsEnrolledAndWithNYHAClassIV");
+		patientsEnrolledAndWithEchocardiographyDocumented.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsEnrolledAndWithEchocardiographyDocumented.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		
+		patientsEnrolledAndWithEchocardiographyDocumented.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientsEnrolledAndWithEchocardiographyDocumented.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsEnrolledAndWithEchocardiographyDocumented.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(patientsWithEchocardiographyDocumented, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientsEnrolledAndWithEchocardiographyDocumented.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(enrolledInHFProgram, ParameterizableUtil
+		            .createParameterMappings("enrolledOnOrAfter=${onOrAfter},enrolledOnOrBefore=${onOrBefore}")));
+		patientsEnrolledAndWithEchocardiographyDocumented.setCompositionString("1 AND 2");
+		
+		CohortIndicator patientsEnrolledAndWithEchocardiographyDocumentedIndicator = Indicators
+		        .newCountIndicator(
+		            "patientsEnrolledAndWithEchocardiographyDocumentedIndicator",
+		            patientsEnrolledAndWithEchocardiographyDocumented,
+		            ParameterizableUtil
+		                    .createParameterMappings("endDate=${endDate},startDate=${startDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+		dsd.addColumn(
+		    "B1M",
+		    "New patients enrolled in the last month with echocardiography documented ",
+		    new Mapped(patientsEnrolledAndWithEchocardiographyDocumentedIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		//=======================================================
 		// B4: Of the new patients enrolled in the last month, % with NYHA class IV 
 		//=======================================================
 		

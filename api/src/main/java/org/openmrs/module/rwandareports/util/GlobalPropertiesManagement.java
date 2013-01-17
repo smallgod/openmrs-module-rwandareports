@@ -912,6 +912,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String DDB_ECHOCARDIOGRAPH_RESULT = "reports.ddb_echocardiograph_result";
 	
+	public final static String DDB_ECHOCARDIOGRAPH_COMMENT = "reports.ddb_echocardiograph_comment";
+	
 	public final static String SERUM_CREATININE = "reports.serumCreatinine";
 	
 	public final static String HIV_TEST = "reports.hivTestConcept";
