@@ -32,7 +32,7 @@ public class OnWarfarin implements CustomCalculation {
 
 				Patient p = result.getPatientData().getPatient();
 				List<Encounter> patientEncounters = Context.getEncounterService().getEncounters(p, null, null, null, null, null, null, false);
-				List<DrugOrder> patientDrugOrders = Context.getOrderService().getDrugOrdersByPatient(p, ORDER_STATUS.NOTVOIDED, false);
+				List<DrugOrder> patientDrugOrders = Context.getOrderService().getDrugOrdersByPatient(p, ORDER_STATUS.CURRENT, false);
                 
 				if (patientEncounters.size() > 0 && patientDrugOrders.size() > 0) {
 					//Encounter recentEncounter = patientEncounters.get(patientEncounters.size() - 1);  //the last encounter in the List should be the most recent one.
@@ -59,18 +59,16 @@ public class OnWarfarin implements CustomCalculation {
 	//should return true if the order-concept's conceptId is equal to one of the warfarin-concept conceptId
 	public boolean isWarfarinOrder(DrugOrder order) {
 		String insulineConcepts = Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.WARFARIN);
-		String[] items = insulineConcepts.split(",");
 		
-		for (String string : items) {
 			try {
-				int i = Integer.parseInt(string);
+				int i = Integer.parseInt(insulineConcepts);
 				if (i == order.getDrug().getConcept().getConceptId())
 					return true;
 			} catch (NumberFormatException e) {
-				log.error("Invalid Global property: "+GlobalPropertiesManagement.WARFARIN+". Value should be a comma separated list of Integers");
+				log.error("Invalid Global property: "+GlobalPropertiesManagement.WARFARIN+". Value mapped here should be an Integer");
 			}
 			
-		}
+		
 		return false;
 
 	}
