@@ -165,7 +165,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		SqlEncounterQuery patientVisitsToHFClinic = new SqlEncounterQuery();
 		
-		patientVisitsToHFClinic.setQuery("select distinct e.encounter_id from encounter e where e.encounter_type="
+		patientVisitsToHFClinic.setQuery("select e.encounter_id from encounter e where e.encounter_type="
 		        + heartFailureEncounterType.getEncounterTypeId()
 		        + " and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0");
 		patientVisitsToHFClinic.setName("patientVisitsToHFClinic");
@@ -185,9 +185,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		SqlEncounterQuery patientVisitsWithDocumentedBP = new SqlEncounterQuery();
 		
 		patientVisitsWithDocumentedBP
-		        .setQuery("select e.encounter_id from encounter e,obs o where o.encounter_id=e.encounter_id and o.concept_id="
+		        .setQuery("select e.encounter_id from encounter e,obs o where o.encounter_id=e.encounter_id and e.encounter_type="
+		                + heartFailureEncounterType.getEncounterTypeId()
+		                + " and o.concept_id="
 		                + systolicBP.getConceptId()
-		                + " and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 group by e.encounter_datetime, e.patient_id");
+		                + " and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 ");
 		patientVisitsWithDocumentedBP.setName("patientVisitsToHypertensionClinic");
 		patientVisitsWithDocumentedBP.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsWithDocumentedBP.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -268,14 +270,15 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		//=======================================================
 		// B1: Of the new patients enrolled in the last month, % with echocardiography documented
 		//=======================================================
-
-		SqlCohortDefinition patientsWithEchocardiographyDocumented = Cohorts.getPatientsWithEchocardiographyDocumented(
-		    "patientsWithEchocardiographyDocumented");
+		
+		SqlCohortDefinition patientsWithEchocardiographyDocumented = Cohorts
+		        .getPatientsWithEchocardiographyDocumented("patientsWithEchocardiographyDocumented");
 		
 		CompositionCohortDefinition patientsEnrolledAndWithEchocardiographyDocumented = new CompositionCohortDefinition();
 		patientsEnrolledAndWithEchocardiographyDocumented.setName("patientsEnrolledAndWithNYHAClassIV");
 		patientsEnrolledAndWithEchocardiographyDocumented.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientsEnrolledAndWithEchocardiographyDocumented.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientsEnrolledAndWithEchocardiographyDocumented
+		        .addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		
 		patientsEnrolledAndWithEchocardiographyDocumented.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsEnrolledAndWithEchocardiographyDocumented.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -558,15 +561,12 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		//=======================================================
 		
 		SqlCohortDefinition patientsInPostOperativeState = Cohorts
-        .createPatientsInStateNotPredatingProgramEnrolment(postOperative);
+		        .createPatientsInStateNotPredatingProgramEnrolment(postOperative);
 		
 		CompositionCohortDefinition patientsSeenAndInPostOperativeState = new CompositionCohortDefinition();
-		patientsSeenAndInPostOperativeState
-		        .setName("patientsSeenAndInPostOperativeState");
-		patientsSeenAndInPostOperativeState.addParameter(new Parameter("onOrAfter", "onOrAfter",
-		        Date.class));
-		patientsSeenAndInPostOperativeState.addParameter(new Parameter("onOrBefore", "onOrBefore",
-		        Date.class));
+		patientsSeenAndInPostOperativeState.setName("patientsSeenAndInPostOperativeState");
+		patientsSeenAndInPostOperativeState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsSeenAndInPostOperativeState.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsSeenAndInPostOperativeState.getSearches().put(
 		    "1",
 		    new Mapped<CohortDefinition>(patientsInPostOperativeState, ParameterizableUtil
@@ -577,10 +577,9 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		            .createParameterMappings("onOrAfter=${onOrBefore-12m+1d},onOrBefore=${onOrBefore}")));
 		patientsSeenAndInPostOperativeState.setCompositionString("1 AND 2");
 		
-		CohortIndicator patientsSeenAndInPostOperativeStateIndicator = Indicators
-		        .newCountIndicator("patientsSeenAndInPostOperativeStateIndicator",
-		            patientsSeenAndInPostOperativeState,
-		            ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		CohortIndicator patientsSeenAndInPostOperativeStateIndicator = Indicators.newCountIndicator(
+		    "patientsSeenAndInPostOperativeStateIndicator", patientsSeenAndInPostOperativeState,
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		
 		dsd.addColumn(
 		    "D5NM",
@@ -591,19 +590,16 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		//=======================================================
 		// F1: Number of patients who died in review month
 		//=======================================================
-		ProgramEnrollmentCohortDefinition enrolledInHFProgramAsOfTheSartDate = Cohorts.createProgramEnrollmentParameterizedByStartEndDate(
-		    "enrolledInHFProgram", heartFailureProgram);
+		ProgramEnrollmentCohortDefinition enrolledInHFProgramAsOfTheSartDate = Cohorts
+		        .createProgramEnrollmentParameterizedByStartEndDate("enrolledInHFProgram", heartFailureProgram);
 		
 		SqlCohortDefinition patientsInPatientDiedState = Cohorts
-        .createPatientsInStateNotPredatingProgramEnrolment(patientDied);
+		        .createPatientsInStateNotPredatingProgramEnrolment(patientDied);
 		
 		CompositionCohortDefinition patientsEnrolledAndInPatientDiedState = new CompositionCohortDefinition();
-		patientsEnrolledAndInPatientDiedState
-		        .setName("patientsEnrolledAndInPatientDiedState");
-		patientsEnrolledAndInPatientDiedState.addParameter(new Parameter("onOrAfter", "onOrAfter",
-		        Date.class));
-		patientsEnrolledAndInPatientDiedState.addParameter(new Parameter("onOrBefore", "onOrBefore",
-		        Date.class));
+		patientsEnrolledAndInPatientDiedState.setName("patientsEnrolledAndInPatientDiedState");
+		patientsEnrolledAndInPatientDiedState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsEnrolledAndInPatientDiedState.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsEnrolledAndInPatientDiedState.getSearches().put(
 		    "1",
 		    new Mapped<CohortDefinition>(enrolledInHFProgramAsOfTheSartDate, ParameterizableUtil
@@ -614,10 +610,9 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		            .createParameterMappings("onOrAfter=${onOrBefore},onOrBefore=${onOrBefore}")));
 		patientsEnrolledAndInPatientDiedState.setCompositionString("1 AND 2");
 		
-		CohortIndicator patientsEnrolledAndInPatientDiedStateIndicator = Indicators
-		        .newCountIndicator("patientsSeenAndInPostOperativeStateIndicator",
-		            patientsEnrolledAndInPatientDiedState,
-		            ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		CohortIndicator patientsEnrolledAndInPatientDiedStateIndicator = Indicators.newCountIndicator(
+		    "patientsSeenAndInPostOperativeStateIndicator", patientsEnrolledAndInPatientDiedState,
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		
 		dsd.addColumn(
 		    "F1M",
@@ -632,9 +627,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		        .createEncounterBasedOnForms("patientWithPostoperatoireAndinsuffisanceHospitalisations",
 		            onOrAfterOnOrBefore, postoperatoireAndinsuffisanceHospitalisations);
 		
-		EncounterCohortDefinition patientWithPostoperatoireHospitalisations = Cohorts
-        .createEncounterBasedOnForms("patientWithPostoperatoireAndinsuffisanceHospitalisations",
-            onOrAfterOnOrBefore, postoperatoire);
+		EncounterCohortDefinition patientWithPostoperatoireHospitalisations = Cohorts.createEncounterBasedOnForms(
+		    "patientWithPostoperatoireAndinsuffisanceHospitalisations", onOrAfterOnOrBefore, postoperatoire);
 		
 		CompositionCohortDefinition patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations = new CompositionCohortDefinition();
 		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations
@@ -743,9 +737,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		postoperatoireAndinsuffisanceHospitalisations.add(postoperatoireCardiaqueHospitalisations);
 		postoperatoireAndinsuffisanceHospitalisations.add(insuffisanceCardiaqueHospitalisations);
-		postOperative = gp.getProgramWorkflowState(GlobalPropertiesManagement.POST_OPERATIVE_STATE, GlobalPropertiesManagement.SURGERY_STATUS_WORKFLOW, GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
-		patientDied = gp.getProgramWorkflowState(GlobalPropertiesManagement.HEART_FAILURE_PATIENT_DIED_STATE, GlobalPropertiesManagement.HEART_FAILURE_TREATMENT_STATUS_WORKFLOW, GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
-	
+		postOperative = gp.getProgramWorkflowState(GlobalPropertiesManagement.POST_OPERATIVE_STATE,
+		    GlobalPropertiesManagement.SURGERY_STATUS_WORKFLOW, GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
+		patientDied = gp.getProgramWorkflowState(GlobalPropertiesManagement.HEART_FAILURE_PATIENT_DIED_STATE,
+		    GlobalPropertiesManagement.HEART_FAILURE_TREATMENT_STATUS_WORKFLOW,
+		    GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
 		
 	}
 	
