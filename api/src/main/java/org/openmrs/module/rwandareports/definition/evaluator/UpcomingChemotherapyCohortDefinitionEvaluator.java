@@ -51,7 +51,7 @@ public class UpcomingChemotherapyCohortDefinitionEvaluator implements CohortDefi
     	
     	for(ExtendedDrugOrder order: orders)
     	{
-    		if(order.getRoute() != null && order.getRoute().equals(gp.getConcept(GlobalPropertiesManagement.IV_CONCEPT)))
+    		if(order.getRoute() != null && gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT).contains(order.getRoute()))
     		{
     			cohort.addMember(order.getPatient().getId());
     		}

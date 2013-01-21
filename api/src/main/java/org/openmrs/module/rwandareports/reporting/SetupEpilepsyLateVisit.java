@@ -50,6 +50,7 @@ public class SetupEpilepsyLateVisit {
 	private EncounterType epilepsyVisit;
     private Form epilepsyRDVForm;
     private Form epilepsyDDBForm;
+    private Form followUpForm;
 	private List<Form> epilepsyForms = new ArrayList<Form>();
 
 	public void setup() throws Exception {
@@ -196,8 +197,11 @@ public class SetupEpilepsyLateVisit {
 
         epilepsyDDBForm = gp.getForm(GlobalPropertiesManagement.EPILEPSY_DDB);
         
+        followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
+        
         epilepsyForms.add(epilepsyRDVForm);
         epilepsyForms.add(epilepsyDDBForm);
+        epilepsyForms.add(followUpForm);
 	}
 
 }

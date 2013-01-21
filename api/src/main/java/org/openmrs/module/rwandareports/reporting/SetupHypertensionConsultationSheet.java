@@ -44,6 +44,7 @@ public class SetupHypertensionConsultationSheet {
 	
 	private Form rendevousForm;
 	private Form hypertensionDDBForm;
+	private Form followUpForm;
 	
 	private Concept systolicBP;
 	private Concept diastolicBP;
@@ -170,11 +171,14 @@ public class SetupHypertensionConsultationSheet {
 		
 		hypertensionDDBForm=gp.getForm(GlobalPropertiesManagement.HYPERTENSION_DDB);
 		
+		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
+		
 		systolicBP = gp.getConcept(GlobalPropertiesManagement.SYSTOLIC_BLOOD_PRESSURE);
 		diastolicBP = gp.getConcept(GlobalPropertiesManagement.DIASTOLIC_BLOOD_PRESSURE);
 		
 		DDBAndRendezvousForms.add(rendevousForm);
 		DDBAndRendezvousForms.add(hypertensionDDBForm);
+		DDBAndRendezvousForms.add(followUpForm);
 		hypertensionEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER);
 		
 	}

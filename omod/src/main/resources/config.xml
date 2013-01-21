@@ -61,6 +61,14 @@
 	</globalProperty>
 	
 	<globalProperty>
+		<property>reports.externalHivProgram</property>
+		<defaultValue>External HIV Program</defaultValue>
+		<description>
+			The name of the External HIV Program
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>reports.pediInitialEncounter</property>
 		<defaultValue>3</defaultValue>
 		<description>
@@ -2276,5 +2284,234 @@
 		<description>The version id of the module</description>
 	</globalProperty>
 	
+	
+	<globalProperty>
+		<property>reports.hemoglobin</property>
+		<defaultValue>3ccc7158-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for hemoglobin test result</description>
+	</globalProperty>
 		
+	<globalProperty>
+		<property>reports.pneumonia</property>
+		<defaultValue>3cd9c484-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for pneumonia acute presumed bacterial</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.pneumoniaSubAcute</property>
+		<defaultValue>3cd9c60a-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for SUB-ACUTE PNEUMONIA PRESUMED PCP oppportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.candidiasis</property>
+		<defaultValue>3cce906e-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for candidiasis opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.candidiasisEsophageal</property>
+		<defaultValue>3cdc532a-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for candidiasis esophageal opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.candidiasisOral</property>
+		<defaultValue>3cebb5fe-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for candidiasis oral opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.convulsions</property>
+		<defaultValue>3cd9e0b8-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for CONVULSIONS OR NEUROLOGICAL DEFICIT PRESUMED CEREBRAL LYMPHOMA opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.encephalopathy</property>
+		<defaultValue>3cd9d65e-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for ENCEPHALOPATHY PRESUMED DUE TO HIV opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.extraPulmonaryTB</property>
+		<defaultValue>3cdbd670-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for EXTRA-PULMONARY TUBERCULOSIS opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.pulmonaryTB</property>
+		<defaultValue>3cdbd9b8-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for PULMONARY TUBERCULOSIS opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.genitalSores</property>
+		<defaultValue>3cd4b5d4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for GENITAL SORES opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.herpesSimplex</property>
+		<defaultValue>3cd9e694-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for HERPES SIMPLEX GENITAL INFECTION opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.herpesZoster</property>
+		<defaultValue>3cd48924-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for HERPES ZOSTER opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.kaposisSarcoma</property>
+		<defaultValue>3cd173f6-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for KAPOSIS SARCOMA opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.meningitisCrypto</property>
+		<defaultValue>3cd9d1f4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for MENINGITIS SUB-ACUTE PRESUMED CRYPTOCOCCUS opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.meningitisTB</property>
+		<defaultValue>3cd9d366-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for MENINGITIS SUB-ACUTE PRESUMED TUBERCULOSIS opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.nodularRash</property>
+		<defaultValue>3cd9e22a-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for NODULAR RASH opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.dysphagia</property>
+		<defaultValue>3cd9cd6c-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for SEVERE DYSPHAGIA PRESUMED INVASIVE opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.toxoplasmosis</property>
+		<defaultValue>3cebd71e-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for TOXOPLASMOSIS opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.tuberculoma</property>
+		<defaultValue>3ce85e2c-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for TUBERCULOMA opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.tuberculousEnteritis</property>
+		<defaultValue>670895c1-e4a3-4c51-8b65-913a8713008c</defaultValue>
+		<description>The concept for TUBERCULOUS ENTERITIS opportunistic infection</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oiAndCommorbidity</property>
+		<defaultValue>0ae23a5a-15f5-102d-96e4-000c29c2a5d7</defaultValue>
+		<description>The concept for CURRENT OPPORTUNISTIC INFECTION OR COMORBIDITY, CONFIRMED OR PRESUMED</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oi</property>
+		<defaultValue>cfd246e2-db79-4ab9-bc7a-a45813734a3b</defaultValue>
+		<description>The concept for OPPORTUNISTIC INFECTION, CONFIRMED OR PRESUMED</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.otherNonCoded</property>
+		<defaultValue>3cee7fb4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for OTHER NON-CODED</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.adverseEffect</property>
+		<defaultValue>3cd96052-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for ADVERSE EFFECT</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.rashModerate</property>
+		<defaultValue>3cdd098c-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for RASH, MODERATE side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.rashSevere</property>
+		<defaultValue>3cdd0af4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for RASH, SEVERE side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.nausea</property>
+		<defaultValue>3cf1c610-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for NAUSEA side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.vomiting</property>
+		<defaultValue>3cf1c930-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for VOMITING side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.jaundice</property>
+		<defaultValue>3ccea1bc-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for JAUNDICE side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.neuropathy</property>
+		<defaultValue>3ccea1bc-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for JAUNDICE side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.anemia</property>
+		<defaultValue>3ccc4764-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for ANEMIA side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.lacticAcidosis</property>
+		<defaultValue>3cda6d62-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for LACTIC ACIDOSIS side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.hepatitis</property>
+		<defaultValue>3ccc7d2e-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for HEPATITIS side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.nightmares</property>
+		<defaultValue>3ce160b8-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for NIGHTMARES side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.lipodistrophy</property>
+		<defaultValue>3ce15dca-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for LIPODYSTROPHY side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.anaphylaxis</property>
+		<defaultValue>3cd68008-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept for ANAPHYLAXIS side effect</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.ncdFollowUpForm</property>
+		<defaultValue>1df78f57-990d-46a7-aa9b-9a992d32ea57</defaultValue>
+		<description>The form for patient follow-up</description>
+	</globalProperty>
+	
+	
 </module>

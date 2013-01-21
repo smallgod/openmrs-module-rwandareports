@@ -51,6 +51,7 @@ public class SetupHeartFailureLateVisit {
 	private EncounterType heartFailureVisit;
     private Form heartFailureRDVForm;
     private Form heartFailureDDBForm;
+    private Form followUpForm;
 	private List<Form> DDBAndRendezvousForms = new ArrayList<Form>();
 	
 	public void setup() throws Exception {
@@ -179,8 +180,10 @@ public class SetupHeartFailureLateVisit {
         heartFailureVisit = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
 		heartFailureRDVForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_FLOW_VISIT);
 		heartFailureDDBForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB);
+		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
 		DDBAndRendezvousForms.add(heartFailureRDVForm);
 		DDBAndRendezvousForms.add(heartFailureDDBForm);
+		DDBAndRendezvousForms.add(followUpForm);
 		
 		
 	}

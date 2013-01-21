@@ -134,6 +134,22 @@ public class Cohorts {
 		return stateId;
 	}
 	
+	private static String getProgramString(List<Program> program) {
+		String programId = "";
+		int i = 0;
+		for (Program p : program) {
+			if (i > 0) {
+				programId = programId + ",";
+			}
+			
+			programId = programId + p.getId();
+			
+			i++;
+		}
+		
+		return programId;
+	}
+	
 	public static SqlCohortDefinition createPatientsWithBaseLineObservation(Concept concept,
 	                                                                        List<ProgramWorkflowState> state,
 	                                                                        Integer daysBefore, Integer daysAfter) {
@@ -142,12 +158,49 @@ public class Cohorts {
 		
 		SqlCohortDefinition patientsWithBaseLineObservation = new SqlCohortDefinition(
 		        "select p.patient_id from patient p, obs o, patient_program pp, patient_state ps where p.voided = 0 and o.voided = 0 and pp.voided = 0 and ps.voided = 0 "
-		                + "and ps.patient_program_id = pp.patient_program_id and pp.patient_id = p.patient_id and p.patient_id = o.person_id and ps.state in ("
+		                + "and ps.patient_program_id = pp.patient_program_id and pp.patient_id = p.patient_id and p.patient_id = o.person_id and ps.patient_state_id = (select patient_state_id from patient_state where patient_program_id = pp.patient_program_id and voided = 0 and state in ("
 		                + stateId
-		                + ") and o.concept_id = "
+		                + ") order by start_date asc limit 1) and o.concept_id = "
 		                + concept.getConceptId()
 		                + " and o.value_numeric is not null and o.obs_datetime >= DATE_SUB(ps.start_date,INTERVAL "
 		                + daysBefore + " DAY) and o.obs_datetime <= DATE_ADD(ps.start_date,INTERVAL " + daysAfter + " DAY)");
+		return patientsWithBaseLineObservation;
+	}
+	
+	public static SqlCohortDefinition createPatientsWithBaseLineObservationProgram(Concept concept,
+	                                                                        List<Program> program,
+	                                                                        Integer daysBefore, Integer daysAfter) {
+		
+		String programId = getProgramString(program);
+		
+		SqlCohortDefinition patientsWithBaseLineObservation = new SqlCohortDefinition(
+		        "select p.patient_id from patient p, obs o, patient_program pp where p.voided = 0 and o.voided = 0 and pp.voided = 0  "
+		                + "and pp.patient_id = p.patient_id and p.patient_id = o.person_id and pp.patient_program_id = (select patient_program_id from patient_program where patient_id = p.patient_id and voided = 0 and program_id in ("
+		                + programId
+		                + ") order by date_enrolled asc limit 1) and o.concept_id = "
+		                + concept.getConceptId()
+		                + " and o.value_numeric is not null and o.obs_datetime >= DATE_SUB(pp.date_enrolled,INTERVAL "
+		                + daysBefore + " DAY) and o.obs_datetime <= DATE_ADD(pp.date_enrolled,INTERVAL " + daysAfter + " DAY)");
+		return patientsWithBaseLineObservation;
+	}
+	
+	public static SqlCohortDefinition createPatientsWithBaseLineObservation(Concept concept,
+	                                                                       Concept drugOrderSet,
+	                                                                        Integer daysBefore, Integer daysAfter) {
+		
+		
+		SqlCohortDefinition patientsWithBaseLineObservation = new SqlCohortDefinition(
+		        "select p.patient_id from patient p, obs o, orders ord  where p.voided = 0 and o.voided = 0 and p.patient_id" +
+				"= o.person_id and ord.order_id = (select order_id from orders where voided = 0 and patient_id " +
+				"= p.patient_id and concept_id in (select concept_id from concept_set where concept_set = " +
+				drugOrderSet.getConceptId() + 
+				") order by start_date asc limit 1) and o.concept_id = " +
+				concept.getConceptId() +
+				" and o.value_numeric is not null and o.obs_datetime >= DATE_SUB(ord.start_date,INTERVAL " +
+				daysBefore + 
+				" DAY) and o.obs_datetime <= DATE_ADD(ord.start_date,INTERVAL " +
+				daysAfter +
+				" DAY)");
 		return patientsWithBaseLineObservation;
 	}
 	
@@ -164,7 +217,7 @@ public class Cohorts {
 		                + "(select p.patient_id as patient_id, ps.start_date as start_date from patient p, patient_program pp, patient_state ps where "
 		                + "p.voided = 0 and pp.voided = 0 and ps.voided = 0 and ps.patient_program_id = pp.patient_program_id and pp.patient_id = p.patient_id and ps.state in ("
 		                + stateId + ") group by p.patient_id order by start_date asc)s " + "on s.patient_id = d.patient_id "
-		                + "where d.start_date != s.start_date");
+		                + "where DATEDIFF( s.start_date, d.start_date ) >= 1");
 		
 		return patients;
 	}
@@ -173,7 +226,7 @@ public class Cohorts {
 		SqlCohortDefinition patientsWithBaseLineObservation = new SqlCohortDefinition(
 		        "select p.patient_id from patient p, patient_program pp, patient_state ps where p.voided = 0 and pp.voided = 0 and ps.voided = 0 "
 		                + "and ps.patient_program_id = pp.patient_program_id and pp.patient_id = p.patient_id and ps.state = "
-		                + state.getId() + " and ps.start_date < pp.date_enrolled");
+		                + state.getId() + " and DATEDIFF( ps.start_date, pp.date_enrolled ) < 0");
 		return patientsWithBaseLineObservation;
 	}
 	
@@ -201,6 +254,22 @@ public class Cohorts {
 	                                                                               Integer daysBefore, Integer daysAfter) {
 		InverseCohortDefinition patientsWithoutBaseLineObservation = new InverseCohortDefinition(
 		        createPatientsWithBaseLineObservation(concept, state, daysBefore, daysAfter));
+		return patientsWithoutBaseLineObservation;
+	}
+	
+	public static InverseCohortDefinition createPatientsWithoutBaseLineObservation(Concept concept,
+	                                                                               Concept drugConceptSet,
+	                                                                               Integer daysBefore, Integer daysAfter) {
+		InverseCohortDefinition patientsWithoutBaseLineObservation = new InverseCohortDefinition(
+		        createPatientsWithBaseLineObservation(concept, drugConceptSet, daysBefore, daysAfter));
+		return patientsWithoutBaseLineObservation;
+	}
+	
+	public static InverseCohortDefinition createPatientsWithoutBaseLineObservationProgramEnrollment(Concept concept,
+	                                                                               List<Program> program,
+	                                                                               Integer daysBefore, Integer daysAfter) {
+		InverseCohortDefinition patientsWithoutBaseLineObservation = new InverseCohortDefinition(
+		        createPatientsWithBaseLineObservationProgram(concept, program, daysBefore, daysAfter));
 		return patientsWithoutBaseLineObservation;
 	}
 	
@@ -661,6 +730,16 @@ public class Cohorts {
 		}
 		
 		return obsCohortDefinition;
+	}
+	
+	public static InverseCohortDefinition createNoObservationDefintion(Concept concept) {
+		
+		SqlCohortDefinition query = new SqlCohortDefinition("select person_id from obs where voided = 0 and concept_id = "
+			+ concept.getId());
+		
+		InverseCohortDefinition noObs = new InverseCohortDefinition(query);
+		
+		return noObs;
 	}
 	
 	public static CodedObsCohortDefinition createCodedObsCohortDefinition(Concept question, Concept value,

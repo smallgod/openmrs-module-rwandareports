@@ -55,6 +55,8 @@ public class SetupAsthmaLateVisit {
 	
 	private Form asthmaDDBForm;
 	
+	private Form followUpForm;
+	
 	private List<Form> asthmaForms = new ArrayList<Form>();
 	
 	public void setup() throws Exception {
@@ -182,8 +184,11 @@ public class SetupAsthmaLateVisit {
 		
 		asthmaDDBForm = gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
 		
+		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
+		
 		asthmaForms.add(asthmaRDVForm);
 		asthmaForms.add(asthmaDDBForm);
+		asthmaForms.add(followUpForm);
 		
 		/* 	
 		SqlCohortDefinition latevisit=new SqlCohortDefinition("select o.person_id from obs o, (select * from (select * from encounter where form_id in ("+asthmaDDBFormId+","+asthmaRDVFormId+") and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_encounters, (select * from (select * from encounter where encounter_type="+asthmaflowsheet.getEncounterTypeId()+" and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_asthmaVisit where last_encounters.encounter_id=o.encounter_id and last_encounters.encounter_datetime<o.value_datetime and o.voided=0 and o.concept_id="+nextVisitConcept.getConceptId()+" and DATEDIFF(:endDate,o.value_datetime)>7 and (not last_asthmaVisit.encounter_datetime > o.value_datetime) and last_asthmaVisit.patient_id=o.person_id ");

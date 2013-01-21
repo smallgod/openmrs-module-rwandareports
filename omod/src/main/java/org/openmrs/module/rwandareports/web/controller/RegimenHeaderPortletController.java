@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,7 +44,7 @@ public class RegimenHeaderPortletController extends PortletController {
 	@Override
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 
-		Concept iv = gp.getConcept(GlobalPropertiesManagement.IV_CONCEPT);
+		List<Concept> iv = gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT);
 		Patient patient = Context.getPatientService().getPatient((Integer) model.get("patientId"));
     	
 		List<DrugOrder> allDrugOrders = Context.getOrderService().getDrugOrdersByPatient(patient);
@@ -60,10 +61,10 @@ public class RegimenHeaderPortletController extends PortletController {
 					DrugRegimen regimen = (DrugRegimen)edo.getGroup();
 					if (!regimens.contains(regimen))
 					{
-						List<ExtendedDrugOrder> members = regimen.getMembers();
+						Set<ExtendedDrugOrder> members = regimen.getMembers();
 						for(ExtendedDrugOrder order: members)
 						{
-							if(order.getStartDate().after(compareDate.getTime()) && order.getRoute() != null && order.getRoute().equals(iv))
+							if(order.getStartDate().after(compareDate.getTime()) && order.getRoute() != null && iv.contains(order.getRoute()))
 							{
 								regimens.add(regimen);
 								break;

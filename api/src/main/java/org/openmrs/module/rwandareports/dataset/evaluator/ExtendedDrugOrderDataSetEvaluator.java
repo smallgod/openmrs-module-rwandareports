@@ -149,10 +149,7 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 					{
 						doseDisplay = f.format(edo.getDose());
 					}
-					else
-					{
-						doseDisplay = f.format(edo.getDose()) + " (" + edo.getUnits() + ")";
-					}	
+						
 					
 					if(edo.getUnits().equals("mg/m2"))
 					{
@@ -181,6 +178,10 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 							}
 						}
 					}
+					else
+					{
+						actualDoseDisplay = f.format(edo.getDose()) + " (" + edo.getUnits() + ")";
+					}
 				}
 				dataSet.addColumnValue(edo.getId(), dose, doseDisplay);
 				dataSet.addColumnValue(edo.getId(), actualDose, actualDoseDisplay);
@@ -188,7 +189,7 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 				String routeDisplay = "";
 				if(edo.getRoute() != null)
 				{
-					routeDisplay = edo.getRoute().getDisplayString();
+					routeDisplay = edo.getRoute().getShortestName(Context.getLocale(), false).getName();
 				}
 				dataSet.addColumnValue(edo.getId(), route, routeDisplay);
 				

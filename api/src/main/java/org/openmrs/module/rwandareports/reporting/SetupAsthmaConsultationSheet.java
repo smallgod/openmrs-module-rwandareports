@@ -56,6 +56,7 @@ public class SetupAsthmaConsultationSheet {
 	List<EncounterType> asthmaEncounter;
 	private Form rendevousForm;
 	private Form asthmaDDBForm;
+	private Form followUpForm;
 	
 	//private Concept returnVisitDate;
 	
@@ -176,8 +177,10 @@ public class SetupAsthmaConsultationSheet {
 		asthmaEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.ASTHMA_VISIT);
 		rendevousForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_RENDEVOUS_VISIT_FORM);
 		asthmaDDBForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
+		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
 		DDBAndRendezvousForms.add(rendevousForm);
 		DDBAndRendezvousForms.add(asthmaDDBForm);
+		DDBAndRendezvousForms.add(followUpForm);
 	}
 	
 	/*

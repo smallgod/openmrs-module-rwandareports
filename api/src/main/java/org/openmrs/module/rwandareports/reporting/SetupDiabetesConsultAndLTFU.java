@@ -206,6 +206,7 @@ public class SetupDiabetesConsultAndLTFU {
 	private void setupPrograms() {
 		diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.DIABETES_DDB_FORM)) ;
 		diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.DIABETES_RDV_FORM)) ;
+		diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM));
 		diabetesProgram = gp.getProgram(GlobalPropertiesManagement.DM_PROGRAM);
 		diabetesEncouters = gp.getEncounterTypeList(GlobalPropertiesManagement.DIABETES_VISIT);
 	}

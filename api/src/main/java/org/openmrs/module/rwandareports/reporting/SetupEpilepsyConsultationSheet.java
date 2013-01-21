@@ -45,6 +45,7 @@ public class SetupEpilepsyConsultationSheet {
 	private Program epilepsyProgram;
 	private Form epilepsyrendevousForm;
 	private Form epilepsyDDBForm;
+	private Form followUpForm;
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
 	private EncounterType epilepsyVisit;
 	List<EncounterType> epilepsyVisitEncounter;
@@ -155,8 +156,10 @@ public class SetupEpilepsyConsultationSheet {
 		epilepsyProgram = gp.getProgram(GlobalPropertiesManagement.EPILEPSY_PROGRAM);
 		epilepsyrendevousForm=gp.getForm(GlobalPropertiesManagement.EPILEPSY_RENDEVOUS_VISIT_FORM);
 		epilepsyDDBForm=gp.getForm(GlobalPropertiesManagement.EPILEPSY_DDB);
+		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
 		DDBAndRendezvousForms.add(epilepsyrendevousForm);
 		DDBAndRendezvousForms.add(epilepsyDDBForm);
+		DDBAndRendezvousForms.add(followUpForm);
 		epilepsyVisit = gp.getEncounterType(GlobalPropertiesManagement.EPILEPSY_VISIT);
 		epilepsyVisitEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.EPILEPSY_VISIT);
 	}

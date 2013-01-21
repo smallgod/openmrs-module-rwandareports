@@ -1,7 +1,7 @@
 package org.openmrs.module.rwandareports.util;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,11 +21,14 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.AllDrugOrd
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllDrugOrdersRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineObservation;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineObservationAnswer;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CurrentOrdersRestrictedByConceptSet;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.DateDiffType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfAllProgramEnrolment;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfMostRecentEncounterOfType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfObsAfterDateOfOtherDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramCompletion;
@@ -37,6 +40,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugO
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstRecordedObservationWithCodedConceptAnswer;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FullHistoryOfProgramWorkflowStates;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentProgramWorkflowState;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsValueAfterDateOfOtherDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsValueBeforeDateOfOtherDefinition;
@@ -44,6 +48,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.Observatio
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAddress;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAgeInMonths;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAttribute;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientHash;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientIdentifier;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
@@ -53,12 +58,12 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilt
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationship;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
+import org.openmrs.module.rwandareports.customcalculator.BooleanCalculation;
 import org.openmrs.module.rwandareports.definition.CurrentPatientDrugOrder;
 import org.openmrs.module.rwandareports.definition.CurrentPatientProgram;
 import org.openmrs.module.rwandareports.definition.DrugRegimenInformation;
 import org.openmrs.module.rwandareports.definition.LastWeekMostRecentObservation;
 import org.openmrs.module.rwandareports.definition.RegimenDateInformation;
-import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
 
 public class RowPerPatientColumns {
@@ -197,6 +202,17 @@ public class RowPerPatientColumns {
 		return lastEncounter;
 	}
 	
+	public static DateOfMostRecentEncounterOfType getDateOfMostRecentEncounterType(String name, List<EncounterType> encounterTypes,
+	                                                         String dateFormat) {
+		DateOfMostRecentEncounterOfType lastEncounter = new DateOfMostRecentEncounterOfType();
+		lastEncounter.setName(name);
+		lastEncounter.setEncounterTypes(encounterTypes);
+		if (dateFormat != null) {
+			lastEncounter.setDateFormat(dateFormat);
+		}
+		return lastEncounter;
+	}
+	
 	public static DateDiff getDifferenceSinceLastEncounter(String name, List<EncounterType> encounterTypes,
 	                                                       DateDiffType differenceType) {
 		DateDiff lastVisit = new DateDiff();
@@ -234,6 +250,12 @@ public class RowPerPatientColumns {
 		healthCenter.setAttribute("Health Center");
 		healthCenter.setName(name);
 		return healthCenter;
+	}
+	
+	public static PatientHash getPatientHash(String name) {
+		PatientHash hash = new PatientHash();
+		hash.setName(name);
+		return hash;
 	}
 	
 	public static StateOfPatient getTreatmentGroupOfHIVPatient(String name, ResultFilter filter) {
@@ -660,12 +682,66 @@ return oe;
 		return ovadood;
 	}
 	
-	public static BaselineObservation getBaselineObservation(String name, Concept concept, DateOfPatientData patientData,
+	public static BaselineObservation getBaselineObservation(String name, Concept concept, int before, int after, DateOfPatientData patientData,
 	                                                         String dateFormat) {
 		BaselineObservation baseline = new BaselineObservation();
 		baseline.setConcept(concept);
 		baseline.setName(name);
 		baseline.setDateOfPatientData(patientData, new HashMap<String, Object>());
+		baseline.setAfter(after);
+		baseline.setBefore(before);
+		
+		if (dateFormat != null) {
+			baseline.setDateFormat(dateFormat);
+		}
+		
+		return baseline;
+	}
+	
+	public static BaselineObservationAnswer getBaselineObservationAnswer(String name, List<Concept> questions, Concept answer, int before, int after, DateOfPatientData patientData,
+	                                                         String dateFormat) {
+		BaselineObservationAnswer baseline = new BaselineObservationAnswer();
+		baseline.setAnswer(answer);
+		baseline.setQuestions(questions);
+		baseline.setName(name);
+		baseline.setDateOfPatientData(patientData, new HashMap<String, Object>());
+		baseline.setAfter(after);
+		baseline.setBefore(before);
+		
+		if (dateFormat != null) {
+			baseline.setDateFormat(dateFormat);
+		}
+		
+		return baseline;
+	}
+	
+	public static BaselineObservation getBaselineObservationAtMonth(String name, Concept concept, int before, int after, int offset, DateOfPatientData patientData,
+	                                                         String dateFormat) {
+		BaselineObservation baseline = new BaselineObservation();
+		baseline.setConcept(concept);
+		baseline.setName(name);
+		baseline.setDateOfPatientData(patientData, new HashMap<String, Object>());
+		baseline.setAfter(after);
+		baseline.setBefore(before);
+		baseline.setOffset(offset, Calendar.MONTH);
+		
+		if (dateFormat != null) {
+			baseline.setDateFormat(dateFormat);
+		}
+		
+		return baseline;
+	}
+	
+	public static BaselineObservationAnswer getBaselineObservationAnswerAtMonth(String name, List<Concept> questions, Concept answer, int before, int after, int offset, DateOfPatientData patientData,
+	                                                         String dateFormat) {
+		BaselineObservationAnswer baseline = new BaselineObservationAnswer();
+		baseline.setAnswer(answer);
+		baseline.setQuestions(questions);
+		baseline.setName(name);
+		baseline.setDateOfPatientData(patientData, new HashMap<String, Object>());
+		baseline.setAfter(after);
+		baseline.setBefore(before);
+		baseline.setOffset(offset, Calendar.MONTH);
 		
 		if (dateFormat != null) {
 			baseline.setDateFormat(dateFormat);
@@ -679,8 +755,8 @@ return oe;
 		baseline.setConcept(gp.getConcept(GlobalPropertiesManagement.CD4_TEST));
 		baseline.setName(name);
 		baseline.setDateOfPatientData(getDateOfHIVEnrolment("hivEnrollment", dateFormat), new HashMap<String, Object>());
-		baseline.setAfter(42);
-		baseline.setBefore(180);
+		baseline.setAfter(30);
+		baseline.setBefore(90);
 		
 		if (dateFormat != null) {
 			baseline.setDateFormat(dateFormat);
@@ -842,6 +918,14 @@ return oe;
 		return mdd;
 	}
 	
+	public static MultiplePatientDataDefinitions getDateOfAllPMTCTEnrolment(String name, String dateFormat) {
+		MultiplePatientDataDefinitions mdd = new MultiplePatientDataDefinitions();
+		mdd.setName(name);
+		mdd.addPatientDataDefinition(getDateOfProgramEnrolment(name, gp.getProgram(GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM), dateFormat), new HashMap<String, Object>());
+		mdd.addPatientDataDefinition(getDateOfProgramEnrolment(name, gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM), dateFormat), new HashMap<String, Object>());
+		return mdd;
+	}
+	
 	public static DateOfProgramCompletion getDateOfHIVCompletion(String name, String dateFormat) {
 		return getDateOfProgramCompletion(name, gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM), dateFormat);
 	}
@@ -932,6 +1016,27 @@ return oe;
 		return info;
 	}
 	
+	public static CustomCalculationBasedOnMultiplePatientDataDefinitions getBooleanRepresentation(String name, RowPerPatientData patientData)
+	{
+		CustomCalculationBasedOnMultiplePatientDataDefinitions definition = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
+		definition.addPatientDataToBeEvaluated(patientData, new HashMap<String, Object>());
+		definition.setName(name);
+		definition.setCalculator(new BooleanCalculation());
+		return definition;
+	}
+	
+	public static MostRecentProgramWorkflowState getMostRecentProgramWorkflowState(String name, List<ProgramWorkflow> workflows, ResultFilter filter)
+	{
+		MostRecentProgramWorkflowState recent = new MostRecentProgramWorkflowState();
+		recent.setName(name);
+		recent.setWorkflows(workflows);
+		if(filter != null)
+		{
+			recent.setFilter(filter);
+		}
+		return recent;
+	}
+	
 	public static CurrentPatientDrugOrder getCurrentDrugOrders(String name,ResultFilter drugFilter) {
 		CurrentPatientDrugOrder co = new CurrentPatientDrugOrder();
            if (drugFilter != null) {
@@ -944,5 +1049,4 @@ return oe;
 	public static CurrentPatientDrugOrder getPatientCurrentlyActiveOnDrugOrder(String name, ResultFilter drugFilter) {
           return getCurrentDrugOrders(name, drugFilter);
      }
-	
 }

@@ -84,6 +84,12 @@ public class GlobalPropertiesManagement {
 	{
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
 		
+		return getConcept(globalProperty, globalPropertyName);
+	}
+	
+	public Concept getConcept(String globalProperty, String globalPropertyName)
+	{
+		
 		Concept c = Context.getConceptService().getConceptByUuid(globalProperty);
 		
 		if(c == null)
@@ -108,6 +114,24 @@ public class GlobalPropertiesManagement {
 		}
 		
 		return c;
+	}
+	
+	public List<Concept> getConceptList(String globalPropertyName)
+	{
+		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
+		
+		List<Concept> concepts = new ArrayList<Concept>();
+		
+		if(globalProperty != null)
+		{
+			String[] propertySplit = globalProperty.split(",");
+			for(String property: propertySplit)
+			{
+				concepts.add(getConcept(property, globalPropertyName));
+			}
+		}
+		
+		return concepts;
 	}
 	
 	public Form getForm(String globalPropertyName)
@@ -466,6 +490,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String ONCOLOGY_PROGRAM = "reports.oncologyprogram";
 	
+	public final static String EXTERNAL_HIV_PROGRAM = "reports.externalHivProgram";
+	
 	//ProgramWorkflow
 	public final static String TREATMENT_STATUS_WORKFLOW = "reports.hivworkflowstatus";
 	
@@ -692,6 +718,78 @@ public class GlobalPropertiesManagement {
 	
 	public final static String DAUNORUBICIN_GIVEN = "reports.daunorubicinGiven";
 	
+	public final static String PNEUMONIA = "reports.pneumonia";
+	
+	public final static String PNEUMONIA_SUB_ACUTE = "reports.pneumoniaSubAcute";
+	
+	public final static String CANDIDIASIS = "reports.candidiasis";
+	
+	public final static String CANDIDIASIS_ESOPHAGEAL = "reports.candidiasisEsophageal";
+	
+	public final static String CANDIDIASIS_ORAL = "reports.candidiasisOral";
+	
+	public final static String CONVULSIONS = "reports.convulsions";
+	
+	public final static String ENCEPHALOPATHY = "reports.encephalopathy";
+	
+	public final static String EXTRA_PULMONARY_TB = "reports.extraPulmonaryTB";
+	
+	public final static String PULMONARY_TB = "reports.pulmonaryTB";
+	
+	public final static String GENITAL_SORES = "reports.genitalSores";
+	
+	public final static String HERPES_SIMPLEX = "reports.herpesSimplex";
+	
+	public final static String HERPES_ZOSTER = "reports.herpesZoster";
+	
+	public final static String KARPOSIS_SARCOMA = "reports.kaposisSarcoma";
+	
+	public final static String MENINGITIS_CRYPTO = "reports.meningitisCrypto";
+	
+	public final static String MENINGITIS_TB = "reports.meningitisTB";
+	
+	public final static String NODULAR_RASH = "reports.nodularRash";
+	
+	public final static String DYSPHAGIA = "reports.dysphagia";
+	
+	public final static String TOXOPLASMOSIS = "reports.toxoplasmosis";
+	
+	public final static String TUBERCULOMA = "reports.tuberculoma";
+	
+	public final static String TUBERCULOUS_ENTERITIS = "reports.tuberculousEnteritis";
+	
+	public final static String ANAPHYLAXIS = "reports.anaphylaxis";
+	
+	public final static String OPPORTUNISTIC_INFECTIONS_AND_COMMORBIDITY = "reports.oiAndCommorbidity";
+	
+	public final static String OPPORTUNISTIC_INFECTIONS = "reports.oi";
+	
+	public final static String OTHER_NON_CODED = "reports.otherNonCoded";
+	
+	public final static String ADVERSE_EFFECT_CONCEPT = "reports.adverseEffect";
+	
+	public final static String RASH_MODERATE = "reports.rashModerate";
+	
+	public final static String RASH_SEVERE = "reports.rashSevere";
+	
+	public final static String NAUSEA = "reports.nausea";
+	
+	public final static String VOMITING = "reports.vomiting";
+	
+	public final static String JAUNDICE = "reports.jaundice";
+	
+	public final static String NEUROPATHY = "reports.neuropathy";
+	
+	public final static String ANEMIA = "reports.anemia";
+	
+	public final static String LACTIC_ACIDOSIS = "reports.lacticAcidosis";
+	
+	public final static String HEPATITIS = "reports.hepatitis";
+	
+	public final static String NIGHTMARES = "reports.nightmares";
+	
+	public final static String LIPODISTROPHY = "reports.lipodistrophy";
+	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
 	public static final String VCT_PROGRAM = "reports.vctProgram";							
@@ -759,6 +857,8 @@ public class GlobalPropertiesManagement {
 	public final static String PATIENT_TRANSFER_ENCOUNTER = "reports.PatientTransferEncounterType";
 	
 	public final static String PEDIANDADULTHIV_ENCOUNTER_TYPES = "reports.hivencounterTypeIds";
+	
+	public final static String NCD_FOLLOWUP_FORM = "reports.ncdFollowUpForm";
 	
 	//RelationshipTypes
 	public final static String ACCOMPAGNATUER_RELATIONSHIP = "reports.accompagnatuerRelationship";
@@ -917,6 +1017,8 @@ public class GlobalPropertiesManagement {
 	public final static String SERUM_CREATININE = "reports.serumCreatinine";
 	
 	public final static String HIV_TEST = "reports.hivTestConcept";
+	
+	public final static String HEMOGLOBIN = "reports.hemoglobin";
 	
 	//Group constructs  
 	public final static String CHILD_SEROLOGY_CONSTRUCT = "reports.childSerologyConcept";

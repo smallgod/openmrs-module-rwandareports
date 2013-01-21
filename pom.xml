@@ -62,21 +62,21 @@
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>reportingobjectgroup-api</artifactId>
-			<version>1.0.4.3-SNAPSHOT</version>
+			<version>1.0.4.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>reportingobjectgroup-omod</artifactId>
-			<version>1.0.4.3-SNAPSHOT</version>
+			<version>1.0.4.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>heightweighttracker-api</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

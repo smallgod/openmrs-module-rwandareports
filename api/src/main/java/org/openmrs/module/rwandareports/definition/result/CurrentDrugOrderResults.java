@@ -11,7 +11,6 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPati
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilter;
 import org.openmrs.module.rowperpatientreports.patientdata.result.BasePatientDataResult;
 
-
 public class CurrentDrugOrderResults extends BasePatientDataResult {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
@@ -21,12 +20,12 @@ public class CurrentDrugOrderResults extends BasePatientDataResult {
 	private String dateFormat = "yyyy-MM-dd";
 	
 	private ResultFilter drugFilter = null;
-
+	
 	public CurrentDrugOrderResults(RowPerPatientData patientData, EvaluationContext ec) {
-	    super(patientData, ec);
-	    setDateFormat(patientData.getDateFormat());
-    }
-
+		super(patientData, ec);
+		setDateFormat(patientData.getDateFormat());
+	}
+	
 	public Class<?> getColumnClass() {
 		return String.class;
 	}
@@ -38,15 +37,13 @@ public class CurrentDrugOrderResults extends BasePatientDataResult {
 	public boolean isMultiple() {
 		return true;
 	}
-
-    
+	
 	public String getDateFormat() {
 		return dateFormat;
 	}
-
+	
 	public void setDateFormat(String dateFormat) {
-		if(dateFormat != null)
-		{	
+		if (dateFormat != null) {
 			this.dateFormat = dateFormat;
 		}
 	}
@@ -54,40 +51,37 @@ public class CurrentDrugOrderResults extends BasePatientDataResult {
 	public ResultFilter getDrugFilter() {
 		return drugFilter;
 	}
-
+	
 	public void setDrugFilter(ResultFilter drugFilter) {
 		this.drugFilter = drugFilter;
 	}
-
+	
 	/**
-     * @param value the value to set
-     */
-    public void setValue(List<DrugOrder> value) {
-    	this.value = value;
-    }
-
-    public String getValueAsString() {
-	    StringBuilder result = new StringBuilder(" ");
-	    
-	    for(DrugOrder drO: getValue())
-	    {
-    		try{
-    			if(drugFilter != null)
-    			{
-    				result.append(drugFilter.filter(drO));
-    			}
-    			else
-    			{
-    				result.append(drO.getDrug().getName());
-    			}
-    			
-    			result.append(" ");
-    		}
-    		catch(Exception e)
-    		{
-    			log.info("Error retrieving drug info", e);
-    		} 	
-	    }
-	    return result.toString().trim();
-    }
+	 * @param value the value to set
+	 */
+	public void setValue(List<DrugOrder> value) {
+		this.value = value;
+	}
+	
+	public String getValueAsString() {
+		StringBuilder result = new StringBuilder(" ");
+		
+		if (getValue() != null) {
+			for (DrugOrder drO : getValue()) {
+				try {
+					if (drugFilter != null) {
+						result.append(drugFilter.filter(drO));
+					} else {
+						result.append(drO.getDrug().getName());
+					}
+					
+					result.append(" ");
+				}
+				catch (Exception e) {
+					log.info("Error retrieving drug info", e);
+				}
+			}
+		}
+		return result.toString().trim();
+	}
 }
