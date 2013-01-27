@@ -386,7 +386,7 @@ public class SetupHIVResearchExtractionSheet {
 		ReportDesign designOn = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingAdult.xls",
 		    "ResearchOngoingAdultMaleExcel", null);
 		
-		designSE.setProperties(props);
+		designOn.setProperties(props);
 		
 		h.saveReportDesign(designOn);
 	}
