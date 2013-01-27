@@ -5,23 +5,23 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.jfree.util.Log;
 import org.openmrs.Concept;
-import org.openmrs.DrugOrder;
 import org.openmrs.EncounterType;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AgeAtDateOfOtherDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllDrugOrdersRestrictedByConcept;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllDrugOrdersRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineDrugOrder;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineEncounter;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineObservationAnswer;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineProgramEnrollment;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CurrentOrdersRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
@@ -59,12 +59,15 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePe
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
 import org.openmrs.module.rwandareports.customcalculator.BooleanCalculation;
+import org.openmrs.module.rwandareports.definition.ArtSwitch;
+import org.openmrs.module.rwandareports.definition.ArtSwitchDate;
 import org.openmrs.module.rwandareports.definition.CurrentPatientDrugOrder;
 import org.openmrs.module.rwandareports.definition.CurrentPatientProgram;
 import org.openmrs.module.rwandareports.definition.DrugRegimenInformation;
+import org.openmrs.module.rwandareports.definition.HIVOutcome;
 import org.openmrs.module.rwandareports.definition.LastWeekMostRecentObservation;
 import org.openmrs.module.rwandareports.definition.RegimenDateInformation;
-import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
+import org.openmrs.module.rwandareports.definition.StartOfArt;
 
 public class RowPerPatientColumns {
 	
@@ -130,6 +133,24 @@ public class RowPerPatientColumns {
 		id.setName(name);
 		id.addPatientDataDefinition(imbId, new HashMap<String, Object>());
 		id.addPatientDataDefinition(pcId, new HashMap<String, Object>());
+		
+		return id;
+	}
+	
+	public static MultiplePatientDataDefinitions getAnyId(String name) {
+		PatientIdentifierType imbType = gp.getPatientIdentifier(GlobalPropertiesManagement.IMB_IDENTIFIER);
+		PatientIdentifier imbId = new PatientIdentifier(imbType);
+		
+		PatientIdentifierType pcType = gp.getPatientIdentifier(GlobalPropertiesManagement.PC_IDENTIFIER);
+		PatientIdentifier pcId = new PatientIdentifier(pcType);
+		
+		PatientIdentifier anyId = new PatientIdentifier();
+		
+		MultiplePatientDataDefinitions id = new MultiplePatientDataDefinitions();
+		id.setName(name);
+		id.addPatientDataDefinition(imbId, new HashMap<String, Object>());
+		id.addPatientDataDefinition(pcId, new HashMap<String, Object>());
+		id.addPatientDataDefinition(anyId, new HashMap<String, Object>());
 		
 		return id;
 	}
@@ -202,9 +223,23 @@ public class RowPerPatientColumns {
 		return lastEncounter;
 	}
 	
-	public static DateOfMostRecentEncounterOfType getDateOfMostRecentEncounterType(String name, List<EncounterType> encounterTypes,
-	                                                         String dateFormat) {
+	public static DateOfMostRecentEncounterOfType getDateOfMostRecentEncounterType(String name,
+	                                                                               List<EncounterType> encounterTypes,
+	                                                                               String dateFormat) {
 		DateOfMostRecentEncounterOfType lastEncounter = new DateOfMostRecentEncounterOfType();
+		lastEncounter.setName(name);
+		lastEncounter.setEncounterTypes(encounterTypes);
+		if (dateFormat != null) {
+			lastEncounter.setDateFormat(dateFormat);
+		}
+		return lastEncounter;
+	}
+	
+	public static DateOfMostRecentEncounterOfType getDateOfMostRecentEncounterType(String name,
+	                                                                               List<EncounterType> encounterTypes,
+	                                                                               String parameterName, String dateFormat) {
+		DateOfMostRecentEncounterOfType lastEncounter = new DateOfMostRecentEncounterOfType();
+		lastEncounter.addParameter(new Parameter(parameterName, parameterName, Date.class));
 		lastEncounter.setName(name);
 		lastEncounter.setEncounterTypes(encounterTypes);
 		if (dateFormat != null) {
@@ -416,10 +451,10 @@ public class RowPerPatientColumns {
 	}
 	
 	public static AllObservationValues getAllINRValues(String name, String dateFormat, ResultFilter resultFilter,
-            ResultFilter outputFilter) {
-         return getAllObservationValues(name, gp.getConcept(GlobalPropertiesManagement.INTERNATIONAL_NORMALIZED_RATIO), dateFormat,
-        resultFilter, outputFilter);
-    }
+	                                                   ResultFilter outputFilter) {
+		return getAllObservationValues(name, gp.getConcept(GlobalPropertiesManagement.INTERNATIONAL_NORMALIZED_RATIO),
+		    dateFormat, resultFilter, outputFilter);
+	}
 	
 	public static AllObservationValues getAllCD4Values(String name, String dateFormat, ResultFilter resultFilter,
 	                                                   ResultFilter outputFilter) {
@@ -446,18 +481,19 @@ public class RowPerPatientColumns {
 	}
 	
 	public static ObservationInMostRecentEncounterOfType getSeizureInMostRecentEncounterOfType(String name,
-            EncounterType encounterType, ObservationInMostRecentEncounterOfType observationInMostRecentEncounterOfType) {
-       return getObservationInMostRecentEncounterOfType(name,
-            gp.getConcept(GlobalPropertiesManagement.SEIZURE_CONCEPT), encounterType);
-     }
-	
+	                                                                                           EncounterType encounterType,
+	                                                                                           ObservationInMostRecentEncounterOfType observationInMostRecentEncounterOfType) {
+		return getObservationInMostRecentEncounterOfType(name, gp.getConcept(GlobalPropertiesManagement.SEIZURE_CONCEPT),
+		    encounterType);
+	}
 	
 	public static ObservationInMostRecentEncounterOfType getNextVisitInMostRecentEncounterOfTypes(String name,
-            EncounterType encounterType, ObservationInMostRecentEncounterOfType observationInMostRecentEncounterOfType,
-            ResultFilter resultFilter) {
-       return getObservationInMostRecentEncounterOfType(name,
-            gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE), encounterType, resultFilter);
-     }
+	                                                                                              EncounterType encounterType,
+	                                                                                              ObservationInMostRecentEncounterOfType observationInMostRecentEncounterOfType,
+	                                                                                              ResultFilter resultFilter) {
+		return getObservationInMostRecentEncounterOfType(name, gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),
+		    encounterType, resultFilter);
+	}
 	
 	public static PatientRelationship getAccompRelationship(String name) {
 		return getPatientRelationship(name, gp.getRelationshipType(GlobalPropertiesManagement.ACCOMPAGNATUER_RELATIONSHIP)
@@ -499,18 +535,16 @@ public class RowPerPatientColumns {
 	}
 	
 	public static CurrentOrdersRestrictedByConceptSet getCurrentHypertensionOrders(String name, String dateFormat,
-	                                                                         ResultFilter drugFilter) {
+	                                                                               ResultFilter drugFilter) {
 		return getCurrentOrdersRestrictedByConceptSet(name,
 		    gp.getConcept(GlobalPropertiesManagement.HYPERTENSION_TREATMENT_DRUGS), dateFormat, drugFilter);
 	}
 	
-	
 	public static CurrentOrdersRestrictedByConceptSet getCurrentEpilepsyOrders(String name, String dateFormat,
-                                                                               ResultFilter drugFilter) {
-       return getCurrentOrdersRestrictedByConceptSet(name,
-            gp.getConcept(GlobalPropertiesManagement.EPILEPSY_TREATMENT_DRUGS), dateFormat, drugFilter);
-       }
-	
+	                                                                           ResultFilter drugFilter) {
+		return getCurrentOrdersRestrictedByConceptSet(name,
+		    gp.getConcept(GlobalPropertiesManagement.EPILEPSY_TREATMENT_DRUGS), dateFormat, drugFilter);
+	}
 	
 	public static MostRecentObservation getMostRecent(String name, Concept concept, String dateFormat) {
 		MostRecentObservation mostRecent = new MostRecentObservation();
@@ -567,9 +601,19 @@ public class RowPerPatientColumns {
 		return allObs;
 	}
 	
+	public static AllObservationValues getAllObservationValuesBeforeEndDate(String name, Concept concept, int minResults,
+	                                                                        String dateFormat, ResultFilter resultFilter,
+	                                                                        ResultFilter outputFilter) {
+		AllObservationValues allObs = getAllObservationValues(name, concept, dateFormat, resultFilter, outputFilter);
+		allObs.addParameter(new Parameter("endDate", "endDate", Date.class));
+		allObs.setMinResultsOutput(minResults);
+		return allObs;
+	}
+	
 	public static ObservationInMostRecentEncounterOfType getObservationInMostRecentEncounterOfType(String name,
 	                                                                                               Concept concept,
-	                                                                                               EncounterType encounterType, ResultFilter resultFilter ) {
+	                                                                                               EncounterType encounterType,
+	                                                                                               ResultFilter resultFilter) {
 		
 		ObservationInMostRecentEncounterOfType oe = new ObservationInMostRecentEncounterOfType();
 		oe.setName(name);
@@ -581,24 +625,24 @@ public class RowPerPatientColumns {
 		if (resultFilter != null) {
 			
 			oe.setFilter(resultFilter);
-			}
+		}
 		return oe;
 	}
 	
 	public static ObservationInMostRecentEncounterOfType getObservationInMostRecentEncounterOfType(String name,
-            Concept concept, EncounterType encounterType) {
-
-
-        ObservationInMostRecentEncounterOfType oe = new ObservationInMostRecentEncounterOfType();
-        oe.setName(name);
-        oe.setObservationConcept(concept);
-       // oe.setFilter(dateFilter);
-        List<EncounterType> encounterTypes = new ArrayList<EncounterType>();
-        encounterTypes.add(encounterType);
-        oe.setEncounterTypes(encounterTypes);
-
-return oe;
-}
+	                                                                                               Concept concept,
+	                                                                                               EncounterType encounterType) {
+		
+		ObservationInMostRecentEncounterOfType oe = new ObservationInMostRecentEncounterOfType();
+		oe.setName(name);
+		oe.setObservationConcept(concept);
+		// oe.setFilter(dateFilter);
+		List<EncounterType> encounterTypes = new ArrayList<EncounterType>();
+		encounterTypes.add(encounterType);
+		oe.setEncounterTypes(encounterTypes);
+		
+		return oe;
+	}
 	
 	public static PatientRelationship getPatientRelationship(String name, int relationshipTypeId, String side,
 	                                                         ResultFilter accompagnateurFilter) {
@@ -682,8 +726,8 @@ return oe;
 		return ovadood;
 	}
 	
-	public static BaselineObservation getBaselineObservation(String name, Concept concept, int before, int after, DateOfPatientData patientData,
-	                                                         String dateFormat) {
+	public static BaselineObservation getBaselineObservation(String name, Concept concept, int before, int after,
+	                                                         DateOfPatientData patientData, String dateFormat) {
 		BaselineObservation baseline = new BaselineObservation();
 		baseline.setConcept(concept);
 		baseline.setName(name);
@@ -698,8 +742,9 @@ return oe;
 		return baseline;
 	}
 	
-	public static BaselineObservationAnswer getBaselineObservationAnswer(String name, List<Concept> questions, Concept answer, int before, int after, DateOfPatientData patientData,
-	                                                         String dateFormat) {
+	public static BaselineObservationAnswer getBaselineObservationAnswer(String name, List<Concept> questions,
+	                                                                     Concept answer, int before, int after,
+	                                                                     DateOfPatientData patientData, String dateFormat) {
 		BaselineObservationAnswer baseline = new BaselineObservationAnswer();
 		baseline.setAnswer(answer);
 		baseline.setQuestions(questions);
@@ -715,10 +760,68 @@ return oe;
 		return baseline;
 	}
 	
-	public static BaselineObservation getBaselineObservationAtMonth(String name, Concept concept, int before, int after, int offset, DateOfPatientData patientData,
-	                                                         String dateFormat) {
-		BaselineObservation baseline = new BaselineObservation();
-		baseline.setConcept(concept);
+	public static BaselineObservationAnswer getBaselineObservationAnswerBeforeEndDate(String name, List<Concept> questions,
+	                                                                                  Concept answer, int before, int after,
+	                                                                                  DateOfPatientData patientData,
+	                                                                                  String dateFormat) {
+		BaselineObservationAnswer baseline = getBaselineObservationAnswer(name, questions, answer, before, after,
+		    patientData, dateFormat);
+		baseline.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		return baseline;
+	}
+	
+	public static BaselineObservation getBaselineObservationAtMonth(String name, Concept concept, int before, int after,
+	                                                                int offset, DateOfPatientData patientData,
+	                                                                String dateFormat) {
+		BaselineObservation baseline = getBaselineObservation(name, concept, before, after, patientData, dateFormat);
+		baseline.setOffset(offset, Calendar.MONTH);
+		
+		return baseline;
+	}
+	
+	public static BaselineObservation getBaselineObservationAtMonthBeforeEndDate(String name, Concept concept, int before,
+	                                                                             int after, int offset,
+	                                                                             DateOfPatientData patientData,
+	                                                                             Map<String, Object> parameters,
+	                                                                             String dateFormat) {
+		BaselineObservation baseline = getBaselineObservationAtMonth(name, concept, before, after, offset, patientData,
+		    dateFormat);
+		baseline.addParameter(new Parameter("endDate", "endDate", Date.class));
+		baseline.setDateOfPatientData(patientData, parameters);
+		
+		return baseline;
+	}
+	
+	public static BaselineObservationAnswer getBaselineObservationAnswerAtMonth(String name, List<Concept> questions,
+	                                                                            Concept answer, int before, int after,
+	                                                                            int offset, DateOfPatientData patientData,
+	                                                                            String dateFormat) {
+		BaselineObservationAnswer baseline = getBaselineObservationAnswer(name, questions, answer, before, after,
+		    patientData, dateFormat);
+		baseline.setOffset(offset, Calendar.MONTH);
+		
+		return baseline;
+	}
+	
+	public static BaselineObservationAnswer getBaselineObservationAnswerAtMonthBeforeEndDate(String name,
+	                                                                                         List<Concept> questions,
+	                                                                                         Concept answer, int before,
+	                                                                                         int after, int offset,
+	                                                                                         DateOfPatientData patientData,
+	                                                                                         String dateFormat) {
+		BaselineObservationAnswer baseline = getBaselineObservationAnswerAtMonth(name, questions, answer, before, after,
+		    offset, patientData, dateFormat);
+		baseline.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		return baseline;
+	}
+	
+	public static BaselineEncounter getBaselineEncounterAtMonth(String name, List<EncounterType> types, int before,
+	                                                            int after, int offset, DateOfPatientData patientData,
+	                                                            String dateFormat) {
+		BaselineEncounter baseline = new BaselineEncounter();
+		baseline.setEncounterTypes(types);
 		baseline.setName(name);
 		baseline.setDateOfPatientData(patientData, new HashMap<String, Object>());
 		baseline.setAfter(after);
@@ -732,20 +835,69 @@ return oe;
 		return baseline;
 	}
 	
-	public static BaselineObservationAnswer getBaselineObservationAnswerAtMonth(String name, List<Concept> questions, Concept answer, int before, int after, int offset, DateOfPatientData patientData,
-	                                                         String dateFormat) {
-		BaselineObservationAnswer baseline = new BaselineObservationAnswer();
-		baseline.setAnswer(answer);
-		baseline.setQuestions(questions);
+	public static BaselineEncounter getBaselineEncounterAtMonthBeforeEndDate(String name, List<EncounterType> types,
+	                                                                         int before, int after, int offset,
+	                                                                         DateOfPatientData patientData,
+	                                                                         Map<String, Object> parameters,
+	                                                                         String dateFormat) {
+		BaselineEncounter baseline = getBaselineEncounterAtMonth(name, types, before, after, offset, patientData, dateFormat);
+		baseline.addParameter(new Parameter("endDate", "endDate", Date.class));
+		baseline.setDateOfPatientData(patientData, parameters);
+		
+		return baseline;
+	}
+	
+	public static BaselineProgramEnrollment getBaselineProgramEnrollment(String name, Program program, int before,
+	                                                                            int after, 
+	                                                                            DateOfPatientData patientData,
+	                                                                            String dateFormat) {
+		BaselineProgramEnrollment baseline = new BaselineProgramEnrollment();
+		baseline.setProgram(program);
 		baseline.setName(name);
 		baseline.setDateOfPatientData(patientData, new HashMap<String, Object>());
 		baseline.setAfter(after);
 		baseline.setBefore(before);
-		baseline.setOffset(offset, Calendar.MONTH);
 		
 		if (dateFormat != null) {
 			baseline.setDateFormat(dateFormat);
 		}
+		
+		return baseline;
+	}
+	
+	public static BaselineProgramEnrollment getBaselineProgramEnrollmentAtMonth(String name, Program program, int before,
+	                                                                            int after, int offset,
+	                                                                            DateOfPatientData patientData,
+	                                                                            String dateFormat) {
+		BaselineProgramEnrollment baseline = getBaselineProgramEnrollment(name, program, before, after, patientData, dateFormat);
+		baseline.setOffset(offset, Calendar.MONTH);
+		
+		return baseline;
+	}
+	
+	public static BaselineProgramEnrollment getBaselineProgramEnrollmentAtMonthBeforeEndDate(String name, Program program,
+	                                                                                         int before, int after,
+	                                                                                         int offset,
+	                                                                                         DateOfPatientData patientData,
+	                                                                                         Map<String, Object> parameters,
+	                                                                                         String dateFormat) {
+		BaselineProgramEnrollment baseline = getBaselineProgramEnrollmentAtMonth(name, program, before, after, offset,
+		    patientData, dateFormat);
+		baseline.addParameter(new Parameter("endDate", "endDate", Date.class));
+		baseline.setDateOfPatientData(patientData, parameters);
+		
+		return baseline;
+	}
+	
+	public static BaselineProgramEnrollment getBaselineProgramEnrollmentBeforeEndDate(String name, Program program,
+	                                                                                         int before, int after,
+	                                                                                         DateOfPatientData patientData,
+	                                                                                         Map<String, Object> parameters,
+	                                                                                         String dateFormat) {
+		BaselineProgramEnrollment baseline = getBaselineProgramEnrollment(name, program, before, after, 
+		    patientData, dateFormat);
+		baseline.addParameter(new Parameter("endDate", "endDate", Date.class));
+		baseline.setDateOfPatientData(patientData, parameters);
 		
 		return baseline;
 	}
@@ -761,6 +913,44 @@ return oe;
 		if (dateFormat != null) {
 			baseline.setDateFormat(dateFormat);
 		}
+		
+		return baseline;
+	}
+	
+	public static BaselineDrugOrder getBaselineDrugOrder(String name, Concept concept, int before, int after,
+	                                                     DateOfPatientData patientData, Map<String, Object> parameters,
+	                                                     String dateFormat) {
+		BaselineDrugOrder baseline = new BaselineDrugOrder();
+		baseline.setDrugConcept(concept);
+		baseline.setName(name);
+		baseline.setDateOfPatientData(patientData, parameters);
+		baseline.setAfter(after);
+		baseline.setBefore(before);
+		
+		if (dateFormat != null) {
+			baseline.setDateFormat(dateFormat);
+		}
+		
+		return baseline;
+	}
+	
+	public static BaselineDrugOrder getBaselineDrugOrderBeforeEndDate(String name, Concept concept, int before, int after,
+	                                                                  DateOfPatientData patientData,
+	                                                                  Map<String, Object> parameters, String dateFormat) {
+		BaselineDrugOrder baseline = getBaselineDrugOrder(name, concept, before, after, patientData, parameters, dateFormat);
+		baseline.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		return baseline;
+	}
+	
+	public static BaselineDrugOrder getBaselineDrugOrderAtMonthBeforeEndDate(String name, Concept concept, int before,
+	                                                                         int after, int offset,
+	                                                                         DateOfPatientData patientData,
+	                                                                         Map<String, Object> parameters,
+	                                                                         String dateFormat) {
+		BaselineDrugOrder baseline = getBaselineDrugOrderBeforeEndDate(name, concept, before, after, patientData,
+		    parameters, dateFormat);
+		baseline.setOffset(offset, Calendar.MONTH);
 		
 		return baseline;
 	}
@@ -811,6 +1001,18 @@ return oe;
 		return startDate;
 	}
 	
+	public static DateOfWorkflowStateChange getDateOfWorkflowStateChange(String name, Concept workflowConcept,
+	                                                                     String parameterName, String dateFormat) {
+		DateOfWorkflowStateChange startDate = new DateOfWorkflowStateChange();
+		startDate.addParameter(new Parameter(parameterName, parameterName, Date.class));
+		startDate.setConcept(workflowConcept);
+		startDate.setName(name);
+		if (dateFormat != null) {
+			startDate.setDateFormat(dateFormat);
+		}
+		return startDate;
+	}
+	
 	public static DateOfProgramEnrolment getDateOfProgramEnrolment(String name, Program program, String dateFormat) {
 		DateOfProgramEnrolment progEnrol = new DateOfProgramEnrolment();
 		progEnrol.setName(name);
@@ -826,6 +1028,18 @@ return oe;
 		DateOfProgramEnrolment progEnrol = new DateOfProgramEnrolment();
 		progEnrol.setName(name);
 		progEnrol.setReturnEarliest(returnEarliest);
+		progEnrol.setProgramId(program.getProgramId());
+		if (dateFormat != null) {
+			progEnrol.setDateFormat(dateFormat);
+		}
+		return progEnrol;
+	}
+	
+	public static DateOfProgramEnrolment getDateOfProgramEnrolment(String name, Program program, String parameter,
+	                                                               String dateFormat) {
+		DateOfProgramEnrolment progEnrol = new DateOfProgramEnrolment();
+		progEnrol.addParameter(new Parameter(parameter, parameter, Date.class));
+		progEnrol.setName(name);
 		progEnrol.setProgramId(program.getProgramId());
 		if (dateFormat != null) {
 			progEnrol.setDateFormat(dateFormat);
@@ -883,6 +1097,19 @@ return oe;
 		return startDateDrugs;
 	}
 	
+	public static FirstDrugOrderStartedRestrictedByConceptSet getFirstDrugOrderStartedRestrictedByConceptSet(String name,
+	                                                                                                         Concept conceptSet,
+	                                                                                                         String parameterName,
+	                                                                                                         String dateFormat) {
+		FirstDrugOrderStartedRestrictedByConceptSet startDateDrugs = getFirstDrugOrderStartedRestrictedByConceptSet(name,
+		    conceptSet);
+		startDateDrugs.addParameter(new Parameter(parameterName, parameterName, Date.class));
+		if (dateFormat != null) {
+			startDateDrugs.setDateFormat(dateFormat);
+		}
+		return startDateDrugs;
+	}
+	
 	public static FirstDrugOrderStartedAfterDateRestrictedByConceptSet getFirstDrugOrderStartedAfterDateRestrictedByConceptSet(String name,
 	                                                                                                                           Concept conceptSet,
 	                                                                                                                           DateOfPatientData patientData) {
@@ -902,6 +1129,12 @@ return oe;
 		    dateFormat);
 	}
 	
+	public static FirstDrugOrderStartedRestrictedByConceptSet getDrugOrderForStartOfARTBeforeDate(String name,
+	                                                                                              String dateFormat) {
+		return getFirstDrugOrderStartedRestrictedByConceptSet(name, gp.getConcept(GlobalPropertiesManagement.ART_DRUGS_SET),
+		    "endDate", dateFormat);
+	}
+	
 	public static DateOfProgramEnrolment getDateOfHIVEnrolment(String name, String dateFormat) {
 		return getDateOfProgramEnrolment(name, gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM), true, dateFormat);
 	}
@@ -919,10 +1152,19 @@ return oe;
 	}
 	
 	public static MultiplePatientDataDefinitions getDateOfAllPMTCTEnrolment(String name, String dateFormat) {
+		
+		Map<String, Object> mappings = new HashMap<String, Object>();
+		mappings.put("endDate", "${endDate}");
+		
 		MultiplePatientDataDefinitions mdd = new MultiplePatientDataDefinitions();
+		mdd.addParameter(new Parameter("endDate", "endDate", Date.class));
 		mdd.setName(name);
-		mdd.addPatientDataDefinition(getDateOfProgramEnrolment(name, gp.getProgram(GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM), dateFormat), new HashMap<String, Object>());
-		mdd.addPatientDataDefinition(getDateOfProgramEnrolment(name, gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM), dateFormat), new HashMap<String, Object>());
+		mdd.addPatientDataDefinition(
+		    getDateOfProgramEnrolment(name, gp.getProgram(GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM), "endDate",
+		        dateFormat), mappings);
+		mdd.addPatientDataDefinition(
+		    getDateOfProgramEnrolment(name, gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM),
+		        "endDate", dateFormat), mappings);
 		return mdd;
 	}
 	
@@ -946,6 +1188,31 @@ return oe;
 	                                                                                                      DateOfPatientData patientData) {
 		return getFirstDrugOrderStartedAfterDateRestrictedByConceptSet(name,
 		    gp.getConcept(GlobalPropertiesManagement.ART_DRUGS_SET), patientData);
+	}
+	
+	public static StartOfArt getDrugOrdersForStartOfARTBeforeDate(String name) {
+		StartOfArt art = new StartOfArt();
+		art.addParameter(new Parameter("endDate", "endDate", Date.class));
+		art.setName(name);
+		return art;
+	}
+	
+	public static ArtSwitch getDrugOrdersForARTSwitchBeforeDate(String name, RowPerPatientData artData,
+	                                                            Map<String, Object> parameters) {
+		ArtSwitch art = new ArtSwitch();
+		art.addParameter(new Parameter("endDate", "endDate", Date.class));
+		art.setArtData(artData, parameters);
+		art.setName(name);
+		return art;
+	}
+	
+	public static ArtSwitchDate getDateForARTSwitchBeforeDate(String name, RowPerPatientData artData,
+	                                                          Map<String, Object> parameters) {
+		ArtSwitchDate art = new ArtSwitchDate();
+		art.addParameter(new Parameter("endDate", "endDate", Date.class));
+		art.setArtData(artData, parameters);
+		art.setName(name);
+		return art;
 	}
 	
 	public static AllDrugOrdersRestrictedByConcept getAllDrugOrdersRestrictedByConcept(String name, Concept concept) {
@@ -1009,15 +1276,14 @@ return oe;
 		info.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
 		info.addParameter(new Parameter("untilDate", "untilDate", Date.class));
 		
-		if(format != null)
-		{
+		if (format != null) {
 			info.setDateFormat(format);
 		}
 		return info;
 	}
 	
-	public static CustomCalculationBasedOnMultiplePatientDataDefinitions getBooleanRepresentation(String name, RowPerPatientData patientData)
-	{
+	public static CustomCalculationBasedOnMultiplePatientDataDefinitions getBooleanRepresentation(String name,
+	                                                                                              RowPerPatientData patientData) {
 		CustomCalculationBasedOnMultiplePatientDataDefinitions definition = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		definition.addPatientDataToBeEvaluated(patientData, new HashMap<String, Object>());
 		definition.setName(name);
@@ -1025,28 +1291,59 @@ return oe;
 		return definition;
 	}
 	
-	public static MostRecentProgramWorkflowState getMostRecentProgramWorkflowState(String name, List<ProgramWorkflow> workflows, ResultFilter filter)
-	{
+	public static CustomCalculationBasedOnMultiplePatientDataDefinitions getBooleanRepresentation(String name,
+	                                                                                              String parameter,
+	                                                                                              Map<String, Object> parameters,
+	                                                                                              RowPerPatientData patientData) {
+		CustomCalculationBasedOnMultiplePatientDataDefinitions definition = getBooleanRepresentation(name, patientData);
+		definition.addParameter(new Parameter(parameter, parameter, Date.class));
+		definition.addPatientDataToBeEvaluated(patientData, parameters);
+		definition.setCalculator(new BooleanCalculation());
+		return definition;
+	}
+	
+	public static MostRecentProgramWorkflowState getMostRecentProgramWorkflowState(String name,
+	                                                                               List<ProgramWorkflow> workflows,
+	                                                                               ResultFilter filter) {
 		MostRecentProgramWorkflowState recent = new MostRecentProgramWorkflowState();
 		recent.setName(name);
 		recent.setWorkflows(workflows);
-		if(filter != null)
-		{
+		if (filter != null) {
 			recent.setFilter(filter);
 		}
 		return recent;
 	}
 	
-	public static CurrentPatientDrugOrder getCurrentDrugOrders(String name,ResultFilter drugFilter) {
+	public static CurrentPatientDrugOrder getCurrentDrugOrders(String name, ResultFilter drugFilter) {
 		CurrentPatientDrugOrder co = new CurrentPatientDrugOrder();
-           if (drugFilter != null) {
-           co.setResultFilter(drugFilter);
-           }
-           co.setName(name);
-           return co;
-        }
+		if (drugFilter != null) {
+			co.setResultFilter(drugFilter);
+		}
+		co.setName(name);
+		return co;
+	}
 	
 	public static CurrentPatientDrugOrder getPatientCurrentlyActiveOnDrugOrder(String name, ResultFilter drugFilter) {
-          return getCurrentDrugOrders(name, drugFilter);
-     }
+		return getCurrentDrugOrders(name, drugFilter);
+	}
+	
+	public static MostRecentObservation getHIVDiagnosisDate(String name) {
+		
+		MostRecentObservation diagnosis = getMostRecent(name, gp.getConcept(GlobalPropertiesManagement.HIV_DIAGNOSIS_DATE),
+		    "yyyy-mm-dd");
+		
+		return diagnosis;
+	}
+	
+	public static HIVOutcome getHIVOutcomeOnEndDate(String name, String dateFormat) {
+		HIVOutcome outcome = new HIVOutcome();
+		outcome.setName(name);
+		outcome.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		if (dateFormat != null) {
+			outcome.setDateFormat(dateFormat);
+		}
+		
+		return outcome;
+	}
 }

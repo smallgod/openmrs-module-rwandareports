@@ -20,7 +20,7 @@ public class BooleanCalculation implements CustomCalculation{
 		for(PatientDataResult result: results)
 		{
 			
-			if(result.getValue() != null && result.getValue().toString().trim().length() > 0)
+			if(result.getValueAsString() != null && result.getValueAsString().trim().length() > 0)
 			{
 				res.setValue("1");
 			}
@@ -28,6 +28,7 @@ public class BooleanCalculation implements CustomCalculation{
 			{
 				res.setValue("0");
 			}
+	
 		}
 		
 		return res;

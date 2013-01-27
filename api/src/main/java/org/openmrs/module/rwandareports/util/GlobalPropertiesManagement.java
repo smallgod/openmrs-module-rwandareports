@@ -997,6 +997,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String CARDIAC_TREATMENT_DRUGS="reports.cardiacTreatmentConceptSet";
 	
+	public final static String BACTRIM_CONCEPT = "reports.bactrimConcept";
+	
 	//Test concepts
 	public final static String TB_TEST_CONCEPT = "reports.tbTestConcept";
 	

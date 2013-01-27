@@ -482,6 +482,13 @@ public class Cohorts {
 		return inProgram;
 	}
 	
+	public static InProgramCohortDefinition createInProgramParameterizableByDate(String name, Program programs,
+	                                                                             String parameterName) {
+		InProgramCohortDefinition inProgram = createInProgram(name, programs);
+		inProgram.addParameter(new Parameter(parameterName, parameterName, Date.class));
+		return inProgram;
+	}
+	
 	public static InProgramCohortDefinition createInProgramParameterizableByDate(String name, List<Program> programs,
 	                                                                             List<String> parameterName) {
 		InProgramCohortDefinition inProgram = createInProgram(name, programs);

@@ -2185,7 +2185,7 @@
 	<globalProperty>
 		<property>reports.BactrimDrug</property>
 		<defaultValue>130</defaultValue>
-		<description>The drug id of NVP Susp</description>
+		<description>The drug id of Bactrim</description>
 	</globalProperty>
 	<globalProperty>
 		<property>reports.classifications</property>
@@ -2511,6 +2511,12 @@
 		<property>reports.ncdFollowUpForm</property>
 		<defaultValue>1df78f57-990d-46a7-aa9b-9a992d32ea57</defaultValue>
 		<description>The form for patient follow-up</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.bactrimConcept</property>
+		<defaultValue>3cd51772-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept id for Bactrim</description>
 	</globalProperty>
 	
 	
