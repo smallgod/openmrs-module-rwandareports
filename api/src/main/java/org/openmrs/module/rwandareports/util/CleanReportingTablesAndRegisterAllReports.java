@@ -41,6 +41,9 @@ import org.openmrs.module.rwandareports.reporting.SetupEpilepsyLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupExposedClinicInfantMonthly;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchDataQualitySheet;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchExtractionSheet;
+import org.openmrs.module.rwandareports.reporting.SetupHeartFailureConsultSheet;
+import org.openmrs.module.rwandareports.reporting.SetupHeartFailureLateVisit;
+import org.openmrs.module.rwandareports.reporting.SetupHeartFailureQuarterlyAndMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupHypertensionConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupHypertensionLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupHypertensionQuarterlyAndMonthlyReport;
@@ -148,7 +151,7 @@ public class CleanReportingTablesAndRegisterAllReports {
     }
 	public static void registerNCDReports() throws Exception {
 			new SetupAsthmaConsultationSheet().setup();  
-			//new SetupHeartFailurereport().setup();
+		
 			new SetupDiabetesConsultAndLTFU().setup();
 			new SetupDiabetesQuarterlyAndMonthReport().setup();
 			new SetupAsthmaQuarterlyAndMonthReport().setup();
@@ -159,6 +162,10 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupHypertensionConsultationSheet().setup();
 			new SetupHypertensionLateVisit().setup();
 			new SetupHypertensionQuarterlyAndMonthlyReport().setup();
+			
+			new SetupHeartFailureConsultSheet().setup();
+			new SetupHeartFailureLateVisit().setup();
+			new SetupHeartFailureQuarterlyAndMonthlyReport();
     }
 	public static void registerCentralReports() throws Exception {
 			new SetupHIVResearchDataQualitySheet().setup();

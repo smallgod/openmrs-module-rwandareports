@@ -2039,7 +2039,7 @@
 		
 		<globalProperty>
 		<property>reports.heartFailureDDBformId</property>
-		<defaultValue>bcada14a-8e42-4082-8d3e-5685be2f2ce2</defaultValue> 
+		<defaultValue>c4302c96-94a6-4724-90cf-88cc29409aa5</defaultValue> 
 		<description>Hear Failure DDB form id </description> 		
 		</globalProperty>		
 		
