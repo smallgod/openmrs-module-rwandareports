@@ -445,7 +445,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		preArtWithACD4Under15.addParameter(new Parameter("startDate", "startDate", Date.class));
 		preArtWithACD4Under15.getSearches().put("1",new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
 		preArtWithACD4Under15.getSearches().put("2",new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		preArtWithACD4Under15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
+		preArtWithACD4Under15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")));
 		preArtWithACD4Under15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
 		preArtWithACD4Under15.setCompositionString("1 AND 2 AND 3 AND 4");
 		
@@ -455,7 +455,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		preArtWithACD4Over15.addParameter(new Parameter("startDate", "startDate", Date.class));
 		preArtWithACD4Over15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
 		preArtWithACD4Over15.getSearches().put("2", new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-		preArtWithACD4Over15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
+		preArtWithACD4Over15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")));
 		preArtWithACD4Over15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
 		preArtWithACD4Over15.setCompositionString("1 AND 2 AND 3 AND 4");
 		
