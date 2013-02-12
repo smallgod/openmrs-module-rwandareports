@@ -7,14 +7,17 @@ import java.util.Properties;
 
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
@@ -28,10 +31,14 @@ import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
+import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
+import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
+import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
+import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
@@ -40,7 +47,7 @@ import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupIDProgramQuarterlyIndicatorReport {
 	
-	Helper h = new Helper();
+public Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -79,6 +86,8 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 	
 	private EncounterType adultHIVEncounterType;
 	
+	private EncounterType pediHIVEncounterType;
+	
 	private Program pmtctCombinedInfantProgram;
 	
 	private List<ProgramWorkflowState> feedingWorkflowStates = new ArrayList<ProgramWorkflowState>();
@@ -97,16 +106,36 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 	private Concept usingCondoms;
 	private Concept naturalFamilyPlanning;
 	private Concept viralLoadConcept;
+	
 	public void setup() throws Exception {
 		
 		setUpProperties();
 		
-		ReportDefinition rd = createCrossSiteReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "HIVIndicator.xls", "HIVIndicators", null);
-		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,dataset:ID_Program_Quarterly_Individual_District_Indicator Data Set");
-		design.setProperties(props);
-		h.saveReportDesign(design);
+		
+		ReportDefinition rd = new ReportDefinition();
+		rd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		rd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		
+		Properties properties = new Properties();
+		properties.setProperty("hierarchyFields", "countyDistrict:District");
+		rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
+		
+		rd.setName("HIV-Indicator Report-Quarterly");
+		
+		rd.addDataSetDefinition(createQuarterlyLocationDataSet(),
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+			
+		
+		h.saveReportDefinition(rd);
+		
+		
+		ReportDesign monthlyDesign = h.createRowPerPatientXlsOverviewReportDesign(rd,"HIVIndicator.xls", "HIVIndicators", null);
+		Properties monthlyProps = new Properties();
+		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
+		
+		monthlyDesign.setProperties(monthlyProps);
+		h.saveReportDesign(monthlyDesign);		
+		
 		
 	}
 	
@@ -121,30 +150,13 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		
 	}
 	
-	private ReportDefinition createCrossSiteReportDefinition() {
-		// PIH Quarterly Cross Site Indicator Report
-		ReportDefinition rd = new ReportDefinition();
-		rd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		rd.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
-		Properties properties = new Properties();
-		properties.setProperty("hierarchyFields", "countyDistrict:District");
-		rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
-		
-		rd.setName("HIV-Indicator Report-Quarterly");
-		
-		rd.addDataSetDefinition(createDataSet(),
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
-		
-		h.saveReportDefinition(rd);
-		
-		return rd;
-	}
 	
-	private LocationHierachyIndicatorDataSetDefinition createDataSet() {
+	public LocationHierachyIndicatorDataSetDefinition createQuarterlyLocationDataSet() {
 		
-		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(createBaseDataSet());
-		ldsd.setName("ID_Program_Quarterly_Individual_District_Indicator Data Set");
+		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
+		        createQuarterlyEncounterBaseDataSet());
+		ldsd.addBaseDefinition(createQuarterlyBaseDataSet());
+		ldsd.setName("Encounter Quarterly Data Set");
 		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
 		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
@@ -152,19 +164,95 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		return ldsd;
 	}
 	
-	private CohortIndicatorDataSetDefinition createBaseDataSet() {
+	private EncounterIndicatorDataSetDefinition createQuarterlyEncounterBaseDataSet() {
+		
+		EncounterIndicatorDataSetDefinition eidsd = new EncounterIndicatorDataSetDefinition();
+		
+		eidsd.setName("eidsd");
+		eidsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		eidsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		
+		createQuarterlyIndicators(eidsd);
+		return eidsd;
+	}
+	
+	private void createQuarterlyIndicators(EncounterIndicatorDataSetDefinition dsd) {
+		
+		//adults
+		
+		SqlEncounterQuery adultHivVisits=new SqlEncounterQuery();
+		adultHivVisits.setName("adultHivVisits");
+		adultHivVisits.setQuery("select e.encounter_id from encounter e, person p where e.encounter_type in ("+pediHIVEncounterType.getEncounterTypeId()+","+adultHIVEncounterType.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) >=5475 and e.voided=0 and p.voided=0");
+		adultHivVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
+		adultHivVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		
+		EncounterIndicator adultHivVisitsIndicator = new EncounterIndicator();
+		adultHivVisitsIndicator.setName("adultHivVisitsIndicator");
+		adultHivVisitsIndicator.setEncounterQuery(new Mapped<EncounterQuery>(adultHivVisits,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
+		
+		dsd.addColumn(adultHivVisitsIndicator);	
+		
+		
+		SqlEncounterQuery adultHivVisitsWithWeight=new SqlEncounterQuery();
+		adultHivVisitsWithWeight.setName("adultHivVisitsWithWeight");
+		adultHivVisitsWithWeight.setQuery("select e.encounter_id from encounter e,obs o, person p where e.encounter_id=o.encounter_id and o.concept_id="+weightConcept.getConceptId()+" and e.encounter_type in ("+pediHIVEncounterType.getEncounterTypeId()+","+adultHIVEncounterType.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) >=5475 and e.voided=0 and p.voided=0 and o.voided=0");
+		//adultHivVisitsWithWeight.setQuery("select e.encounter_id from encounter e,obs o, person p where e.encounter_id=o.encounter_id and o.concept_id=5089 and e.encounter_type in (24,25) and e.encounter_datetime >= '2013-02-01' and e.encounter_datetime <= '2013-02-12' and p.person_id = e.patient_id and DATEDIFF('2013-02-12' , p.birthdate) >=5475 and e.voided=0 and p.voided=0 and o.voided=0");
+		adultHivVisitsWithWeight.addParameter(new Parameter("startDate", "startDate", Date.class));
+		adultHivVisitsWithWeight.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		
+		EncounterIndicator adultHivVisitsWithWeightIndicator = new EncounterIndicator();
+		adultHivVisitsWithWeightIndicator.setName("adultHivVisitsWithWeightIndicator");
+		adultHivVisitsWithWeightIndicator.setEncounterQuery(new Mapped<EncounterQuery>(adultHivVisitsWithWeight,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
+		
+		dsd.addColumn(adultHivVisitsWithWeightIndicator);
+		
+		
+		//pedi
+		
+		SqlEncounterQuery pediHivVisits=new SqlEncounterQuery();
+		pediHivVisits.setName("pediHivVisits");
+		pediHivVisits.setQuery("select e.encounter_id from encounter e, person p where e.encounter_type in ("+pediHIVEncounterType.getEncounterTypeId()+","+adultHIVEncounterType.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) < 5475 and e.voided=0 and p.voided=0");
+		pediHivVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
+		pediHivVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		
+		EncounterIndicator pediHivVisitsIndicator = new EncounterIndicator();
+		pediHivVisitsIndicator.setName("pediHivVisitsIndicator");
+		pediHivVisitsIndicator.setEncounterQuery(new Mapped<EncounterQuery>(pediHivVisits,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
+		
+		dsd.addColumn(pediHivVisitsIndicator);	
+		
+		SqlEncounterQuery pediHivVisitsWithWeight=new SqlEncounterQuery();
+		pediHivVisitsWithWeight.setName("pediHivVisitsWithWeight");
+		pediHivVisitsWithWeight.setQuery("select e.encounter_id from encounter e,obs o, person p where e.encounter_id=o.encounter_id and o.concept_id="+weightConcept.getConceptId()+" and e.encounter_type in ("+pediHIVEncounterType.getEncounterTypeId()+","+adultHIVEncounterType.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) < 5475 and e.voided=0 and p.voided=0");
+		pediHivVisitsWithWeight.addParameter(new Parameter("startDate", "startDate", Date.class));
+		pediHivVisitsWithWeight.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		
+		EncounterIndicator pediHivVisitsWithWeightIndicator = new EncounterIndicator();
+		pediHivVisitsWithWeightIndicator.setName("pediHivVisitsWithWeightIndicator");
+		pediHivVisitsWithWeightIndicator.setEncounterQuery(new Mapped<EncounterQuery>(pediHivVisitsWithWeight,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
+		
+		dsd.addColumn(pediHivVisitsWithWeightIndicator);	
+		
+	}
+	
+	// create monthly cohort Data set
+	
+	private CohortIndicatorDataSetDefinition createQuarterlyBaseDataSet() {
 		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
-		dsd.setName("ID_Program_Quarterly_Individual_District_Indicator Cohort Data Set");
+		dsd.setName("Quarterly Cohort Data Set");
 		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
 		
-		createIndicators(dsd);
+		createQuarterlyIndicators(dsd);
 		return dsd;
 	}
-	
-	private void createIndicators(CohortIndicatorDataSetDefinition dsd) {
 		
-		// HIV patients
+	private void createQuarterlyIndicators(CohortIndicatorDataSetDefinition dsd) {
+// HIV patients
 		
 		InProgramCohortDefinition inAnyHIVProgram = Cohorts.createInProgramParameterizableByDate(
 		    "HIVQ: In All HIV Programs", hivPrograms, "onOrBefore");
@@ -1557,6 +1645,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                     new Mapped(nine, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
         dsd.addColumn("VQ4C", "Actively Eligible with Viral load Under 15",
                     new Mapped(ten, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+		
 	}
 	
 	private void setUpProperties() {
@@ -1598,6 +1687,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		onOrAfterOnOrBefore.add("onOrBefore");
 		
 		adultHIVEncounterType = gp.getEncounterType(GlobalPropertiesManagement.ADULT_FLOWSHEET_ENCOUNTER);
+		pediHIVEncounterType = gp.getEncounterType(GlobalPropertiesManagement.PEDI_FLOWSHEET_ENCOUNTER);
 		exposedInfantEncountertype = gp.getEncounterType(GlobalPropertiesManagement.EXPOSED_INFANT_ENCOUNTER);
 		
 		feedingWorkflowStates.add(gp.getProgramWorkflowState(
@@ -1619,6 +1709,5 @@ public class SetupIDProgramQuarterlyIndicatorReport {
 		usingCondoms= gp.getConcept(GlobalPropertiesManagement.USING_CONDOMS);
 		naturalFamilyPlanning= gp.getConcept(GlobalPropertiesManagement.NATURAL_FAMILY_PLANNING);	
 		viralLoadConcept = gp.getConcept(GlobalPropertiesManagement.VIRAL_LOAD_TEST);
-		
 	}
 }
