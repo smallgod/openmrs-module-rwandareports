@@ -793,7 +793,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("cd4_art_start", cd4, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
 		
 		//cd4_perc_art_start - CD4 percent at ART start
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("cd4_perc_art_start", cd4Perc, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("cd4%_art_start", cd4Perc, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
 		
 		//weight_art_start - weight at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("weight_art_start", weight, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
