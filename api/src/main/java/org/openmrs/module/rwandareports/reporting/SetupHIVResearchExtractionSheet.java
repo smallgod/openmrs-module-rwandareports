@@ -736,7 +736,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueID"), new HashMap<String, Object>());
 		
 		//hiv_pos_date - Date of HIV diagnosis
-		dataSetDefinition.addColumn(RowPerPatientColumns.getHIVDiagnosisDate("diagnosis"), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getHIVDiagnosisDate("diagnosis", "yyyy-MM-dd"), new HashMap<String, Object>());
 		
 		//art_start_date - ART start date
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugOrderForStartOfARTBeforeDate("art_start_date", "yyyy-MM-dd"), mappings);
