@@ -1327,10 +1327,10 @@ public class RowPerPatientColumns {
 		return getCurrentDrugOrders(name, drugFilter);
 	}
 	
-	public static MostRecentObservation getHIVDiagnosisDate(String name) {
+	public static MostRecentObservation getHIVDiagnosisDate(String name, String dateFormat) {
 		
 		MostRecentObservation diagnosis = getMostRecent(name, gp.getConcept(GlobalPropertiesManagement.HIV_DIAGNOSIS_DATE),
-		    "yyyy-mm-dd");
+		    dateFormat);
 		
 		return diagnosis;
 	}
