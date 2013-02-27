@@ -131,6 +131,21 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		monthlyRd.addDataSetDefinition(createMonthlyLocationDataSet(),
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
+        // Quarterly Report Definition: Start
+		
+		ReportDefinition quarterlyRd = new ReportDefinition();
+		quarterlyRd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		quarterlyRd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		
+		quarterlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
+		
+		quarterlyRd.setName("NCD-Heart Failure Indicator Report-Quarterly");
+		
+		quarterlyRd.addDataSetDefinition(createQuarterlyLocationDataSet(),
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+		
+		// Quarterly Report Definition: End
+		
 		ProgramEnrollmentCohortDefinition patientEnrolledInHF = new ProgramEnrollmentCohortDefinition();
 		patientEnrolledInHF.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
 		patientEnrolledInHF.setPrograms(HFPrograms);
@@ -138,7 +153,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		monthlyRd.setBaseCohortDefinition(patientEnrolledInHF,
 		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
 		
+		quarterlyRd.setBaseCohortDefinition(patientEnrolledInHF,
+			    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
+		
 		h.saveReportDefinition(monthlyRd);
+		h.saveReportDefinition(quarterlyRd);
 		
 		ReportDesign monthlyDesign = h.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
 		    "HF_Monthly_Indicator_Report.xls", "Heart Failure Indicator Monthly Report (Excel)", null);
@@ -147,6 +166,14 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		monthlyDesign.setProperties(monthlyProps);
 		h.saveReportDesign(monthlyDesign);
+		
+		ReportDesign quarterlyDesign = h.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
+			    "HF_Quarterly_Indicator_Report.xls", "Heart Failure Quarterly Indicator Report (Excel)", null);
+			Properties quarterlyProps = new Properties();
+			quarterlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
+			
+			quarterlyDesign.setProperties(quarterlyProps);
+			h.saveReportDesign(quarterlyDesign);
 		
 	}
 	
@@ -215,6 +242,78 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
 		
 		return ldsd;
+	}
+	
+  public LocationHierachyIndicatorDataSetDefinition createQuarterlyLocationDataSet() {
+		
+		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
+		        createEncounterQuarterlyBaseDataSet());
+		ldsd.addBaseDefinition(createQuarterlyBaseDataSet());
+		ldsd.setName("Encounter Quarterly Data Set");
+		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
+		
+		return ldsd;
+	}
+  
+  private EncounterIndicatorDataSetDefinition createEncounterQuarterlyBaseDataSet() {
+		
+		EncounterIndicatorDataSetDefinition eidsd = new EncounterIndicatorDataSetDefinition();
+		
+		eidsd.setName("eidsd");
+		eidsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		eidsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		
+		createQuarterlyIndicators(eidsd);
+		return eidsd;
+	}
+  
+//create quarterly cohort Data set
+	private CohortIndicatorDataSetDefinition createQuarterlyBaseDataSet() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("Quarterly Cohort Data Set");
+		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		createQuarterlyIndicators(dsd);
+		return dsd;
+	}
+	
+	private void createQuarterlyIndicators(EncounterIndicatorDataSetDefinition dsd) {
+		//=======================================================================
+		//  A1: Total # of patient visits to Hypertension clinic in the last quarter
+		//==================================================================
+        SqlEncounterQuery patientVisitsToHFClinic = new SqlEncounterQuery();
+		
+		patientVisitsToHFClinic.setQuery("select e.encounter_id from encounter e where e.encounter_type="
+		        + heartFailureEncounterType.getEncounterTypeId()
+		        + " and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0");
+		patientVisitsToHFClinic.setName("patientVisitsToHFClinic");
+		patientVisitsToHFClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientVisitsToHFClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		EncounterIndicator patientVisitsToHFClinicQuarterlyIndicator = new EncounterIndicator();
+		patientVisitsToHFClinicQuarterlyIndicator.setName("patientVisitsToHFClinicQuarterlyIndicator");
+		patientVisitsToHFClinicQuarterlyIndicator.setEncounterQuery(new Mapped<EncounterQuery>(patientVisitsToHFClinic,
+		        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${endDate-1m+1d}")));
+		
+		dsd.addColumn(patientVisitsToHFClinicQuarterlyIndicator);
+		
+	}
+	
+	private void createQuarterlyIndicators(CohortIndicatorDataSetDefinition dsd) {
+		// =======================================================
+		// A2: Total # of patients seen in the last quarter
+		// =======================================================
+		EncounterCohortDefinition patientSeen = Cohorts.createEncounterParameterizedByDate("Patients seen",
+		    onOrAfterOnOrBefore, heartFailureEncounterType);
+		
+		CohortIndicator patientsSeenIndicator = Indicators.newCountIndicator("patientsSeenIndicator", patientSeen,
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		dsd.addColumn("A2Q", "Total # of patients seen in the last quarter", new Mapped(patientsSeenIndicator,
+		        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
 	}
 	
 	private EncounterIndicatorDataSetDefinition createMonthlyEncounterBaseDataSet() {

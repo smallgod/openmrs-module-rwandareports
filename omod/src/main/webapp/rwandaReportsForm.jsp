@@ -337,7 +337,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_heartFailureLateVisit.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td>NCD-Heart Failure Report-Monthly</td>
+<td>NCD-Heart Failure Indicator Report</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_heartFailureQuarterlyAndMonthlyReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_heartFailureQuarterlyAndMonthlyReport.form" onclick=msgrem(this)>Remove</a></td>
