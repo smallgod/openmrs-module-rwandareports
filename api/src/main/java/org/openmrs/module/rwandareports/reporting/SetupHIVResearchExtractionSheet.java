@@ -24,6 +24,7 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfFirstDrugOrderStartedRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfWorkflowStateChange;
 import org.openmrs.module.rwandareports.definition.ArtSwitch;
 import org.openmrs.module.rwandareports.definition.StartOfArt;
@@ -727,8 +728,7 @@ public class SetupHIVResearchExtractionSheet {
 		mappings.put("endDate", "${endDate}");
 		
 		//Add Columns
-		DateOfWorkflowStateChange artStart = RowPerPatientColumns.getDateOfWorkflowStateChange("art_prog_start_date", art, "endDate", "yyyy-MM-dd");
-		
+		DateOfFirstDrugOrderStartedRestrictedByConceptSet artStart = RowPerPatientColumns.getDateOfDrugOrderForStartOfARTBeforeDate("artStart", "yyyy-MM-dd");
 		//IMB Id
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAnyId("IMB Id"), new HashMap<String, Object>());
 	
@@ -745,7 +745,8 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfAllHIVEnrolment("hiv_care_start_date", "yyyy-MM-dd"), new HashMap<String, Object>());
 		
 		//art_prog_start_date - ART program enrollment date
-		dataSetDefinition.addColumn(artStart, mappings);
+		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfWorkflowStateChange("art_prog_start_date", art, "endDate", "yyyy-MM-dd"), mappings);
 		
 		//transfer - Transfer In
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("transfer", RowPerPatientColumns.getDateOfProgramEnrolment("transferEnroll", externalHiv, "yyyy-MM-dd")), new HashMap<String, Object>());
@@ -850,7 +851,7 @@ public class SetupHIVResearchExtractionSheet {
 		mappings.put("endDate", "${endDate}");
 		
 		//Add Columns
-		DateOfWorkflowStateChange artStart = RowPerPatientColumns.getDateOfWorkflowStateChange("art_prog_start_date", art, "endDate", "yyyy-MM-dd");
+		DateOfFirstDrugOrderStartedRestrictedByConceptSet artStart = RowPerPatientColumns.getDateOfDrugOrderForStartOfARTBeforeDate("artStart", "yyyy-MM-dd");
 		
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
@@ -1150,7 +1151,7 @@ public class SetupHIVResearchExtractionSheet {
 		mappings.put("endDate", "${endDate}");
 		
 		//Add Columns
-		DateOfWorkflowStateChange artStart = RowPerPatientColumns.getDateOfWorkflowStateChange("art_prog_start_date", art, "endDate", "yyyy-MM-dd");
+		DateOfFirstDrugOrderStartedRestrictedByConceptSet artStart = RowPerPatientColumns.getDateOfDrugOrderForStartOfARTBeforeDate("artStart", "yyyy-MM-dd");
 		
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
@@ -1320,7 +1321,7 @@ public class SetupHIVResearchExtractionSheet {
 		mappings.put("endDate", "${endDate}");
 		
 		//Add Columns
-		DateOfWorkflowStateChange artStart = RowPerPatientColumns.getDateOfWorkflowStateChange("art_prog_start_date", art, "endDate", "yyyy-MM-dd");
+		DateOfFirstDrugOrderStartedRestrictedByConceptSet artStart = RowPerPatientColumns.getDateOfDrugOrderForStartOfARTBeforeDate("artStart", "yyyy-MM-dd");
 		
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
