@@ -28,6 +28,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.DateDiffType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfAllProgramEnrolment;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfFirstDrugOrderStartedRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfMostRecentEncounterOfType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfObsAfterDateOfOtherDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfPatientData;
@@ -1120,6 +1121,27 @@ public class RowPerPatientColumns {
 		return initial;
 	}
 	
+	public static DateOfFirstDrugOrderStartedRestrictedByConceptSet getDateOfFirstDrugOrderStartedRestrictedByConceptSet(String name,
+	                                                                                                         Concept conceptSet,
+	                                                                                                         String parameterName,
+	                                                                                                         String dateFormat) {
+		DateOfFirstDrugOrderStartedRestrictedByConceptSet startDateDrugs = getDateOfFirstDrugOrderStartedRestrictedByConceptSet(name,
+		    conceptSet);
+		startDateDrugs.addParameter(new Parameter(parameterName, parameterName, Date.class));
+		if (dateFormat != null) {
+			startDateDrugs.setDateFormat(dateFormat);
+		}
+		return startDateDrugs;
+	}
+	
+	public static DateOfFirstDrugOrderStartedRestrictedByConceptSet getDateOfFirstDrugOrderStartedRestrictedByConceptSet(String name,
+	                                                                                                         Concept conceptSet) {
+		DateOfFirstDrugOrderStartedRestrictedByConceptSet startDateDrugs = new DateOfFirstDrugOrderStartedRestrictedByConceptSet();
+		startDateDrugs.setName(name);
+		startDateDrugs.setDrugConceptSetConcept(conceptSet);
+		return startDateDrugs;
+	}
+	
 	public static FirstDrugOrderStartedRestrictedByConceptSet getDrugOrderForStartOfART(String name) {
 		return getFirstDrugOrderStartedRestrictedByConceptSet(name, gp.getConcept(GlobalPropertiesManagement.ART_DRUGS_SET));
 	}
@@ -1132,6 +1154,12 @@ public class RowPerPatientColumns {
 	public static FirstDrugOrderStartedRestrictedByConceptSet getDrugOrderForStartOfARTBeforeDate(String name,
 	                                                                                              String dateFormat) {
 		return getFirstDrugOrderStartedRestrictedByConceptSet(name, gp.getConcept(GlobalPropertiesManagement.ART_DRUGS_SET),
+		    "endDate", dateFormat);
+	}
+	
+	public static DateOfFirstDrugOrderStartedRestrictedByConceptSet getDateOfDrugOrderForStartOfARTBeforeDate(String name,
+	                                                                                              String dateFormat) {
+		return getDateOfFirstDrugOrderStartedRestrictedByConceptSet(name, gp.getConcept(GlobalPropertiesManagement.ART_DRUGS_SET),
 		    "endDate", dateFormat);
 	}
 	
