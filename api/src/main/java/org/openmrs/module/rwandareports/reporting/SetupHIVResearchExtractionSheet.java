@@ -892,8 +892,6 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_art_start", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerBeforeEndDate("OI_tuberculoma_art_start", oiConcepts, tuberculoma, 90, 30, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_art_start - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_art_start", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerBeforeEndDate("OI_TBent_art_start", oiConcepts, tuberculousEnteritis, 90, 30, artStart, "yyyy-MM-dd")), mappings);
-		//OI_anaph_art_start - anaphylaxis	
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_anaph_art_start", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerBeforeEndDate("OI_anaph_art_start", oiConcepts, anaphylaxis, 90, 30, artStart, "yyyy-MM-dd")), mappings);
 		
 		//6 month Variable
 		//OI_pneu_06m - acute pneumonia presumed bacterial
@@ -932,10 +930,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_06m", oiConcepts, tuberculoma, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_06m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_06m", oiConcepts, tuberculousEnteritis, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
-		//OI_anaph_06m	 - anaphylaxis	
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_anaph_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_anaph_06m", oiConcepts, anaphylaxis, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
-		//OI_rash_mild_06m	 - mild rash	
-		//TODO
+		
 		
 		//12 month variables	
 		//OI_pneu_12m - acute pneumonia presumed bacterial
@@ -974,9 +969,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_12m", oiConcepts, tuberculoma, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_12m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_12m", oiConcepts, tuberculousEnteritis, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
-		//OI_anaph_12m	 - anaphylaxis	
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_anaph_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_anaph_12m", oiConcepts, anaphylaxis, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
-	
+		
 		//24 month variables
 		//OI_pneu_24m - acute pneumonia presumed bacterial
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_pneu_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_pneu_24m", oiConcepts, pneumonia, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
@@ -1016,8 +1009,6 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_24m", oiConcepts, tuberculoma, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_24m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_24m", oiConcepts, tuberculousEnteritis, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
-		//OI_anaph_24m	 - anaphylaxis	
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_anaph_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_anaph_24m", oiConcepts, anaphylaxis, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
 		
 		//36 month variables
 		//OI_pneu_36m - acute pneumonia presumed bacterial
@@ -1056,8 +1047,6 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_36m", oiConcepts, tuberculoma, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_36m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_36m", oiConcepts, tuberculousEnteritis, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
-		//OI_anaph_36m	 - anaphylaxis	
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_anaph_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_anaph_36m", oiConcepts, anaphylaxis, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
 		
 		//48 month variables
 		//OI_pneu_48m - acute pneumonia presumed bacterial
@@ -1096,8 +1085,6 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_48m", oiConcepts, tuberculoma, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_48m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_48m", oiConcepts, tuberculousEnteritis, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
-		//OI_anaph_48m	 - anaphylaxis	
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_anaph_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_anaph_48m", oiConcepts, anaphylaxis, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
 		
 		
 		//60 month variables
@@ -1139,8 +1126,6 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_60m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_60m", oiConcepts, tuberculoma, 30, 30, 60, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_60m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_60m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_60m", oiConcepts, tuberculousEnteritis, 30, 30, 60, artStart, "yyyy-MM-dd")), mappings);
-		//OI_anaph_60m	 - anaphylaxis	
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_anaph_60m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_anaph_60m", oiConcepts, anaphylaxis, 30, 30, 60, artStart, "yyyy-MM-dd")), mappings);
 	}
 	
 	private void addSEColumns(RowPerPatientDataSetDefinition dataSetDefinition) {
@@ -1157,6 +1142,8 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
 		
 		//6 month Variables
+		//SE_anaph_06m - anaphylaxis	
+		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_06m", sideEffects, anaphylaxis, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_06m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_06m", sideEffects, rashModerate, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_sev_06m - severe rash
@@ -1182,7 +1169,10 @@ public class SetupHIVResearchExtractionSheet {
 		//SE_other_06m - other
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_06m", sideEffects, nonCoded, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
 		
+		
 		//12 month variables
+		//SE_anaph_12m - anaphylaxis	
+		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_12m", sideEffects, anaphylaxis, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_12m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_12m", sideEffects, rashModerate, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_sev_12m - severe rash
@@ -1209,6 +1199,8 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_12m", sideEffects, nonCoded, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
 	
 		//24 month variables
+		//SE_anaph_24m - anaphylaxis	
+		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_24m", sideEffects, anaphylaxis, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_24m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_24m", sideEffects, rashModerate, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_sev_24m - severe rash
@@ -1235,6 +1227,8 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_24m", sideEffects, nonCoded, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
 		
 		//36 month variables
+		//SE_anaph_36m - anaphylaxis	
+		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_36m", sideEffects, anaphylaxis, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_36m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_36m", sideEffects, rashModerate, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_sev_36m - severe rash
@@ -1261,6 +1255,8 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_36m", sideEffects, nonCoded, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
 		
 		//48 month variables
+		//SE_anaph_48m - anaphylaxis	
+		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_48m", sideEffects, anaphylaxis, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_48m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_48m", sideEffects, rashModerate, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_sev_48m - severe rash
@@ -1287,6 +1283,8 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_48m", sideEffects, nonCoded, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
 		
 		//60 month variables
+		//SE_anaph_60m - anaphylaxis	
+		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_60m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_60m", sideEffects, anaphylaxis, 30, 30, 60, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_60m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_60m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_60m", sideEffects, rashModerate, 30, 30, 60, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_sev_60m - severe rash
