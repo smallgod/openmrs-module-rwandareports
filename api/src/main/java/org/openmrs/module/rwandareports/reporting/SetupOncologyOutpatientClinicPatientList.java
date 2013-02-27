@@ -6,9 +6,12 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.openmrs.Concept;
+import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -17,14 +20,11 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rwandareports.dataset.comparator.ChemotherapyDataSetRowComparator;
-import org.openmrs.module.rwandareports.definition.UpcomingChemotherapyCohortDefinition;
-import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupChemotherapyExpectedPatientList {
+public class SetupOncologyOutpatientClinicPatientList {
 	
 	Helper h = new Helper();
 	
@@ -35,7 +35,7 @@ public class SetupChemotherapyExpectedPatientList {
 
 	private ProgramWorkflow diagnosis;
 	
-	private Concept chemotherapy;
+	private Concept scheduledVisit;
 	
 	private Concept telephone;
 	
@@ -47,8 +47,8 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyExpectedPatientList.xls",
-		    "ChemotherapyPatientList.xls_", null);
+		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "OncologyOutpatientClinicConsult.xls",
+		    "OncologyOutpatientClinicConsult.xls_", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
@@ -60,25 +60,20 @@ public class SetupChemotherapyExpectedPatientList {
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("ChemotherapyPatientList.xls_".equals(rd.getName())) {
+			if ("OncologyOutpatientClinicConsult.xls_".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Chemotherapy Expected Patient List");
+		h.purgeReportDefinition("ONC-Oncology Outpatient Clinic Patient List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Chemotherapy Expected Patient List");
+		reportDefinition.setName("ONC-Oncology Outpatient Clinic Patient List");
 				
-		UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
-		baseCohort.setChemotherapyIndication(chemotherapy);
-		baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
-		baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
-		
-		reportDefinition.setBaseCohortDefinition(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));
+		reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));	
+		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		createDataSetDefinition(reportDefinition);
 		
 		h.saveReportDefinition(reportDefinition);
@@ -89,26 +84,26 @@ public class SetupChemotherapyExpectedPatientList {
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		// Create new dataset definition 
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
-		dataSetDefinition.setName("Chemotherapy Patient List");
+		dataSetDefinition.setName("Chemotherapy Missed List");
 		
-		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
-		
-		SortCriteria sortCriteria = new SortCriteria();
-		sortCriteria.addSortElement("regimenDate", SortDirection.ASC);
-		dataSetDefinition.setSortCriteria(sortCriteria);
 		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		
+		SortCriteria sortCriteria = new SortCriteria();
+		sortCriteria.addSortElement("nextRDV", SortDirection.ASC);
+		dataSetDefinition.setSortCriteria(sortCriteria);
+		
+		//Add filters
+		dataSetDefinition.addFilter(Cohorts.createDateObsCohortDefinition(scheduledVisit, RangeComparator.GREATER_EQUAL, RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil.createParameterMappings("value2=${endDate+7d},value1=${endDate}"));
 		
 		//Add Columns
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", scheduledVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
+		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
-		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		
+		 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone", telephone, null), new HashMap<String, Object>());
@@ -132,7 +127,7 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		diagnosis = gp.getProgramWorkflow(GlobalPropertiesManagement.DIAGNOSIS_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
-		chemotherapy = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY);
+		scheduledVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
 		
 		telephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
 		

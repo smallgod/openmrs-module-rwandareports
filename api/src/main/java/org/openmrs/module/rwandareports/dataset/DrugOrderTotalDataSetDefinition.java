@@ -1,5 +1,8 @@
 package org.openmrs.module.rwandareports.dataset;
 
+import java.util.Date;
+import java.util.List;
+
 import org.openmrs.Concept;
 import org.openmrs.module.reporting.dataset.definition.BaseDataSetDefinition;
 import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
@@ -8,40 +11,39 @@ import org.openmrs.module.reporting.definition.configuration.ConfigurationProper
 /**
  *
  */
-public class ExtendedDrugOrderDataSetDefinition extends BaseDataSetDefinition {
+public class DrugOrderTotalDataSetDefinition extends BaseDataSetDefinition {
 	
 	
 	//***** PROPERTIES *****
 	
 	@ConfigurationProperty
-	String drugRegimen = null;
+	Date asOfDate = null;
 	
 	@ConfigurationProperty
-	Concept indication = null;
-	
+	List<Concept> indication = null;
 	
 	//***** CONSTRUCTORS *****
 	
 	/**
 	 * Default Constructor
 	 */
-	public ExtendedDrugOrderDataSetDefinition() {
+	public DrugOrderTotalDataSetDefinition() {
 		
 	}
-	
-    public String getDrugRegimen() {
-    	return drugRegimen;
+
+    public Date getAsOfDate() {
+    	return asOfDate;
     }
-    
-    public void setDrugRegimen(String drugRegimen) {
-    	this.drugRegimen = drugRegimen;
+	
+    public void setAsOfDate(Date asOfDate) {
+    	this.asOfDate = asOfDate;
     }
 
-	public Concept getIndication() {
+    public List<Concept> getIndication() {
     	return indication;
     }
-
-    public void setIndication(Concept indication) {
+    
+    public void setIndication(List<Concept> indication) {
     	this.indication = indication;
     }
 }

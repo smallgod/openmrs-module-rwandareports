@@ -17,14 +17,12 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rwandareports.dataset.comparator.ChemotherapyDataSetRowComparator;
-import org.openmrs.module.rwandareports.definition.UpcomingChemotherapyCohortDefinition;
-import org.openmrs.module.rwandareports.filter.DateFormatFilter;
+import org.openmrs.module.rwandareports.definition.MissedChemotherapyCohortDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupChemotherapyExpectedPatientList {
+public class SetupMissedChemotherapyPatientList {
 	
 	Helper h = new Helper();
 	
@@ -47,8 +45,8 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyExpectedPatientList.xls",
-		    "ChemotherapyPatientList.xls_", null);
+		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "MissedChemotherapyPatientList.xls",
+		    "MissedChemotherapyPatientList.xls_", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
@@ -60,24 +58,23 @@ public class SetupChemotherapyExpectedPatientList {
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("ChemotherapyPatientList.xls_".equals(rd.getName())) {
+			if ("MissedChemotherapyPatientList.xls_".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Chemotherapy Expected Patient List");
+		h.purgeReportDefinition("ONC- Chemotherapy Missed Patient List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Chemotherapy Expected Patient List");
+		reportDefinition.setName("ONC-Chemotherapy Missed Patient List");
 				
-		UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
+		MissedChemotherapyCohortDefinition baseCohort = new MissedChemotherapyCohortDefinition();
 		baseCohort.setChemotherapyIndication(chemotherapy);
-		baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
-		baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
+		baseCohort.addParameter(new Parameter("beforeDate", "beforeDate", Date.class));
 		
-		reportDefinition.setBaseCohortDefinition(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
+		reportDefinition.setBaseCohortDefinition(baseCohort,ParameterizableUtil.createParameterMappings("beforeDate=${endDate-1d}"));
 		reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
@@ -89,7 +86,7 @@ public class SetupChemotherapyExpectedPatientList {
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		// Create new dataset definition 
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
-		dataSetDefinition.setName("Chemotherapy Patient List");
+		dataSetDefinition.setName("Chemotherapy Missed List");
 		
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		
@@ -105,9 +102,9 @@ public class SetupChemotherapyExpectedPatientList {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
-		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
+		 
+		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate-6m},untilDate=${endDate-1d}"));
+		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate-6m},untilDate=${endDate-1d}"));
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 		

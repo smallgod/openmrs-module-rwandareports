@@ -15,6 +15,10 @@ package org.openmrs.module.rwandareports.web.controller;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,8 +81,54 @@ public class RegimenHeaderPortletController extends PortletController {
 		
 		if(regimens.size() > 0)
 		{
-			model.put("regimens", regimens);
+			List<RegimenDTO> regimenDTOs = new ArrayList<RegimenDTO>(); 
+			for(DrugRegimen reg: regimens)
+			{
+				RegimenDTO dto = new RegimenDTO();
+				dto.setDrugRegimen(reg);
+				dto.setStartDates(getRegimenCycleDays(reg));
+				regimenDTOs.add(dto);
+			}
+			model.put("regimens", regimenDTOs);
 		}
     	model.put("patient", patient);
+	}
+	
+	private List<StartDateDTO> getRegimenCycleDays(DrugRegimen regimen)
+	{
+		List<Concept> iv = gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT);
+		
+		Set<Date> ivDates = new HashSet<Date>();
+		for(ExtendedDrugOrder order: regimen.getMembers())
+		{
+			if(order.getRoute() != null && iv.contains(order.getRoute()))
+			{
+				ivDates.add(order.getStartDate());
+			}
+		}
+		
+		List<StartDateDTO> cycleDays = new ArrayList<StartDateDTO>();
+		for(Date date: ivDates)
+		{
+			long cycleDay = date.getTime() - regimen.getFirstDrugOrderStartDate().getTime();
+			if(cycleDay > 0)
+			{
+				cycleDay = cycleDay/86400000;
+			}
+			
+			StartDateDTO dto = new StartDateDTO();
+			dto.setStartDate(date);
+			dto.setStartDay((int)cycleDay);
+			cycleDays.add(dto);
+			Collections.sort(cycleDays, new Comparator<StartDateDTO>() {
+
+				@Override
+                public int compare(StartDateDTO o1, StartDateDTO o2) {
+	                return o1.getStartDay().compareTo(o2.getStartDay());
+                }
+				
+			});
+		}
+		return cycleDays;
 	}
 }

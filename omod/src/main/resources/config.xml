@@ -2514,10 +2514,45 @@
 	</globalProperty>
 	
 	<globalProperty>
+		<property>reports.chemoTreatmentSummaryForm</property>
+		<defaultValue>dbd15612-cb86-49c1-ad7f-8573002ce0d1</defaultValue>
+		<description>The form for chemotherapy treatment summary form</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>reports.bactrimConcept</property>
 		<defaultValue>3cd51772-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>The concept id for Bactrim</description>
 	</globalProperty>
 	
+	<globalProperty>
+		<property>reports.secondaryTelephoneNumberConcept</property>
+		<defaultValue>55bd1ac5-d8aa-4fab-abb3-eb92c44e23e1</defaultValue>
+		<description>The concept id for the secondary telephone number</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologyOutpatientScheduledVisit</property>
+		<defaultValue>c224989e-4d14-4880-b6b4-8208d6a1b786</defaultValue>
+		<description>The concept id for the scheduled outpatient clinic visit</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologyTestScheduledVisit</property>
+		<defaultValue>a44a2203-aa0f-4c7c-9aba-d7778a674e9b</defaultValue>
+		<description>The concept id for the scheduled oncology test or biopsy</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.tissueSite</property>
+		<defaultValue>5e1eca70-d380-492a-82c2-fa89c4924b7d</defaultValue>
+		<description>The concept id for the scheduled tissue biopsy site</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologyBloodDiagnostic</property>
+		<defaultValue>5e1eca70-d380-492a-82c2-fa89c4924b7d</defaultValue>
+		<description>The concept id for the oncology blood diagnostic test</description>
+	</globalProperty>
 	
 </module>

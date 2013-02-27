@@ -559,8 +559,6 @@ public class GlobalPropertiesManagement {
 	
 	public final static String TRANSFERRED_OUT_STATE="reports.patienttransferedoutstate";
 	
-	
-	
 	//Identifiers
 	public final static String IMB_IDENTIFIER = "reports.imbIdIdentifier"; 
 	
@@ -571,8 +569,9 @@ public class GlobalPropertiesManagement {
 	public final static String INVALID_IMB_IDENTIFIER = "reports.invalidimbIdIdentifier"; 
 	
 	//Concepts
-	
 	public final static String TELEPHONE_NUMBER_CONCEPT = "reports.telephoneNumberConcept"; 
+	
+	public final static String SECONDARY_TELEPHONE_NUMBER_CONCEPT = "reports.secondaryTelephoneNumberConcept"; 
 	
 	public final static String WEIGHT_CONCEPT = "reports.weightConcept"; 
 	
@@ -790,6 +789,14 @@ public class GlobalPropertiesManagement {
 	
 	public final static String LIPODISTROPHY = "reports.lipodistrophy";
 	
+	public final static String ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT = "reports.oncologyOutpatientScheduledVisit";
+	
+	public final static String ONCOLOGY_SCHEDULED_TEST_VISIT = "reports.oncologyTestScheduledVisit";
+	
+	public final static String BIOPSY_TEST_SITE = "reports.tissueSite";
+	
+	public final static String ONCOLOGY_BLOOD_DIAGNOSTIC_TEST = "reports.oncologyBloodDiagnostic";
+	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
 	public static final String VCT_PROGRAM = "reports.vctProgram";							
@@ -920,6 +927,8 @@ public class GlobalPropertiesManagement {
     public final static String HEARTFAILURE_FLOW_VISIT="reports.heartfailureFlowVisit";
 	
 	public final static String HEARTFAILURE_DDB = "reports.heartfailureDDBformId";
+	
+	public final static String CHEMOTHERAPY_TREATMENT_SUMMARY_FORM = "reports.chemoTreatmentSummaryForm";
 	
 	//Drug concepts
 	public final static String FUROSEMIDE= "reports.furosemide";

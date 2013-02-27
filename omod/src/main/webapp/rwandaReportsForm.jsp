@@ -343,7 +343,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_heartFailureQuarterlyAndMonthlyReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="2" class="tabletd">Oncology</td>
+<td rowspan="6" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -354,6 +354,30 @@ $(document).ready(function(){
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_chemotherapyPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_chemotherapyPatientList.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<td>ONC-Chemotherapy Missed Patient List</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_missedChemotherapyPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_missedChemotherapyPatientList.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<td>ONC-Chemotherapy Daily Drug List</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_chemotherapyDailyDrugList.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_chemotherapyDailyDrugList.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<td>ONC-Oncology Outpatient Clinic Patient List</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientClinicPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyOutpatientClinicPatientList.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<td>ONC-Oncology Outpatient Clinic Missed Visit Patient List</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientClinicMissedVisit.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyOutpatientClinicMissedVisit.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 </table>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

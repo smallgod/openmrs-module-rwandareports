@@ -48,8 +48,12 @@ import org.openmrs.module.rwandareports.reporting.SetupHypertensionConsultationS
 import org.openmrs.module.rwandareports.reporting.SetupHypertensionLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupHypertensionQuarterlyAndMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupIDProgramQuarterlyIndicatorReport;
+import org.openmrs.module.rwandareports.reporting.SetupMissedChemotherapyPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupMissingCD4Report;
 import org.openmrs.module.rwandareports.reporting.SetupMonthlyCD4DeclineReport;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyDailyDrugList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicMissedVisit;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFoodDistributionReport;
@@ -184,6 +188,10 @@ public class CleanReportingTablesAndRegisterAllReports {
 	public static void registerOncologyReports() throws Exception {
 			new SetupOncologyTreatmentAdministrationPlan().setup();
 			new SetupChemotherapyExpectedPatientList().setup();
+			new SetupOncologyDailyDrugList().setup();
+			new SetupMissedChemotherapyPatientList().setup();
+			new SetupOncologyOutpatientClinicPatientList().setup();
+			new SetupOncologyOutpatientClinicMissedVisit().setup();
     }
 	public static void registerCHWReports() {
 	    
