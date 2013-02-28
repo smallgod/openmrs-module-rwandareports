@@ -281,7 +281,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
 	private void createQuarterlyIndicators(EncounterIndicatorDataSetDefinition dsd) {
 		//=======================================================================
-		//  A1: Total # of patient visits to Hypertension clinic in the last quarter
+		//  A1: Total # of patient visits to Heart failure clinic in the last quarter
 		//==================================================================
         SqlEncounterQuery patientVisitsToHFClinic = new SqlEncounterQuery();
 		
@@ -295,7 +295,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		EncounterIndicator patientVisitsToHFClinicQuarterlyIndicator = new EncounterIndicator();
 		patientVisitsToHFClinicQuarterlyIndicator.setName("patientVisitsToHFClinicQuarterlyIndicator");
 		patientVisitsToHFClinicQuarterlyIndicator.setEncounterQuery(new Mapped<EncounterQuery>(patientVisitsToHFClinic,
-		        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${endDate-1m+1d}")));
+		        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 		
 		dsd.addColumn(patientVisitsToHFClinicQuarterlyIndicator);
 		
@@ -313,6 +313,40 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		dsd.addColumn("A2Q", "Total # of patients seen in the last quarter", new Mapped(patientsSeenIndicator,
 		        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//=======================================================================
+		// A3: Total # of new patients enrolled in the last month/quarter
+		//==================================================================
+		
+		ProgramEnrollmentCohortDefinition patientEnrolledInHFProgram = Cohorts.createProgramEnrollmentParameterizedByStartEndDate(
+		    "Enrolled In Heart Failure Program", heartFailureProgram);
+		
+		CohortIndicator patientEnrolledInHFProgramQuarterIndicator = Indicators.newCountIndicator(
+		    "patientEnrolledInHFProgramQuarterIndicator", patientEnrolledInHFProgram,
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));		
+		
+		dsd.addColumn(
+		    "A3Q",
+		    "Total # of new patients enrolled in the last quarter",
+		    new Mapped(patientEnrolledInHFProgramQuarterIndicator, ParameterizableUtil
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		
+		//======================================
+		// A4: Total # of patients ever enrolled 
+		//======================================
+		
+		ProgramEnrollmentCohortDefinition patientEverEnrolledInHFProgram = Cohorts.createProgramEnrollmentParameterizedByStartEndDate(
+		    "Ever Enrolled In Heart Failure Program", heartFailureProgram);
+		
+		CohortIndicator patientEverEnrolledInHFProgramIndicator = Indicators.newCountIndicator(
+		    "patientEverEnrolledInHFProgramIndicator", patientEverEnrolledInHFProgram,
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));		
+		
+		dsd.addColumn(
+		    "A4Q",
+		    "Total # of patients ever enrolled",
+		    new Mapped(patientEverEnrolledInHFProgramIndicator, ParameterizableUtil
+		            .createParameterMappings("endDate=${endDate}")), "");
 		
 	}
 	
