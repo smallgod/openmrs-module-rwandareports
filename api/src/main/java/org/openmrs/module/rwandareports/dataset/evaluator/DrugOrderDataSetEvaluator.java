@@ -69,94 +69,175 @@ public class DrugOrderDataSetEvaluator implements DataSetEvaluator {
 		DataSetColumn patientName = new DataSetColumn("patientName", "patientName", String.class);
 		dataSet.getMetaData().addColumn(patientName);
 		
-		DataSetColumn drug = new DataSetColumn("drug", "drug", String.class);
-		dataSet.getMetaData().addColumn(drug);
+		DataSetColumn patientSex = new DataSetColumn("patientSex", "patientSex", String.class);
+		dataSet.getMetaData().addColumn(patientSex);
 		
-		DataSetColumn dose = new DataSetColumn("dose", "dose", String.class);
-		dataSet.getMetaData().addColumn(dose);
+		DataSetColumn patientAge = new DataSetColumn("patientAge", "patientAge", String.class);
+		dataSet.getMetaData().addColumn(patientAge);
 		
-		DataSetColumn route = new DataSetColumn("route", "route", String.class);
-		dataSet.getMetaData().addColumn(route);
+		DataSetColumn drug1 = new DataSetColumn("drug1", "drug1", String.class);
+		dataSet.getMetaData().addColumn(drug1);
 		
-		DrugOrderDataSetDefinition drugDSD = (DrugOrderDataSetDefinition)dataSetDefinition;
+		DataSetColumn drug2 = new DataSetColumn("drug2", "drug2", String.class);
+		dataSet.getMetaData().addColumn(drug2);
 		
-		if(cohort != null)
-		{
-			for(Integer pId: cohort.getMemberIds())
-			{
+		DataSetColumn drug3 = new DataSetColumn("drug3", "drug3", String.class);
+		dataSet.getMetaData().addColumn(drug3);
+		
+		DataSetColumn drug4 = new DataSetColumn("drug4", "drug4", String.class);
+		dataSet.getMetaData().addColumn(drug4);
+		
+		DataSetColumn drug5 = new DataSetColumn("drug5", "drug5", String.class);
+		dataSet.getMetaData().addColumn(drug5);
+		
+		DataSetColumn drug6 = new DataSetColumn("drug6", "drug6", String.class);
+		dataSet.getMetaData().addColumn(drug6);
+		
+		DrugOrderDataSetDefinition drugDSD = (DrugOrderDataSetDefinition) dataSetDefinition;
+		
+		if (cohort != null) {
+			for (Integer pId : cohort.getMemberIds()) {
 				Patient patient = Context.getPatientService().getPatient(pId);
 				List<DrugOrder> allDrugOrders = Context.getOrderService().getDrugOrdersByPatient(patient);
 				
 				String patientN = patient.getGivenName() + " " + patient.getFamilyName();
 				dataSet.addColumnValue(pId, patientName, patientN);
-				dataSet.addColumnValue(pId, drug, "");
-				dataSet.addColumnValue(pId, dose, "");
-				dataSet.addColumnValue(pId, route, "");
+				dataSet.addColumnValue(pId, patientSex, patient.getGender());
+				dataSet.addColumnValue(pId, patientAge, patient.getAge(drugDSD.getAsOfDate()));
 				
 				DecimalFormat f = new DecimalFormat("0.#");
 				
-				for(DrugOrder drO: allDrugOrders)
-				{
-					if(drO instanceof ExtendedDrugOrder)
-					{
-						ExtendedDrugOrder eDrO = (ExtendedDrugOrder)drO;
-						if(drugDSD.getIndication().contains(eDrO.getIndication()))
-						{
-							if(eDrO.isCurrent(drugDSD.getAsOfDate()))
-							{
-								String dosage = "";
-								if (eDrO.getDose() != null && eDrO.getUnits() != null) {
-									
-									if (eDrO.getUnits().contains("/m2")) {
+				int index = 1;
+				
+				String drugString6 = null;
+				
+				for (DrugOrder drO : allDrugOrders) {
+					if (drO instanceof ExtendedDrugOrder) {
+						ExtendedDrugOrder eDrO = (ExtendedDrugOrder) drO;
+						if (drugDSD.getIndication().contains(eDrO.getIndication())) {
+							if (drO.getDrug() != null
+							        && drO.getDrug().getConcept() != null
+							        && (drugDSD.getDrugExclusions() == null || !drugDSD.getDrugExclusions().contains(
+							            drO.getDrug().getConcept()))) {
+								
+								if (eDrO.isCurrent(drugDSD.getAsOfDate())) {
+									String dosage = "";
+									if (eDrO.getDose() != null && eDrO.getUnits() != null) {
 										
-										List<Obs> bsaValues = Context.getObsService().getObservationsByPersonAndConcept(patient, bsa);
-										
-										if (bsaValues != null && bsaValues.size() > 0) {
-											Obs recent = null;
-											for (Obs o : bsaValues) {
-												if (recent == null || recent.getObsDatetime().before(o.getObsDatetime())) {
-													recent = o;
-												}
-											}
+										if (eDrO.getUnits().contains("/m2")) {
 											
-											double calcDose = eDrO.getDose() * recent.getValueNumeric();
-											if (eDrO.getDrug() != null && eDrO.getDrug().getMaximumDailyDose() != null
-											        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
-												calcDose = eDrO.getDrug().getMaximumDailyDose();
-											}
-											dosage = f.format(calcDose) + eDrO.getUnits().substring(0, eDrO.getUnits().indexOf("/"));
-										}	
-									} else if (eDrO.getUnits().contains("/kg")) {
-										
-										List<Obs> weightValues = Context.getObsService().getObservationsByPersonAndConcept(patient, weight);
-										
-										if (weightValues != null && weightValues.size() > 0) {
-											Obs recent = null;
-											for (Obs o : weightValues) {
-												if (recent == null || recent.getObsDatetime().before(o.getObsDatetime())) {
-													recent = o;
-												}
-											}
+											List<Obs> bsaValues = Context.getObsService().getObservationsByPersonAndConcept(
+											    patient, bsa);
 											
-											double calcDose = eDrO.getDose() * recent.getValueNumeric();
-											if (eDrO.getDrug() != null && eDrO.getDrug().getMaximumDailyDose() != null
-											        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
-												calcDose = eDrO.getDrug().getMaximumDailyDose();
+											if (bsaValues != null && bsaValues.size() > 0) {
+												Obs recent = null;
+												for (Obs o : bsaValues) {
+													if (recent == null || recent.getObsDatetime().before(o.getObsDatetime())) {
+														recent = o;
+													}
+												}
+												
+												double calcDose = eDrO.getDose() * recent.getValueNumeric();
+												if (eDrO.getDrug() != null && eDrO.getDrug().getMaximumDailyDose() != null
+												        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
+													calcDose = eDrO.getDrug().getMaximumDailyDose();
+												}
+												dosage = f.format(calcDose)
+												        + eDrO.getUnits().substring(0, eDrO.getUnits().indexOf("/"));
 											}
-											dosage = f.format(calcDose) + eDrO.getUnits().substring(0, eDrO.getUnits().indexOf("/"));
+										} else if (eDrO.getUnits().contains("/kg")) {
+											
+											List<Obs> weightValues = Context.getObsService()
+											        .getObservationsByPersonAndConcept(patient, weight);
+											
+											if (weightValues != null && weightValues.size() > 0) {
+												Obs recent = null;
+												for (Obs o : weightValues) {
+													if (recent == null || recent.getObsDatetime().before(o.getObsDatetime())) {
+														recent = o;
+													}
+												}
+												
+												double calcDose = eDrO.getDose() * recent.getValueNumeric();
+												if (eDrO.getDrug() != null && eDrO.getDrug().getMaximumDailyDose() != null
+												        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
+													calcDose = eDrO.getDrug().getMaximumDailyDose();
+												}
+												dosage = f.format(calcDose)
+												        + eDrO.getUnits().substring(0, eDrO.getUnits().indexOf("/"));
+											}
+										} else {
+											dosage = eDrO.getDose() + eDrO.getUnits();
 										}
-									} else
-									{
-										dosage = eDrO.getDose() + eDrO.getUnits();
+										
+										String drugString = eDrO.getDrug().getName() + " " + dosage + " " + eDrO.getRoute().getDisplayString();
+										if(index == 1)
+										{
+											dataSet.addColumnValue(pId, drug1, "R1 " + drugString);
+										}
+										else if(index == 2)
+										{
+											dataSet.addColumnValue(pId, drug2, "R2 " + drugString);
+										}
+										else if(index == 3)
+										{
+											dataSet.addColumnValue(pId, drug3, "R3 " + drugString);
+										}
+										else if(index == 4)
+										{
+											dataSet.addColumnValue(pId, drug4, drugString);
+										}
+										else if(index == 5)
+										{
+											dataSet.addColumnValue(pId, drug5, drugString);
+										}
+										else if(index == 6)
+										{
+											drugString6 = drugString;
+										}
+										else if(index > 6)
+										{
+											drugString6 = drugString6 + ", " + drugString;
+										}
+										index++;
 									}
 								}
-	
-								dataSet.addColumnValue(eDrO.getId(), patientName, "");
-								dataSet.addColumnValue(eDrO.getId(), drug, eDrO.getDrug().getName());
-								dataSet.addColumnValue(eDrO.getId(), dose, dosage);
-								dataSet.addColumnValue(eDrO.getId(), route, eDrO.getRoute().getDisplayString());
 							}
 						}
+					}
+					if(index == 2)
+					{
+						dataSet.addColumnValue(pId, drug2, "");
+						dataSet.addColumnValue(pId, drug3, "");
+						dataSet.addColumnValue(pId, drug4, "");
+						dataSet.addColumnValue(pId, drug5, "");
+						dataSet.addColumnValue(pId, drug6, "");
+					}
+					else if(index == 3)
+					{
+						dataSet.addColumnValue(pId, drug3, "");
+						dataSet.addColumnValue(pId, drug4, "");
+						dataSet.addColumnValue(pId, drug5, "");
+						dataSet.addColumnValue(pId, drug6, "");
+					}
+					else if (index == 4)
+					{
+						dataSet.addColumnValue(pId, drug4, "");
+						dataSet.addColumnValue(pId, drug5, "");
+						dataSet.addColumnValue(pId, drug6, "");
+					}
+					else if (index == 5)
+					{
+						dataSet.addColumnValue(pId, drug5, "");
+						dataSet.addColumnValue(pId, drug6, "");
+					}
+					else if(index == 6)
+					{
+						dataSet.addColumnValue(pId, drug6, "");
+					}
+					else if(index == 7)
+					{
+						dataSet.addColumnValue(pId, drug5, drugString6);
 					}
 				}
 			}
@@ -164,3 +245,5 @@ public class DrugOrderDataSetEvaluator implements DataSetEvaluator {
 		return dataSet;
 	}
 }
+
+

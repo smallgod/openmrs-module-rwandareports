@@ -972,6 +972,14 @@ public class GlobalPropertiesManagement {
 	public final static String HYDROCHLOROTHIAZIDE_DRUG="reports.hydrochlorothiazide";
 	
     public final static String ADVERSE_MED_EFFECT="reports.adversemed";
+    
+    public final static String ADVERSE_MED_EFFECT_NON_CODED = "reports.adverseMedNonCoded";
+    
+    public final static String ADVERSE_EFFECT_REACTION = "reports.adverseReaction";
+    
+    public final static String ADVERSE_EFFECT_REACTION_NON_CODED = "reports.adverseReactionNonCoded";
+    
+    public final static String ADVERSE_EFFECT_DATE = "reports.adverseReactionDate";
 	
 	public final static String RIFAMPICIN_DRUG="reports.rifampicin";
 	
@@ -980,6 +988,8 @@ public class GlobalPropertiesManagement {
 	public final static String ISONIAZID_DRUG="reports.isoniazid";
 	
 	public final static String KALETRA_DRUG="reports.kaletra";
+	
+	public final static String NORMAL_SALINE = "reports.normalSaline";
 	
 	//Drug set concepts
 	public final static String ART_DRUGS_SET = "reports.allArtDrugsConceptSet";

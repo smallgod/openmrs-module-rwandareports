@@ -22,6 +22,9 @@ public class DrugOrderDataSetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	List<Concept> indication = null;
 	
+	@ConfigurationProperty
+	List<Concept> drugExclusions = null;
+	
 	//***** CONSTRUCTORS *****
 	
 	/**
@@ -46,4 +49,12 @@ public class DrugOrderDataSetDefinition extends BaseDataSetDefinition {
     public void setIndication(List<Concept> indication) {
     	this.indication = indication;
     }
+	
+    public List<Concept> getDrugExclusions() {
+    	return drugExclusions;
+    }
+
+    public void setDrugExclusions(List<Concept> drugExclusions) {
+    	this.drugExclusions = drugExclusions;
+    }   
 }

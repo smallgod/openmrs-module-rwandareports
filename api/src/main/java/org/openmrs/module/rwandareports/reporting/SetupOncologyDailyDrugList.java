@@ -30,9 +30,12 @@ public class SetupOncologyDailyDrugList {
 	
 	private Concept premedication;
 	
-	private Concept postmedication;
+	private Concept normalSaline;
 	
 	List<Concept> indications = new ArrayList<Concept>();
+	
+	List<Concept> drugExclusions = new ArrayList<Concept>();
+	
 	
 	public void setup() throws Exception {
 		
@@ -44,7 +47,7 @@ public class SetupOncologyDailyDrugList {
 		    "ChemotherapyDailyDrugList.xls_", null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:2,dataset:dataSet|sheet:1,row:5,dataset:dataSet2");
+		props.put("repeatingSections", "sheet:1,row:6-14,dataset:dataset|sheet:2,row:3,dataset:dataSet2");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);
@@ -85,17 +88,18 @@ public class SetupOncologyDailyDrugList {
 		dataSetDefinition.setName("Chemotherapy Daily Drug List");
 		dataSetDefinition.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
 		dataSetDefinition.setIndication(indications);
+		dataSetDefinition.setDrugExclusions(drugExclusions);
 		
-		DrugOrderTotalDataSetDefinition dataSetDefinition2 = new DrugOrderTotalDataSetDefinition();
-		dataSetDefinition2.setName("Chemotherapy Daily Drug List");
-		dataSetDefinition2.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
-		dataSetDefinition2.setIndication(indications);
+//		DrugOrderTotalDataSetDefinition dataSetDefinition2 = new DrugOrderTotalDataSetDefinition();
+//		dataSetDefinition2.setName("Chemotherapy Daily Drug List");
+//		dataSetDefinition2.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
+//		dataSetDefinition2.setIndication(indications);
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("asOfDate", "${endDate}");
 		
-		reportDefinition.addDataSetDefinition("dataSet", dataSetDefinition, mappings);
-		reportDefinition.addDataSetDefinition("dataSet2", dataSetDefinition2, mappings);
+		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
+//		reportDefinition.addDataSetDefinition("dataSet2", dataSetDefinition2, mappings);
 	}
 	
 	private void setupProperties() {
@@ -104,10 +108,12 @@ public class SetupOncologyDailyDrugList {
 		
 		premedication = gp.getConcept(GlobalPropertiesManagement.PREMEDICATION);
 		
-		postmedication = gp.getConcept(GlobalPropertiesManagement.POSTMEDICATION);
-		
 		indications.add(chemotherapy);
 		indications.add(premedication);
-		indications.add(postmedication);
+		
+		normalSaline = gp.getConcept(GlobalPropertiesManagement.NORMAL_SALINE);
+		
+		drugExclusions.add(normalSaline);
+	
 	}
 }
