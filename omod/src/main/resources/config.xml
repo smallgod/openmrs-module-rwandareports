@@ -2771,5 +2771,17 @@
 		<defaultValue>f447cc5e-c0f6-4d0d-97c9-4d9d983d8205</defaultValue>
 		<description>The concept id for normal saline</description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oralRoute</property>
+		<defaultValue>46aaaca8-1f21-410a-aac9-67bfcc1fd577</defaultValue>
+		<description>The concept id the oral route for medications</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.tabletForm</property>
+		<defaultValue>3f2b8c24-aef1-41ef-a409-d089b3d1a839</defaultValue>
+		<description>The concept id the tablet form for medications</description>
+	</globalProperty>
 
 </module>

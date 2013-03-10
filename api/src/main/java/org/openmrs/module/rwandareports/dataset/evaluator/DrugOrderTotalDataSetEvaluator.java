@@ -66,6 +66,10 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 		Concept bsa = gp.getConcept(GlobalPropertiesManagement.BSA_CONCEPT);
 		Concept weight = gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);
 		
+		Concept oral = gp.getConcept(GlobalPropertiesManagement.ORAL_ROUTE);
+		
+		Concept tabs = gp.getConcept(GlobalPropertiesManagement.TABLET_FORM);
+		
 		Cohort cohort = context.getBaseCohort();
 		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, context);
@@ -93,59 +97,83 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 					if (drO instanceof ExtendedDrugOrder) {
 						ExtendedDrugOrder eDrO = (ExtendedDrugOrder) drO;
 						if (drugDSD.getIndication().contains(eDrO.getIndication())) {
-							if (eDrO.isCurrent(drugDSD.getAsOfDate())) {
-								double dosage = 0;
-								if (drugTotal.containsKey(eDrO.getDrug())) {
-									dosage = drugTotal.get(eDrO.getDrug());
-								}
-								
-								if (eDrO.getDose() != null && eDrO.getUnits() != null) {
-									
-									if (eDrO.getUnits().contains("/m2")) {
-										
-										List<Obs> bsaValues = Context.getObsService().getObservationsByPersonAndConcept(
-										    patient, bsa);
-										
-										if (bsaValues != null && bsaValues.size() > 0) {
-											Obs recent = null;
-											for (Obs o : bsaValues) {
-												if (recent == null || recent.getObsDatetime().before(o.getObsDatetime())) {
-													recent = o;
-												}
-											}
-											
-											double calcDose = eDrO.getDose() * recent.getValueNumeric();
-											if (eDrO.getDrug() != null && eDrO.getDrug().getMaximumDailyDose() != null
-											        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
-												calcDose = eDrO.getDrug().getMaximumDailyDose();
-											}
-											dosage = dosage + calcDose;
-										}
-									} else if (eDrO.getUnits().contains("/kg")) {
-										
-										List<Obs> weightValues = Context.getObsService().getObservationsByPersonAndConcept(
-										    patient, weight);
-										
-										if (weightValues != null && weightValues.size() > 0) {
-											Obs recent = null;
-											for (Obs o : weightValues) {
-												if (recent == null || recent.getObsDatetime().before(o.getObsDatetime())) {
-													recent = o;
-												}
-											}
-											
-											double calcDose = eDrO.getDose() * recent.getValueNumeric();
-											if (eDrO.getDrug() != null && eDrO.getDrug().getMaximumDailyDose() != null
-											        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
-												calcDose = eDrO.getDrug().getMaximumDailyDose();
-											}
-											dosage = dosage + calcDose;
-										}
-									} else {
-										dosage = dosage + eDrO.getDose();
+							if (drO.getDrug() != null
+							        && drO.getDrug().getConcept() != null
+							        && (drugDSD.getDrugExclusions() == null || !drugDSD.getDrugExclusions().contains(
+							            drO.getDrug().getConcept()))) {
+								if (eDrO.isCurrent(drugDSD.getAsOfDate())) {
+									double dosage = 0;
+									if (drugTotal.containsKey(eDrO.getDrug())) {
+										dosage = drugTotal.get(eDrO.getDrug());
 									}
 									
-									drugTotal.put(eDrO.getDrug(), dosage);
+									if (eDrO.getDose() != null && eDrO.getUnits() != null) {
+										
+										if (eDrO.getUnits().contains("/m2")) {
+											
+											List<Obs> bsaValues = Context.getObsService().getObservationsByPersonAndConcept(
+											    patient, bsa);
+											
+											if (bsaValues != null && bsaValues.size() > 0) {
+												Obs recent = null;
+												for (Obs o : bsaValues) {
+													if (recent == null || recent.getObsDatetime().before(o.getObsDatetime())) {
+														recent = o;
+													}
+												}
+												
+												double calcDose = eDrO.getDose() * recent.getValueNumeric();
+												if (eDrO.getDrug() != null && eDrO.getDrug().getMaximumDailyDose() != null
+												        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
+													calcDose = eDrO.getDrug().getMaximumDailyDose();
+												}
+												if(eDrO.getRoute() != null && eDrO.getRoute().equals(oral))
+												{
+													double units = calcDose / eDrO.getDrug().getDoseStrength();
+													calcDose = Math.ceil(calcDose);
+												}
+												dosage = dosage + calcDose;
+											}
+										} else if (eDrO.getUnits().contains("/kg")) {
+											
+											List<Obs> weightValues = Context.getObsService()
+											        .getObservationsByPersonAndConcept(patient, weight);
+											
+											if (weightValues != null && weightValues.size() > 0) {
+												Obs recent = null;
+												for (Obs o : weightValues) {
+													if (recent == null || recent.getObsDatetime().before(o.getObsDatetime())) {
+														recent = o;
+													}
+												}
+												
+												double calcDose = eDrO.getDose() * recent.getValueNumeric();
+												if (eDrO.getDrug() != null && eDrO.getDrug().getMaximumDailyDose() != null
+												        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
+													calcDose = eDrO.getDrug().getMaximumDailyDose();
+												}
+												if(eDrO.getRoute() != null && eDrO.getRoute().equals(oral))
+												{
+													double units = calcDose / eDrO.getDrug().getDoseStrength();
+													calcDose = Math.ceil(calcDose);
+												}
+												dosage = dosage + calcDose;
+											}
+										} else {
+											if(eDrO.getDrug().getDosageForm() != null && !eDrO.getDrug().getDosageForm().equals(tabs))
+											{
+												
+												double units = eDrO.getDose() / eDrO.getDrug().getDoseStrength();
+												dosage = dosage + Math.ceil(units);
+											}
+											else
+											{
+												dosage = dosage + eDrO.getDose();
+											}
+										}
+										
+										drugTotal.put(eDrO.getDrug(), dosage);
+									}
 								}
 							}
 						}
@@ -154,6 +182,10 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 			}
 			for (Drug d : drugTotal.keySet()) {
 				String doseInfo = f.format(drugTotal.get(d));
+				if(d.getRoute() != null && d.getRoute().equals(oral))
+				{
+					doseInfo = doseInfo + " x " + f.format(d.getDoseStrength());
+				}
 				if (d.getUnits() != null && d.getUnits().indexOf("/") > 0) {
 					doseInfo = doseInfo + d.getUnits().substring(0, d.getUnits().indexOf("/"));
 				} else if (d.getUnits() != null) {

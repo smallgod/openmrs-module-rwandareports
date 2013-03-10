@@ -96,7 +96,7 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 			
 			if (dsd.getIndication() != null) {
 				for (ExtendedDrugOrder order : regimen.getMembers()) {
-					if (order.getIndication() != null && order.getIndication().equals(dsd.getIndication())) {
+					if (!order.isVoided() && order.getIndication() != null && order.getIndication().equals(dsd.getIndication())) {
 						if (activeDate != null) {
 							if (order.isCurrent(activeDate) || OpenmrsUtil.compare(order.getStartDate(), activeDate) == 0 || (order.getAutoExpireDate() != null && OpenmrsUtil.compare(order.getAutoExpireDate(), activeDate) == 0) || (order.getDiscontinuedDate() != null && OpenmrsUtil.compare(order.getDiscontinuedDate(), activeDate) == 0)) {
 								orders.add(order);
@@ -107,7 +107,13 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 					}
 				}
 			} else {
-				orders.addAll(regimen.getMembers());
+				for(ExtendedDrugOrder order: regimen.getMembers())
+				{
+					if(!order.isVoided())
+					{
+						orders.add(order);
+					}
+				}
 			}
 			
 			DataSetColumn start = new DataSetColumn("startDate", "startDate", Date.class);
@@ -271,6 +277,17 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 					instructionsDisplay = edo.getInstructions();
 				}
 				dataSet.addColumnValue(edo.getId(), instructions, instructionsDisplay);
+			}
+			if (orders.size() == 0) {
+				dataSet.addColumnValue(-1, start, "");
+				dataSet.addColumnValue(-1, drug, "");
+				dataSet.addColumnValue(-1, doseReduction, "");
+				dataSet.addColumnValue(-1, dose, "");
+				dataSet.addColumnValue(-1, actualDose, "");
+				dataSet.addColumnValue(-1, route, "");
+				dataSet.addColumnValue(-1, infInst, "");
+				dataSet.addColumnValue(-1, freq, "");
+				dataSet.addColumnValue(-1, instructions, "");
 			}
 		}
 		return dataSet;

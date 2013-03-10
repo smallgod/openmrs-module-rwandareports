@@ -80,6 +80,12 @@ public class RowPerPatientColumns {
 		return givenName;
 	}
 	
+	public static PatientProperty getMiddleNameColumn(String name) {
+		PatientProperty givenName = new PatientProperty("middleName");
+		givenName.setName(name);
+		return givenName;
+	}
+	
 	public static PatientProperty getFamilyNameColumn(String name) {
 		PatientProperty familyName = new PatientProperty("familyName");
 		familyName.setName(name);

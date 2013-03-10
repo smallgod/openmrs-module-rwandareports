@@ -100,8 +100,16 @@ public class DrugOrderDataSetEvaluator implements DataSetEvaluator {
 				Patient patient = Context.getPatientService().getPatient(pId);
 				List<DrugOrder> allDrugOrders = Context.getOrderService().getDrugOrdersByPatient(patient);
 				
-				String patientN = patient.getGivenName() + " " + patient.getFamilyName();
-				dataSet.addColumnValue(pId, patientName, patientN);
+				StringBuilder patientN = new StringBuilder();
+				patientN.append(patient.getGivenName());
+				patientN.append(" ");
+				if(patient.getMiddleName() != null && patient.getMiddleName().trim().length() > 0)
+				{
+					patientN.append(patient.getMiddleName());
+					patientN.append(" ");
+				}
+				patientN.append(patient.getFamilyName());
+				dataSet.addColumnValue(pId, patientName, patientN.toString());
 				dataSet.addColumnValue(pId, patientSex, patient.getGender());
 				dataSet.addColumnValue(pId, patientAge, patient.getAge(drugDSD.getAsOfDate()));
 				

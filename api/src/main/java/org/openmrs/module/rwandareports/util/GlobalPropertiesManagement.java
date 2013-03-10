@@ -797,6 +797,20 @@ public class GlobalPropertiesManagement {
 	
 	public final static String ONCOLOGY_BLOOD_DIAGNOSTIC_TEST = "reports.oncologyBloodDiagnostic";
 	
+	public final static String ADVERSE_MED_EFFECT="reports.adversemed";
+    
+    public final static String ADVERSE_MED_EFFECT_NON_CODED = "reports.adverseMedNonCoded";
+    
+    public final static String ADVERSE_EFFECT_REACTION = "reports.adverseReaction";
+    
+    public final static String ADVERSE_EFFECT_REACTION_NON_CODED = "reports.adverseReactionNonCoded";
+    
+    public final static String ADVERSE_EFFECT_DATE = "reports.adverseReactionDate";
+    
+    public final static String ORAL_ROUTE = "reports.oralRoute";
+    
+    public final static String TABLET_FORM = "reports.tabletForm";
+	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
 	public static final String VCT_PROGRAM = "reports.vctProgram";							
@@ -970,16 +984,6 @@ public class GlobalPropertiesManagement {
 	public final static String BECLOMETHASONE_DRUG="reports.beclomethasoneConcept";
 	
 	public final static String HYDROCHLOROTHIAZIDE_DRUG="reports.hydrochlorothiazide";
-	
-    public final static String ADVERSE_MED_EFFECT="reports.adversemed";
-    
-    public final static String ADVERSE_MED_EFFECT_NON_CODED = "reports.adverseMedNonCoded";
-    
-    public final static String ADVERSE_EFFECT_REACTION = "reports.adverseReaction";
-    
-    public final static String ADVERSE_EFFECT_REACTION_NON_CODED = "reports.adverseReactionNonCoded";
-    
-    public final static String ADVERSE_EFFECT_DATE = "reports.adverseReactionDate";
 	
 	public final static String RIFAMPICIN_DRUG="reports.rifampicin";
 	

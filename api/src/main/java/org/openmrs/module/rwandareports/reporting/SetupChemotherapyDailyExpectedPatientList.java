@@ -17,13 +17,12 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rwandareports.dataset.WeekViewDataSetDefinition;
 import org.openmrs.module.rwandareports.definition.UpcomingChemotherapyCohortDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupChemotherapyExpectedPatientList {
+public class SetupChemotherapyDailyExpectedPatientList {
 	
 	Helper h = new Helper();
 	
@@ -46,11 +45,11 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyExpectedPatientList.xls",
-		    "ChemotherapyPatientList.xls_", null);
+		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyDailyExpectedPatientList.xls",
+		    "ChemotherapyDailyPatientList.xls_", null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:4,dataset:dataset2|sheet:2,row:7,dataset:dataset");
+		props.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);
@@ -59,21 +58,25 @@ public class SetupChemotherapyExpectedPatientList {
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("ChemotherapyPatientList.xls_".equals(rd.getName())) {
+			if ("ChemotherapyDailyPatientList.xls_".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Chemotherapy Expected Patient List");
+		h.purgeReportDefinition("ONC-Chemotherapy Daily Expected Patient List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Chemotherapy Expected Patient List");
-					
-		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
-	
-		reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));
+		reportDefinition.setName("ONC-Chemotherapy Daily Expected Patient List");
+				
+		UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
+		baseCohort.setChemotherapyIndication(chemotherapy);
+		baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
+		baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
+		
+		reportDefinition.setBaseCohortDefinition(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
+		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
 		h.saveReportDefinition(reportDefinition);
@@ -84,47 +87,26 @@ public class SetupChemotherapyExpectedPatientList {
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		// Create new dataset definition 
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
-		dataSetDefinition.setName("Chemotherapy Patient List");
+		dataSetDefinition.setName("Chemotherapy Daily Patient List");
 		
-		RowPerPatientDataSetDefinition baseSetDefinition = new RowPerPatientDataSetDefinition();
-		baseSetDefinition.setName("Chemotherapy Base Patient List");
-		
-		UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
-		baseCohort.setChemotherapyIndication(chemotherapy);
-		baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
-		baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
-		
-		dataSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		baseSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
+		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		
 		SortCriteria sortCriteria = new SortCriteria();
-		sortCriteria.addSortElement("regimenDateFormat", SortDirection.ASC);
+		sortCriteria.addSortElement("familyName", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
-		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		
-		SortCriteria baseSortCriteria = new SortCriteria();
-		baseSortCriteria.addSortElement("familyName", SortDirection.ASC);
-		baseSetDefinition.setSortCriteria(baseSortCriteria);
-		baseSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
+		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
-		baseSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
-		baseSetDefinition.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
-		baseSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
-		baseSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		baseSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDateFormat", "yyyy/MM/dd"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 		
@@ -132,26 +114,12 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone2", telephone2, null), new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("address", true, true, true, true),
-		    new HashMap<String, Object>());
-		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("accompagnateur"), new HashMap<String, Object>());
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
 		
-		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
-		
-		WeekViewDataSetDefinition weekDataSetDefinition = new WeekViewDataSetDefinition();
-		weekDataSetDefinition.setName("weekDataSetDefinition");
-		weekDataSetDefinition.setBaseDefinition(baseSetDefinition);
-		weekDataSetDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
-		
-		Map<String, Object> baseMappings = new HashMap<String, Object>();
-		baseMappings.put("startDate", "${endDate}");
-		
-		reportDefinition.addDataSetDefinition("dataset2", weekDataSetDefinition, baseMappings);
-		
+		reportDefinition.addDataSetDefinition("dataSet", dataSetDefinition, mappings);
 	}
 	
 	private void setupProperties() {

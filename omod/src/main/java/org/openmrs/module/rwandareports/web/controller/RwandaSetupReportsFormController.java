@@ -5,6 +5,7 @@ import org.openmrs.module.rwandareports.reporting.SetupAdultLateVisitAndCD4Repor
 import org.openmrs.module.rwandareports.reporting.SetupAsthmaConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupAsthmaLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupAsthmaQuarterlyAndMonthReport;
+import org.openmrs.module.rwandareports.reporting.SetupChemotherapyDailyExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupChemotherapyExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupCombinedHFCSPConsultationReport;
 import org.openmrs.module.rwandareports.reporting.SetupDataEntryDelayReport;
@@ -529,6 +530,18 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_chemotherapyPatientList")
 	public ModelAndView removeChemotherapyPatientList() throws Exception {
 		new SetupChemotherapyExpectedPatientList().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/register_chemotherapyDailyPatientList")
+	public ModelAndView registerChemotherapyDailyPatientList() throws Exception {
+		new SetupChemotherapyDailyExpectedPatientList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/remove_chemotherapyDailyPatientList")
+	public ModelAndView removeChemotherapyDailyPatientList() throws Exception {
+		new SetupChemotherapyDailyExpectedPatientList().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 	

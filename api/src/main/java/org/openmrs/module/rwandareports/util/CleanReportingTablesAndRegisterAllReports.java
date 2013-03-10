@@ -30,6 +30,7 @@ import org.openmrs.module.rwandareports.reporting.SetupAdultLateVisitAndCD4Repor
 import org.openmrs.module.rwandareports.reporting.SetupAsthmaConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupAsthmaLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupAsthmaQuarterlyAndMonthReport;
+import org.openmrs.module.rwandareports.reporting.SetupChemotherapyDailyExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupChemotherapyExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupCombinedHFCSPConsultationReport;
 import org.openmrs.module.rwandareports.reporting.SetupDataEntryDelayReport;
@@ -188,6 +189,7 @@ public class CleanReportingTablesAndRegisterAllReports {
 	public static void registerOncologyReports() throws Exception {
 			new SetupOncologyTreatmentAdministrationPlan().setup();
 			new SetupChemotherapyExpectedPatientList().setup();
+			new SetupChemotherapyDailyExpectedPatientList().setup();
 			new SetupOncologyDailyDrugList().setup();
 			new SetupMissedChemotherapyPatientList().setup();
 			new SetupOncologyOutpatientClinicPatientList().setup();

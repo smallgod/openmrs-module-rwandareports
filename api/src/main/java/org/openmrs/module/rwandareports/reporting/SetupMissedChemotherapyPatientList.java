@@ -91,7 +91,7 @@ public class SetupMissedChemotherapyPatientList {
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		
 		SortCriteria sortCriteria = new SortCriteria();
-		sortCriteria.addSortElement("regimenDate", SortDirection.ASC);
+		sortCriteria.addSortElement("regimenDateFormat", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		
@@ -99,12 +99,15 @@ public class SetupMissedChemotherapyPatientList {
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
+		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
 		 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate-6m},untilDate=${endDate-1d}"));
 		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate-6m},untilDate=${endDate-1d}"));
+		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDateFormat", "yyyy/MM/dd"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate-6m},untilDate=${endDate-1d}"));
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 		

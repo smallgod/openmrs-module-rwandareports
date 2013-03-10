@@ -47,7 +47,7 @@ public class SetupOncologyDailyDrugList {
 		    "ChemotherapyDailyDrugList.xls_", null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:6-14,dataset:dataset|sheet:2,row:3,dataset:dataSet2");
+		props.put("repeatingSections", "sheet:1,row:6-14,dataset:dataset|sheet:1,row:17,dataset:dataset2");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);
@@ -73,7 +73,7 @@ public class SetupOncologyDailyDrugList {
 		baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
 		baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
 		
-		reportDefinition.setBaseCohortDefinition(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+1d}"));
+		reportDefinition.setBaseCohortDefinition(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
@@ -90,16 +90,17 @@ public class SetupOncologyDailyDrugList {
 		dataSetDefinition.setIndication(indications);
 		dataSetDefinition.setDrugExclusions(drugExclusions);
 		
-//		DrugOrderTotalDataSetDefinition dataSetDefinition2 = new DrugOrderTotalDataSetDefinition();
-//		dataSetDefinition2.setName("Chemotherapy Daily Drug List");
-//		dataSetDefinition2.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
-//		dataSetDefinition2.setIndication(indications);
+		DrugOrderTotalDataSetDefinition dataSetDefinition2 = new DrugOrderTotalDataSetDefinition();
+		dataSetDefinition2.setName("Chemotherapy Daily Drug List");
+		dataSetDefinition2.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
+		dataSetDefinition2.setIndication(indications);
+		dataSetDefinition2.setDrugExclusions(drugExclusions);
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("asOfDate", "${endDate}");
 		
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
-//		reportDefinition.addDataSetDefinition("dataSet2", dataSetDefinition2, mappings);
+		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 	}
 	
 	private void setupProperties() {
