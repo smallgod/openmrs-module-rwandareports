@@ -797,6 +797,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String ONCOLOGY_BLOOD_DIAGNOSTIC_TEST = "reports.oncologyBloodDiagnostic";
 	
+	public final static String EJECTION_FRACTION="reports.ejectionFraction";
+	
 	public final static String ADVERSE_MED_EFFECT="reports.adversemed";
     
     public final static String ADVERSE_MED_EFFECT_NON_CODED = "reports.adverseMedNonCoded";
@@ -917,6 +919,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String HYPERTENSION_FLOW_VISIT = "reports.hypertensionFlowVisit";
 	
+	public final static String HYPERTENSION_FLOW_ECHOCARDIOGRAPHIE_FORM = "reports.hypertensionFlowEchoFormId";
+		
 	public final static String HEART_FAILURE_DDB = "reports.heartFailureDDBformId";
 	
 	public final static String EPILEPSY_DDB = "reports.epilepsyDDBformId";

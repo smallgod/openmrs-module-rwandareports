@@ -222,6 +222,15 @@ public class Cohorts {
 		return patients;
 	}
 	
+	public static SqlCohortDefinition createPatientsWithStartDateOfStateEqualsToProgramEnrolmentDate(ProgramWorkflowState state) {
+		SqlCohortDefinition patientsWithBState = new SqlCohortDefinition(
+		        "select p.patient_id from patient p, patient_program pp, patient_state ps where p.voided = 0 and pp.voided = 0 and ps.voided = 0 "
+		                + "and ps.patient_program_id = pp.patient_program_id and pp.patient_id = p.patient_id and ps.state = "
+		                + state.getId() + " and ps.start_date=pp.date_enrolled");
+		return patientsWithBState;
+	}
+	
+	
 	public static SqlCohortDefinition createPatientsWithStatePredatingProgramEnrolment(ProgramWorkflowState state) {
 		SqlCohortDefinition patientsWithBaseLineObservation = new SqlCohortDefinition(
 		        "select p.patient_id from patient p, patient_program pp, patient_state ps where p.voided = 0 and pp.voided = 0 and ps.voided = 0 "
@@ -304,6 +313,14 @@ public class Cohorts {
 		under15Cohort.setMaxAge(new Integer(14));
 		under15Cohort.addParameter(new Parameter("effectiveDate", "endDate", Date.class));
 		return under15Cohort;
+	}	
+	
+	public static AgeCohortDefinition createUnderAgeCohort(String name, int age) {
+		AgeCohortDefinition underAgeCohort = new AgeCohortDefinition();
+		underAgeCohort.setName(name);
+		underAgeCohort.setMaxAge(new Integer(age));
+		underAgeCohort.addParameter(new Parameter("effectiveDate", "endDate", Date.class));
+		return underAgeCohort;
 	}
 	
 	public static AgeCohortDefinition createUnder3AgeCohort(String name) {
@@ -1293,6 +1310,23 @@ public class Cohorts {
 		return obsBetweenStartDateAndEndDate;
 	}
 	
+	
+	public static SqlCohortDefinition getPatientsWithObservationsBetweenStartDateAndEndDate(String name,Concept concept) {
+		SqlCohortDefinition obsBetweenStartDateAndEndDate = new SqlCohortDefinition();
+		
+		StringBuilder query = new StringBuilder("select distinct o.person_id from obs o where o.concept_id= ");
+		
+		query.append(concept.getId());
+			
+		query.append(" and o.voided=0 and o.obs_datetime>= :start and o.obs_datetime<= :end and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL)");
+		
+		obsBetweenStartDateAndEndDate.setQuery(query.toString());
+		obsBetweenStartDateAndEndDate.addParameter(new Parameter("start", "start", Date.class));
+		obsBetweenStartDateAndEndDate.addParameter(new Parameter("end", "end", Date.class));
+		
+		return obsBetweenStartDateAndEndDate;
+	}
+	
 	public static SqlCohortDefinition getPatientsOnRegimenAtLastVisit(String name, List<Concept> concepts,
 	                                                                  EncounterType encounterType) {
 		SqlCohortDefinition regimenAtLastVist = new SqlCohortDefinition();
@@ -1310,7 +1344,7 @@ public class Cohorts {
 			query.append(concept.getId());
 			i++;
 		}
-		query.append(") and o.discontinued=0 and o.voided=0 group by o.patient_id");
+		query.append(") and (o.discontinued=0 or discontinued_date >= lastenc.encounter_datetime) and o.voided=0 group by o.patient_id");
 		regimenAtLastVist.setQuery(query.toString());
 		
 		return regimenAtLastVist;
@@ -1614,5 +1648,22 @@ public class Cohorts {
 		
 		return withEchocardiographyDocumented;
 	}
+
+	public static SqlCohortDefinition getPatientsOnRegimenAtLastVisit(String name, Concept concept,
+                                                                      EncounterType encounterType) {
+SqlCohortDefinition regimenAtLastVist = new SqlCohortDefinition();
+		
+		StringBuilder query = new StringBuilder(
+		        "select o.patient_id from orders o,(select * from (select * from encounter e where e.encounter_type="
+		                + encounterType.getId()
+		                + " and e.voided=0 order by e.encounter_datetime desc) as lastencbypatient group by lastencbypatient.patient_id) as lastenc where lastenc.patient_id=o.patient_id and lastenc.encounter_datetime>o.start_date and o.concept_id= ");
+				
+			query.append(concept.getId());
+			
+		query.append(" and o.discontinued=0 and o.voided=0 group by o.patient_id");
+		regimenAtLastVist.setQuery(query.toString());
+		
+		return regimenAtLastVist;
+    }
 	
 }

@@ -357,6 +357,14 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.ejectionFraction</property>
+		<defaultValue>a643a9b7-6b4e-4478-8e55-5429fe91c39b</defaultValue>
+		<description>
+			The concept id of the Fraction Ejection
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>reports.serumCreatinine</property>
 		<defaultValue>3cd4374e-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>
@@ -1328,7 +1336,7 @@
 	</globalProperty>
 	<globalProperty>
 		<property>cardiologyreporting.cardilogyConsultationFormId</property>
-		<defaultValue>82</defaultValue>
+		<defaultValue>93</defaultValue>
 		<description>
 			This global property is used to get Cardiology
 			Consultation Form . The default value is form ID.  
@@ -2380,6 +2388,12 @@
 			flow sheet</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.hypertensionFlowEchoFormId</property>
+		<defaultValue>6aaf54ea-c60b-4c95-afef-1531d05e91a0</defaultValue>
+		<description>The id of the form Echocardiography hypertension flow sheet</description>
+	</globalProperty>
+	
 	<globalProperty>
 		<property>reports.heartfailureDDBformId</property>
 		<defaultValue>c4302c96-94a6-4724-90cf-88cc29409aa5</defaultValue>
