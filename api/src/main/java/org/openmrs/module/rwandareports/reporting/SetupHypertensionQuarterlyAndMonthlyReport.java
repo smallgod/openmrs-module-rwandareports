@@ -206,7 +206,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		                + rendevousForm.getFormId()
 		                + " or form_id="
 		                + DDBform.getFormId()
-		                + ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id)");
+		                + ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 )");
 		patientVisitsToHypertensionClinic.setName("patientVisitsToHypertensionClinic");
 		patientVisitsToHypertensionClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsToHypertensionClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -229,7 +229,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 			+ rendevousForm.getFormId()
 			+ " or e.form_id="
 			+ DDBform.getFormId()
-			+ ") and o.encounter_id=e.encounter_id and o.concept_id="+systolicBP.getConceptId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 group by e.encounter_datetime, e.patient_id");
+			+ ") and o.encounter_id=e.encounter_id and o.concept_id="+systolicBP.getConceptId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 ");
 		patientVisitsWithDocumentedBP.setName("patientVisitsToHypertensionClinic");
 		patientVisitsWithDocumentedBP.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsWithDocumentedBP.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -283,7 +283,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		                + rendevousForm.getFormId()
 		                + " or form_id="
 		                + DDBform.getFormId()
-		                + ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id)");
+		                + ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 )");
 		patientVisitsToHypertensionClinic.setName("patientVisitsToHypertensionClinic");
 		patientVisitsToHypertensionClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsToHypertensionClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -306,7 +306,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 			+ rendevousForm.getFormId()
 			+ " or e.form_id="
 			+ DDBform.getFormId()
-			+ ") and o.encounter_id=e.encounter_id and o.concept_id="+systolicBP.getConceptId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 group by e.encounter_datetime, e.patient_id");
+			+ ") and o.encounter_id=e.encounter_id and o.concept_id="+systolicBP.getConceptId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 ");
 		patientVisitsWithDocumentedBP.setName("patientVisitsToHypertensionClinic");
 		patientVisitsWithDocumentedBP.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsWithDocumentedBP.addParameter(new Parameter("endDate", "endDate", Date.class));
