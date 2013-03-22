@@ -107,17 +107,14 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 				
 				if(pd.isShowDrugDetails() && (pd.getIndication() == null || pd.getIndication().equals(order.getIndication())))
 				{
-					if(drugs.length() > 0)
+					if((OpenmrsUtil.compare(order.getStartDate(), pd.getAsOfDate()) >= 0) && (pd.getUntilDate() == null || OpenmrsUtil.compare(order.getStartDate(), pd.getUntilDate()) <= 0))
 					{
-						drugs.append(", ");
+						drugs.append("\n");
+						drugs.append(order.getDrug().getName());
+						drugs.append(" ");
+						drugs.append(order.getDose());
+						drugs.append(order.getUnits());
 					}
-					else{
-						drugs.append(" /n\n");
-					}
-					drugs.append(order.getDrug().getName());
-					drugs.append(" ");
-					drugs.append(order.getDose());
-					drugs.append(order.getUnits());
 				}
 				
 				if (order.getRoute() != null && iv.contains(order.getRoute())) {
