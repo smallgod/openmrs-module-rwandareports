@@ -11,8 +11,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.ReportingConstants;
+import org.openmrs.module.reporting.dataset.MapDataSet;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.Report;
+import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.ReportRequest.Priority;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
@@ -20,9 +23,11 @@ import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.reporting.Helper;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class RunReportsController {
@@ -70,5 +75,31 @@ public class RunReportsController {
 		else {
 			response.getWriter().write("There was an error retrieving the report");
 		}
+		
     }
+		
+    @RequestMapping("/module/rwandareports/renderCalendarWebRenderer")
+	public ModelAndView renderIndicatorReport() {     	
+	    return new ModelAndView("/module/rwandareports/renderCalendarWebRenderer");    	
+	}
+    
+    public String showReport(Model model, HttpSession session) {
+		String renderArg = (String) session.getAttribute(ReportingConstants.OPENMRS_REPORT_ARGUMENT);
+		ReportData data = null;
+		try {
+			data = (ReportData) session.getAttribute(ReportingConstants.OPENMRS_REPORT_DATA);
+		}
+		catch (ClassCastException ex) {
+			// pass
+		}
+		if (data == null)
+			return "redirect:../reporting/dashboard/index.form";
+		
+		MapDataSet dataSet = (MapDataSet) data.getDataSets().get(renderArg);
+		model.addAttribute("columns", dataSet.getMetaData());
+		//List<Regimen> regimens = RwandaReportsUtil.createRegimenList(Context.getService(Cd4CountReportingService.class).getAllRegimens());  
+	//	model.addAttribute("regimens", regimens);
+		return null;
+	}
+    
 }

@@ -31,6 +31,7 @@ import org.openmrs.module.rwandareports.reporting.SetupMonthlyCD4DeclineReport;
 import org.openmrs.module.rwandareports.reporting.SetupNCDConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupNCDLateVisitandLTFUReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyDailyDrugList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientAppointmentList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicMissedVisit;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
@@ -578,6 +579,18 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_oncologyOutpatientClinicMissedVisit")
 	public ModelAndView removeOncologyOutpatientClinicMissedVisit() throws Exception {
 		new SetupOncologyOutpatientClinicMissedVisit().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/register_oncologyOutpatientAppointment")
+	public ModelAndView registerOncologyOutpatientAppointment() throws Exception {
+		new SetupOncologyOutpatientAppointmentList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/remove_oncologyOutpatientAppointment")
+	public ModelAndView removeOncologyOutpatientAppointment() throws Exception {
+		new SetupOncologyOutpatientAppointmentList().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 	

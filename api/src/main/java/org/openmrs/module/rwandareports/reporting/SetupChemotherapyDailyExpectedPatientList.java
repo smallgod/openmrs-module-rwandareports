@@ -39,6 +39,7 @@ public class SetupChemotherapyDailyExpectedPatientList {
 	
 	private Concept telephone2;
 	
+	
 	public void setup() throws Exception {
 		
 		setupProperties();
@@ -53,12 +54,21 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);
+		
+		ReportDesign designTwo = h.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyDailyTreatmentSummary.xls",
+		    "ChemotherapyDailyTreatmentSummary.xls_", null);
+		
+		Properties propsTwo = new Properties();
+		propsTwo.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
+		designTwo.setProperties(propsTwo);
+		
+		h.saveReportDesign(designTwo);
 	}
 	
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("ChemotherapyDailyPatientList.xls_".equals(rd.getName())) {
+			if ("ChemotherapyDailyPatientList.xls_".equals(rd.getName()) || "ChemotherapyDailyTreatmentSummary.xls_".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
@@ -106,7 +116,8 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
+		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
+		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimenDrugs", chemotherapy, false, true), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 		
@@ -133,5 +144,6 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		telephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
 		
 		telephone2 = gp.getConcept(GlobalPropertiesManagement.SECONDARY_TELEPHONE_NUMBER_CONCEPT);
+		
 	}
 }

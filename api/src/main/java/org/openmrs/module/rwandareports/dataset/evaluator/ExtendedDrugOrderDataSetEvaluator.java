@@ -181,7 +181,8 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 				}
 				dataSet.addColumnValue(edo.getId(), doseReduction, doseReductionDisplay);
 				
-				DecimalFormat f = new DecimalFormat("0.#");
+				DecimalFormat f = new DecimalFormat("0.###");
+				DecimalFormat f2 = new DecimalFormat("0.#");
 				if (edo.getDose() != null && edo.getUnits() != null) {
 					if (edo.getUnits().equals("mg/m2")) {
 						doseDisplay = f.format(edo.getDose());
@@ -189,6 +190,10 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 					else if(edo.getUnits().contains("/m2") || edo.getUnits().contains("/kg"))
 					{
 						doseDisplay = f.format(edo.getDose()) + edo.getUnits();
+					}
+					else if(edo.getUnits().contains("AUC"))
+					{
+						doseDisplay = edo.getUnits() + "=" + f.format(edo.getDose());
 					}
 					
 					if (edo.getUnits().contains("/m2")) {
@@ -209,7 +214,7 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 							        && calcDose > edo.getDrug().getMaximumDailyDose()) {
 								calcDose = edo.getDrug().getMaximumDailyDose();
 							}
-							actualDoseDisplay = f.format(calcDose);
+							actualDoseDisplay = f2.format(calcDose);
 						}
 						
 					} else if (edo.getUnits().contains("/kg")) {
@@ -230,11 +235,15 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 							        && calcDose > edo.getDrug().getMaximumDailyDose()) {
 								calcDose = edo.getDrug().getMaximumDailyDose();
 							}
-							actualDoseDisplay = f.format(calcDose);
+							actualDoseDisplay = f2.format(calcDose);
 						}
 						
-					} else {
-						actualDoseDisplay = f.format(edo.getDose()) + " (" + edo.getUnits() + ")";
+					} else if(edo.getUnits().contains("AUC"))
+					{
+						actualDoseDisplay = "";
+					}
+						else {
+						actualDoseDisplay = f2.format(edo.getDose()) + " (" + edo.getUnits() + ")";
 					}
 				}
 				dataSet.addColumnValue(edo.getId(), dose, doseDisplay);

@@ -105,7 +105,7 @@ public class SetupMissedChemotherapyPatientList {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
 		 
-		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate-6m},untilDate=${endDate-1d}"));
+		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate-6m},untilDate=${endDate-1d}"));
 		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate-6m},untilDate=${endDate-1d}"));
 		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDateFormat", "yyyy/MM/dd"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate-6m},untilDate=${endDate-1d}"));
 		

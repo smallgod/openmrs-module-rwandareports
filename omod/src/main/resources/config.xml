@@ -2797,5 +2797,13 @@
 		<defaultValue>3f2b8c24-aef1-41ef-a409-d089b3d1a839</defaultValue>
 		<description>The concept id the tablet form for medications</description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.vialSizes</property>
+		<defaultValue>71602AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:10000,3db21aed-ca35-4c53-8863-53865d34a207:15,72876AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:1,74120AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:1000,75216AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:50,74204AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:0.5,01c586e0-6268-40d9-810b-99ac917b6635:200,76025AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:100,76550AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:500,78742AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:50,79700AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:15,7eb886a7-7fcc-49fe-9d0c-a8704c0879db:100,1fc083a8-2edc-4b5e-982c-f263720b5857:260,c7500e2a-1449-4c60-9eb6-c82bba8a606d:10,bc0918fc-3496-426c-bfd5-ef466e9776db:1</defaultValue>
+		<description>Comma separated list of vial sizes, each drug should contain the uuid or concept id for the drug separated by : followed by the vial size</description>
+	</globalProperty>
+	
+	
 
 </module>

@@ -70,6 +70,8 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 		
 		Concept tabs = gp.getConcept(GlobalPropertiesManagement.TABLET_FORM);
 		
+		Map<Concept, Double> vialSizes = gp.getVialSizes();
+		
 		Cohort cohort = context.getBaseCohort();
 		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, context);
@@ -82,6 +84,9 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 		
 		DataSetColumn route = new DataSetColumn("route", "route", String.class);
 		dataSet.getMetaData().addColumn(route);
+		
+		DataSetColumn vial = new DataSetColumn("vial", "vial", String.class);
+		dataSet.getMetaData().addColumn(vial);
 		
 		DrugOrderTotalDataSetDefinition drugDSD = (DrugOrderTotalDataSetDefinition) dataSetDefinition;
 		
@@ -127,10 +132,9 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 												        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
 													calcDose = eDrO.getDrug().getMaximumDailyDose();
 												}
-												if(eDrO.getRoute() != null && eDrO.getRoute().equals(oral))
-												{
+												if (eDrO.getRoute() != null && eDrO.getRoute().equals(oral)) {
 													double units = calcDose / eDrO.getDrug().getDoseStrength();
-													calcDose = Math.ceil(calcDose);
+													calcDose = Math.ceil(units);
 												}
 												dosage = dosage + calcDose;
 											}
@@ -152,22 +156,22 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 												        && calcDose > eDrO.getDrug().getMaximumDailyDose()) {
 													calcDose = eDrO.getDrug().getMaximumDailyDose();
 												}
-												if(eDrO.getRoute() != null && eDrO.getRoute().equals(oral))
-												{
+												if (eDrO.getRoute() != null && eDrO.getRoute().equals(oral)) {
 													double units = calcDose / eDrO.getDrug().getDoseStrength();
-													calcDose = Math.ceil(calcDose);
+													calcDose = Math.ceil(units);
 												}
 												dosage = dosage + calcDose;
 											}
+										} else if (eDrO.getUnits().contains("AUC")) {
+											dosage = dosage + 2;
 										} else {
-											if(eDrO.getDrug().getDosageForm() != null && !eDrO.getDrug().getDosageForm().equals(tabs))
-											{
+											if (eDrO.getDrug().getDosageForm() != null
+											        && !eDrO.getDrug().getDosageForm().equals(tabs)
+											        && eDrO.getRoute().equals(oral)) {
 												
 												double units = eDrO.getDose() / eDrO.getDrug().getDoseStrength();
 												dosage = dosage + Math.ceil(units);
-											}
-											else
-											{
+											} else {
 												dosage = dosage + eDrO.getDose();
 											}
 										}
@@ -180,20 +184,79 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 					}
 				}
 			}
+			Map<Concept, DrugTotalPOJO> combinedTotals = new HashMap<Concept, DrugTotalPOJO>();
 			for (Drug d : drugTotal.keySet()) {
-				String doseInfo = f.format(drugTotal.get(d));
-				if(d.getRoute() != null && d.getRoute().equals(oral))
-				{
-					doseInfo = doseInfo + " x " + f.format(d.getDoseStrength());
+				if (d.getRoute().equals(oral)) {
+					
+					String doseInfo = f.format(drugTotal.get(d));
+					if (d.getRoute() != null && d.getRoute().equals(oral)) {
+						doseInfo = doseInfo + " x " + f.format(d.getDoseStrength());
+					}
+					if (d.getUnits() != null && d.getUnits().indexOf("/") > 0) {
+						doseInfo = doseInfo + d.getUnits().substring(0, d.getUnits().indexOf("/"));
+					} else if (d.getUnits().contains("AUC")) {
+						doseInfo = "";
+					} else if (d.getUnits() != null) {
+						doseInfo = doseInfo + d.getUnits();
+					}
+					
+					String vials = "";
+					
+					
+					dataSet.addColumnValue(d.getId(), drug, d.getName());
+					dataSet.addColumnValue(d.getId(), dose, doseInfo);
+					dataSet.addColumnValue(d.getId(), vial, vials);
+					dataSet.addColumnValue(d.getId(), route, d.getRoute().getDisplayString());
 				}
-				if (d.getUnits() != null && d.getUnits().indexOf("/") > 0) {
-					doseInfo = doseInfo + d.getUnits().substring(0, d.getUnits().indexOf("/"));
-				} else if (d.getUnits() != null) {
-					doseInfo = doseInfo + d.getUnits();
+				else {
+					
+					if(combinedTotals.containsKey(d.getConcept()))
+					{
+						DrugTotalPOJO drugT = combinedTotals.get(d.getConcept());
+						Double newTotal = drugT.getDose() + drugTotal.get(d);
+						drugT.setDose(newTotal);
+					}
+					else
+					{
+						DrugTotalPOJO drugT = new DrugTotalPOJO();
+						drugT.setDose(drugTotal.get(d));
+						
+						String drugName = d.getName().substring(0, d.getName().indexOf("("));
+						drugT.setName(drugName);
+						
+						drugT.setRoute(d.getRoute());
+						drugT.setUnits(d.getUnits());
+						
+						combinedTotals.put(d.getConcept(), drugT);
+					}
 				}
-				dataSet.addColumnValue(d.getId(), drug, d.getName());
-				dataSet.addColumnValue(d.getId(), dose, doseInfo);
-				dataSet.addColumnValue(d.getId(), route, d.getRoute().getDisplayString());
+			}
+			for (Concept c : combinedTotals.keySet()) {
+				DrugTotalPOJO drugT = combinedTotals.get(c);
+				
+				String doseInfo = f.format(drugT.getDose());
+				
+				if (drugT.getUnits() != null && drugT.getUnits().indexOf("/") > 0) {
+					doseInfo = doseInfo + drugT.getUnits().substring(0, drugT.getUnits().indexOf("/"));
+				} else if (drugT.getUnits().contains("AUC")) {
+					doseInfo = "";
+				} else if (drugT.getUnits() != null) {
+					doseInfo = doseInfo + drugT.getUnits();
+				}
+				
+				String vials = "";
+				if (vialSizes.containsKey(c)) {
+					Double v = drugT.getDose() / vialSizes.get(c);
+					v = Math.ceil(v);
+					
+					vials = f.format(v);
+				}
+				
+				dataSet.addColumnValue(c.getId(), drug, drugT.getName());
+				dataSet.addColumnValue(c.getId(), dose, doseInfo);
+				dataSet.addColumnValue(c.getId(), vial, vials);
+				dataSet.addColumnValue(c.getId(), route, drugT.getRoute().getDisplayString());
+				
 			}
 		}
 		return dataSet;

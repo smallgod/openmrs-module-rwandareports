@@ -57,6 +57,12 @@ public class WeekViewDataSetEvaluator implements DataSetEvaluator {
 		Map<String, Object> mappingsFri = new HashMap<String, Object>();
 		mappingsFri.put("endDate", "${startDate+4d}");
 		
+		Map<String, Object> mappingsSat = new HashMap<String, Object>();
+		mappingsSat.put("endDate", "${startDate+5d}");
+		
+		Map<String, Object> mappingsSun = new HashMap<String, Object>();
+		mappingsSun.put("endDate", "${startDate+6d}");
+		
 		EvaluationContext ecMon = EvaluationContext.cloneForChild(context, new Mapped<RowPerPatientDataSetDefinition>(base,
 		        mappingsMon));
 		EvaluationContext ecTues = EvaluationContext.cloneForChild(context, new Mapped<RowPerPatientDataSetDefinition>(base,
@@ -67,12 +73,18 @@ public class WeekViewDataSetEvaluator implements DataSetEvaluator {
 		        base, mappingsThurs));
 		EvaluationContext ecFri = EvaluationContext.cloneForChild(context, new Mapped<RowPerPatientDataSetDefinition>(base,
 		        mappingsFri));
+		EvaluationContext ecSat = EvaluationContext.cloneForChild(context, new Mapped<RowPerPatientDataSetDefinition>(base,
+		        mappingsSat));
+		EvaluationContext ecSun = EvaluationContext.cloneForChild(context, new Mapped<RowPerPatientDataSetDefinition>(base,
+		        mappingsSun));
 		
 		SimpleDataSet monday = (SimpleDataSet) Context.getService(DataSetDefinitionService.class).evaluate(base, ecMon);
 		SimpleDataSet tuesday = (SimpleDataSet) Context.getService(DataSetDefinitionService.class).evaluate(base, ecTues);
 		SimpleDataSet wednesday = (SimpleDataSet) Context.getService(DataSetDefinitionService.class).evaluate(base, ecWed);
 		SimpleDataSet thursday = (SimpleDataSet) Context.getService(DataSetDefinitionService.class).evaluate(base, ecThurs);
 		SimpleDataSet friday = (SimpleDataSet) Context.getService(DataSetDefinitionService.class).evaluate(base, ecFri);
+		SimpleDataSet saturday = (SimpleDataSet) Context.getService(DataSetDefinitionService.class).evaluate(base, ecSat);
+		SimpleDataSet sunday = (SimpleDataSet) Context.getService(DataSetDefinitionService.class).evaluate(base, ecSun);
 		
 		Map<SimpleDataSet, String> week = new HashMap<SimpleDataSet, String>();
 		week.put(monday, "monday");
@@ -80,6 +92,8 @@ public class WeekViewDataSetEvaluator implements DataSetEvaluator {
 		week.put(wednesday, "wednesday");
 		week.put(thursday, "thursday");
 		week.put(friday, "friday");
+		week.put(saturday, "saturday");
+		week.put(sunday, "sunday");
 		
 		SimpleDataSet result = new SimpleDataSet(dsd, context);
 		addColumns(result, monday);
@@ -126,6 +140,8 @@ public class WeekViewDataSetEvaluator implements DataSetEvaluator {
 		days.add("wednesday");
 		days.add("thursday");
 		days.add("friday");
+		days.add("saturday");
+		days.add("sunday");
 		
 		for (String day : days) {
 			for (DataSetColumn column : columns) {

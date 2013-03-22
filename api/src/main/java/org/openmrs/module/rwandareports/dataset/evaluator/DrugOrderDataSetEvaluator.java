@@ -14,6 +14,9 @@
 package org.openmrs.module.rwandareports.dataset.evaluator;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -93,6 +96,8 @@ public class DrugOrderDataSetEvaluator implements DataSetEvaluator {
 		DataSetColumn drug6 = new DataSetColumn("drug6", "drug6", String.class);
 		dataSet.getMetaData().addColumn(drug6);
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
 		DrugOrderDataSetDefinition drugDSD = (DrugOrderDataSetDefinition) dataSetDefinition;
 		
 		if (cohort != null) {
@@ -100,11 +105,19 @@ public class DrugOrderDataSetEvaluator implements DataSetEvaluator {
 				Patient patient = Context.getPatientService().getPatient(pId);
 				List<DrugOrder> allDrugOrders = Context.getOrderService().getDrugOrdersByPatient(patient);
 				
+				Collections.sort(allDrugOrders, new Comparator<DrugOrder>(){
+
+					@Override
+                    public int compare(DrugOrder o1, DrugOrder o2) {
+	                    return o1.getDrug().getName().compareTo(o2.getDrug().getName());
+                    }
+					
+				});
+				
 				StringBuilder patientN = new StringBuilder();
 				patientN.append(patient.getGivenName());
 				patientN.append(" ");
-				if(patient.getMiddleName() != null && patient.getMiddleName().trim().length() > 0)
-				{
+				if (patient.getMiddleName() != null && patient.getMiddleName().trim().length() > 0) {
 					patientN.append(patient.getMiddleName());
 					patientN.append(" ");
 				}
@@ -128,7 +141,7 @@ public class DrugOrderDataSetEvaluator implements DataSetEvaluator {
 							        && (drugDSD.getDrugExclusions() == null || !drugDSD.getDrugExclusions().contains(
 							            drO.getDrug().getConcept()))) {
 								
-								if (eDrO.isCurrent(drugDSD.getAsOfDate())) {
+								if (eDrO.getStartDate() != null && (sdf.format(eDrO.getStartDate())).equals(sdf.format(drugDSD.getAsOfDate()))) {
 									String dosage = "";
 									if (eDrO.getDose() != null && eDrO.getUnits() != null) {
 										
@@ -174,37 +187,27 @@ public class DrugOrderDataSetEvaluator implements DataSetEvaluator {
 												dosage = f.format(calcDose)
 												        + eDrO.getUnits().substring(0, eDrO.getUnits().indexOf("/"));
 											}
+										} else if (eDrO.getUnits().contains("AUC")) {
+											dosage = eDrO.getUnits() + "=" + eDrO.getDose();
 										} else {
 											dosage = eDrO.getDose() + eDrO.getUnits();
 										}
 										
-										String drugString = eDrO.getDrug().getName() + " " + dosage + " " + eDrO.getRoute().getDisplayString();
-										if(index == 1)
-										{
+										String drugString = eDrO.getDrug().getName() + " " + dosage + " "
+										        + eDrO.getRoute().getDisplayString();
+										if (index == 1) {
 											dataSet.addColumnValue(pId, drug1, "R1 " + drugString);
-										}
-										else if(index == 2)
-										{
+										} else if (index == 2) {
 											dataSet.addColumnValue(pId, drug2, "R2 " + drugString);
-										}
-										else if(index == 3)
-										{
+										} else if (index == 3) {
 											dataSet.addColumnValue(pId, drug3, "R3 " + drugString);
-										}
-										else if(index == 4)
-										{
+										} else if (index == 4) {
 											dataSet.addColumnValue(pId, drug4, drugString);
-										}
-										else if(index == 5)
-										{
+										} else if (index == 5) {
 											dataSet.addColumnValue(pId, drug5, drugString);
-										}
-										else if(index == 6)
-										{
+										} else if (index == 6) {
 											drugString6 = drugString;
-										}
-										else if(index > 6)
-										{
+										} else if (index > 6) {
 											drugString6 = drugString6 + ", " + drugString;
 										}
 										index++;
@@ -213,39 +216,28 @@ public class DrugOrderDataSetEvaluator implements DataSetEvaluator {
 							}
 						}
 					}
-					if(index == 2)
-					{
+					if (index == 2) {
 						dataSet.addColumnValue(pId, drug2, "");
 						dataSet.addColumnValue(pId, drug3, "");
 						dataSet.addColumnValue(pId, drug4, "");
 						dataSet.addColumnValue(pId, drug5, "");
 						dataSet.addColumnValue(pId, drug6, "");
-					}
-					else if(index == 3)
-					{
+					} else if (index == 3) {
 						dataSet.addColumnValue(pId, drug3, "");
 						dataSet.addColumnValue(pId, drug4, "");
 						dataSet.addColumnValue(pId, drug5, "");
 						dataSet.addColumnValue(pId, drug6, "");
-					}
-					else if (index == 4)
-					{
+					} else if (index == 4) {
 						dataSet.addColumnValue(pId, drug4, "");
 						dataSet.addColumnValue(pId, drug5, "");
 						dataSet.addColumnValue(pId, drug6, "");
-					}
-					else if (index == 5)
-					{
+					} else if (index == 5) {
 						dataSet.addColumnValue(pId, drug5, "");
 						dataSet.addColumnValue(pId, drug6, "");
-					}
-					else if(index == 6)
-					{
+					} else if (index == 6) {
 						dataSet.addColumnValue(pId, drug6, "");
-					}
-					else if(index == 7)
-					{
-						dataSet.addColumnValue(pId, drug5, drugString6);
+					} else if (index > 6) {
+						dataSet.addColumnValue(pId, drug6, drugString6);
 					}
 				}
 			}
@@ -253,5 +245,3 @@ public class DrugOrderDataSetEvaluator implements DataSetEvaluator {
 		return dataSet;
 	}
 }
-
-

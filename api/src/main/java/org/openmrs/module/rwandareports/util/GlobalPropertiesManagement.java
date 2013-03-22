@@ -2,7 +2,9 @@ package org.openmrs.module.rwandareports.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -456,6 +458,25 @@ public class GlobalPropertiesManagement {
 		}
 		
 		return concepts;
+	}
+	
+	public Map<Concept, Double> getVialSizes(){
+		Map<Concept, Double> vialSizes = new HashMap<Concept, Double>();
+		
+		String vialGp =  Context.getAdministrationService().getGlobalProperty("reports.vialSizes");
+		String[] vials = vialGp.split(",");
+		
+		for(String vial: vials)
+		{
+			String[] v = vial.split(":");
+			
+			Concept drugConcept = getConcept(v[0], "reports.vialSize:" + v[0]);
+			Double size = Double.parseDouble(v[1]);
+			
+			vialSizes.put(drugConcept, size);
+		}
+		
+		return vialSizes;
 	}
 	
 

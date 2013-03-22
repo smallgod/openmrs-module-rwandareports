@@ -59,6 +59,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilt
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationship;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
 import org.openmrs.module.rwandareports.customcalculator.BooleanCalculation;
 import org.openmrs.module.rwandareports.definition.ArtSwitch;
 import org.openmrs.module.rwandareports.definition.ArtSwitchDate;
@@ -167,6 +168,12 @@ public class RowPerPatientColumns {
 		PatientIdentifier id = new PatientIdentifier(tracNetId);
 		
 		return id;
+	}
+	
+	public static SystemIdentifier getSystemId(String name) {
+		SystemIdentifier systemId = new SystemIdentifier();
+		systemId.setName(name);
+		return systemId;
 	}
 	
 	public static RetrievePersonByRelationship getMother() {
@@ -1295,12 +1302,20 @@ public class RowPerPatientColumns {
 		return info;
 	}
 	
-	public static DrugRegimenInformation getDrugRegimenInformationParameterized(String name, boolean showStartDate) {
+	public static DrugRegimenInformation getDrugRegimenInformationParameterized(String name, boolean showStartDate, boolean showDrugDetails) {
 		DrugRegimenInformation info = new DrugRegimenInformation();
 		info.setName(name);
 		info.setShowStartDate(showStartDate);
+		info.setShowDrugDetails(showDrugDetails);
 		info.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
 		info.addParameter(new Parameter("untilDate", "untilDate", Date.class));
+		return info;
+	}
+	
+	public static DrugRegimenInformation getDrugRegimenInformationParameterized(String name, Concept indication, boolean showStartDate, boolean showDrugDetails) {
+		DrugRegimenInformation info = getDrugRegimenInformationParameterized(name, showStartDate, showDrugDetails);
+		info.setIndication(indication);
+		
 		return info;
 	}
 	

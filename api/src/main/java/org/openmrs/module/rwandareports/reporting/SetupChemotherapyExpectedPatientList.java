@@ -17,6 +17,7 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
+import org.openmrs.module.rwandareports.dataset.ConsecutiveCombinedDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.WeekViewDataSetDefinition;
 import org.openmrs.module.rwandareports.definition.UpcomingChemotherapyCohortDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -94,11 +95,11 @@ public class SetupChemotherapyExpectedPatientList {
 		baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
 		baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
 		
-		dataSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
+		dataSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
 		baseSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
 		
 		SortCriteria sortCriteria = new SortCriteria();
-		sortCriteria.addSortElement("regimenDateFormat", SortDirection.ASC);
+		sortCriteria.addSortElement("familyName", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		
@@ -120,11 +121,10 @@ public class SetupChemotherapyExpectedPatientList {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
 		baseSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		baseSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
+		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
+		baseSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
-		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDateFormat", "yyyy/MM/dd"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+6d}"));
+		dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 		
@@ -137,10 +137,16 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("accompagnateur"), new HashMap<String, Object>());
 		
-		Map<String, Object> mappings = new HashMap<String, Object>();
-		mappings.put("endDate", "${endDate}");
+		ConsecutiveCombinedDataSetDefinition consecutiveDataSetDefinition = new ConsecutiveCombinedDataSetDefinition();
+		consecutiveDataSetDefinition.setName("consecutiveDataSetDefinition");
+		consecutiveDataSetDefinition.setBaseDefinition(dataSetDefinition);
+		consecutiveDataSetDefinition.setNumberOfIterations(7);
+		consecutiveDataSetDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
 		
-		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
+		Map<String, Object> mappings = new HashMap<String, Object>();
+		mappings.put("startDate", "${endDate}");
+		
+		reportDefinition.addDataSetDefinition("dataset", consecutiveDataSetDefinition, mappings);
 		
 		WeekViewDataSetDefinition weekDataSetDefinition = new WeekViewDataSetDefinition();
 		weekDataSetDefinition.setName("weekDataSetDefinition");

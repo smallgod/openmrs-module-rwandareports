@@ -1,7 +1,10 @@
 package org.openmrs.module.rwandareports.definition.evaluator;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -86,13 +89,43 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 			result.append(" Regimen: ");
 			result.append(regimen.getName());
 			
+			StringBuilder drugs = new StringBuilder();
+			
+			List<ExtendedDrugOrder> members = new ArrayList<ExtendedDrugOrder>();
+			members.addAll(regimen.getMembers());
+			Collections.sort(members, new Comparator<ExtendedDrugOrder>(){
+
+				@Override
+                public int compare(ExtendedDrugOrder o1, ExtendedDrugOrder o2) {
+	                return o1.getDrug().getName().compareTo(o2.getDrug().getName());
+                }
+				
+			});
+			
 			Date startDate = null;
-			for (ExtendedDrugOrder order : regimen.getMembers()) {
+			for (ExtendedDrugOrder order : members) {
+				
+				if(pd.isShowDrugDetails() && (pd.getIndication() == null || pd.getIndication().equals(order.getIndication())))
+				{
+					if(drugs.length() > 0)
+					{
+						drugs.append(", ");
+					}
+					else{
+						drugs.append(" /n\n");
+					}
+					drugs.append(order.getDrug().getName());
+					drugs.append(" ");
+					drugs.append(order.getDose());
+					drugs.append(order.getUnits());
+				}
+				
 				if (order.getRoute() != null && iv.contains(order.getRoute())) {
+					
 					if (pd.getAsOfDate() != null) {
-						if ((startDate == null || OpenmrsUtil.compare(order.getStartDate(), pd.getAsOfDate()) >= 0)
+						if (((startDate == null || OpenmrsUtil.compare(order.getStartDate(), pd.getAsOfDate()) >= 0)
 						        || (order.getStartDate().before(startDate) && OpenmrsUtil.compare(order.getStartDate(),
-						            pd.getAsOfDate()) >= 0)) {
+						            pd.getAsOfDate()) >= 0)) && (pd.getUntilDate() == null || OpenmrsUtil.compare(order.getStartDate(), pd.getUntilDate()) <= 0)) {
 							startDate = order.getStartDate();
 						}
 					}
@@ -114,6 +147,11 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 				result.append(String.valueOf(cycleDay + 1));
 			}
 			
+			if(pd.isShowDrugDetails())
+			{
+				result.append("");
+				result.append(drugs);
+			}
 			
 			par.setValue(result.toString());
 		}

@@ -1,0 +1,56 @@
+@CHARSET "UTF-8";
+
+@media print
+{
+	#printCalendarContents {page-break-after:always}
+}
+
+#calendarTd {
+	width: 65%;	
+}
+
+#calendarTable {
+	width: 100%;	
+}
+
+#calendarContents {
+	width: 100%;	
+}
+
+#printCalendarContents {
+	width: 1350px;	
+}
+
+#printButton {
+	padding-top: 5px;
+	padding-bottom: 15px;
+}
+
+#header {
+	float: right;
+}
+
+.legend0 {
+	background-color: #99CCFF;
+}
+
+.legend1 {
+	background-color: #D076FF;
+}
+
+.legend2 {
+	background-color: #FFC79A;
+}
+
+.legend3 {
+	background-color: #BBFFA2;
+}
+
+.legend4 {
+	background-color: #FFBFEF;
+}
+
+.legend5 {
+	background-color: #2F72FF;
+}
+
