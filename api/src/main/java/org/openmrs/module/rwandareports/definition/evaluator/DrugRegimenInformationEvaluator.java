@@ -51,6 +51,7 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 				offset.setTime(regimen.getFirstDrugOrderStartDate());
 				offset.add(Calendar.DAY_OF_YEAR, regOffset);
 				pd.setAsOfDate(offset.getTime());
+				pd.setUntilDate(offset.getTime());
 				pd.setShowStartDate(true);
 			}
 		} else {

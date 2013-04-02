@@ -28,7 +28,7 @@ public class DrugRegimenInformation extends BasePatientData implements RowPerPat
 	private boolean showStartDate = true;
 	
 	@ConfigurationProperty(required=false)
-	private boolean showDrugDetails = true;
+	private boolean showDrugDetails = false;
 
 	
     public String getRegimen() {
