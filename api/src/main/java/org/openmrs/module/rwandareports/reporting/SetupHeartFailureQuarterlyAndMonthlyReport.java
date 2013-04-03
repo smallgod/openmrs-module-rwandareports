@@ -678,7 +678,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));		
 		patientsWithEchoDocumanted.getSearches().put("3",new Mapped<CohortDefinition>(patientEnrolledInHFProgram, ParameterizableUtil
 	            .createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}")));
-		patientsWithEchoDocumanted.setCompositionString("(NOT 1) 2 AND 3");
+		patientsWithEchoDocumanted.setCompositionString("2 AND 3 AND (NOT 1)");
 		
 		CohortIndicator patientsWithEchoDocumantedIndicator = Indicators.newCountIndicator(
 		    "patientsWithEchoDocumantedIndicator", patientsWithEchoDocumanted,null);		
