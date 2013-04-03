@@ -38,6 +38,8 @@ public class SetupOncologyOutpatientAppointmentList {
 	
 	private Concept specialVisit;
 	
+	private Concept biopsyVisit;
+	
 	public void setup() throws Exception {
 		
 		setupProperties();
@@ -83,15 +85,20 @@ public class SetupOncologyOutpatientAppointmentList {
 		RowPerPatientDataSetDefinition dataSetDefinition3 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition3.setName("Special Consultation");
 		
+		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
+		dataSetDefinition4.setName("Biopsy to be performed");
+		
 		dataSetDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));
 		dataSetDefinition2.addParameter(new Parameter("endDate", "endDate", Date.class));
 		dataSetDefinition3.addParameter(new Parameter("endDate", "endDate", Date.class));
+		dataSetDefinition4.addParameter(new Parameter("endDate", "endDate", Date.class));
 		
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDV", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 		dataSetDefinition2.setSortCriteria(sortCriteria);
 		dataSetDefinition3.setSortCriteria(sortCriteria);
+		dataSetDefinition4.setSortCriteria(sortCriteria);
 		
 		//Add filters
 		dataSetDefinition.addFilter(Cohorts.createDateObsCohortDefinition(scheduledVisit, RangeComparator.GREATER_EQUAL,
@@ -103,24 +110,31 @@ public class SetupOncologyOutpatientAppointmentList {
 		dataSetDefinition3.addFilter(Cohorts.createDateObsCohortDefinition(specialVisit, RangeComparator.GREATER_EQUAL,
 		    RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil
 		        .createParameterMappings("value2=${endDate+6M},value1=${endDate-14d}"));
+		dataSetDefinition4.addFilter(Cohorts.createDateObsCohortDefinition(biopsyVisit, RangeComparator.GREATER_EQUAL,
+		    RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil
+		        .createParameterMappings("value2=${endDate+6M},value1=${endDate-14d}"));
 		
 		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getSystemId("id"), new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(RowPerPatientColumns.getSystemId("id"), new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(RowPerPatientColumns.getSystemId("id"), new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(RowPerPatientColumns.getSystemId("id"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("date", scheduledVisit, "yyyy-MM-dd"),
 		    new HashMap<String, Object>());
@@ -128,17 +142,21 @@ public class SetupOncologyOutpatientAppointmentList {
 		    new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("date", scheduledVisit, "yyyy-MM-dd"),
 		    new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(RowPerPatientColumns.getMostRecent("date", scheduledVisit, "yyyy-MM-dd"),
+		    new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("imbId"), new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(RowPerPatientColumns.getIMBId("imbId"), new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(RowPerPatientColumns.getIMBId("imbId"), new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(RowPerPatientColumns.getIMBId("imbId"), new HashMap<String, Object>());
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
 		
 		reportDefinition.addDataSetDefinition("Routine Visit", dataSetDefinition, mappings);
-		//reportDefinition.addDataSetDefinition("Biopsy Result Visit", dataSetDefinition2, mappings);
-		//reportDefinition.addDataSetDefinition("Special Consultation", dataSetDefinition3, mappings);
+		reportDefinition.addDataSetDefinition("Biopsy Result Visit", dataSetDefinition2, mappings);
+		reportDefinition.addDataSetDefinition("Special Consultation", dataSetDefinition3, mappings);
+		reportDefinition.addDataSetDefinition("Biopsy to be performed", dataSetDefinition4, mappings);
 	}
 	
 	private void setupProperties() {
@@ -147,10 +165,11 @@ public class SetupOncologyOutpatientAppointmentList {
 		
 		scheduledVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
 		
-		//Change to correct concepts
-		biopsyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
+		biopsyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_PATHOLOGY_RESULT_VISIT);
 		
-		specialVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
+		specialVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SPECIAL_VISIT);
+		
+		biopsyVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_TEST_VISIT);
 	}
 	
 	private void createCustomWebRenderer(ReportDefinition rd) throws IOException {

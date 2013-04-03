@@ -41,6 +41,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugO
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstRecordedObservationWithCodedConceptAnswer;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FullHistoryOfProgramWorkflowStates;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObsgroup;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentProgramWorkflowState;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsValueAfterDateOfOtherDefinition;
@@ -558,6 +559,17 @@ public class RowPerPatientColumns {
 	                                                                           ResultFilter drugFilter) {
 		return getCurrentOrdersRestrictedByConceptSet(name,
 		    gp.getConcept(GlobalPropertiesManagement.EPILEPSY_TREATMENT_DRUGS), dateFormat, drugFilter);
+	}
+	
+	public static MostRecentObsgroup getMostRecentObsgroup(String name, Concept concept, Concept member, String dateFormat) {
+		MostRecentObsgroup mostRecent = new MostRecentObsgroup();
+		mostRecent.setConcept(concept);
+		mostRecent.setName(name);
+		mostRecent.setMemberToDisplay(member);
+		if (dateFormat != null) {
+			mostRecent.setDateFormat(dateFormat);
+		}
+		return mostRecent;
 	}
 	
 	public static MostRecentObservation getMostRecent(String name, Concept concept, String dateFormat) {

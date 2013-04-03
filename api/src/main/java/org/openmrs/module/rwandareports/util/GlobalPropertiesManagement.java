@@ -814,6 +814,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String ONCOLOGY_SCHEDULED_TEST_VISIT = "reports.oncologyTestScheduledVisit";
 	
+	public final static String ONCOLOGY_PATHOLOGY_RESULT_VISIT = "reports.oncologyPathologyResultVisit";
+	
+	public final static String ONCOLOGY_SPECIAL_VISIT = "reports.oncologySpecialVisit";
+	
 	public final static String BIOPSY_TEST_SITE = "reports.tissueSite";
 	
 	public final static String ONCOLOGY_BLOOD_DIAGNOSTIC_TEST = "reports.oncologyBloodDiagnostic";
@@ -833,6 +837,20 @@ public class GlobalPropertiesManagement {
     public final static String ORAL_ROUTE = "reports.oralRoute";
     
     public final static String TABLET_FORM = "reports.tabletForm";
+    
+    public final static String BIOPSY_URL = "reports.biopsyUrl";
+    
+    public final static String PRIMARY_DOCTOR_CONSTRUCT = "reports.primaryDoctorConstruct";
+    
+    public final static String PRIMARY_DOCTOR_NAME = "reports.primaryDoctorName";
+    
+    public final static String PRIMARY_DOCTOR_TELEPHONE = "reports.primaryDoctorTelephone";
+    
+    public final static String PRIMARY_DOCTOR_EMAIL = "reports.primaryDoctorEmail";
+    
+    public final static String PATHOLOGY_ACCESSION_NUMBER = "reports.pathologyAccessionNumber";
+    
+	public final static String PATHOLOGY_RESULTS_COMMUNICATED = "reports.pathologyResultsCommunicated";
 	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
@@ -954,7 +972,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String HIV_TRANSFER_FORM="reports.tranferinForm";
 	
-
+	public final static String PATH_RESULTS_FORM = "reports.pathResultsForm";
+	
+	public final static String PATH_SUBMISSION_FORM = "reports.pathSubmissionForm";
+	
 	public final static String POSTOPERATOIRE_CARDIAQUERDV = "reports.Form_PostoperatoireCardiaqueRDV";
 	
 	public final static String INSUFFISANCE_CARDIAQUE_RDV = "reports.Form_InsuffisanceCardiaqueRDV";

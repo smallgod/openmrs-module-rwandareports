@@ -31,9 +31,11 @@ import org.openmrs.module.rwandareports.reporting.SetupMonthlyCD4DeclineReport;
 import org.openmrs.module.rwandareports.reporting.SetupNCDConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupNCDLateVisitandLTFUReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyDailyDrugList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyExternalBiopsyContactList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientAppointmentList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicMissedVisit;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicPatientList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFoodDistributionReport;
@@ -519,6 +521,30 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_chemotherapyDailyDrugList")
 	public ModelAndView removeChemotherapyDailyDrugList() throws Exception {
 		new SetupOncologyDailyDrugList().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/register_oncologyBiopsyList")
+	public ModelAndView registerOncologyBiopsyList() throws Exception {
+		new SetupOncologyTestPatientList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/remove_oncologyBiopsyList")
+	public ModelAndView removeOncologyBiopsyList() throws Exception {
+		new SetupOncologyTestPatientList().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/register_oncologyExternalBiopsyList")
+	public ModelAndView registerOncologyExternalBiopsyList() throws Exception {
+		new SetupOncologyExternalBiopsyContactList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/remove_oncologyExternalBiopsyList")
+	public ModelAndView removeOncologyExternalBiopsyList() throws Exception {
+		new SetupOncologyExternalBiopsyContactList().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 	

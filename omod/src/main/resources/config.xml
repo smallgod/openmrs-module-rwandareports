@@ -2761,8 +2761,22 @@
 
 	<globalProperty>
 		<property>reports.oncologyTestScheduledVisit</property>
-		<defaultValue>a44a2203-aa0f-4c7c-9aba-d7778a674e9b</defaultValue>
+		<defaultValue>ea843dde-d33b-4687-88cb-5cd76111b48b</defaultValue>
 		<description>The concept id for the scheduled oncology test or biopsy
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologyPathologyResultVisit</property>
+		<defaultValue>56001c5f-1a8a-4d80-b255-d1de983a852e</defaultValue>
+		<description>The concept id for the scheduled oncology test result or pathology result visit
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologySpecialVisit</property>
+		<defaultValue>7ec61380-3cde-4b7a-a322-4678a0b460c4</defaultValue>
+		<description>The concept id for the scheduled oncology special consultation
 		</description>
 	</globalProperty>
 
@@ -2804,6 +2818,58 @@
 		<description>Comma separated list of vial sizes, each drug should contain the uuid or concept id for the drug separated by : followed by the vial size</description>
 	</globalProperty>
 	
+	<globalProperty>
+		<property>reports.pathResultsForm</property>
+		<defaultValue>d4ab99d5-67f0-4fca-88e1-bb8347a19f74</defaultValue>
+		<description>The form id for the pathology results form</description>
+	</globalProperty>
 	
+	<globalProperty>
+		<property>reports.biopsyUrl</property>
+		<defaultValue>05f31a2b-2b94-4d1c-b958-fbcf82facc81</defaultValue>
+		<description>The concept id for the pathology results url observation</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.primaryDoctorConstruct</property>
+		<defaultValue>412e1928-568c-4055-b50a-902fd35cc30b</defaultValue>
+		<description>The concept id for the primary doctor construct for Oncology Path forms</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.primaryDoctorName</property>
+		<defaultValue>3cd997f2-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept id for the primary doctor name for Oncology Path forms</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.primaryDoctorTelephone</property>
+		<defaultValue>276f8057-55a4-4b1c-8915-69ad090fcffb</defaultValue>
+		<description>The concept id for the primary doctor telephone for Oncology Path forms</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.primaryDoctorEmail</property>
+		<defaultValue>a4cd8972-6a31-411c-ade2-54c24ddad631</defaultValue>
+		<description>The concept id for the primary doctor email for Oncology Path forms</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.pathSubmissionForm</property>
+		<defaultValue>9371cdff-7e07-48a1-bc53-d0583a1aa9ac</defaultValue>
+		<description>The form id for the pathology submission form</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.pathologyAccessionNumber</property>
+		<defaultValue>9d6c1f99-9da6-434b-8780-b436292d845b</defaultValue>
+		<description>The concept id for the pathology accession number</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.pathologyResultsCommunicated</property>
+		<defaultValue>773e56e1-29df-422d-bb69-70c602569ab1</defaultValue>
+		<description>The concept id for the pathology communicated concept</description>
+	</globalProperty>
 
 </module>

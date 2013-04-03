@@ -158,8 +158,8 @@ public class SetupOncologyOutpatientClinicPatientList {
 		mappings.put("endDate", "${endDate}");
 		
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
-		//reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
-		//reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
+		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
+		reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
 	}
 	
 	private void setupProperties() {
@@ -170,10 +170,9 @@ public class SetupOncologyOutpatientClinicPatientList {
 		
 		scheduledVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
 		
-		//Change to correct concepts
-		biopsyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
+		biopsyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_PATHOLOGY_RESULT_VISIT);
 		
-		specialVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
+		specialVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SPECIAL_VISIT);
 		
 		telephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
 		
