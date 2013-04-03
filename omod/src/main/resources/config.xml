@@ -2871,5 +2871,23 @@
 		<defaultValue>773e56e1-29df-422d-bb69-70c602569ab1</defaultValue>
 		<description>The concept id for the pathology communicated concept</description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologyTestConstruct</property>
+		<defaultValue>56b7cea0-3aae-401b-8280-1639e0e46310</defaultValue>
+		<description>The concept id for the other oncology test construct concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.labTestsOrdered</property>
+		<defaultValue>3cd937e4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept id for the lab tests ordered</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.tissueBiopsy</property>
+		<defaultValue>cffa61ee-9058-4ba5-aece-8164517d6645</defaultValue>
+		<description>The concept id for the tissue biopsy lab test</description>
+	</globalProperty>
 
 </module>

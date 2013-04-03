@@ -1,9 +1,7 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -12,8 +10,12 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
+import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -39,6 +41,8 @@ public class SetupOncologyTestPatientList {
 	
 	private EncounterType outpatientOncology;
 	
+	private EncounterType inpatientOncology;
+	
 	private Concept biopsyResult;
 	
 	private Concept resultsVisit;
@@ -54,6 +58,15 @@ public class SetupOncologyTestPatientList {
 	private Concept primaryDoctorConstruct;
 	
 	private Concept primaryDoctorDetails; 
+	
+	private Concept patientNotified;
+	
+	private Concept testOrdered;
+	
+	private Concept otherOncologyTest;
+	
+	private Concept tissueBiospsy;
+	
 	
 	public void setup() throws Exception {
 		
@@ -127,11 +140,94 @@ public class SetupOncologyTestPatientList {
 		sortCriteria4.addSortElement("biopsyScheduledSort", SortDirection.ASC);
 		dataSetDefinition4.setSortCriteria(sortCriteria4);
 		
+		//cohorts
+		//Biopsy results back
+		StringBuilder sql = new StringBuilder();
+		sql.append("select lastResult.patient_id from (select * from (select * from encounter where voided = 0 and form_id=");
+		sql.append(pathResult.getFormId());
+		sql.append(" order by encounter_datetime desc) as o group by o.patient_id) as lastResult, (select * from (select * from encounter where encounter_type in(");
+		sql.append(outpatientOncology.getEncounterTypeId());
+		sql.append(",");
+		sql.append(inpatientOncology.getEncounterTypeId());
+		sql.append(")  and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where ");
+		sql.append(" DATEDIFF(:endDate,lastResult.encounter_datetime)>=0 and (not last_Visit.encounter_datetime > lastResult.encounter_datetime) and last_Visit.patient_id=lastResult.patient_id");
+		
+		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
+		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		StringBuilder sql2 = new StringBuilder();
+		sql2.append("select o.patient_id from encounter o where o.voided=0 and o.form_id=");
+		sql2.append(pathResult.getFormId());
+		sql2.append(" and o.patient_id not in(select patient_id from encounter where encounter_type in (");
+		sql2.append(outpatientOncology.getEncounterTypeId());
+		sql2.append(",");
+		sql2.append(inpatientOncology.getEncounterTypeId());
+		sql2.append(") and voided = 0)");
+		
+		SqlCohortDefinition lateVisitNoEncounter = new SqlCohortDefinition(sql2.toString());
+		lateVisitNoEncounter.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		StringBuilder sql3 = new StringBuilder();
+		sql3.append("select lastResult.patient_id from (select * from (select * from encounter where voided = 0 and form_id=");
+		sql3.append(pathResult.getFormId());
+		sql3.append(" order by encounter_datetime desc) as o group by o.patient_id) as lastResult, (select * from (select * from obs where voided = 0 and concept_id=  ");
+		sql3.append(patientNotified.getConceptId());
+		sql3.append(" order by obs_datetime desc) as o group by o.person_id) as lastObs where ");
+		sql3.append(" (lastObs.obs_datetime >= lastResult.encounter_datetime) and lastObs.person_id=lastResult.patient_id");
+		
+		SqlCohortDefinition lateVisit2 = new SqlCohortDefinition(sql3.toString());
+		lateVisit2.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		CompositionCohortDefinition visit = new CompositionCohortDefinition();
+		visit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		visit.getSearches().put("1",new Mapped<CohortDefinition>(lateVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit.getSearches().put("2",new Mapped<CohortDefinition>(lateVisitNoEncounter, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit.getSearches().put("3",new Mapped<CohortDefinition>(lateVisit2, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit.setCompositionString("(1 OR 2) AND NOT 3");
+		
+		//Biopsy not taken
+		StringBuilder sql4 = new StringBuilder();
+		sql4.append("select lastObs.person_id from (select * from (select * from obs where voided = 0 and (concept_id=  ");
+		sql4.append(otherOncologyTest.getConceptId());
+		sql4.append(" or (concept_id=");
+		sql4.append(testOrdered.getConceptId());
+		sql4.append(" and value_coded=");
+		sql4.append(tissueBiospsy.getConceptId());
+		sql4.append("))");
+		sql4.append(" order by obs_datetime desc) as o group by o.person_id) as lastObs, (select * from (select * from encounter where form_id=");
+		sql4.append(pathSubmission.getFormId());
+		sql4.append("  and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where ");
+		sql4.append(" DATEDIFF(:endDate,lastObs.obs_datetime)>6 and (not last_Visit.encounter_datetime > lastObs.obs_datetime) and last_Visit.patient_id=lastObs.person_id");
+		
+		SqlCohortDefinition lateVisit3 = new SqlCohortDefinition(sql4.toString());
+		lateVisit3.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		StringBuilder sql5 = new StringBuilder();
+		sql5.append("select o.person_id from obs o where o.voided=0 and (o.concept_id=");
+		sql5.append(otherOncologyTest.getConceptId());
+		sql5.append(" or (o.concept_id=");
+		sql5.append(testOrdered.getConceptId());
+		sql5.append(" and o.value_coded=");
+		sql5.append(tissueBiospsy.getConceptId());
+		sql5.append("))");
+		sql5.append(" and DATEDIFF(:endDate,o.obs_datetime)>6 and o.person_id not in(select patient_id from encounter where form_id =");
+		sql5.append(pathSubmission.getFormId());
+		sql5.append(" and voided = 0)");
+		
+		SqlCohortDefinition lateVisitNoEncounter3 = new SqlCohortDefinition(sql5.toString());
+		lateVisitNoEncounter3.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		CompositionCohortDefinition visit2 = new CompositionCohortDefinition();
+		visit2.addParameter(new Parameter("endDate", "endDate", Date.class));
+		visit2.getSearches().put("1",new Mapped<CohortDefinition>(lateVisit3, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit2.getSearches().put("2",new Mapped<CohortDefinition>(lateVisitNoEncounter3, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit2.setCompositionString("1 OR 2");
+
 		//Add filters
-		dataSetDefinition.addFilter(Cohorts.createPatientsWhereMostRecentEncounterIsForm(pathResult, outpatientOncology), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition.addFilter(visit, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition2.addFilter(Cohorts.createPatientsDueForVisit(resultsVisit, pathResult), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition3.addFilter(Cohorts.createPatientsOverdueForVisit(pathSubmission, pathResult), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		dataSetDefinition4.addFilter(Cohorts.createPatientsLateForVisit(biopsyScheduled, pathSubmission), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition4.addFilter(visit2, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", resultsVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
@@ -199,6 +295,8 @@ public class SetupOncologyTestPatientList {
 		
 		outpatientOncology = gp.getEncounterType(GlobalPropertiesManagement.OUTPATIENT_ONCOLOGY_ENCOUNTER);
 		
+		inpatientOncology = gp.getEncounterType(GlobalPropertiesManagement.INPATIENT_ONCOLOGY_ENCOUNTER);
+		
 		resultsVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_PATHOLOGY_RESULT_VISIT);
 		
 		biopsyResult = gp.getConcept(GlobalPropertiesManagement.BIOPSY_URL);
@@ -216,5 +314,13 @@ public class SetupOncologyTestPatientList {
 		biopsyScheduled = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_TEST_VISIT);
 		
 		pathSubmission = gp.getForm(GlobalPropertiesManagement.PATH_SUBMISSION_FORM);
+		
+		patientNotified = gp.getConcept(GlobalPropertiesManagement.PATHOLOGY_RESULTS_COMMUNICATED);
+		
+		otherOncologyTest = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_TEST_CONSTRUCT);
+		
+		testOrdered = gp.getConcept(GlobalPropertiesManagement.LABORATORY_TESTS_ORDERED);
+		
+		tissueBiospsy = gp.getConcept(GlobalPropertiesManagement.TISSUE_BIOPSY);
 	}
 }
