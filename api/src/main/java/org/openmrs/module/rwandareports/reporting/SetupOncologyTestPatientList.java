@@ -99,7 +99,7 @@ public class SetupOncologyTestPatientList {
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("ONC-Biopsy Results/Tracking Contact List");
 				
-		reportDefinition.addParameter(new Parameter("endDate", "Date:", Date.class));	
+		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));	
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		createDataSetDefinition(reportDefinition);
 		

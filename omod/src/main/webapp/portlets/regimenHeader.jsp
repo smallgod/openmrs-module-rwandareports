@@ -105,7 +105,7 @@
 			<tr>
 				<th align="left"><spring:message code="rwandareports.printTreatmentSummary"/> </th>
 			</tr>
-		<c:forEach items="${model.regimens}" var="drugGroup">
+		<c:forEach items="${model.allRegimens}" var="drugGroup">
 			<c:choose>
 				<c:when test="${fn:length(drugGroup.startDates) > 1 }">
 					<c:forEach items="${drugGroup.startDates }" var="startDate">

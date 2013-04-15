@@ -54,7 +54,7 @@ public class SetupOncologyOutpatientClinicPatientList {
 		    "OncologyOutpatientClinicConsult.xls_", null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:8,dataset:dataset|sheet:1,row:12,dataset:dataset2|sheet:1,row:16,dataset:dataset3");
+		props.put("repeatingSections", "sheet:1,row:8,dataset:dataset|sheet:1,row:13,dataset:dataset2|sheet:1,row:18,dataset:dataset3");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);
@@ -95,9 +95,9 @@ public class SetupOncologyOutpatientClinicPatientList {
 		RowPerPatientDataSetDefinition dataSetDefinition3 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition3.setName("Special Consultation");
 		
-		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-		dataSetDefinition2.addParameter(new Parameter("endDate", "Monday", Date.class));
-		dataSetDefinition3.addParameter(new Parameter("endDate", "Monday", Date.class));
+		dataSetDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
+		dataSetDefinition2.addParameter(new Parameter("endDate", "Date", Date.class));
+		dataSetDefinition3.addParameter(new Parameter("endDate", "Date", Date.class));
 		
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("familyName", SortDirection.ASC);

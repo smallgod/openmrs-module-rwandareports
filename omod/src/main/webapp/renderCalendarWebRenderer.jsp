@@ -16,11 +16,13 @@ jQuery(document).ready(function() {
   jQuery('#calendar').fullCalendar({
 	  height: 100,
 	  events: [
+				<c:set var="first" value="0"/>
 				<c:forEach var="dataSetDefinitionEntry" items="${__openmrs_report_data.definition.dataSetDefinitions}" varStatus="itemStatus">
 				<c:set var="dataSetKey" value="${dataSetDefinitionEntry.key}"/>
 				<c:set var="dataSet" value="${__openmrs_report_data.dataSets[dataSetKey]}"/>
 				<c:forEach items="${dataSet.rowMap}" var="rowEntry" varStatus="rowEntryIndex">
-					<c:if test="${rowEntryIndex.index > 0 || itemStatus.index > 0}">,</c:if>	
+					<c:if test="${first == '1'}">,</c:if>	
+						<c:set var="first" value="1"/>
 						{
 					    title  : '<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[1]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[2]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[3]]}"/>',				
 					    start  : '<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[4]]}"/>',
@@ -43,14 +45,16 @@ jQuery(document).ready(function() {
 			    right:  ''
 		},
 		events: [
+			<c:set var="first" value="0"/>
 			<c:forEach var="dataSetDefinitionEntry" items="${__openmrs_report_data.definition.dataSetDefinitions}" varStatus="itemStatus">
 			<c:set var="dataSetKey" value="${dataSetDefinitionEntry.key}"/>
 			<c:set var="dataSet" value="${__openmrs_report_data.dataSets[dataSetKey]}"/>
 
 			<c:forEach items="${dataSet.rowMap}" var="rowEntry" varStatus="rowEntryIndex">
-				<c:if test="${rowEntryIndex.index > 0 || itemStatus.index > 0}">,</c:if>	
+			<c:if test="${first == '1'}">,</c:if>	
+				<c:set var="first" value="1"/>
 					{
-				    title  : '<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[5]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[1]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[2]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[3]]}"/>',				
+				    title  : '<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[6]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[1]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[2]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[3]]}"/>',				
 				    start  : '<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[4]]}"/>',
 				    end :'<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[4]]}"/>',
 				    textColor: '#000000',

@@ -49,10 +49,12 @@ public class RegimenHeaderPortletController extends PortletController {
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 
 		List<Concept> iv = gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT);
+		Concept chemotherapy = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY);
 		Patient patient = Context.getPatientService().getPatient((Integer) model.get("patientId"));
     	
 		List<DrugOrder> allDrugOrders = Context.getOrderService().getDrugOrdersByPatient(patient);
 		List<DrugRegimen> regimens = new ArrayList<DrugRegimen>();
+		List<DrugRegimen> allRegimens = new ArrayList<DrugRegimen>();
 		
 		Calendar compareDate = Calendar.getInstance();
 		compareDate.add(Calendar.DAY_OF_YEAR, -7);
@@ -68,7 +70,7 @@ public class RegimenHeaderPortletController extends PortletController {
 						Set<ExtendedDrugOrder> members = regimen.getMembers();
 						for(ExtendedDrugOrder order: members)
 						{
-							if(order.getStartDate().after(compareDate.getTime()) && order.getRoute() != null && iv.contains(order.getRoute()))
+							if(order.getStartDate().after(compareDate.getTime()) && order.getRoute() != null && iv.contains(order.getRoute()) && order.getIndication() != null && chemotherapy.equals(order.getIndication()))
 							{
 								regimens.add(regimen);
 								break;
@@ -91,6 +93,42 @@ public class RegimenHeaderPortletController extends PortletController {
 			}
 			model.put("regimens", regimenDTOs);
 		}
+		
+		for(DrugOrder drugOrder : allDrugOrders)
+		{
+			if (drugOrder instanceof ExtendedDrugOrder) {
+				ExtendedDrugOrder edo = (ExtendedDrugOrder)drugOrder;
+				if(edo.getGroup() != null && edo.getGroup() instanceof DrugRegimen) {
+					DrugRegimen regimen = (DrugRegimen)edo.getGroup();
+					if (!allRegimens.contains(regimen))
+					{
+						Set<ExtendedDrugOrder> members = regimen.getMembers();
+						for(ExtendedDrugOrder order: members)
+						{
+							if(order.getIndication() != null && chemotherapy.equals(order.getIndication()))
+							{
+								allRegimens.add(regimen);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if(allRegimens.size() > 0)
+		{
+			List<RegimenDTO> regimenDTOs = new ArrayList<RegimenDTO>(); 
+			for(DrugRegimen reg: allRegimens)
+			{
+				RegimenDTO dto = new RegimenDTO();
+				dto.setDrugRegimen(reg);
+				dto.setStartDates(getRegimenCycleDays(reg));
+				regimenDTOs.add(dto);
+			}
+			model.put("allRegimens", regimenDTOs);
+		}
+		
     	model.put("patient", patient);
 	}
 	

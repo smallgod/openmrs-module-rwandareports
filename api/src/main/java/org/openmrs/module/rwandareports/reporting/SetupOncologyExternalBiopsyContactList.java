@@ -86,7 +86,7 @@ public class SetupOncologyExternalBiopsyContactList {
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("ONC-External Biopsy Results/Tracking Contact List");
 				
-		reportDefinition.addParameter(new Parameter("endDate", "Date:", Date.class));	
+		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));	
 		reportDefinition.setBaseCohortDefinition(new InverseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram)), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		createDataSetDefinition(reportDefinition);
 		

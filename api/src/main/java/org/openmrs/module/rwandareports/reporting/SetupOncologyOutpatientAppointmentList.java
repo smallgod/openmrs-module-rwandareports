@@ -138,11 +138,11 @@ public class SetupOncologyOutpatientAppointmentList {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("date", scheduledVisit, "yyyy-MM-dd"),
 		    new HashMap<String, Object>());
-		dataSetDefinition2.addColumn(RowPerPatientColumns.getMostRecent("date", scheduledVisit, "yyyy-MM-dd"),
+		dataSetDefinition2.addColumn(RowPerPatientColumns.getMostRecent("date", biopsyResultVisit, "yyyy-MM-dd"),
 		    new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("date", scheduledVisit, "yyyy-MM-dd"),
+		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("date", specialVisit, "yyyy-MM-dd"),
 		    new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getMostRecent("date", scheduledVisit, "yyyy-MM-dd"),
+		dataSetDefinition4.addColumn(RowPerPatientColumns.getMostRecent("date", biopsyVisit, "yyyy-MM-dd"),
 		    new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("imbId"), new HashMap<String, Object>());
