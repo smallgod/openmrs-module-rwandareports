@@ -27,6 +27,7 @@ import org.openmrs.module.reporting.cohort.definition.InverseCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.PersonAttributeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.SetComparator;
+import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
@@ -40,6 +41,7 @@ import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
 import org.openmrs.module.rwandareports.renderer.DataQualityReportWebRenderer;
+import org.openmrs.module.rwandareports.renderer.DataQualityWebRenderedForNCDandOncology;
 import org.openmrs.module.rwandareports.renderer.DataQualityWebRendererForSites;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -63,6 +65,7 @@ public class SetupDataQualityIndicatorReport {
 	private Program chronicrespiratory;
 	private Program hypertention;
 	private Program epilepsy;
+	//Private Program oncologyProgram;
 	private ProgramWorkflowState adultOnART;
 	private ProgramWorkflowState pediOnART;
 	private ProgramWorkflowState PMTCTOnART;
@@ -81,6 +84,11 @@ public class SetupDataQualityIndicatorReport {
 	private ProgramWorkflowState diedInEpil;
 	private List<Concept> tbFirstLineDrugsConcepts;
 	private List<Concept> tbSecondLineDrugsConcepts;
+	private List<Concept> hfailureDrugsConcepts;
+	private List<Concept> epilepsyDrugsConcepts;
+	private List<Concept> diabetesDrugsConcepts;
+	private List<Concept> hypertentionDrugsConcepts;
+	private List<Concept> chronicrespiratoryDrugsConcepts;
 	private Concept reasonForExitingCare;
 	private Concept transferOut;
 	private Concept height;
@@ -98,7 +106,8 @@ public class SetupDataQualityIndicatorReport {
 		setUpProperties();
 
 		createReportDefinitionBySite();
-		createReportDefinitionAllSites();
+		//createReportDefinitionAllSites();
+		createReportDefinitionBySiteForNCD();
 
 	}
 
@@ -107,13 +116,14 @@ public class SetupDataQualityIndicatorReport {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
 			if ("DataQualityWebRenderer".equals(rd.getName())
-					|| "DataWebRenderer".equals(rd.getName())) {
+					||"DataWebRendererNCD".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
 
 		h.purgeReportDefinition("DQ-Data Quality Report By Site");
-		h.purgeReportDefinition("DQ-Data Quality Report For All Sites");
+		//h.purgeReportDefinition("DQ-Data Quality Report For All Sites");
+		h.purgeReportDefinition("DQ-Data Quality Report for NCD");
 	}
 
 	// DQ Report by Site
@@ -134,17 +144,18 @@ public class SetupDataQualityIndicatorReport {
 				ParameterizableUtil
 						.createParameterMappings("location=${location}"));
 
-		createIndicatorsForReports(rd);
+		rd.addDataSetDefinition(createIndicatorsForReports(), null);
 		h.saveReportDefinition(rd);
-		createCustomWebRenderer(rd, "DataQualityWebRenderer");
-
 		rd.addDataSetDefinition(createObsDataSet(), ParameterizableUtil
 				.createParameterMappings("location=${location}"));
 		h.saveReportDefinition(rd);
+		createCustomWebRenderer(rd, "DataQualityWebRenderer");
+
+
 		return rd;
 	}
 
-	// DQ Report for all sites
+/*	// DQ Report for all sites
 	private ReportDefinition createReportDefinitionAllSites()
 			throws IOException {
 
@@ -152,11 +163,12 @@ public class SetupDataQualityIndicatorReport {
 		rdsites.removeParameter(ReportingConstants.START_DATE_PARAMETER);
 		rdsites.removeParameter(ReportingConstants.END_DATE_PARAMETER);
 		rdsites.removeParameter(ReportingConstants.LOCATION_PARAMETER);
+
 		rdsites.setName("DQ-Data Quality Report For All Sites");
 
 		rdsites.setupDataSetDefinition();
 
-		createIndicatorsForReports(rdsites);
+		rdsites.addDataSetDefinition(createIndicatorsForReports(), null);
 		h.saveReportDefinition(rdsites);
 		createCustomWebRendererForSites(rdsites, "DataWebRenderer");
 		
@@ -165,12 +177,45 @@ public class SetupDataQualityIndicatorReport {
 		h.saveReportDefinition(rdsites);
 		return rdsites;
 
+	}*/
+	// DQ Report by Site for NCD
+	public ReportDefinition createReportDefinitionBySiteForNCD() throws IOException {
+
+		PeriodIndicatorReportDefinition rd = new PeriodIndicatorReportDefinition();
+		rd.removeParameter(ReportingConstants.START_DATE_PARAMETER);
+		rd.removeParameter(ReportingConstants.END_DATE_PARAMETER);
+		rd.removeParameter(ReportingConstants.LOCATION_PARAMETER);
+		rd.addParameter(new Parameter("location", "Location", Location.class));
+
+		rd.setName("DQ-Data Quality Report for NCD");
+
+		rd.setupDataSetDefinition();
+
+		rd.setBaseCohortDefinition(Cohorts
+				.createParameterizedLocationCohort("At Location"),
+				ParameterizableUtil
+						.createParameterMappings("location=${location}"));
+
+		rd.addDataSetDefinition(createreportForNCDreport(), null);
+		h.saveReportDefinition(rd);
+		createCustomWebRendererForNCDorOncology(rd, "DataWebRendererNCD");
+
+
+		return rd;
 	}
-
+	
+	/*public CohortIndicatorDataSetDefinition testNCD(){
+		CohortIndicatorDataSetDefinition reportDefinition=new CohortIndicatorDataSetDefinition();
+		reportDefinition.setName("defaultDataSetncd");
+	    createreportForNCDreport();
+		return reportDefinition;
+						
+						
+	}*/
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void createIndicatorsForReports(
-			PeriodIndicatorReportDefinition reportDefinition) {
-
+	public CohortIndicatorDataSetDefinition createIndicatorsForReports() {
+		CohortIndicatorDataSetDefinition reportDefinition=new CohortIndicatorDataSetDefinition();
+		reportDefinition.setName("defaultDataSetGlobal");
 		// ======================================================================================================================================================================================================
 		// 1. Any patients who are in Pediatric HIV program or in the Adult HIV
 		// program AND on ART whose accompagnateur is not listed in EMR (or who
@@ -402,75 +447,10 @@ public class SetupDataQualityIndicatorReport {
 						"Patients with current TB regimen who are not in TB Program excluding Heart Failure Program",
 						onTBDrugsNotInTBProgHFExcluded, null);
 
-		// ======================================================================================
-		// 9. Patients with imb invalid identifier type
-		// ======================================================================================
-
-		SqlCohortDefinition imbIds = Cohorts.getIMBId("DQ:IMB IDs");
-		SqlCohortDefinition pciIds = Cohorts.getPciId("DQ: PCI IDs");
-		SqlCohortDefinition patswithInvalidImb = Cohorts
-				.getInvalidIMB("DQ: patients with invalid IMB");
-
-		CompositionCohortDefinition patientsWithInvalidIdsnotWIthImbOrPciIds = new CompositionCohortDefinition();
-		patientsWithInvalidIdsnotWIthImbOrPciIds
-				.setName("DQ: Invalids but no IMB or PCI IDs");
-		patientsWithInvalidIdsnotWIthImbOrPciIds.getSearches().put("1",
-				new Mapped(patswithInvalidImb, null));
-		patientsWithInvalidIdsnotWIthImbOrPciIds.getSearches().put("2",
-				new Mapped(imbIds, null));
-		patientsWithInvalidIdsnotWIthImbOrPciIds.getSearches().put("3",
-				new Mapped(pciIds, null));
-		patientsWithInvalidIdsnotWIthImbOrPciIds
-				.setCompositionString("NOT (2 OR 3) AND 1");
-
-		CohortIndicator patientsWithInvalidIdInd = Indicators
-				.newCountIndicator("patients with invalid id check digit",
-						patientsWithInvalidIdsnotWIthImbOrPciIds, null);
-
-		// ======================================================================================
-		// 10. Active patients with no IMB or PHC ID
-		// ======================================================================================
-
-		List<String> parameterNames = new ArrayList<String>();
-		parameterNames.add("onOrAfter");
-		parameterNames.add("onOrBefore");
-		EncounterCohortDefinition anyEncounter = Cohorts
-				.createEncounterParameterizedByDate("DQ: any encounter",
-						parameterNames);
-
-		CompositionCohortDefinition patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow = new CompositionCohortDefinition();
-		patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow
-				.setName("DQ: patients without IMB or Primary Care Identifier ids but with any encounter in last year from now");
-		patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow
-				.getSearches()
-				.put("1",
-						new Mapped(
-								anyEncounter,
-								ParameterizableUtil
-										.createParameterMappings("onOrAfter=${now-12m},onOrBefore=${now}")));
-		patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow
-				.getSearches().put("2", new Mapped(imbIds, null));
-		patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow
-				.getSearches().put("3", new Mapped(pciIds, null));
-		patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow
-				.setCompositionString("NOT (2 OR 3) AND 1");
-
-		CohortIndicator patientsWithIMBOrPCIdentiferanyEncounterLastYearFromNowIndicator = Indicators
-				.newCountIndicator(
-						"patients without IMB or Primary Care Identifier ids but with any encounter in last year from now",
-						patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow,
-						null);
 
 		// ======================================================================================
 		// 11. On initial TB treatment for longer than 8 months
 		// ======================================================================================
-		// SqlCohortDefinition patientsWithObsgreaterThanEnc=new
-		// SqlCohortDefinition("select distinct o.person_id from obs o inner join encounter enc where "
-		// +
-		// "enc.encounter_id=o.encounter_id and o.person_id=enc.patient_id and o.obs_datetime > enc.encounter_datetime and o.voided=0 and o.void_reason is null");
-		// CohortIndicator patientsWithObsgreaterThanEncIndi =
-		// Indicators.newCountIndicator("Observations in the future",
-		// patientsWithObsgreaterThanEnc, null);
 
 		SqlCohortDefinition patientsInTBTooLong = new SqlCohortDefinition(
 				"select distinct patient_id from patient_program pp,program p where pp.program_id=p.program_id and p.name='"
@@ -486,6 +466,7 @@ public class SetupDataQualityIndicatorReport {
 				"select distinct o.patient_id from orders o,concept c where o.concept_id=c.concept_id and c.concept_id in ("
 						+ tbFirstLineDrugsConceptIds
 						+ ") and o.discontinued=0 and (auto_expire_date is null) and o.voided=0");
+		
 		String tbFirstSecondDrugsConceptIds = null;
 		for (Concept concept : tbSecondLineDrugsConcepts) {
 			tbFirstSecondDrugsConceptIds = tbFirstSecondDrugsConceptIds + ","
@@ -500,63 +481,15 @@ public class SetupDataQualityIndicatorReport {
 		CompositionCohortDefinition patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen = new CompositionCohortDefinition();
 		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen
 				.setName("DQ: patients In TB Program Too long on First Line Regimen and Not on Second Line regimen");
-		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen.getSearches()
-				.put("1", new Mapped(patientsInTBTooLong, null));
-		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen.getSearches()
-				.put("2", new Mapped(onTBFirstLineDrugs, null));
-		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen.getSearches()
-				.put("3", new Mapped(onTBSecondLineDrugs, null));
-		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen
-				.setCompositionString(" 1 AND 2 AND (NOT 3) ");
+		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen.getSearches().put("1", new Mapped(patientsInTBTooLong, null));
+		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen.getSearches().put("2", new Mapped(onTBFirstLineDrugs, null));
+		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen.getSearches().put("3", new Mapped(onTBSecondLineDrugs, null));
+		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen.setCompositionString(" 1 AND 2 AND (NOT 3) ");
 
 		CohortIndicator patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimenIndicator = Indicators
-				.newCountIndicator(
-						"PMTCTDQ: Number patients In TB Program Too long on First Line Regimen and Not on Second Line regimen",
-						patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen,
-						null);
-
-		// ======================================================================================
-		// 12. Patients over 100 years old
-		// ======================================================================================
-
-		AgeCohortDefinition patientsOver100Yearsold = new AgeCohortDefinition(
-				100, null, null);
-
-		CohortIndicator patientsOver100YearsoldIndicator = Indicators
-				.newCountIndicator(
-						"PMTCTDQ: Number patients Over 100 years old",
-						patientsOver100Yearsold, null);
-
-		// ======================================================================================
-		// 13. Patients with a visit in last 12 months who do not have a
-		// correctly structured address
-		// ======================================================================================
-
-		SqlCohortDefinition patientsWithNoStructuredAddress = new SqlCohortDefinition(
-				"select distinct(p.patient_id) from patient p,person_address pa where p.patient_id=pa.person_id and pa.preferred=1 and p.voided=0 and (pa.state_province is null or pa.county_district is null or pa.city_village is null or pa.address3 is null or pa.address1 is null "
-						+ "or pa.state_province='' or pa.county_district='' or pa.address3 is null or pa.address1='' )");
-
-		CompositionCohortDefinition patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow = new CompositionCohortDefinition();
-		patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow
-				.setName("DQ: patients With No Structured Address and with any encounter in last year from now");
-		patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow
-				.getSearches()
-				.put("1",
-						new Mapped(
-								anyEncounter,
-								ParameterizableUtil
-										.createParameterMappings("onOrAfter=${now-12m},onOrBefore=${now}")));
-		patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow
-				.getSearches().put("2",
-						new Mapped(patientsWithNoStructuredAddress, null));
-		patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow
-				.setCompositionString("1 AND 2");
-
-		CohortIndicator patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNowIndicator = Indicators
-				.newCountIndicator(
-						"Number of patients With No Structured Address and with any encounter in last year from now",
-						patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow,
-						null);
+			.newCountIndicator(
+			"PMTCTDQ: Number patients In TB Program Too long on First Line Regimen and Not on Second Line regimen",
+			patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen,null);
 
 		// ======================================================================================
 		// 14. Patients whose status status 'deceased' but enrolled in program
@@ -612,127 +545,6 @@ public class SetupDataQualityIndicatorReport {
 				.newCountIndicator(
 						"Number of patients With status decease but still enrolled in their programs",
 						patientExitedfromcareinPrograms, null);
-
-		// ======================================================================================
-		// 15. Patients who status is transferred out but is currently enrolled
-		// in program
-		// ======================================================================================
-
-		CodedObsCohortDefinition patientsTransferredOut = Cohorts
-				.createCodedObsCohortDefinition("patientsTransferredOut",
-						onOrAfterOnOrBeforeParamterNames, reasonForExitingCare,
-						transferOut, SetComparator.IN, TimeModifier.LAST);
-
-		CompositionCohortDefinition patientTransferedOutinPrograms = new CompositionCohortDefinition();
-		patientTransferedOutinPrograms
-				.setName("DQ: Transfered out in All Programs ");
-		patientTransferedOutinPrograms.getSearches().put(
-				"1",
-				new Mapped(enrolledInAllPrograms, ParameterizableUtil
-						.createParameterMappings("onDate=${now}")));
-		patientTransferedOutinPrograms.getSearches().put(
-				"2",
-				new Mapped(patientsTransferredOut, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${now}")));
-		patientTransferedOutinPrograms.setCompositionString("1 AND 2");
-		CohortIndicator patientTransferedOutinProgramsIndicator = Indicators
-				.newCountIndicator(
-						"Number of patients Transfered out but still enrolled in their programs",
-						patientTransferedOutinPrograms, null);
-
-		// ======================================================================================
-		// 16. Patients with no health center
-		// ======================================================================================
-
-		PersonAttributeCohortDefinition pihHealthCenter = new PersonAttributeCohortDefinition();
-		pihHealthCenter.setName("Patients at Health Center");
-		pihHealthCenter.setAttributeType(Context.getPersonService()
-				.getPersonAttributeTypeByName("Health Center"));
-
-		InverseCohortDefinition patientsWithoutHc = new InverseCohortDefinition(
-				pihHealthCenter);
-		patientsWithoutHc.setName("patientsWithoutHc");
-
-		CohortIndicator patientWithnohealthCenterIndicator = Indicators
-				.newCountIndicator("Number of patients without HC",
-						patientsWithoutHc, null);
-
-		// ======================================================================================
-		// 17. Patients with no encounter
-		// ======================================================================================
-
-		List<Program> inPrograms = new ArrayList<Program>();
-		inPrograms.add(pediHIV);
-		inPrograms.add(adultHIV);
-		inPrograms.add(nutritionpro);
-		inPrograms.add(pmtct);
-		inPrograms.add(heartFailure);
-		inPrograms.add(dmprogram);
-		inPrograms.add(chronicrespiratory);
-		inPrograms.add(hypertention);
-		inPrograms.add(epilepsy);
-		InProgramCohortDefinition enrolledInAllProgramsExceptTb = Cohorts
-				.createInProgramParameterizableByDate(
-						"DQ: enrolledInAllProgramsExceptTb", inPrograms,
-						"onDate");
-
-		CompositionCohortDefinition patientsWithNoEncounterInProgram = new CompositionCohortDefinition();
-		patientsWithNoEncounterInProgram
-				.setName("DQ: patients with no encounter in programs");
-		patientsWithNoEncounterInProgram.getSearches().put(
-				"1",
-				new Mapped(anyEncounter, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${now}")));
-		patientsWithNoEncounterInProgram.getSearches().put(
-				"2",
-				new Mapped(enrolledInAllProgramsExceptTb, ParameterizableUtil
-						.createParameterMappings("onDate=${now}")));
-
-		patientsWithNoEncounterInProgram.setCompositionString("2 AND (NOT 1)");
-
-		CohortIndicator patientsWithNoEncounterInProgramIndicator = Indicators
-				.newCountIndicator("Number with no encounter",
-						patientsWithNoEncounterInProgram, null);
-
-		// ======================================================================================
-		// 18. Patients with a BMI <12 or >35
-		// ======================================================================================
-
-		SqlCohortDefinition bmilow = new SqlCohortDefinition();
-		bmilow.setName("bmilow");
-		bmilow.setQuery("select w.person_id from "
-				+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
-				+ height.getId()
-				+ "' "
-				+ "order by o.obs_datetime desc) as lastheight group by lastheight.person_id) h,"
-				+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
-				+ weight.getId()
-				+ "' "
-				+ "order by o.obs_datetime desc) as lastweight group by lastweight.person_id) w "
-				+ "where w.person_id=h.person_id and ROUND(((w.value_numeric*10000)/(h.value_numeric*h.value_numeric)),2)<12.0");
-
-		SqlCohortDefinition bmihight = new SqlCohortDefinition();
-		bmihight.setName("bmihight");
-		bmihight.setQuery("select w.person_id from "
-				+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
-				+ height.getId()
-				+ "' "
-				+ "order by o.obs_datetime desc) as lastheight group by lastheight.person_id) h,"
-				+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
-				+ weight.getId()
-				+ "' "
-				+ "order by o.obs_datetime desc) as lastweight group by lastweight.person_id) w "
-				+ "where w.person_id=h.person_id and ROUND(((w.value_numeric*10000)/(h.value_numeric*h.value_numeric)),2)>35.0");
-
-		CompositionCohortDefinition bmimoreorless = new CompositionCohortDefinition();
-		bmimoreorless.setName("bmimoreorless");
-		bmimoreorless.getSearches().put("1", new Mapped(bmilow, null));
-		bmimoreorless.getSearches().put("2", new Mapped(bmihight, null));
-		;
-		bmimoreorless.setCompositionString("1 OR 2");
-
-		CohortIndicator patientsWithBMIMoreThan35 = Indicators
-				.newCountIndicator("BMI >15", bmimoreorless, null);
 
 		// ======================================================================================
 		// 19. Patients <15 in Adult HIV program or PMTCT-combined clinic mother
@@ -835,39 +647,9 @@ public class SetupDataQualityIndicatorReport {
 				.newCountIndicator("Number of invalid dates and forms",
 						patientsWithinvaliddatesandmissingforms, null);
 
-		// ======================================================================================
-		// 20. Missing program enrollment start date
-		// ======================================================================================
-
-		StringBuilder programs = new StringBuilder();
-
-		int i = 0;
-
-		for (Program program : allPrograms) {
-			if (i == 0) {
-				programs.append(program.getProgramId());
-			} else {
-				programs.append(",");
-				programs.append(program.getProgramId());
-			}
-			i++;
-		}
-
-		SqlCohortDefinition patientsMissingprogramsEnrolStartDate = new SqlCohortDefinition();
-		patientsMissingprogramsEnrolStartDate
-				.setQuery("select distinct (p.patient_id) from patient_program pp, patient p, program pro where pp.patient_id=p.patient_id and pp.program_id=pro.program_id and pro.program_id in ("
-						+ programs.toString()
-						+ ") and pp.date_enrolled is null and p.voided=0 and pp.voided=0 ");
-		patientsMissingprogramsEnrolStartDate
-				.setName("DQ: Patients in programs but with no program Enrollment dates");
-
-		CohortIndicator patientsMissingprogramsEnrolStartDateindicator = Indicators
-				.newCountIndicator("DQ:Number of invalid dates and forms",
-						patientsMissingprogramsEnrolStartDate, null);
-
-		// ================================================================================lab======
+		// =====================================================================================
 		// 21. PMTCT Infants without a mother relationship
-		// ======================================================================================
+		// =====================================================================================
 
 		SqlCohortDefinition infantsWithNoMotherAcc = new SqlCohortDefinition();
 		infantsWithNoMotherAcc
@@ -879,7 +661,7 @@ public class SetupDataQualityIndicatorReport {
 
 		CompositionCohortDefinition infantsInPmtctClinicInfant = new CompositionCohortDefinition();
 		infantsInPmtctClinicInfant
-				.setName("DQ: Patients currently enrolled in the PMTCT Combined Clinic � Infant program who don�t have a non-voided Mother/Child relationship");
+				.setName("DQ: Patients currently enrolled in the PMTCT Combined Clinic ÔøΩ Infant program who donÔøΩt have a non-voided Mother/Child relationship");
 		infantsInPmtctClinicInfant.getSearches().put("1",
 				new Mapped(infantsWithNoMotherAcc, null));
 		infantsInPmtctClinicInfant.getSearches().put(
@@ -898,91 +680,292 @@ public class SetupDataQualityIndicatorReport {
 		// Add global filters to the report
 		// ======================================================================================
 
-		reportDefinition
-				.addIndicator(
-						"1",
-						"patients who are in Pediatric or Adult HIV program AND on ART whose accompagnateur is not listed in EMR",
-						patientsInHIVOnARTWithoutAccompIndicator);
-		reportDefinition
-				.addIndicator(
-						"2",
-						"Patients enrolled in PMTCT Pregnancy for more than 8 months and a half",
-						patientsInPMTCTTooLongIndicator);
-		reportDefinition
-				.addIndicator(
-						"3",
-						"Patients enrolled in Combined Clinic Mother for more than 19 months",
-						patientsInPMTCTCCMTooLongIndicator);
-		reportDefinition
-				.addIndicator(
-						"4",
-						"Patients enrolled in Combined Clinic Infant for more than 19 months",
-						patientsInPMTCTCCITooLongIndicator);
-		reportDefinition
-				.addIndicator(
-						"5",
-						"Patients in PMTCT-pregnancy or PMTCT Combine Clinic - mother while a 'male' patient",
-						malesInPMTCTAndPMTCTCCMIndicator);
-		reportDefinition
-				.addIndicator(
-						"6",
-						"Patients with current ARV regimen with incorrect treatment status(not 'On ART')",
-						patientsOnARTRegimenNotOnARTStatus);
-		reportDefinition
-				.addIndicator(
-						"7",
-						"Patients with treatment status 'On Antiretrovirals' without an ARV regimen",
-						patientsOnARTStatusNotOnARTRegimen);
-		reportDefinition
-				.addIndicator(
-						"8",
-						"Patients with current TB regimen not currently in TB program (excluding patients in HF program)",
-						patientsOnTBRegimenNotInTBProgramHFExcluded);
-		reportDefinition.addIndicator("9", "Patients with invalid IMB ID",
-				patientsWithInvalidIdInd);
-		reportDefinition
-				.addIndicator("10", "Active patients with no IMB or PHC ID",
-						patientsWithIMBOrPCIdentiferanyEncounterLastYearFromNowIndicator);
-		reportDefinition
-				.addIndicator("11",
-						"On initial TB treatment for longer than 8 months",
-						patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimenIndicator);
-		reportDefinition.addIndicator("12", "Patients over 100 years old",
-				patientsOver100YearsoldIndicator);
-		reportDefinition
-				.addIndicator(
-						"13",
-						"Patients with a visit in last 12 months who do not have a correctly structured address",
-						patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNowIndicator);
-		reportDefinition.addIndicator("14",
-				"Patients whose status deceased but enrolled in program",
-				patientExitedfromcareinProgramsIndicator);
-		reportDefinition
-				.addIndicator(
-						"15",
-						"Patients who status is transferred out but is currently enrolled in program ",
-						patientTransferedOutinProgramsIndicator);
-		reportDefinition.addIndicator("16", "Patients with no health center",
-				patientWithnohealthCenterIndicator);
-		reportDefinition.addIndicator("17", "Patients with no encounter",
-				patientsWithNoEncounterInProgramIndicator);
-		reportDefinition.addIndicator("18", "Patients With BMI <12 or >35",
-				patientsWithBMIMoreThan35);
-		reportDefinition
-				.addIndicator(
-						"19",
-						"Patients whose ART start date or 'on ART' workflow are before any programs began AND do not have a 'transfer in form",
-						patientsOnArtbeforeHivEnrollmentIndicator);
-		reportDefinition.addIndicator("20",
-				"Patients With Missing program enrollment start date",
-				patientsMissingprogramsEnrolStartDateindicator);
-		reportDefinition
-				.addIndicator(
-						"21",
-						"Patients currently enrolled in the PMTCT Combined Clinic Infant program who don't have a non-voided Mother/Child relationship",
-						infantsWithNoMotherAccIndicator);
+		reportDefinition.addColumn("1","patients who are in Pediatric or Adult HIV program AND on ART whose accompagnateur is not listed in EMR",
+			 new Mapped(patientsInHIVOnARTWithoutAccompIndicator,null),"");
+		reportDefinition.addColumn("2","Patients enrolled in PMTCT Pregnancy for more than 8 months and a half",
+			 new Mapped(patientsInPMTCTTooLongIndicator,null),"");
+		reportDefinition.addColumn("3","Patients enrolled in Combined Clinic Mother for more than 19 months",
+			 new Mapped(patientsInPMTCTCCMTooLongIndicator,null),"");
+		reportDefinition.addColumn("4","Patients enrolled in Combined Clinic Infant for more than 19 months",
+			 new Mapped(patientsInPMTCTCCITooLongIndicator,null),"");
+		reportDefinition.addColumn("5","Patients in PMTCT-pregnancy or PMTCT Combine Clinic - mother while a 'male' patient",
+			 new Mapped(malesInPMTCTAndPMTCTCCMIndicator,null),"");
+		reportDefinition.addColumn("6","Patients with current ARV regimen with incorrect treatment status(not 'On ART')",
+			 new Mapped(patientsOnARTRegimenNotOnARTStatus,null),"");
+		reportDefinition.addColumn("7","Patients with treatment status 'On Antiretrovirals' without an ARV regimen",
+			 new Mapped(patientsOnARTStatusNotOnARTRegimen,null),"");
+		reportDefinition.addColumn("8","Patients with current TB regimen not currently in TB program (excluding patients in HF program)",
+			 new Mapped(patientsOnTBRegimenNotInTBProgramHFExcluded,null),"");
+		reportDefinition.addColumn("9","On initial TB treatment for longer than 8 months",
+			 new Mapped(patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimenIndicator,null),"");
+		reportDefinition.addColumn("10","Patients whose status deceased but enrolled in program",
+			 new Mapped(patientExitedfromcareinProgramsIndicator,null),"");
+		reportDefinition.addColumn("11","Patients whose ART start date or 'on ART' workflow are before any programs began AND do not have a 'transfer in form",
+			new Mapped(patientsOnArtbeforeHivEnrollmentIndicator, null),"");
+		reportDefinition.addColumn("12","Patients currently enrolled in the PMTCT Combined Clinic Infant program who don't have a non-voided Mother/Child relationship",
+			new Mapped(infantsWithNoMotherAccIndicator,null),"");
+		
+		return reportDefinition;
 
 	}
+	
+	
+	public CohortIndicatorDataSetDefinition createreportForNCDreport() {
+		CohortIndicatorDataSetDefinition reportDefinition=new CohortIndicatorDataSetDefinition();
+		reportDefinition.setName("defaultDataSetncd");
+				
+				// ======================================================================================
+				// 1. Patients with imb invalid identifier type
+				// ======================================================================================
+
+				SqlCohortDefinition imbIds = Cohorts.getIMBId("DQ:IMB IDs");
+				SqlCohortDefinition pciIds = Cohorts.getPciId("DQ: PCI IDs");
+				SqlCohortDefinition patswithInvalidImb = Cohorts.getInvalidIMB("DQ: patients with invalid IMB");
+
+				CompositionCohortDefinition patientsWithInvalidIdsnotWIthImbOrPciIds = new CompositionCohortDefinition();
+				patientsWithInvalidIdsnotWIthImbOrPciIds.setName("DQ: Invalids but no IMB or PCI IDs");
+				patientsWithInvalidIdsnotWIthImbOrPciIds.getSearches().put("1",new Mapped(patswithInvalidImb, null));
+				patientsWithInvalidIdsnotWIthImbOrPciIds.getSearches().put("2",new Mapped(imbIds, null));
+				patientsWithInvalidIdsnotWIthImbOrPciIds.getSearches().put("3",new Mapped(pciIds, null));
+				patientsWithInvalidIdsnotWIthImbOrPciIds.setCompositionString("NOT (2 OR 3) AND 1");
+
+				CohortIndicator patientsWithInvalidIdInd = Indicators
+						.newCountIndicator("patients with invalid id check digit",patientsWithInvalidIdsnotWIthImbOrPciIds, null);
+
+				// ======================================================================================
+				// 2. Active patients with no IMB or PHC ID
+				// ======================================================================================
+
+				List<String> parameterNames = new ArrayList<String>();
+				parameterNames.add("onOrAfter");
+				parameterNames.add("onOrBefore");
+				EncounterCohortDefinition anyEncounter = Cohorts.createEncounterParameterizedByDate("DQ: any encounter",parameterNames);
+
+				CompositionCohortDefinition patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow = new CompositionCohortDefinition();
+				patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow
+						.setName("DQ: patients without IMB or Primary Care Identifier ids but with any encounter in last year from now");
+				patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow.getSearches().put("1",new Mapped(anyEncounter,ParameterizableUtil.createParameterMappings("onOrAfter=${now-12m},onOrBefore=${now}")));
+				patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow.getSearches().put("2", new Mapped(imbIds, null));
+				patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow.getSearches().put("3", new Mapped(pciIds, null));
+				patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow.setCompositionString("NOT (2 OR 3) AND 1");
+
+				CohortIndicator patientsWithIMBOrPCIdentiferanyEncounterLastYearFromNowIndicator = Indicators
+						.newCountIndicator("patients without IMB or Primary Care Identifier ids but with any encounter in last year from now",
+								patientsWithoutIMBOrPCIdentiferWithAnyEncounterLastYearFromNow,null);
+       
+			    // ======================================================================================
+				// 3. Patients over 100 years old
+				// ======================================================================================
+
+				AgeCohortDefinition patientsOver100Yearsold = new AgeCohortDefinition(100, null, null);
+
+				CohortIndicator patientsOver100YearsoldIndicator = Indicators.newCountIndicator(
+								"PMTCTDQ: Number patients Over 100 years old",patientsOver100Yearsold, null);
+
+				// ======================================================================================
+				// 4. Patients with a visit in the last 12 months who do not have a
+				// correctly structured address
+				// ======================================================================================
+
+				SqlCohortDefinition patientsWithNoStructuredAddress = new SqlCohortDefinition(
+						"select distinct(p.patient_id) from patient p,person_address pa where p.patient_id=pa.person_id and pa.preferred=1 and p.voided=0 and (pa.state_province is null or pa.county_district is null or pa.city_village is null or pa.address3 is null or pa.address1 is null "
+								+ "or pa.state_province='' or pa.county_district='' or pa.address3 is null or pa.address1='' )");
+
+				CompositionCohortDefinition patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow = new CompositionCohortDefinition();
+				patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow
+						.setName("DQ: patients With No Structured Address and with any encounter in last year from now");
+				patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow.getSearches().put("1",new Mapped(anyEncounter,
+						ParameterizableUtil.createParameterMappings("onOrAfter=${now-12m},onOrBefore=${now}")));
+				patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow
+						.getSearches().put("2",new Mapped(patientsWithNoStructuredAddress, null));
+				patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow.setCompositionString("1 AND 2");
+
+				CohortIndicator patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNowIndicator = Indicators.newCountIndicator(
+								"Number of patients With No Structured Address and with any encounter in last year from now",
+								patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNow,null);
+
+				// ======================================================================================
+				// 6. Patients who status is transferred out but is currently enrolled
+				// in program
+				// ======================================================================================
+				
+				List<Program> inAllPrograms = new ArrayList<Program>();
+				inAllPrograms.add(pediHIV);
+				inAllPrograms.add(adultHIV);
+				inAllPrograms.add(tb);
+				inAllPrograms.add(nutritionpro);
+				inAllPrograms.add(pmtct);
+				inAllPrograms.add(heartFailure);
+				inAllPrograms.add(dmprogram);
+				inAllPrograms.add(chronicrespiratory);
+				inAllPrograms.add(hypertention);
+				inAllPrograms.add(epilepsy);
+				InProgramCohortDefinition enrolledInAllPrograms = Cohorts.createInProgramParameterizableByDate(
+								"DQ: enrolledInAllPrograms", inAllPrograms, "onDate");
+
+                CodedObsCohortDefinition patientsTransferredOut = Cohorts.createCodedObsCohortDefinition("patientsTransferredOut",
+                		onOrAfterOnOrBeforeParamterNames, reasonForExitingCare,transferOut, SetComparator.IN, TimeModifier.LAST);
+
+				CompositionCohortDefinition patientTransferedOutinPrograms = new CompositionCohortDefinition();
+				patientTransferedOutinPrograms.setName("DQ: Transfered out in All Programs ");
+				patientTransferedOutinPrograms.getSearches().put("1",new Mapped(enrolledInAllPrograms, 
+					ParameterizableUtil.createParameterMappings("onDate=${now}")));
+				patientTransferedOutinPrograms.getSearches().put("2",new Mapped(patientsTransferredOut, 
+					ParameterizableUtil.createParameterMappings("onOrBefore=${now}")));
+				patientTransferedOutinPrograms.setCompositionString("1 AND 2");
+				CohortIndicator patientTransferedOutinProgramsIndicator = Indicators.newCountIndicator(
+						"Number of patients Transfered out but still enrolled in their programs",patientTransferedOutinPrograms, null);
+
+				// ======================================================================================
+				// 7. Patients with no health center
+				// ======================================================================================
+
+				PersonAttributeCohortDefinition pihHealthCenter = new PersonAttributeCohortDefinition();
+				pihHealthCenter.setName("Patients at Health Center");
+				pihHealthCenter.setAttributeType(Context.getPersonService()
+						.getPersonAttributeTypeByName("Health Center"));
+
+				InverseCohortDefinition patientsWithoutHc = new InverseCohortDefinition(
+						pihHealthCenter);
+				patientsWithoutHc.setName("patientsWithoutHc");
+
+				CohortIndicator patientWithnohealthCenterIndicator = Indicators
+						.newCountIndicator("Number of patients without HC",
+								patientsWithoutHc, null);
+
+				// ======================================================================================
+				// 8. Patients with no encounter
+				// ======================================================================================
+
+				List<Program> inPrograms = new ArrayList<Program>();
+				inPrograms.add(pediHIV);
+				inPrograms.add(adultHIV);
+				inPrograms.add(nutritionpro);
+				inPrograms.add(pmtct);
+				inPrograms.add(heartFailure);
+				inPrograms.add(dmprogram);
+				inPrograms.add(chronicrespiratory);
+				inPrograms.add(hypertention);
+				inPrograms.add(epilepsy);
+				InProgramCohortDefinition enrolledInAllProgramsExceptTb = Cohorts
+						.createInProgramParameterizableByDate(
+								"DQ: enrolledInAllProgramsExceptTb", inPrograms,
+								"onDate");
+
+				CompositionCohortDefinition patientsWithNoEncounterInProgram = new CompositionCohortDefinition();
+				patientsWithNoEncounterInProgram.setName("DQ: patients with no encounter in programs");
+				patientsWithNoEncounterInProgram.getSearches().put("1",new Mapped(anyEncounter, 
+						ParameterizableUtil.createParameterMappings("onOrBefore=${now}")));
+				patientsWithNoEncounterInProgram.getSearches().put("2",new Mapped(enrolledInAllProgramsExceptTb, 
+						ParameterizableUtil.createParameterMappings("onDate=${now}")));
+                patientsWithNoEncounterInProgram.setCompositionString("2 AND (NOT 1)");
+
+				CohortIndicator patientsWithNoEncounterInProgramIndicator = Indicators
+						.newCountIndicator("Number with no encounter",patientsWithNoEncounterInProgram, null);
+
+				// ======================================================================================
+				// 9. Patients with a BMI <12 or >35
+				// ======================================================================================
+
+				SqlCohortDefinition bmilow = new SqlCohortDefinition();
+				bmilow.setName("bmilow");
+				bmilow.setQuery("select w.person_id from "
+						+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
+						+ height.getId()
+						+ "' "
+						+ "order by o.obs_datetime desc) as lastheight group by lastheight.person_id) h,"
+						+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
+						+ weight.getId()
+						+ "' "
+						+ "order by o.obs_datetime desc) as lastweight group by lastweight.person_id) w "
+						+ "where w.person_id=h.person_id and ROUND(((w.value_numeric*10000)/(h.value_numeric*h.value_numeric)),2)<12.0");
+
+				SqlCohortDefinition bmihight = new SqlCohortDefinition();
+				bmihight.setName("bmihight");
+				bmihight.setQuery("select w.person_id from "
+						+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
+						+ height.getId()
+						+ "' "
+						+ "order by o.obs_datetime desc) as lastheight group by lastheight.person_id) h,"
+						+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
+						+ weight.getId()
+						+ "' "
+						+ "order by o.obs_datetime desc) as lastweight group by lastweight.person_id) w "
+						+ "where w.person_id=h.person_id and ROUND(((w.value_numeric*10000)/(h.value_numeric*h.value_numeric)),2)>35.0");
+
+				CompositionCohortDefinition bmimoreorless = new CompositionCohortDefinition();
+				bmimoreorless.setName("bmimoreorless");
+				bmimoreorless.getSearches().put("1", new Mapped(bmilow, null));
+				bmimoreorless.getSearches().put("2", new Mapped(bmihight, null));
+				;
+				bmimoreorless.setCompositionString("1 OR 2");
+
+				CohortIndicator patientsWithBMIMoreThan35 = Indicators
+						.newCountIndicator("BMI >15", bmimoreorless, null);
+
+				// ======================================================================================
+				// 10. Missing program enrollment start date
+				// ======================================================================================
+
+				StringBuilder programs = new StringBuilder();
+
+				int i = 0;
+
+				for (Program program : allPrograms) {
+					if (i == 0) {
+						programs.append(program.getProgramId());
+					} else {
+						programs.append(",");
+						programs.append(program.getProgramId());
+					}
+					i++;
+				}
+
+				SqlCohortDefinition patientsMissingprogramsEnrolStartDate = new SqlCohortDefinition();
+				patientsMissingprogramsEnrolStartDate
+						.setQuery("select distinct (p.patient_id) from patient_program pp, patient p, program pro where pp.patient_id=p.patient_id and pp.program_id=pro.program_id and pro.program_id in ("
+								+ programs.toString()
+								+ ") and pp.date_enrolled is null and p.voided=0 and pp.voided=0 ");
+				patientsMissingprogramsEnrolStartDate
+						.setName("DQ: Patients in programs but with no program Enrollment dates");
+
+				CohortIndicator patientsMissingprogramsEnrolStartDateindicator = Indicators
+						.newCountIndicator("DQ:Number of invalid dates and forms",
+								patientsMissingprogramsEnrolStartDate, null);
+
+	
+
+				// end of DQ applied to all sites
+
+				// ======================================================================================
+				// Add global filters to the report
+				// ======================================================================================
+
+				reportDefinition.addColumn("1", "Patients with invalid IMB ID",
+						new Mapped(patientsWithInvalidIdInd, null),"");
+				reportDefinition.addColumn("2", "Active patients with no IMB or PHC ID",
+						new Mapped(patientsWithIMBOrPCIdentiferanyEncounterLastYearFromNowIndicator, null),"");
+				reportDefinition.addColumn("3", "Patients over 100 years old",
+						new Mapped(patientsOver100YearsoldIndicator,null),"");
+				reportDefinition.addColumn("4","Patients with a visit in last 12 months who do not have a correctly structured address",
+						new Mapped(patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNowIndicator,null),"");
+				reportDefinition.addColumn("5","Patients who status is transferred out but is currently enrolled in program ",
+						new Mapped(patientTransferedOutinProgramsIndicator,null),"");
+				reportDefinition.addColumn("6", "Patients with no health center",
+						new Mapped(patientWithnohealthCenterIndicator,null),"");
+				reportDefinition.addColumn("7", "Patients with no encounter",
+						new Mapped(patientsWithNoEncounterInProgramIndicator,null),"");
+				reportDefinition.addColumn("8", "Patients With BMI <12 or >35",
+						new Mapped(patientsWithBMIMoreThan35,null),"");
+				reportDefinition.addColumn("9","Patients With Missing program enrollment start date",
+						new Mapped(patientsMissingprogramsEnrolStartDateindicator,null),"");
+				
+				
+				return reportDefinition;
+				
+
+	  }
+
 
 	public EncounterIndicatorDataSetDefinition createObsDataSet() {
 		EncounterIndicatorDataSetDefinition dsd = new EncounterIndicatorDataSetDefinition();
@@ -1024,6 +1007,7 @@ public class SetupDataQualityIndicatorReport {
 		pediHIV = gp.getProgram(GlobalPropertiesManagement.PEDI_HIV_PROGRAM);
 		adultHIV = gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
 		tb = gp.getProgram(GlobalPropertiesManagement.TB_PROGRAM);
+		//oncologyProgram = gp.getProgram(GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		heartFailure = gp
 				.getProgram(GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
 		dmprogram = gp.getProgram(GlobalPropertiesManagement.DM_PROGRAM);
@@ -1046,12 +1030,15 @@ public class SetupDataQualityIndicatorReport {
 				GlobalPropertiesManagement.ON_ANTIRETROVIRALS_STATE,
 				GlobalPropertiesManagement.TREATMENT_STATUS_WORKFLOW,
 				GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
-		tbFirstLineDrugsConcepts = gp
-				.getConceptsByConceptSet(GlobalPropertiesManagement.TB_FIRST_LINE_DRUG_SET);
-		tbSecondLineDrugsConcepts = gp
-				.getConceptsByConceptSet(GlobalPropertiesManagement.TB_SECOND_LINE_DRUG_SET);
-		reasonForExitingCare = gp
-				.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
+		tbFirstLineDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.TB_FIRST_LINE_DRUG_SET);
+		tbSecondLineDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.TB_SECOND_LINE_DRUG_SET);
+		//hfailureDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.CARDIAC_TREATMENT_DRUGS);
+		epilepsyDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.EPILEPSY_TREATMENT_DRUGS);
+		hypertentionDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.HYPERTENSION_TREATMENT_DRUGS);
+		diabetesDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.DIABETES_TREATMENT_DRUG_SET);
+		chronicrespiratoryDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_DISEASE_TREATMENT_DRUGS);
+		
+		reasonForExitingCare = gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
 		transferOut = gp.getConcept(GlobalPropertiesManagement.TRASNFERED_OUT);
 		diedinAdult = gp.getProgramWorkflowState(
 				GlobalPropertiesManagement.PATIENT_DIED_STATE,
@@ -1141,6 +1128,16 @@ public class SetupDataQualityIndicatorReport {
 		design.setName(name);
 		design.setReportDefinition(rd);
 		design.setRendererType(DataQualityWebRendererForSites.class);
+		ReportService rs = Context.getService(ReportService.class);
+		rs.saveReportDesign(design);
+	}
+	
+	private void createCustomWebRendererForNCDorOncology(ReportDefinition rd,
+			String name) throws IOException {
+		final ReportDesign design = new ReportDesign();
+		design.setName(name);
+		design.setReportDefinition(rd);
+		design.setRendererType(DataQualityWebRenderedForNCDandOncology.class);
 		ReportService rs = Context.getService(ReportService.class);
 		rs.saveReportDesign(design);
 	}
