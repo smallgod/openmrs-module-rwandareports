@@ -99,7 +99,7 @@ public class SetupOncologyOutpatientClinicMissedVisit {
 		dataSetDefinition3.addParameter(new Parameter("endDate", "Date", Date.class));
 		
 		SortCriteria sortCriteria = new SortCriteria();
-		sortCriteria.addSortElement("nextRDV", SortDirection.ASC);
+		sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 		dataSetDefinition2.setSortCriteria(sortCriteria);
 		dataSetDefinition3.setSortCriteria(sortCriteria);
@@ -111,8 +111,12 @@ public class SetupOncologyOutpatientClinicMissedVisit {
 		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", scheduledVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
-		dataSetDefinition2.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", scheduledVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", scheduledVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
+		dataSetDefinition2.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", biopsyResultVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", specialVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
+		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", scheduledVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
+		dataSetDefinition2.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", biopsyResultVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", specialVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
@@ -157,7 +161,7 @@ public class SetupOncologyOutpatientClinicMissedVisit {
 		mappings.put("endDate", "${endDate}");
 		
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
-		reportDefinition.addDataSetDefinition("datase2t", dataSetDefinition2, mappings);
+		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 		reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
 	}
 	

@@ -37,7 +37,7 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 	 */
 	public void started() {
 		log.info("Started Rwanda Report Module Config");
-		registerTask("Register Reports", "Deletes or aggregates old usage statistics data", RegisterReportsTask.class, 60 * 60 * 24l);
+		registerTask("Register Reports", "Registers report definitions", RegisterReportsTask.class, 60 * 60 * 24l);
 	}
 	
 	/**
