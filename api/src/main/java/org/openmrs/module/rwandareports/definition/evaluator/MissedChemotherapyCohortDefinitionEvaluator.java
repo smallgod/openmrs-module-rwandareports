@@ -53,8 +53,11 @@ public class MissedChemotherapyCohortDefinitionEvaluator implements CohortDefini
 	public EvaluatedCohort evaluate(CohortDefinition cohortDefinition, EvaluationContext context) {
 		
 		Form treatmentAdminForm = gp.getForm(GlobalPropertiesManagement.CHEMOTHERAPY_TREATMENT_SUMMARY_FORM);
+		Form treatmentAdminFormShort = gp.getForm(GlobalPropertiesManagement.CHEMOTHERAPY_TREATMENT_SUMMARY_FORM_SHORT);
+		
 		List<Form> forms = new ArrayList<Form>();
 		forms.add(treatmentAdminForm);
+		forms.add(treatmentAdminFormShort);
 		
 		MissedChemotherapyCohortDefinition definition = (MissedChemotherapyCohortDefinition) cohortDefinition;
 		

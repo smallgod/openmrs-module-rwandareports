@@ -2738,6 +2738,13 @@
 		<description>The form for chemotherapy treatment summary form
 		</description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.chemoTreatmentSummaryFormShort</property>
+		<defaultValue>7f24c0e0-fc81-4bbf-b781-965f4dbd6ae7</defaultValue>
+		<description>The form for chemotherapy treatment summary form short version
+		</description>
+	</globalProperty>
 
 	<globalProperty>
 		<property>reports.bactrimConcept</property>

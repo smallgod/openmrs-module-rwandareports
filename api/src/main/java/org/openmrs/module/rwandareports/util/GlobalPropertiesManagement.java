@@ -996,6 +996,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String CHEMOTHERAPY_TREATMENT_SUMMARY_FORM = "reports.chemoTreatmentSummaryForm";
 	
+	public final static String CHEMOTHERAPY_TREATMENT_SUMMARY_FORM_SHORT = "reports.chemoTreatmentSummaryFormShort";
+	
 	//Drug concepts
 	public final static String FUROSEMIDE= "reports.furosemide";
 	
