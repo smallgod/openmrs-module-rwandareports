@@ -96,15 +96,19 @@ public class WeekViewDataSetEvaluator implements DataSetEvaluator {
 		week.put(sunday, "sunday");
 		
 		SimpleDataSet result = new SimpleDataSet(dsd, context);
-		addColumns(result, monday);
 		
 		int maxSize = 0;
+		
+		SimpleDataSet sample = monday;
 		
 		for (SimpleDataSet day : week.keySet()) {
 			if (day.getRowMap().size() > maxSize) {
 				maxSize = day.getRowMap().size();
+				sample = day;
 			}
 		}
+		
+		addColumns(result, sample);
 		
 		for (int i = 0; i < maxSize; i++) {
 			

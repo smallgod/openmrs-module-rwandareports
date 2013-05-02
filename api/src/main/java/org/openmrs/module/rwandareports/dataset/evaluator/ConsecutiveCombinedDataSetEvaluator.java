@@ -40,6 +40,8 @@ public class ConsecutiveCombinedDataSetEvaluator implements DataSetEvaluator {
 		
 		int j = 0;
 		
+		boolean sample = true;
+		
 		for(int i = 0; i < dsd.getNumberOfIterations(); i++)
 		{
 			context = ObjectUtil.nvl(context, new EvaluationContext());
@@ -61,9 +63,10 @@ public class ConsecutiveCombinedDataSetEvaluator implements DataSetEvaluator {
 		
 			SimpleDataSet day = (SimpleDataSet) Context.getService(DataSetDefinitionService.class).evaluate(base, ec);
 		
-			if(i == 0)
+			if(day.getRowMap().size() > 0 && sample)
 			{
 				addColumns(result, day);
+				sample = false;
 			}
 		
 			Map<Integer, DataSetRow> rows = day.getRowMap();
