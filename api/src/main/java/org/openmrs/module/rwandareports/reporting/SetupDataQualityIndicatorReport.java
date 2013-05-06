@@ -84,11 +84,6 @@ public class SetupDataQualityIndicatorReport {
 	private ProgramWorkflowState diedInEpil;
 	private List<Concept> tbFirstLineDrugsConcepts;
 	private List<Concept> tbSecondLineDrugsConcepts;
-	private List<Concept> hfailureDrugsConcepts;
-	private List<Concept> epilepsyDrugsConcepts;
-	private List<Concept> diabetesDrugsConcepts;
-	private List<Concept> hypertentionDrugsConcepts;
-	private List<Concept> chronicrespiratoryDrugsConcepts;
 	private Concept reasonForExitingCare;
 	private Concept transferOut;
 	private Concept height;
@@ -106,7 +101,7 @@ public class SetupDataQualityIndicatorReport {
 		setUpProperties();
 
 		createReportDefinitionBySite();
-		//createReportDefinitionAllSites();
+		createReportDefinitionAllSites();
 		createReportDefinitionBySiteForNCD();
 
 	}
@@ -116,13 +111,14 @@ public class SetupDataQualityIndicatorReport {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
 			if ("DataQualityWebRenderer".equals(rd.getName())
-					||"DataWebRendererNCD".equals(rd.getName())) {
+				|| "DataWebRenderer".equals(rd.getName())
+				||"DataWebRendererNCD".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
 
 		h.purgeReportDefinition("DQ-Data Quality Report By Site");
-		//h.purgeReportDefinition("DQ-Data Quality Report For All Sites");
+		h.purgeReportDefinition("DQ-Data Quality Report For All Sites");
 		h.purgeReportDefinition("DQ-Data Quality Report for NCD");
 	}
 
@@ -155,7 +151,7 @@ public class SetupDataQualityIndicatorReport {
 		return rd;
 	}
 
-/*	// DQ Report for all sites
+	// DQ Report for all sites
 	private ReportDefinition createReportDefinitionAllSites()
 			throws IOException {
 
@@ -177,7 +173,7 @@ public class SetupDataQualityIndicatorReport {
 		h.saveReportDefinition(rdsites);
 		return rdsites;
 
-	}*/
+	}
 	// DQ Report by Site for NCD
 	public ReportDefinition createReportDefinitionBySiteForNCD() throws IOException {
 
@@ -204,14 +200,6 @@ public class SetupDataQualityIndicatorReport {
 		return rd;
 	}
 	
-	/*public CohortIndicatorDataSetDefinition testNCD(){
-		CohortIndicatorDataSetDefinition reportDefinition=new CohortIndicatorDataSetDefinition();
-		reportDefinition.setName("defaultDataSetncd");
-	    createreportForNCDreport();
-		return reportDefinition;
-						
-						
-	}*/
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public CohortIndicatorDataSetDefinition createIndicatorsForReports() {
 		CohortIndicatorDataSetDefinition reportDefinition=new CohortIndicatorDataSetDefinition();
@@ -872,11 +860,11 @@ public class SetupDataQualityIndicatorReport {
 				bmilow.setQuery("select w.person_id from "
 						+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
 						+ height.getId()
-						+ "' "
+						+ "' "+ "and o.voided=0 "
 						+ "order by o.obs_datetime desc) as lastheight group by lastheight.person_id) h,"
 						+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
 						+ weight.getId()
-						+ "' "
+						+ "' "+ "and o.voided=0 "
 						+ "order by o.obs_datetime desc) as lastweight group by lastweight.person_id) w "
 						+ "where w.person_id=h.person_id and ROUND(((w.value_numeric*10000)/(h.value_numeric*h.value_numeric)),2)<12.0");
 
@@ -885,11 +873,11 @@ public class SetupDataQualityIndicatorReport {
 				bmihight.setQuery("select w.person_id from "
 						+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
 						+ height.getId()
-						+ "' "
+						+ "' "+ "and o.voided=0 "
 						+ "order by o.obs_datetime desc) as lastheight group by lastheight.person_id) h,"
 						+ "(select * from (select o.person_id,o.value_numeric from obs o,concept c where o.concept_id= c.concept_id and c.concept_id='"
 						+ weight.getId()
-						+ "' "
+						+ "' "+ "and o.voided=0 "
 						+ "order by o.obs_datetime desc) as lastweight group by lastweight.person_id) w "
 						+ "where w.person_id=h.person_id and ROUND(((w.value_numeric*10000)/(h.value_numeric*h.value_numeric)),2)>35.0");
 
@@ -1032,12 +1020,6 @@ public class SetupDataQualityIndicatorReport {
 				GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
 		tbFirstLineDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.TB_FIRST_LINE_DRUG_SET);
 		tbSecondLineDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.TB_SECOND_LINE_DRUG_SET);
-		//hfailureDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.CARDIAC_TREATMENT_DRUGS);
-		epilepsyDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.EPILEPSY_TREATMENT_DRUGS);
-		hypertentionDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.HYPERTENSION_TREATMENT_DRUGS);
-		diabetesDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.DIABETES_TREATMENT_DRUG_SET);
-		chronicrespiratoryDrugsConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_DISEASE_TREATMENT_DRUGS);
-		
 		reasonForExitingCare = gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
 		transferOut = gp.getConcept(GlobalPropertiesManagement.TRASNFERED_OUT);
 		diedinAdult = gp.getProgramWorkflowState(
