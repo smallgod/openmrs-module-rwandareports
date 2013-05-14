@@ -1,5 +1,6 @@
 package org.openmrs.module.rwandareports;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -10,6 +11,7 @@ import java.util.Properties;
 
 import org.apache.poi.util.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.PatientIdentifierType;
@@ -24,6 +26,7 @@ import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.ExcelTemplateRenderer;
+import org.openmrs.module.reporting.report.renderer.XlsReportRenderer;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAttribute;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientIdentifier;
@@ -49,6 +52,7 @@ public class MultiLocationRowPerPatientTest extends BaseModuleContextSensitiveTe
 		return false;
 	}
 
+	@Ignore
 	@Test
 	public void runReport() throws Exception {
 		
@@ -58,7 +62,7 @@ public class MultiLocationRowPerPatientTest extends BaseModuleContextSensitiveTe
 		// Create Report Definition
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("Missing CD4 All Sites Report");
-		
+
 		
 		// Parameters
 		reportDefinition.addParameter(new Parameter("startDate", "Start Date", Date.class));
@@ -122,30 +126,6 @@ public class MultiLocationRowPerPatientTest extends BaseModuleContextSensitiveTe
 		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
 		
 		reportDefinition.addDataSetDefinition("NoResult", ldsd, mappings1);
-
-		// Output Designs
-		final ReportDesign design = new ReportDesign();
-		design.setName("XlsMissingCD4ReportAllSiteTemplate");
-		design.setReportDefinition(reportDefinition);
-		design.setRendererType(ExcelTemplateRenderer.class);
-		
-		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,dataset:NoResult|sheet:1,row:6,dataset:NoResult.PatientDataSet");
-		design.getProperties().putAll(props);
-		
-		ReportDesignResource resource = new ReportDesignResource();
-		resource.setName("template.xls");
-		InputStream is = OpenmrsClassLoader.getInstance().getResourceAsStream("MissingCD4ReportAllSiteTemplate.xls");
-		resource.setContents(IOUtils.toByteArray(is));
-		design.addResource(resource);
-
-		// For now, we need this little magic to simulate what would happen if this were all stored in the database via the UI
-		
-		ExcelTemplateRenderer renderer = new ExcelTemplateRenderer() {
-			public ReportDesign getDesign(String argument) {
-				return design;
-			}
-		};
 		
 		EvaluationContext context = new EvaluationContext();
 		AllLocation kirehe = new AllLocation();
@@ -161,8 +141,11 @@ public class MultiLocationRowPerPatientTest extends BaseModuleContextSensitiveTe
 		
 		ReportDefinitionService rs = Context.getService(ReportDefinitionService.class);
 		ReportData data = rs.evaluate(reportDefinition, context);
-		
-		FileOutputStream fos = new FileOutputStream("/Users/larakellett/Documents/Work/Tests/test.xls"); // You will need to change this if you have no /tmp directory
+
+		String outFile = System.getProperty("java.io.tmpdir") + File.separator + "test.xls";
+		FileOutputStream fos = new FileOutputStream(outFile);
+
+		XlsReportRenderer renderer = new XlsReportRenderer();
 		renderer.render(data, "xxx:xls", fos);
 		fos.close();
 	}
