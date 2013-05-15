@@ -25,17 +25,17 @@ public class DataQualityWebRendererForSites extends AbstractRwandaWebRenderer {
 
 	@Override
     public String getLabel() {
-    	return "DQ-Data Quality Report For All Sites";
+    	return "DQ-Data Quality HIV/TB Report For All Sites";
     }
 
 	@Override
 	public String getLinkUrl(ReportDefinition arg0) {
 		return "module/rwandareports/renderDataQualityDataSet.form";
 	}
-
-	@Override
+	
 	public String getDataSetNameToCheck() {
-		return "DQ-Data Quality Report For All Sites Data Set";
+		return "DQ-Data Quality HIV/TB Report For All Sites Data Set";
+
 	}
 
 }

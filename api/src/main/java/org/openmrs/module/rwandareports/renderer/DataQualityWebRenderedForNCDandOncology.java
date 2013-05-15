@@ -13,8 +13,22 @@
  */
 package org.openmrs.module.rwandareports.renderer;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
+import org.openmrs.module.reporting.evaluation.parameter.Mapped;
+import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
+import org.openmrs.module.reporting.report.renderer.RenderingException;
+import org.openmrs.module.reporting.report.renderer.RenderingMode;
+//import org.openmrs.module.reporting.web.renderers.IndicatorReportWebRenderer;
+import org.openmrs.module.reporting.web.renderers.WebReportRenderer;
 
 /**
  * Renderer for Data Quality report
@@ -22,20 +36,28 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
  */
 @Handler
 public class DataQualityWebRenderedForNCDandOncology extends AbstractRwandaWebRenderer {
-
+	
+	
+	/**
+     * @see org.openmrs.report.ReportRenderer#getLabel()
+     */
 	@Override
     public String getLabel() {
-    	return "DQ-Data Quality Report for NCD";
+    	return "DQ-Data Quality NCD/ONCOLOGY Report By Site";
     }
-
+	
+	
+	/**
+	 * @see org.openmrs.module.reporting.web.renderers.WebReportRenderer#getLinkUrl(org.openmrs.module.reporting.report.definition.ReportDefinition)
+	 */
 	@Override
 	public String getLinkUrl(ReportDefinition arg0) {
 		return "module/rwandareports/renderDataQualityDataSet.form";
 	}
 
-	@Override
 	public String getDataSetNameToCheck() {
-		return "DQ-Data Quality Report for NCD Data Set";
+		return "DQ-Data Quality NCD/ONCOLOGY Report By Site Data Set";
 	}
+
 
 }

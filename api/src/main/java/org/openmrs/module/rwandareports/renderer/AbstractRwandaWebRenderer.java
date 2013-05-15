@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.rwandareports.renderer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
@@ -31,11 +33,14 @@ import java.util.Map;
  *
  */
 public abstract class AbstractRwandaWebRenderer extends AbstractWebReportRenderer {
+	
+	protected final Log log = LogFactory.getLog(getClass());
 
 	/**
 	 * This should contain the display name for the report output that the user will choose in the UI
 	 */
     public abstract String getLabel();
+    
 
 	/**
 	 * This should be set to the name of the dataset that a report must contain
@@ -46,6 +51,7 @@ public abstract class AbstractRwandaWebRenderer extends AbstractWebReportRendere
 	@Override
 	public boolean canRender(ReportDefinition reportDefinition) {
 		return !getRenderingModes(reportDefinition).isEmpty();
+		
 	}
 
 	/**
@@ -57,7 +63,7 @@ public abstract class AbstractRwandaWebRenderer extends AbstractWebReportRendere
 		for (Map.Entry<String, Mapped<? extends DataSetDefinition>> e : definition.getDataSetDefinitions().entrySet()) {
 			String name = e.getKey();
 			DataSetDefinition def = e.getValue().getParameterizable();
-	    	if (getDataSetNameToCheck() != null && getDataSetNameToCheck().equals(def.getName())) {
+			if (getDataSetNameToCheck() != null && getDataSetNameToCheck().equals(def.getName())) {
 				ret.add(new RenderingMode(this, this.getLabel() , name, Integer.MAX_VALUE - 5));
 	    	}
 		}
