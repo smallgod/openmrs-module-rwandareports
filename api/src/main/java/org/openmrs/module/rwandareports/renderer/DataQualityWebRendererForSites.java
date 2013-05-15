@@ -13,56 +13,29 @@
  */
 package org.openmrs.module.rwandareports.renderer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.evaluation.parameter.Mapped;
+import org.openmrs.annotation.Handler;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.renderer.RenderingMode;
-import org.openmrs.module.reporting.web.renderers.IndicatorReportWebRenderer;
-import org.openmrs.module.reporting.web.renderers.WebReportRenderer;
 
 /**
  * Renderer for Data Quality report
  *
  */
-public class DataQualityWebRendererForSites extends IndicatorReportWebRenderer implements WebReportRenderer {
-	
-	
-	/**
-     * @see org.openmrs.report.ReportRenderer#getLabel()
-     */
+@Handler
+public class DataQualityWebRendererForSites extends AbstractRwandaWebRenderer {
+
 	@Override
     public String getLabel() {
     	return "DQ-Data Quality Report For All Sites";
     }
-	
-	
-	/**
-	 * @see org.openmrs.module.reporting.web.renderers.WebReportRenderer#getLinkUrl(org.openmrs.module.reporting.report.definition.ReportDefinition)
-	 */
+
 	@Override
 	public String getLinkUrl(ReportDefinition arg0) {
 		return "module/rwandareports/renderDataQualityDataSet.form";
 	}
-	
-	/**
-	 * @see org.openmrs.report.ReportRenderer#getRenderingModes(org.openmrs.report.ReportDefinition)
-	 */
+
 	@Override
-	public Collection<RenderingMode> getRenderingModes(ReportDefinition definition) {
-		List<RenderingMode> ret = new ArrayList<RenderingMode>();
-		for (Map.Entry<String, Mapped<? extends DataSetDefinition>> e : definition.getDataSetDefinitions().entrySet()) {
-			String name = e.getKey();
-			DataSetDefinition def = e.getValue().getParameterizable();
-	    	if ("DQ-Data Quality Report For All Sites Data Set".equals(def.getName())) {
-				ret.add(new RenderingMode(this, this.getLabel() , name, Integer.MAX_VALUE - 5));
-	    	}
-		}
-		return ret;
+	public String getDataSetNameToCheck() {
+		return "DQ-Data Quality Report For All Sites Data Set";
 	}
-	
+
 }

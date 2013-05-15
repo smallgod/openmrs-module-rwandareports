@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.openmrs.annotation.Handler;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.ReportData;
@@ -34,6 +35,7 @@ import org.openmrs.module.reporting.web.renderers.WebReportRenderer;
  * Renderer for Data Quality report
  *
  */
+@Handler
 public class CalendarWebRenderer extends SimpleHtmlReportRenderer implements WebReportRenderer {
 	
 	

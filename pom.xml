@@ -24,15 +24,20 @@
 
 	<properties>
 		<openMRSVersion>1.9.1</openMRSVersion>
-		<reportingVersion>0.7.2</reportingVersion>
+		<reportingVersion>0.7.6</reportingVersion>
 		<rowperpatientsVersion>1.4-SNAPSHOT</rowperpatientsVersion>
 		<orderextensionVersion>1.1</orderextensionVersion>
 		<reportingobjectgroupVersion>1.0.4.4-SNAPSHOT</reportingobjectgroupVersion>
 		<htmlwidgetsVersion>1.6.4</htmlwidgetsVersion>
 		<serializationVersion>0.2.7</serializationVersion>
 		<heightweighttrackerVersion>1.0.1-SNAPSHOT</heightweighttrackerVersion>
+		<calculationVersion>1.0</calculationVersion>
 		<logicVersion>0.5.2</logicVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<MODULE_ID>${project.parent.artifactId}</MODULE_ID>
+		<MODULE_NAME>${project.parent.name}</MODULE_NAME>
+		<MODULE_VERSION>${project.parent.version}</MODULE_VERSION>
+		<MODULE_PACKAGE>${project.parent.groupId}.${project.parent.artifactId}</MODULE_PACKAGE>
 	</properties>
 
 	<dependencies>
@@ -156,6 +161,13 @@
 			<artifactId>logic-api</artifactId>
 			<version>${logicVersion}</version>
 			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>calculation-api</artifactId>
+			<version>${calculationVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
