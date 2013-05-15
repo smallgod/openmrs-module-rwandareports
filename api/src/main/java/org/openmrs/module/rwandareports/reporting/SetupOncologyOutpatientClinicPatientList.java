@@ -1,7 +1,9 @@
 package org.openmrs.module.rwandareports.reporting;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -32,6 +34,8 @@ public class SetupOncologyOutpatientClinicPatientList {
 	//properties retrieved from global variables
 	private Program oncologyProgram;
 
+	private List<Program> oncologyPrograms = new ArrayList<Program>();
+	
 	private ProgramWorkflow diagnosis;
 	
 	private Concept scheduledVisit;
@@ -43,6 +47,8 @@ public class SetupOncologyOutpatientClinicPatientList {
 	private Concept telephone;
 	
 	private Concept telephone2;
+	
+	/*private List<String> onOrAfterOnOrBefore = new ArrayList<String>();*/
 	
 	public void setup() throws Exception {
 		
@@ -74,9 +80,12 @@ public class SetupOncologyOutpatientClinicPatientList {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("ONC-Oncology Outpatient Clinic Patient List");
-				
-		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));	
-		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+		reportDefinition.addParameter(new Parameter("startDate", "StartDate", Date.class));		
+		reportDefinition.addParameter(new Parameter("endDate", "EndDate", Date.class));
+		
+		//reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
+		
+		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyPrograms,"onOrAfter"), ParameterizableUtil.createParameterMappings("onOrAfter=${startDate}"));
 		createDataSetDefinition(reportDefinition);
 		
 		h.saveReportDefinition(reportDefinition);
@@ -95,20 +104,32 @@ public class SetupOncologyOutpatientClinicPatientList {
 		RowPerPatientDataSetDefinition dataSetDefinition3 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition3.setName("Special Consultation");
 		
-		dataSetDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
-		dataSetDefinition2.addParameter(new Parameter("endDate", "Date", Date.class));
-		dataSetDefinition3.addParameter(new Parameter("endDate", "Date", Date.class));
+		dataSetDefinition.addParameter(new Parameter("startDate", "StartDate", Date.class));
+		dataSetDefinition2.addParameter(new Parameter("startDate", "StartDate", Date.class));
+		dataSetDefinition3.addParameter(new Parameter("startDate", "StartDate", Date.class));
+		
+		dataSetDefinition.addParameter(new Parameter("endDate", "EndDate", Date.class));
+		dataSetDefinition2.addParameter(new Parameter("endDate", "EndDate", Date.class));
+		dataSetDefinition3.addParameter(new Parameter("endDate", "EndDate", Date.class));
+		
+		/*SortCriteria sortCriteria = new SortCriteria();
+		sortCriteria.addSortElement("familyName", SortDirection.ASC);
+		dataSetDefinition.setSortCriteria(sortCriteria);
+		dataSetDefinition2.setSortCriteria(sortCriteria);
+		dataSetDefinition3.setSortCriteria(sortCriteria);*/
+		
 		
 		SortCriteria sortCriteria = new SortCriteria();
+		sortCriteria.addSortElement("nextRDV", SortDirection.ASC);
 		sortCriteria.addSortElement("familyName", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 		dataSetDefinition2.setSortCriteria(sortCriteria);
 		dataSetDefinition3.setSortCriteria(sortCriteria);
 		
 		//Add filters
-		dataSetDefinition.addFilter(Cohorts.createDateObsCohortDefinition(scheduledVisit, RangeComparator.GREATER_EQUAL, RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil.createParameterMappings("value2=${endDate},value1=${endDate}"));
-		dataSetDefinition2.addFilter(Cohorts.createDateObsCohortDefinition(biopsyResultVisit, RangeComparator.GREATER_EQUAL, RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil.createParameterMappings("value2=${endDate},value1=${endDate}"));
-		dataSetDefinition3.addFilter(Cohorts.createDateObsCohortDefinition(specialVisit, RangeComparator.GREATER_EQUAL, RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil.createParameterMappings("value2=${endDate},value1=${endDate}"));
+		dataSetDefinition.addFilter(Cohorts.createDateObsCohortDefinition(scheduledVisit, RangeComparator.GREATER_EQUAL, RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil.createParameterMappings("value2=${endDate},value1=${startDate}"));
+		dataSetDefinition2.addFilter(Cohorts.createDateObsCohortDefinition(biopsyResultVisit, RangeComparator.GREATER_EQUAL, RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil.createParameterMappings("value2=${endDate},value1=${startDate}"));
+		dataSetDefinition3.addFilter(Cohorts.createDateObsCohortDefinition(specialVisit, RangeComparator.GREATER_EQUAL, RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil.createParameterMappings("value2=${endDate},value1=${startDate}"));
 		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", scheduledVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
@@ -156,6 +177,7 @@ public class SetupOncologyOutpatientClinicPatientList {
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
+		mappings.put("startDate", "${startDate}");
 		
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
@@ -165,6 +187,8 @@ public class SetupOncologyOutpatientClinicPatientList {
 	private void setupProperties() {
 		
 		oncologyProgram = gp.getProgram(GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
+		
+		oncologyPrograms.add(oncologyProgram);
 		
 		diagnosis = gp.getProgramWorkflow(GlobalPropertiesManagement.DIAGNOSIS_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
@@ -177,5 +201,8 @@ public class SetupOncologyOutpatientClinicPatientList {
 		telephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
 		
 		telephone2 = gp.getConcept(GlobalPropertiesManagement.SECONDARY_TELEPHONE_NUMBER_CONCEPT);
+		
+		/*onOrAfterOnOrBefore.add("onOrAfter");
+		onOrAfterOnOrBefore.add("onOrBefore");*/
 	}
 }
