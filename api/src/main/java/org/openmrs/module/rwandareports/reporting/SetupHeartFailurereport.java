@@ -47,6 +47,7 @@ import org.openmrs.module.rwandareports.definition.DrugsActiveCohortDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
+import org.openmrs.module.rwandareports.util.RwandaReportsUtil;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
@@ -1416,14 +1417,14 @@ public class SetupHeartFailurereport {
 		admitToHospital = gp.getConcept(GlobalPropertiesManagement.ADMIT_TO_HOSPITAL);
 		height = gp.getConcept(GlobalPropertiesManagement.HEIGHT_CONCEPT);
 		
-		furosemide = gp.getDrugs(gp.getConcept(GlobalPropertiesManagement.FUROSEMIDE));
-		atenolol = gp.getDrugs(gp.getConcept(GlobalPropertiesManagement.ATENOLOL));
-		carvedilol = gp.getDrugs(gp.getConcept(GlobalPropertiesManagement.CARVEDILOL));
-		aldactone = gp.getDrugs(gp.getConcept(GlobalPropertiesManagement.ALDACTONE));
-		lisinopril = gp.getDrugs(gp.getConcept(GlobalPropertiesManagement.LISINOPRIL));
-		captopril = gp.getDrugs(gp.getConcept(GlobalPropertiesManagement.CAPTOPRIL));
-		warfarin = gp.getDrugs(gp.getConcept(GlobalPropertiesManagement.WARFARIN));
-		penicillin = gp.getDrugs(gp.getConcept(GlobalPropertiesManagement.PENICILLIN));
+		furosemide = RwandaReportsUtil.getDrugs(gp.getConcept(GlobalPropertiesManagement.FUROSEMIDE));
+		atenolol = RwandaReportsUtil.getDrugs(gp.getConcept(GlobalPropertiesManagement.ATENOLOL));
+		carvedilol = RwandaReportsUtil.getDrugs(gp.getConcept(GlobalPropertiesManagement.CARVEDILOL));
+		aldactone = RwandaReportsUtil.getDrugs(gp.getConcept(GlobalPropertiesManagement.ALDACTONE));
+		lisinopril = RwandaReportsUtil.getDrugs(gp.getConcept(GlobalPropertiesManagement.LISINOPRIL));
+		captopril = RwandaReportsUtil.getDrugs(gp.getConcept(GlobalPropertiesManagement.CAPTOPRIL));
+		warfarin = RwandaReportsUtil.getDrugs(gp.getConcept(GlobalPropertiesManagement.WARFARIN));
+		penicillin = RwandaReportsUtil.getDrugs(gp.getConcept(GlobalPropertiesManagement.PENICILLIN));
 		
 		onOrAfterOnOrBeforeParamterNames.add("onOrAfter");
 		onOrAfterOnOrBeforeParamterNames.add("onOrBefore");

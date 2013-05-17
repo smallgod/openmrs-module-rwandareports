@@ -17,13 +17,14 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.evaluation.EvaluationContext;
+import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,6 +46,16 @@ public abstract class RwandaReportsTest extends BaseModuleContextSensitiveTest {
 	 * @return an instance of SetupReport that is responsible for creating and deleting the report
 	 */
 	public abstract SetupReport getSetupReportClass();
+
+	/**
+	 * @return the names and values of the parameters to run the report with
+	 */
+	public abstract EvaluationContext getEvaluationContext();
+
+	/**
+	 * This method should be overridden to apply any specific tests to the evaluated report data for the given input parameters
+	 */
+	public abstract void testResults(ReportData data);
 
 	@Before
 	public void setup() throws Exception {
@@ -82,11 +93,20 @@ public abstract class RwandaReportsTest extends BaseModuleContextSensitiveTest {
 	}
 
 	/**
+	 * Tests that the Report and associated ReportDesigns are successfully run
+	 */
+	@Test
+	public void shouldRunReport() throws Exception {
+		ReportDefinition reportDefinition = setupReport();
+		ReportData data = Context.getService(ReportDefinitionService.class).evaluate(reportDefinition, getEvaluationContext());
+		testResults(data);
+	}
+
+	/**
 	 * Tests that the Report and associated ReportDesigns are successfully deleted
 	 */
 	@Test
 	public void shouldDeleteReport() throws Exception {
-
 		ReportService rs = Context.getService(ReportService.class);
 		setupReport();
 
@@ -113,4 +133,5 @@ public abstract class RwandaReportsTest extends BaseModuleContextSensitiveTest {
 	private ReportDefinitionService getReportDefinitionService() {
 		return Context.getService(ReportDefinitionService.class);
 	}
+
 }

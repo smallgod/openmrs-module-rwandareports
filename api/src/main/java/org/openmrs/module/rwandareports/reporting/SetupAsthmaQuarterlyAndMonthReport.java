@@ -49,6 +49,7 @@ import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
+import org.openmrs.module.rwandareports.util.RwandaReportsUtil;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
@@ -1177,10 +1178,11 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		basicInhalerTrainingProvided = gp.getConcept(GlobalPropertiesManagement.BASIC_INHALER_TRAINING_PROVIDED);
 		properInhalerTechnique = gp.getConcept(GlobalPropertiesManagement.PROPER_INHALER_TECHNIQUE);
 		
-		asthmasMedications = gp
-		        .getConceptsByConceptSet(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_DISEASE_TREATMENT_DRUGS);
-		
-		asthmasMedicationsWithoutSalbutamol = gp.removeConceptFromConceptSet(asthmasMedications, salbutamol);
+		asthmasMedications = gp.getConceptsByConceptSet(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_DISEASE_TREATMENT_DRUGS);
+
+		asthmasMedicationsWithoutSalbutamol = new ArrayList<Concept>(asthmasMedications);
+		asthmasMedicationsWithoutSalbutamol.remove(salbutamol);
+
 		locOfHosp = gp.getConcept(GlobalPropertiesManagement.LOCATION_OF_HOSPITALIZATION);
 		
 		severePersistentAsthma = gp.getConcept(GlobalPropertiesManagement.SEVERE_PERSISTENT_ASTHMA);

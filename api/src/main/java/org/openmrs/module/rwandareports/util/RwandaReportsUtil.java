@@ -1,11 +1,15 @@
 package org.openmrs.module.rwandareports.util;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Patient;
@@ -71,5 +75,24 @@ public class RwandaReportsUtil {
 		
 		return false;
 	}
-	
+
+	/**
+	 * @return the List of Concepts that are configured as valid answers to the passed Concept
+	 */
+	public static List<Concept> getConceptAnswersAsConcepts(Concept concept) {
+		List<Concept> concepts = new ArrayList<Concept>();
+		Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
+		for (ConceptAnswer conceptAnswer : conceptAnswers) {
+			concepts.add(conceptAnswer.getAnswerConcept());
+		}
+		return concepts;
+	}
+
+	/**
+	 * @return the Drugs that are configured with the given Concept
+	 */
+	public static List<Drug> getDrugs(Concept concept) {
+		List<Drug> drugs = Context.getConceptService().getDrugsByConcept(concept);
+		return drugs;
+	}
 }

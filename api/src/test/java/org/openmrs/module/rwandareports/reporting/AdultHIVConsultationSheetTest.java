@@ -13,15 +13,10 @@
  */
 package org.openmrs.module.rwandareports.reporting;
 
-import junit.framework.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.report.ReportDesign;
-import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
-import org.openmrs.module.reporting.report.service.ReportService;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.module.reporting.evaluation.EvaluationContext;
+import org.openmrs.module.reporting.report.ReportData;
+import org.openmrs.module.rwandareports.RwandaReportsTestUtil;
+import org.openmrs.module.rwandareports.util.MetadataLookup;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,15 +26,33 @@ import java.util.List;
  */
 public class AdultHIVConsultationSheetTest extends RwandaReportsTest {
 
+	@Override
 	public String getReportName() {
 		return "HIV-Adult Consultation Sheet";
 	}
 
+	@Override
 	public List<String> getReportDesignNames() {
 		return Arrays.asList("AdultHIVConsultationSheet.xls_");
 	}
 
+	@Override
 	public SetupReport getSetupReportClass() {
 		return new SetupAdultHIVConsultationSheet();
+	}
+
+	@Override
+	public EvaluationContext getEvaluationContext() {
+		EvaluationContext context = new EvaluationContext();
+		context.addParameterValue("location", RwandaReportsTestUtil.getLocation("Kirehe Health Center"));
+		context.addParameterValue("state", MetadataLookup.getProgramWorkflowState("HIV PROGRAM", "TREATMENT GROUP", "GROUP 1"));
+		return context;
+	}
+
+	@Override
+	public void testResults(ReportData data) {
+		RwandaReportsTestUtil.printReportData(data);
+
+		// TODO: Find some way to test the output of this
 	}
 }

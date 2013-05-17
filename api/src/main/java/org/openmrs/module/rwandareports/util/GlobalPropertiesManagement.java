@@ -20,465 +20,95 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 
 public class GlobalPropertiesManagement {
-	
-	
-	public Program getProgram(String globalPropertyName)
-	{
+
+	public Program getProgram(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		Program program = Context.getProgramWorkflowService().getProgramByUuid(globalProperty);
-		
-		if(program == null)
-		{
-			program = Context.getProgramWorkflowService().getProgramByName(globalProperty);
-		}
-		
-		if(program == null)
-		{
-			try{
-			program = Context.getProgramWorkflowService().getProgram(Integer.parseInt(globalProperty));
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-		}
-		
-		if(program == null)
-		{
-			throw new RuntimeException("Unable to retrieve a program from the global property: " + globalPropertyName);
-		}
-		
-		return program;
+		return MetadataLookup.getProgram(globalProperty);
 	}
 	
-	public PatientIdentifierType getPatientIdentifier(String globalPropertyName)
-	{
+	public PatientIdentifierType getPatientIdentifier(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByUuid(globalProperty);
-		
-		if(pit == null)
-		{
-			pit = Context.getPatientService().getPatientIdentifierTypeByName(globalProperty);
-		}
-		
-		if(pit == null)
-		{
-			try{
-			pit = Context.getPatientService().getPatientIdentifierType(Integer.parseInt(globalProperty));
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-		}
-		
-		if(pit == null)
-		{
-			throw new RuntimeException("Unable to retrieve a patient identifier from the global property: " + globalPropertyName);
-		}
-		
-		return pit;
+		return MetadataLookup.getPatientIdentifier(globalProperty);
 	}
 	
-	public Concept getConcept(String globalPropertyName)
-	{
+	public Concept getConcept(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		return getConcept(globalProperty, globalPropertyName);
+		return MetadataLookup.getConcept(globalProperty);
 	}
 	
-	public Concept getConcept(String globalProperty, String globalPropertyName)
-	{
-		
-		Concept c = Context.getConceptService().getConceptByUuid(globalProperty);
-		
-		if(c == null)
-		{
-			c = Context.getConceptService().getConceptByName(globalProperty);
-		}
-		
-		if(c == null)
-		{
-			try{
-				c = Context.getConceptService().getConcept(Integer.parseInt(globalProperty));
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-		}
-		
-		if(c == null)
-		{
-			throw new RuntimeException("Unable to retrieve a concept from the global property: " + globalPropertyName);
-		}
-		
-		return c;
-	}
-	
-	public List<Concept> getConceptList(String globalPropertyName)
-	{
+	public List<Concept> getConceptList(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		List<Concept> concepts = new ArrayList<Concept>();
-		
-		if(globalProperty != null)
-		{
-			String[] propertySplit = globalProperty.split(",");
-			for(String property: propertySplit)
-			{
-				concepts.add(getConcept(property, globalPropertyName));
-			}
-		}
-		
-		return concepts;
+		return MetadataLookup.getConceptList(globalProperty);
 	}
-	
-	public Form getForm(String globalPropertyName)
-	{
+
+	public List<Concept> getConceptsByConceptSet(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		Form form = Context.getFormService().getFormByUuid(globalProperty);
-		
-		if(form == null)
-		{
-			form = Context.getFormService().getForm(globalProperty);
-		}
-		
-		if(form == null)
-		{
-			try{
-				form = Context.getFormService().getForm(Integer.parseInt(globalProperty));
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-		}
-		
-		if(form == null)
-		{
-			throw new RuntimeException("Unable to retrieve a form from the global property: " + globalPropertyName);
-		}
-		
-		return form;
+		Concept c = MetadataLookup.getConcept(globalProperty);
+		return Context.getConceptService().getConceptsByConceptSet(c);
 	}
-	
-	public Form getFormFromGlobalPropertyValue(String globalProperty, String globalPropertyName)
-	{	
-		Form form = Context.getFormService().getFormByUuid(globalProperty);
-		
-		if(form == null)
-		{
-			form = Context.getFormService().getForm(globalProperty);
-		}
-		
-		if(form == null)
-		{
-			try{
-				form = Context.getFormService().getForm(Integer.parseInt(globalProperty));
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-		}
-		
-		if(form == null)
-		{
-			throw new RuntimeException("Unable to retrieve a form from the global property: " + globalPropertyName);
-		}
-		
-		return form;
-	}
-	
-	public EncounterType getEncounterType(String globalPropertyName)
-	{
+
+	public Form getForm(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		return getEncounterTypeFromGlobalProperty(globalProperty, globalPropertyName);
-		
+		return MetadataLookup.getForm(globalProperty);
 	}
 	
-	private EncounterType getEncounterTypeFromGlobalProperty(String globalProperty, String globalPropertyName)
-	{
-		EncounterType et = Context.getEncounterService().getEncounterTypeByUuid(globalProperty);
-		
-		if(et == null)
-		{
-			et = Context.getEncounterService().getEncounterType(globalProperty);
-		}
-		
-		if(et == null)
-		{
-			try{
-				et = Context.getEncounterService().getEncounterType(Integer.parseInt(globalProperty));
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-		}
-		
-		if(et == null)
-		{
-			throw new RuntimeException("Unable to retrieve a encounterType from the global property: " + globalPropertyName);
-		}
-		
-		return et;
-	}
-	
-	public List<EncounterType> getEncounterTypeList(String globalPropertyName)
-	{
+	public EncounterType getEncounterType(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		String[] encounters = globalProperty.split(":");
-		if(encounters.length == 1)
-		{
-			encounters = globalProperty.split(",");
-		}
-		
-		List<EncounterType> encounterTypes=new ArrayList<EncounterType>();
-		for(String id:encounters){
-			encounterTypes.add(getEncounterTypeFromGlobalProperty(id, id));
-		}
-		
-		return encounterTypes;
+		return MetadataLookup.getEncounterType(globalProperty);
 	}
 	
-	public List<Form> getFormList(String globalPropertyName)
-	{
+	public List<EncounterType> getEncounterTypeList(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		String[] forms = globalProperty.split(",");
-		
-		List<Form> formTypes = new ArrayList<Form>();
-		for(String id:forms){
-			formTypes.add(getFormFromGlobalPropertyValue(id, globalPropertyName));
-		}
-		
-		return formTypes;
+		return MetadataLookup.getEncounterTypeList(globalProperty);
 	}
 	
-	public RelationshipType getRelationshipType(String globalPropertyName)
-	{
+	public List<Form> getFormList(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		RelationshipType rt = Context.getPersonService().getRelationshipTypeByUuid(globalProperty);
-		
-		if(rt == null)
-		{
-			rt =  Context.getPersonService().getRelationshipTypeByName(globalProperty);
-		}
-		
-		if(rt == null)
-		{
-			try{
-				rt =  Context.getPersonService().getRelationshipType(Integer.parseInt(globalProperty));
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-		}
-		
-		if(rt == null)
-		{
-			throw new RuntimeException("Unable to retrieve a relationshipType from the global property: " + globalPropertyName);
-		}
-		
-		return rt;
+		return MetadataLookup.getFormList(globalProperty);
 	}
 	
-	public Integer getGlobalPropertyAsInt(String globalPropertyName)
-	{
+	public RelationshipType getRelationshipType(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		return Integer.parseInt(globalProperty);
+		return MetadataLookup.getRelationshipType(globalProperty);
 	}
 	
-	public OrderType getOrderType(String globalPropertyName)
-	{
+	public OrderType getOrderType(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		OrderType ot = Context.getOrderService().getOrderTypeByUuid(globalProperty);
-		
-		if(ot == null)
-		{
-			try{
-				ot =  Context.getOrderService().getOrderType(Integer.parseInt(globalProperty));
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-		}
-		
-		if(ot == null)
-		{
-			throw new RuntimeException("Unable to retrieve a orderType from the global property: " + globalPropertyName);
-		}
-		
-		return ot;
+		return MetadataLookup.getOrderType(globalProperty);
 	}
 	
-	
-	public ProgramWorkflow getProgramWorkflow(String globalPropertyName, String programName)
-	{
+	public ProgramWorkflow getProgramWorkflow(String globalPropertyName, String programName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		Program program = this.getProgram(programName);
-		
-		ProgramWorkflow pw = null;
-		
-		if(program != null)
-		{
-			pw = program.getWorkflowByName(globalProperty);
-			
-			if(pw == null)
-			{
-				pw = Context.getProgramWorkflowService().getWorkflowByUuid(globalProperty);
-			}
-			if(pw == null)
-			{
-				pw = program.getWorkflow(Integer.parseInt(globalProperty));
-			}
-			
-			if(pw == null)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-			
-			return pw;
-		}
-		else
-		{
-			throw new RuntimeException("Unable to retrieve " + globalPropertyName +" because the global property for the program " + programName + " doesn't resolve to a program");
-		}
+		return MetadataLookup.getProgramWorkflow(programName, globalProperty);
 	}
 	
-	public ProgramWorkflowState getProgramWorkflowState(String globalPropertyName, String workflowName, String programName)
-	{
+	public ProgramWorkflowState getProgramWorkflowState(String globalPropertyName, String workflowName, String programName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		ProgramWorkflow pw = this.getProgramWorkflow(workflowName, programName);
-		
-		ProgramWorkflowState pws = null;
-		
-		if(pw != null)
-		{
-			pws = pw.getState(globalProperty);
-			
-			if(pws == null)
-			{
-				pws = Context.getProgramWorkflowService().getStateByUuid(globalProperty);
-			}
-			
-			if(pws == null)
-			{
-				try{
-					pws = pw.getState(Integer.parseInt(globalProperty));
-					
-					if(pws == null)
-					{
-						pws = pw.getState(Context.getConceptService().getConcept(Integer.parseInt(globalProperty)));
-					}
-				}
-				catch(Exception e)
-				{
-					throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-				}
-			}
-			
-			if(pws == null)
-			{
-				throw new RuntimeException("Unable to retrieve a programWorkflowState from the global property: " + globalPropertyName);
-			}
-		}
-		
-		return pws;
+		return MetadataLookup.getProgramWorkflowState(programName, workflowName, globalProperty);
 	}
 	
-	public List<Drug> getDrugs(Concept concept) {                 
-	     List<Drug> drugs = Context.getConceptService().getDrugsByConcept(concept);                 
-	     return drugs;
-	 }
-	
-	public List<Concept> getConceptAnswersAsConcepts(Concept concept) {
-		List<Concept> concepts = new ArrayList<Concept>();
-		Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
-		for (ConceptAnswer conceptAnswer : conceptAnswers) {
-			concepts.add(conceptAnswer.getAnswerConcept());
-		}
-		
-		return concepts;
-	}
-	
-	public List<Concept> removeConceptFromConceptSet(List<Concept> conceptSet, Concept concept)
-	{
-		conceptSet.remove(concept);
-		return conceptSet;	
-	}
-	
-	public List<Concept> getConceptsByConceptSet(String globalPropertyName)
-	{
-		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		
-		Concept c = Context.getConceptService().getConceptByUuid(globalProperty);
-		List<Concept> concepts=null;
-		if(c!= null)
-			concepts=Context.getConceptService().getConceptsByConceptSet(c);		
-		
-		if(c == null && (concepts==null ||concepts.size()==0))
-		{
-			c = Context.getConceptService().getConceptByName(globalProperty);
-			if(c!= null)
-			concepts=Context.getConceptService().getConceptsByConceptSet(c);
-		}
-		
-		if(c == null && (concepts==null ||concepts.size()==0))
-		{
-			try{
-				c = Context.getConceptService().getConcept(Integer.parseInt(globalProperty));
-				if(c!= null)
-				concepts=Context.getConceptService().getConceptsByConceptSet(c);
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Unable to convert global property " + globalPropertyName +" to an integer.");
-			}
-		}
-		
-		if(c == null)
-		{
-			throw new RuntimeException("Unable to retrieve a concept from the global property: " + globalPropertyName);
-		}
-		if(c != null && (concepts==null ||concepts.size()==0))
-		{
-			throw new RuntimeException("Unable to retrieve a concepts from the global property: " + globalPropertyName+". Check if the concept is a Set of other concepts.");
-		}
-		
-		return concepts;
-	}
-	
-	public Map<Concept, Double> getVialSizes(){
+	public Map<Concept, Double> getVialSizes() {
 		Map<Concept, Double> vialSizes = new HashMap<Concept, Double>();
-		
 		String vialGp =  Context.getAdministrationService().getGlobalProperty("reports.vialSizes");
 		String[] vials = vialGp.split(",");
-		
-		for(String vial: vials)
-		{
+		for(String vial: vials) {
 			String[] v = vial.split(":");
-			
-			Concept drugConcept = getConcept(v[0], "reports.vialSize:" + v[0]);
-			Double size = Double.parseDouble(v[1]);
-			
-			vialSizes.put(drugConcept, size);
+			try {
+				Concept drugConcept = MetadataLookup.getConcept(v[0]);
+				Double size = Double.parseDouble(v[1]);
+				vialSizes.put(drugConcept, size);
+			}
+			catch (Exception e) {
+				throw new IllegalArgumentException("Unable to convert " + vial + " into a vial size Concept and Double", e);
+			}
 		}
-		
 		return vialSizes;
 	}
-	
+
+	public Integer getGlobalPropertyAsInt(String globalPropertyName) {
+		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
+		return Integer.parseInt(globalProperty);
+	}
 
 	//Programs
 	public final static String ADULT_HIV_PROGRAM = "hiv.programid.adult"; 

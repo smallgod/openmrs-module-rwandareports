@@ -38,6 +38,7 @@ import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
+import org.openmrs.module.rwandareports.util.RwandaReportsUtil;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
@@ -1461,8 +1462,8 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 		lisinoprilCaptopril.add(lisinopril);
 		lisinoprilCaptopril.add(captopril);
 		
-		onAceInhibitorsDrugs.addAll(gp.getDrugs(lisinopril));
-		onAceInhibitorsDrugs.addAll(gp.getDrugs(captopril));
+		onAceInhibitorsDrugs.addAll(RwandaReportsUtil.getDrugs(lisinopril));
+		onAceInhibitorsDrugs.addAll(RwandaReportsUtil.getDrugs(captopril));
 		
 		creatinine = gp.getConcept(GlobalPropertiesManagement.SERUM_CREATININE);
 		insulin7030 = gp.getConcept(GlobalPropertiesManagement.INSULIN_70_30);
