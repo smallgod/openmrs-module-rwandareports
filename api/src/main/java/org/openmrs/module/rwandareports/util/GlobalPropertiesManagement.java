@@ -1,14 +1,10 @@
 package org.openmrs.module.rwandareports.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Concept;
-import org.openmrs.ConceptAnswer;
-import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.OrderType;
@@ -28,7 +24,7 @@ public class GlobalPropertiesManagement {
 	
 	public PatientIdentifierType getPatientIdentifier(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		return MetadataLookup.getPatientIdentifier(globalProperty);
+		return MetadataLookup.getPatientIdentifierType(globalProperty);
 	}
 	
 	public Concept getConcept(String globalPropertyName) {

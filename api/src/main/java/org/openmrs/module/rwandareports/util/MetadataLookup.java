@@ -3,8 +3,10 @@ package org.openmrs.module.rwandareports.util;
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
+import org.openmrs.Location;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -92,7 +94,7 @@ public class MetadataLookup {
 	/**
 	 * @return the PatientIdentifier that matches the passed uuid, name, or primary key id
 	 */
-	public static PatientIdentifierType getPatientIdentifier(String lookup) {
+	public static PatientIdentifierType getPatientIdentifierType(String lookup) {
 		PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByUuid(lookup);
 		if (pit == null) {
 			pit = Context.getPatientService().getPatientIdentifierTypeByName(lookup);
@@ -268,4 +270,45 @@ public class MetadataLookup {
 		return ot;
 	}
 
+	/**
+	 * @return the Location that matches the passed uuid, name, or primary key id
+	 */
+	public static Location getLocation(String lookup) {
+		Location et = Context.getLocationService().getLocationByUuid(lookup);
+		if (et == null) {
+			et = Context.getLocationService().getLocation(lookup);
+		}
+		if (et == null) {
+			try {
+				et = Context.getLocationService().getLocation(Integer.parseInt(lookup));
+			}
+			catch(Exception e) {}
+		}
+		if (et == null) {
+			throw new IllegalArgumentException("Unable to find Location using key: " + lookup);
+		}
+
+		return et;
+	}
+
+	/**
+	 * @return the PersonAttributeType that matches the passed uuid, name, or primary key id
+	 */
+	public static PersonAttributeType getPersonAttributeType(String lookup) {
+		PersonAttributeType et = Context.getPersonService().getPersonAttributeTypeByUuid(lookup);
+		if (et == null) {
+			et = Context.getPersonService().getPersonAttributeTypeByName(lookup);
+		}
+		if (et == null) {
+			try {
+				et = Context.getPersonService().getPersonAttributeType(Integer.parseInt(lookup));
+			}
+			catch(Exception e) {}
+		}
+		if (et == null) {
+			throw new IllegalArgumentException("Unable to find PersonAttributeType using key: " + lookup);
+		}
+
+		return et;
+	}
 }
