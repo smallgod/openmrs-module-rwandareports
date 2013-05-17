@@ -18,6 +18,7 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Program;
@@ -36,7 +37,7 @@ import java.util.Iterator;
  * database whose tables you wish to base the test dataset from, remove the
  * Ignore annotation, and run this as a unit test
  */
-//@Ignore
+@Ignore
 public class CreateTestDataSet extends BaseModuleContextSensitiveTest {
 
 	@Test
