@@ -74,13 +74,16 @@ public class GlobalPropertiesManagement {
 	}
 	
 	public ProgramWorkflow getProgramWorkflow(String globalPropertyName, String programName) {
-		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		return MetadataLookup.getProgramWorkflow(programName, globalProperty);
+		String programGp = Context.getAdministrationService().getGlobalProperty(programName);
+		String workflowGp = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
+		return MetadataLookup.getProgramWorkflow(programGp, workflowGp);
 	}
 	
 	public ProgramWorkflowState getProgramWorkflowState(String globalPropertyName, String workflowName, String programName) {
-		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		return MetadataLookup.getProgramWorkflowState(programName, workflowName, globalProperty);
+		String programGp = Context.getAdministrationService().getGlobalProperty(programName);
+		String workflowGp = Context.getAdministrationService().getGlobalProperty(workflowName);
+		String stateGp = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
+		return MetadataLookup.getProgramWorkflowState(programGp, workflowGp, stateGp);
 	}
 	
 	public Map<Concept, Double> getVialSizes() {
