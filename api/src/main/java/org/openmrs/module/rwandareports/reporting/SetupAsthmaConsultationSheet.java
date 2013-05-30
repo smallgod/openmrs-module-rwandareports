@@ -174,7 +174,7 @@ public class SetupAsthmaConsultationSheet {
 	
 	private void setupProperties() {
 		asthmaProgram = gp.getProgram(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_PROGRAM);
-		asthmaEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.ASTHMA_VISIT);
+		asthmaEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.ASTHMA_VISIT,null);
 		rendevousForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_RENDEVOUS_VISIT_FORM);
 		asthmaDDBForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
 		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);

@@ -215,12 +215,16 @@ public class MetadataLookup {
 	 * @return the List of EncounterTypes that matches the passed comma-separated list of Encounter lookups
 	 * @see MetadataLookup#getEncounterType(String)
 	 */
-	public static List<EncounterType> getEncounterTypeList(String lookup) {
+	public static List<EncounterType> getEncounterTypeList(String lookup,String separator) {
 		List<EncounterType> l = new ArrayList<EncounterType>();
 		if (ObjectUtil.notNull(lookup)) {
-			String[] split = lookup.split(",");
-			for (String s : split) {
-				l.add(MetadataLookup.getEncounterType(s));
+			if(ObjectUtil.notNull(separator)){
+				String[] split = lookup.split(separator);
+				for (String s : split) {
+					l.add(MetadataLookup.getEncounterType(s));
+			}
+			}else{
+				l.add(MetadataLookup.getEncounterType(lookup));	
 			}
 		}
 		return l;

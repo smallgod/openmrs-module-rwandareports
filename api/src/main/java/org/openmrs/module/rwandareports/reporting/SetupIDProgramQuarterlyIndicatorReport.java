@@ -1678,7 +1678,7 @@ public Helper h = new Helper();
 		artWorkflowStates.add(pediArt);
 		artWorkflowStates.add(hivArt);
 		
-		hivEncounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.HIV_ENCOUNTER_TYPES);
+		hivEncounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.HIV_ENCOUNTER_TYPES,":");
 		
 		cd4Concept = gp.getConcept(GlobalPropertiesManagement.CD4_TEST);
 		weightConcept = gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);

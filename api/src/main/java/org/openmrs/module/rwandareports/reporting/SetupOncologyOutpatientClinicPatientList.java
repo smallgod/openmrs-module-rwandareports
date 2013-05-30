@@ -60,7 +60,7 @@ public class SetupOncologyOutpatientClinicPatientList {
 		    "OncologyOutpatientClinicConsult.xls_", null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:8,dataset:dataset|sheet:1,row:13,dataset:dataset2|sheet:1,row:18,dataset:dataset3");
+		props.put("repeatingSections", "sheet:1,row:9,dataset:dataset|sheet:1,row:14,dataset:dataset2|sheet:1,row:19,dataset:dataset3");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);

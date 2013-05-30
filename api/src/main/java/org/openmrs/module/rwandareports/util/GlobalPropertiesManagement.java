@@ -53,9 +53,9 @@ public class GlobalPropertiesManagement {
 		return MetadataLookup.getEncounterType(globalProperty);
 	}
 	
-	public List<EncounterType> getEncounterTypeList(String globalPropertyName) {
+	public List<EncounterType> getEncounterTypeList(String globalPropertyName,String separator) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
-		return MetadataLookup.getEncounterTypeList(globalProperty);
+		return MetadataLookup.getEncounterTypeList(globalProperty,separator);
 	}
 	
 	public List<Form> getFormList(String globalPropertyName) {

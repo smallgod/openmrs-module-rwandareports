@@ -225,7 +225,7 @@ public class SetupNCDLateVisitandLTFUReport {
 	}
 	
 	private List<Program> setupPrograms() {
-		clinicalEncoutersExcLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES_EXC_LAB_TEST);
+		clinicalEncoutersExcLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES_EXC_LAB_TEST,",");
 		returnVisitDateConcept = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
 		diseases = new ArrayList<Program>();
 		diseases.add(gp.getProgram(GlobalPropertiesManagement.DM_PROGRAM));

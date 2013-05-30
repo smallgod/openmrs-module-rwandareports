@@ -301,7 +301,7 @@ public class SetupPMTCTPregnancyMonthlyReport {
         height = gp.getConcept(GlobalPropertiesManagement.HEIGHT_CONCEPT);
 		weight = gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);
 		viralLoad = gp.getConcept(GlobalPropertiesManagement.VIRAL_LOAD_TEST);
-		adultHivFlowsheetEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.ADULT_FLOWSHEET_ENCOUNTER);
+		adultHivFlowsheetEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.ADULT_FLOWSHEET_ENCOUNTER,null);
 		adultHivFlowsheet=gp.getEncounterType(GlobalPropertiesManagement.ADULT_FLOWSHEET_ENCOUNTER);
 		adultflowsheetnewvisitForm=gp.getForm(GlobalPropertiesManagement.ADULT_FLOWSHEET_VISIT).getFormId();
 		nextVisitConcept=gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);

@@ -183,7 +183,7 @@ public class SetupHeartFailureConsultSheet {
 		DDBAndRendezvousForms.add(rendevousForm);
 		DDBAndRendezvousForms.add(heartFailureDDBForm);
 		DDBAndRendezvousForms.add(followUpForm);
-		heartFailureEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+		heartFailureEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER,null);
 		
 		
 	}
