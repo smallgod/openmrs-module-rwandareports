@@ -179,7 +179,7 @@ public class SetupHypertensionConsultationSheet {
 		DDBAndRendezvousForms.add(rendevousForm);
 		DDBAndRendezvousForms.add(hypertensionDDBForm);
 		DDBAndRendezvousForms.add(followUpForm);
-		hypertensionEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER,null);
+		hypertensionEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER);
 		
 	}
 }

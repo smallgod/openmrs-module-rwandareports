@@ -459,7 +459,7 @@ public class SetupExposedClinicInfantMonthly {
 		pmtctinfantProgram = gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_CLINIC_PROGRAM);
 		feedingState = gp.getProgramWorkflow(GlobalPropertiesManagement.FEEDING_GROUP_WORKFLOW,
 		    GlobalPropertiesManagement.PMTCT_COMBINED_CLINIC_PROGRAM);
-		exposedInfantEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.EXPOSED_INFANT_ENCOUNTER,null);
+		exposedInfantEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.EXPOSED_INFANT_ENCOUNTER);
 		exposedInfantEncountertype = gp.getEncounterType(GlobalPropertiesManagement.EXPOSED_INFANT_ENCOUNTER);
 		cotrimoxazole = gp.getConcept(GlobalPropertiesManagement.COTRIMOXAZOLE_DRUG);
 		NVPSuspDrugId = Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.NVP_Susp);

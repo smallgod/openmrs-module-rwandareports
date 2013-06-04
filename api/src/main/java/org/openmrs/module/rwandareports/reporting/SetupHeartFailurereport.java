@@ -1396,7 +1396,7 @@ public class SetupHeartFailurereport {
 		cardiologyForm = gp.getFormList(GlobalPropertiesManagement.CARDIOLOGY_CONSULT_FORM);
 		cardiologyDDB = gp.getFormList(GlobalPropertiesManagement.CARDIOLOGY_DDB);
 		
-		encounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.CARDIOLOGY_ENCTOUNTER_TYPES,",");
+		encounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.CARDIOLOGY_ENCTOUNTER_TYPES);
 		
 		echocardiographyResult = gp.getConcept(GlobalPropertiesManagement.DDB_ECHOCARDIOGRAPH_RESULT);
 		notDone = gp.getConcept(GlobalPropertiesManagement.NOT_DONE);

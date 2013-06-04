@@ -394,7 +394,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		
 		adultFlowVisit = (gp.getForm(GlobalPropertiesManagement.ADULT_FLOW_VISIT)).getEncounterType();
 		
-		clinicalEnountersIncLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES,",");
+		clinicalEnountersIncLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES);
 		
 		height = gp.getConcept(GlobalPropertiesManagement.HEIGHT_CONCEPT);
 		
@@ -404,7 +404,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		
 		viralLoad = gp.getConcept(GlobalPropertiesManagement.VIRAL_LOAD_TEST);
 		
-		clinicalEncoutersExcLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES_EXC_LAB_TEST,",");		
+		clinicalEncoutersExcLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES_EXC_LAB_TEST);		
 		
 	}
 }

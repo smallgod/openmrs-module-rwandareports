@@ -419,7 +419,7 @@ public class SetupMonthlyCD4DeclineReport {
 		
 		pmtctCCMother = gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM);
 		
-		clinicalEnountersIncLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES,",");
+		clinicalEnountersIncLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES);
 		
 		cd4 = gp.getConcept(GlobalPropertiesManagement.CD4_TEST);
 		

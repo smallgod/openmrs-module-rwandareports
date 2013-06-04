@@ -207,7 +207,7 @@ public class SetupDiabetesConsultAndLTFU {
 		diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.DIABETES_RDV_FORM)) ;
 		diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM));
 		diabetesProgram = gp.getProgram(GlobalPropertiesManagement.DM_PROGRAM);
-		diabetesEncouters = gp.getEncounterTypeList(GlobalPropertiesManagement.DIABETES_VISIT,null);
+		diabetesEncouters = gp.getEncounterTypeList(GlobalPropertiesManagement.DIABETES_VISIT);
 	}
 	
 	//Add common columns for the two datasets

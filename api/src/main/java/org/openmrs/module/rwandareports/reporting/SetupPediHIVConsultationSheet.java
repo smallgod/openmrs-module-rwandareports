@@ -249,7 +249,7 @@ public class SetupPediHIVConsultationSheet {
 		informed = gp.getProgramWorkflow(GlobalPropertiesManagement.INFORMED_STATUS,
 		    GlobalPropertiesManagement.PEDI_HIV_PROGRAM);
 		
-		pediEncounters = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES,",");
+		pediEncounters = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES);
 		
 		counsellingWorkflow = gp.getProgramWorkflow(GlobalPropertiesManagement.COUNSELLING_GROUP_WORKFLOW,
 		    GlobalPropertiesManagement.PEDI_HIV_PROGRAM);

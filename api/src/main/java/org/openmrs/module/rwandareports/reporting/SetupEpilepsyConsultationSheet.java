@@ -161,7 +161,7 @@ public class SetupEpilepsyConsultationSheet {
 		DDBAndRendezvousForms.add(epilepsyDDBForm);
 		DDBAndRendezvousForms.add(followUpForm);
 		epilepsyVisit = gp.getEncounterType(GlobalPropertiesManagement.EPILEPSY_VISIT);
-		epilepsyVisitEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.EPILEPSY_VISIT,null);
+		epilepsyVisitEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.EPILEPSY_VISIT);
 	}
 	
 }

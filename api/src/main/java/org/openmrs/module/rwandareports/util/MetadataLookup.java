@@ -154,6 +154,25 @@ public class MetadataLookup {
 		}
 		return l;
 	}
+	
+	/**
+	 * @return the List of Concepts that matches the passed any separated list of concept lookups
+	 * @see MetadataLookup#getConcept(String)
+	 */
+	public static List<Concept> getConceptList(String lookup,String separator) {
+		List<Concept> l = new ArrayList<Concept>();
+		if (ObjectUtil.notNull(lookup)) {
+			if(ObjectUtil.notNull(separator)){
+			String[] split = lookup.split(separator);
+			for (String s : split) {
+				l.add(MetadataLookup.getConcept(s));
+			}
+			}else{
+				l.add(MetadataLookup.getConcept(lookup));
+			}
+		}
+		return l;
+	}
 
 	/**
 	 * @return the Form that matches the passed uuid, name, or primary key id
@@ -189,6 +208,25 @@ public class MetadataLookup {
 		}
 		return l;
 	}
+	
+	/**
+	 * @return the List of Forms that matches the passed any separated list of Form lookups
+	 * @see MetadataLookup#getForm(String)
+	 */
+	public static List<Form> getFormList(String lookup,String separator) {
+		List<Form> l = new ArrayList<Form>();
+		if (ObjectUtil.notNull(lookup)) {
+			if(ObjectUtil.notNull(separator)){
+			String[] split = lookup.split(separator);
+			for (String s : split) {
+				l.add(MetadataLookup.getForm(s));
+			}
+			}else{
+				l.add(MetadataLookup.getForm(lookup));
+			}
+		}
+		return l;
+	}
 
 	/**
 	 * @return the EncounterType that matches the passed uuid, name, or primary key id
@@ -209,10 +247,26 @@ public class MetadataLookup {
 		}
 		
 		return et;
-	}
-
+	}	
+	
 	/**
 	 * @return the List of EncounterTypes that matches the passed comma-separated list of Encounter lookups
+	 * @see MetadataLookup#getEncounterType(String)
+	 */
+	public static List<EncounterType> getEncounterTypeList(String lookup) {
+		List<EncounterType> l = new ArrayList<EncounterType>();
+		if (ObjectUtil.notNull(lookup)) {
+				String[] split = lookup.split(",");
+				for (String s : split) {
+					l.add(MetadataLookup.getEncounterType(s));
+			
+		}
+		}
+		return l;
+	}
+	
+	/**
+	 * @return the List of EncounterTypes that matches the passed any separated list of Encounter lookups
 	 * @see MetadataLookup#getEncounterType(String)
 	 */
 	public static List<EncounterType> getEncounterTypeList(String lookup,String separator) {

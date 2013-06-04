@@ -37,6 +37,12 @@ public class GlobalPropertiesManagement {
 		return MetadataLookup.getConceptList(globalProperty);
 	}
 
+	public List<Concept> getConceptList(String globalPropertyName,String separator) {
+		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
+		return MetadataLookup.getConceptList(globalProperty,separator);
+	}
+
+	
 	public List<Concept> getConceptsByConceptSet(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
 		Concept c = MetadataLookup.getConcept(globalProperty);
@@ -58,9 +64,19 @@ public class GlobalPropertiesManagement {
 		return MetadataLookup.getEncounterTypeList(globalProperty,separator);
 	}
 	
+	public List<EncounterType> getEncounterTypeList(String globalPropertyName) {
+		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
+		return MetadataLookup.getEncounterTypeList(globalProperty);
+	}
+	
 	public List<Form> getFormList(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
 		return MetadataLookup.getFormList(globalProperty);
+	}
+	
+	public List<Form> getFormList(String globalPropertyName,String separator) {
+		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
+		return MetadataLookup.getFormList(globalProperty,separator);
 	}
 	
 	public RelationshipType getRelationshipType(String globalPropertyName) {

@@ -1033,8 +1033,8 @@ public class SetupTracNetRwandaReportBySite {
             allergyadultForm = gp.getForm(GlobalPropertiesManagement.ADULT_ALLERGY);
             medicationForms.add(allergypediForm);
             medicationForms.add(allergyadultForm);
-            clinicalEnountersIncLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES,",");
-            pediAdnAdultEncounters=gp.getEncounterTypeList(GlobalPropertiesManagement.PEDIANDADULTHIV_ENCOUNTER_TYPES,",");
+            clinicalEnountersIncLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES);
+            pediAdnAdultEncounters=gp.getEncounterTypeList(GlobalPropertiesManagement.PEDIANDADULTHIV_ENCOUNTER_TYPES);
             adultHivForm = gp.getForm(GlobalPropertiesManagement.ADULT_FLOW_VISIT);
             pediHivform = gp.getForm(GlobalPropertiesManagement.PEDI_FLOW_VISIT);
             hivVisitsforms.add(adultHivForm);
