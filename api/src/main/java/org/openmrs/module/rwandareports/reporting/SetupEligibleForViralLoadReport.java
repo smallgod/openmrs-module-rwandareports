@@ -38,7 +38,9 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAttribute;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -208,6 +210,25 @@ public class SetupEligibleForViralLoadReport {
 		dataSetDefinition1.addColumn(familyName, new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(familyName, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(familyName, new HashMap<String, Object>());
+		
+		PatientProperty age = RowPerPatientColumns.getAge("age");
+		dataSetDefinition1.addColumn(age, new HashMap<String, Object>());
+		dataSetDefinition2.addColumn(age, new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(age, new HashMap<String, Object>());
+		
+		MultiplePatientDataDefinitions group = RowPerPatientColumns.getTreatmentGroupOfAllHIVPatientIncludingCompleted("group", null);
+		dataSetDefinition1.addColumn(group, new HashMap<String, Object>());
+		dataSetDefinition2.addColumn(group, new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(group, new HashMap<String, Object>());
+		
+		PatientAttribute healthCenter = RowPerPatientColumns.getHealthCenter("healthcenter");
+		dataSetDefinition1.addColumn(healthCenter, new HashMap<String, Object>());
+		dataSetDefinition2.addColumn(healthCenter, new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(healthCenter, new HashMap<String, Object>());
+		
+		MostRecentObservation viralLoadResults = RowPerPatientColumns.getMostRecentViralLoad("ViralLoad", "@ddMMMyy");
+		dataSetDefinition1.addColumn(viralLoadResults, new HashMap<String, Object>());
+		
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("location", "${location}");
