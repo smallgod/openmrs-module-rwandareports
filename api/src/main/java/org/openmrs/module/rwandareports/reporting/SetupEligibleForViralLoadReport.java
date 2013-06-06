@@ -159,10 +159,13 @@ public class SetupEligibleForViralLoadReport {
 		SqlCohortDefinition patientsNotVoided = Cohorts.createPatientsNotVoided();
 		
 		NumericObsCohortDefinition viralLoad = Cohorts.createNumericObsCohortDefinition("obsQD: Viral Load recorded",
-		    onOrAfterOnOrBefore, viralLoadConcept, 0, null, TimeModifier.ANY);
+		    onOrAfterOnOrBefore, viralLoadConcept, 0, null, TimeModifier.LAST);
 		
 		NumericObsCohortDefinition noViralLoad = Cohorts.createNumericObsCohortDefinition("obsQD: Viral Load recorded",
 		    onOrAfterOnOrBefore, viralLoadConcept, 0, null, TimeModifier.NO);
+		
+		SqlCohortDefinition withNoResults=new SqlCohortDefinition("select distinct ord.patient_id from orders ord left join obs o on ord.order_id = o.order_id where o.order_id is null and ord.concept_id="+viralLoadConcept.getConceptId()+" and ord.start_date<= :onOrBefore and ord.voided=0 and ord.discontinued=0;");
+		withNoResults.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
 		
 		//Base filter
 		CompositionCohortDefinition eligibleForViralLoad = new CompositionCohortDefinition();
@@ -191,6 +194,8 @@ public class SetupEligibleForViralLoadReport {
 		        .addFilter(eligibleForViralLoad, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition3.addFilter(noViralLoad,
 		    ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-1y}"));
+		dataSetDefinition3
+        .addFilter(withNoResults, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}"));
 		
 		//==================================================================
 		//                 Columns of report settings
