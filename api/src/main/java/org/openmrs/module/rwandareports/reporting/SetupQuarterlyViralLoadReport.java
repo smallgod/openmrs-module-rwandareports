@@ -85,6 +85,7 @@ public class SetupQuarterlyViralLoadReport {
 		    "PIH_Quarterly_Viral_Load.xls", "PIH Quarterly Viral Load (Excel)", null);
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:Data Set");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

@@ -63,7 +63,7 @@ public class SetupPediHIVConsultationSheet {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 		
@@ -72,7 +72,7 @@ public class SetupPediHIVConsultationSheet {
 		
 		Properties props2 = new Properties();
 		props2.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
-		
+		props2.put("sortWeight","5000");
 		design2.setProperties(props2);
 		h.saveReportDesign(design2);
 		
@@ -80,7 +80,7 @@ public class SetupPediHIVConsultationSheet {
 		
 		Properties props3 = new Properties();
 		props3.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
-		
+		props3.put("sortWeight","5000");
 		design3.setProperties(props3);
 		h.saveReportDesign(design3);
 	}

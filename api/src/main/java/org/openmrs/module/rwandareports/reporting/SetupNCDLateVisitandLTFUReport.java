@@ -60,6 +60,7 @@ public class SetupNCDLateVisitandLTFUReport {
 		props.put(
 		    "repeatingSections",
 		    "sheet:1,row:13,dataset:LATE_VISITdataset0|sheet:1,row:15,dataset:LATE_VISITdataset1|sheet:1,row:17,dataset:LATE_VISITdataset2|sheet:1,row:19,dataset:LATE_VISITdataset3|sheet:1,row:21,dataset:LATE_VISITdataset4|sheet:2,row:13,dataset:LTFUdataset0|sheet:2,row:15,dataset:LTFUdataset1|sheet:2,row:17,dataset:LTFUdataset2|sheet:2,row:19,dataset:LTFUdataset3|sheet:2,row:21,dataset:LTFUdataset4");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

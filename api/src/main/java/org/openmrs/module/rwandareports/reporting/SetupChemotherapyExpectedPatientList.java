@@ -52,6 +52,7 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:4,dataset:dataset2|sheet:2,row:7,dataset:dataset");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);

@@ -80,6 +80,7 @@ public class SetupQuarterlyCrossSiteIndicatorByDistrictReport {
 		    "PIH_Quaterly_Cross_Region_Indicator_Form.xls", "PIH Quarterly Indicator Form (Excel)_", null);
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:PIH_Quarterly_Individual_District_Indicator Data Set");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 		

@@ -51,6 +51,7 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);
@@ -60,6 +61,7 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		
 		Properties propsTwo = new Properties();
 		propsTwo.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
+		props.put("sortWeight","5000");
 		designTwo.setProperties(propsTwo);
 		
 		h.saveReportDesign(designTwo);

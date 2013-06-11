@@ -64,7 +64,7 @@ public class SetupHeartFailureLateVisit {
 
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:8,dataset:dataSet");
-
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

@@ -63,6 +63,7 @@ public class SetupHypertensionConsultationSheet {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);

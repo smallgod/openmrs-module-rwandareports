@@ -81,7 +81,7 @@ public class SetupExposedClinicInfantMonthly {
 		props.put(
 		    "repeatingSections",
 		    "sheet:1,row:9,dataset:LatePcrTest|sheet:2,row:9,dataset:Latesero|sheet:3,row:9,dataset:LostoFolowup|sheet:4,row:9,dataset:Less6wNotonNvp|sheet:5,row:9,dataset:More6wNotBactrim");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

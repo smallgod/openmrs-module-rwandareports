@@ -66,6 +66,7 @@ public class SetupOncologyExternalBiopsyContactList {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:7,dataset:dataset|sheet:2,row:7,dataset:dataset2");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);

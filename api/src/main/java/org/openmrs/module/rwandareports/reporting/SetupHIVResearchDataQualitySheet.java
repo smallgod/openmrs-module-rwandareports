@@ -87,7 +87,7 @@ public class SetupHIVResearchDataQualitySheet {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:dataSet,sheet:1,row:6,dataset:BaselineCD4AtProgramPatientDataSet|sheet:1,row:11,dataset:BaselineCD4AtARTPatientDataSet|sheet:1,row:16,dataset:BaselineWeightAtProgramPatientDataSet|sheet:1,row:21,dataset:BaselineWeightAtARTPatientDataSet|sheet:1,row:26,dataset:NoHeightPatientDataSet|sheet:1,row:31,dataset:NoWHOPatientDataSet|sheet:1,row:36,dataset:RegimenStateDiffPatientDataSet|sheet:1,row:41,dataset:ExternalHIVPatientDataSet");
-																														
+		props.put("sortWeight","5000");																												
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);

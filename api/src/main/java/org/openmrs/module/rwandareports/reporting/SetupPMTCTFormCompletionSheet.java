@@ -96,6 +96,7 @@ public class SetupPMTCTFormCompletionSheet {
 		    "PMTCTFormCompletion.xls", "PMTCT Form Completion Excel", null);
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:DataSet");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

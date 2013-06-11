@@ -64,7 +64,7 @@ public class SetupMissingCD4Report {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:dataSet|sheet:1,row:9,dataset:NotCompletedPatientDataSet|sheet:2,dataset:dataSet|sheet:2,row:9,dataset:NoResultPatientDataSet");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

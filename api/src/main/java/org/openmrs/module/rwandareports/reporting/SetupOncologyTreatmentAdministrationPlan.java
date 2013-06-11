@@ -56,6 +56,7 @@ public class SetupOncologyTreatmentAdministrationPlan {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:21,dataset:premedication|sheet:1,row:23,dataset:chemotherapy|sheet:1,row:25,dataset:postmedication");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);

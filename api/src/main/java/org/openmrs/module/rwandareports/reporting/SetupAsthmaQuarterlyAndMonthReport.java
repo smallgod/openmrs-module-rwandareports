@@ -162,7 +162,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		    "Asthma_Indicator_Monthly_Report.xls", "Asthma Indicator Monthly Report (Excel)", null);
 		Properties monthlyProps = new Properties();
 		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set");
-		
+		monthlyProps.put("sortWeight","5000");
 		monthlyDesign.setProperties(monthlyProps);
 		h.saveReportDesign(monthlyDesign);
 		
@@ -170,7 +170,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		    "Asthma_Indicator_Quarterly_Report.xls", "Asthma Indicator Quarterly Report (Excel)", null);
 		Properties quarterlyProps = new Properties();
 		quarterlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
-		
+		quarterlyProps.put("sortWeight","5000");
 		quarterlyDesign.setProperties(quarterlyProps);
 		h.saveReportDesign(quarterlyDesign);
 		

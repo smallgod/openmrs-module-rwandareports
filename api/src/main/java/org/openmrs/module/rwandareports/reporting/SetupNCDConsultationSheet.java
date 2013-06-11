@@ -45,6 +45,7 @@ public class SetupNCDConsultationSheet {
 		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "NCDConsultationSheet.xls","NCDConsultationSheet.xls_", null);	
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:9,dataset:dataset0|sheet:2,row:9,dataset:dataset1|sheet:3,row:9,dataset:dataset2|sheet:4,row:9,dataset:dataset3");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

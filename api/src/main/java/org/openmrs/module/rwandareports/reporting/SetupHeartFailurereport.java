@@ -134,6 +134,7 @@ public class SetupHeartFailurereport {
 		    "Xlsheartfailurereporttemplate", null);
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:Heart Failure Report Location");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

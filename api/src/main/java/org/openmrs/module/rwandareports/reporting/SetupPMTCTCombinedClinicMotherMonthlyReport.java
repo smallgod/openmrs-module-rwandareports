@@ -96,7 +96,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		props.put(
 		    "repeatingSections",
 		    "sheet:1,row:8,dataset:LateVisit|sheet:2,row:8,dataset:LateCD4Count|sheet:3,row:8,dataset:LostToFollowup|sheet:4,row:8,dataset:LowBMI|sheet:5,row:8,dataset:ViralLoadGreaterThan1000InTheLast6Months");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

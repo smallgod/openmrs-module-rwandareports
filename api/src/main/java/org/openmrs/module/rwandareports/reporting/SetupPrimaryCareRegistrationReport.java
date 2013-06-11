@@ -32,7 +32,7 @@ public class SetupPrimaryCareRegistrationReport {
 		props.put(
 		    "repeatingSections",
 		    "sheet:1,row:2,dataset:dataSet");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 		

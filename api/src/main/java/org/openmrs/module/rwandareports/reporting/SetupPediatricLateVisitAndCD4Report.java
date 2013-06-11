@@ -107,7 +107,7 @@ public class SetupPediatricLateVisitAndCD4Report {
 		props.put(
 		    "repeatingSections",
 		    "sheet:1,row:8,dataset:PediatricARTLateVisit|sheet:2,row:8,dataset:PediatricPreARTLateVisit|sheet:3,row:8,dataset:PediatricHIVLateCD4Count|sheet:4,row:8,dataset:PediatricHIVLostToFollowup|sheet:5,row:8,dataset:CD4LessThan350|sheet:6,row:8,dataset:zeroToFiveYears");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 		
@@ -121,7 +121,7 @@ public class SetupPediatricLateVisitAndCD4Report {
 		propsArtMed.put(
 		    "repeatingSections",
 		    "sheet:1,row:8,dataset:Regimen");
-		
+		propsArtMed.put("sortWeight","5000");
 		designArtMedication.setProperties(propsArtMed);
 		h.saveReportDesign(designArtMedication);
 		

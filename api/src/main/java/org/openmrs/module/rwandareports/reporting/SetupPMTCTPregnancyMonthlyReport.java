@@ -74,7 +74,7 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		props.put(
 		    "repeatingSections",
 		    "sheet:1,row:9,dataset:PatientsMissedRdv|sheet:2,row:9,dataset:PatientsWithLastCd4|sheet:3,row:9,dataset:PmtctWithlowBMI|sheet:4,row:9,dataset:ViralLoadAbov1000");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

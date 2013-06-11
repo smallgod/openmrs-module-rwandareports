@@ -179,6 +179,7 @@ public class SetupHIVResearchExtractionSheet {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:2,dataset:dataset");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);
@@ -255,6 +256,7 @@ public class SetupHIVResearchExtractionSheet {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:2,dataset:dataset|sheet:1,row:3,dataset:dataset2|sheet:1,row:4,dataset:dataset3|sheet:1,row:5,dataset:dataset4");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);
@@ -274,6 +276,7 @@ public class SetupHIVResearchExtractionSheet {
 		
 		Properties propsOI = new Properties();
 		propsOI.put("repeatingSections", "sheet:1,row:2,dataset:dataset|sheet:1,row:3,dataset:dataset2");
+		propsOI.put("sortWeight","5000");
 		designOI.setProperties(propsOI);
 		
 		h.saveReportDesign(designOI);
@@ -334,6 +337,7 @@ public class SetupHIVResearchExtractionSheet {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:2,dataset:dataset|sheet:1,row:3,dataset:dataset2|sheet:1,row:4,dataset:dataset3|sheet:1,row:5,dataset:dataset4");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);
@@ -353,6 +357,7 @@ public class SetupHIVResearchExtractionSheet {
 		
 		Properties propsOI = new Properties();
 		propsOI.put("repeatingSections", "sheet:1,row:2,dataset:dataset|sheet:1,row:3,dataset:dataset2");
+		propsOI.put("sortWeight","5000");
 		designOI.setProperties(propsOI);
 		
 		h.saveReportDesign(designOI);
@@ -1137,7 +1142,7 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//Add Columns
 		DateOfFirstDrugOrderStartedRestrictedByConceptSet artStart = RowPerPatientColumns.getDateOfDrugOrderForStartOfARTBeforeDate("artStart", "yyyy-MM-dd");
-		
+
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
 		

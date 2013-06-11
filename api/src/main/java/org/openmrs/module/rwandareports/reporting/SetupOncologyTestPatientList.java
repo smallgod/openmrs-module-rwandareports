@@ -79,6 +79,7 @@ public class SetupOncologyTestPatientList {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:8,dataset:dataset|sheet:2,row:8,dataset:dataset2|sheet:3,row:8,dataset:dataset3|sheet:4,row:8,dataset:dataset4");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);

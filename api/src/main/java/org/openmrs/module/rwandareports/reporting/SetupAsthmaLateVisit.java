@@ -69,7 +69,7 @@ public class SetupAsthmaLateVisit {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:8,dataset:asthmaLateVisit");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 	}

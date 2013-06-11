@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
- 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -34,11 +33,15 @@ import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
+import org.openmrs.module.reporting.report.renderer.RenderingMode;
+import org.openmrs.module.reporting.report.renderer.ReportDesignRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
+import org.openmrs.module.rwandareports.util.MetadataLookup;
+//import org.openmrs.module.rwandareports.util.MetadataLookup;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  
@@ -49,6 +52,7 @@ public class SetupTracNetRwandaReportBySite {
         Helper h = new Helper();
         
         GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+        //MetadataLookup mlookup=new MetadataLookup();
      // properties
         private Program adulthivProgram;
         private Program pediatrichivProgram;
@@ -68,6 +72,7 @@ public class SetupTracNetRwandaReportBySite {
         private Concept reasonForExitingCare;
         private Concept patientDied;
         private Concept patientTransferedOut;
+        private Concept patientDefaulted;
         private Form adultHivForm;
         private Form pediHivform;
         private Form transferinForm;
@@ -81,6 +86,8 @@ public class SetupTracNetRwandaReportBySite {
         private EncounterType patientTransferEncounterType;
         private Concept kaletra;
         private Concept cotrimoxazole;
+        //private Concept fluconazole;
+        //private Concept dapsone;
         public Concept whostage;
         public Concept whostage4p;
         public Concept whostage3p;
@@ -97,11 +104,11 @@ public class SetupTracNetRwandaReportBySite {
                 setupProperties();
                 
                 ReportDefinition rd = createReportDefinition();
-                
                 ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "Mohrwandatracnetreporttemplate.xls",
                     "Xlstracnetreporttemplate", null);
                 Properties props = new Properties();
                 props.put("repeatingSections", "sheet:1,dataset:TracNet Report Location");
+                props.put("sortWeight","5000");
                 design.setProperties(props);
                 h.saveReportDesign(design);
         }
@@ -210,6 +217,7 @@ public class SetupTracNetRwandaReportBySite {
          
           CodedObsCohortDefinition exitedCareWithDeadStatus = Cohorts.createCodedObsCohortDefinition("exitedCareWithDeadStatus",onOrAfterOnOrBefore, reasonForExitingCare,patientDied, SetComparator.IN, TimeModifier.LAST);
           CodedObsCohortDefinition exitedCareWithtransferStatus = Cohorts.createCodedObsCohortDefinition("exitedCareWithtransferStatus",onOrAfterOnOrBefore, reasonForExitingCare,patientTransferedOut, SetComparator.IN, TimeModifier.LAST);
+          CodedObsCohortDefinition exitedCareWithDefaultedStatus = Cohorts.createCodedObsCohortDefinition("exitedCareWithDefaultedStatus",onOrAfterOnOrBefore, reasonForExitingCare,patientDefaulted, SetComparator.IN, TimeModifier.LAST);
           
           SqlCohortDefinition patientsWithhivTransferVisit = new SqlCohortDefinition();
           patientsWithhivTransferVisit.setQuery("select distinct patient_id from encounter where encounter_type="+patientTransferEncounterType.getId()+ " and (form_id="+transferinForm.getFormId()+ ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0");
@@ -266,13 +274,21 @@ public class SetupTracNetRwandaReportBySite {
           newlyEnrolledInHIVCareunder5yrs.setCompositionString("1 AND 2 ");
           CohortIndicator newlyEnrolledInHIVCareunder5yrsInd=Indicators.newCohortIndicator("TR:newlyEnrolledInHIVCareunder5yrsInd", newlyEnrolledInHIVCareunder5yrs,null);
           
-          //3 Total number of new female pediatric patients (age < 15 years) enrolled in HIV care   
+          //3 Total number of new female pediatric patients (age < 15 years) enrolled in HIV care
+          CompositionCohortDefinition nonActivePatients=new CompositionCohortDefinition();
+          nonActivePatients.setName("TR:nonActivePatients");
+          nonActivePatients.getSearches().put("1", new Mapped<CohortDefinition>(exitedCareWithDeadStatus,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
+          nonActivePatients.getSearches().put("2", new Mapped<CohortDefinition>(exitedCareWithtransferStatus,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
+          nonActivePatients.getSearches().put("3", new Mapped<CohortDefinition>(exitedCareWithDefaultedStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          nonActivePatients.setCompositionString("1 OR 2 OR 3");
+          
           CompositionCohortDefinition femalenewlyEnrolledInHIVCareunder15yrs = new CompositionCohortDefinition();
           femalenewlyEnrolledInHIVCareunder15yrs.setName("femalenewlyEnrolledInHIVCareunder15yrs");
           femalenewlyEnrolledInHIVCareunder15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, null));
           femalenewlyEnrolledInHIVCareunder15yrs.getSearches().put("2",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
           femalenewlyEnrolledInHIVCareunder15yrs.getSearches().put("3",new Mapped<CohortDefinition>(femaleCohort,null));
-          femalenewlyEnrolledInHIVCareunder15yrs.setCompositionString("1 AND 2 AND 3 ");
+          femalenewlyEnrolledInHIVCareunder15yrs.getSearches().put("4",new Mapped<CohortDefinition>(nonActivePatients,null));
+          femalenewlyEnrolledInHIVCareunder15yrs.setCompositionString("1 AND 2 AND 3 AND (NOT 4) ");
           CohortIndicator femalesnewlyEnrolledInHIVCareunder15yrsInd=Indicators.newCohortIndicator("TR:femalesnewlyEnrolledInHIVCareunder15yrsInd", femalenewlyEnrolledInHIVCareunder15yrs,null);
           
           //4 Total number of new male pediatric patients (age < 15 years at enrollment) enrolled in HIV care   
@@ -281,7 +297,8 @@ public class SetupTracNetRwandaReportBySite {
           malenewlyEnrolledInHIVCareunder15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, null));
           malenewlyEnrolledInHIVCareunder15yrs.getSearches().put("2",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
           malenewlyEnrolledInHIVCareunder15yrs.getSearches().put("3",new Mapped<CohortDefinition>(maleCohort,null));
-          malenewlyEnrolledInHIVCareunder15yrs.setCompositionString("1 AND 2 AND 3 ");
+          malenewlyEnrolledInHIVCareunder15yrs.getSearches().put("4",new Mapped<CohortDefinition>(nonActivePatients,null));
+          malenewlyEnrolledInHIVCareunder15yrs.setCompositionString("1 AND 2 AND 3 AND (NOT 4) ");
           CohortIndicator malesnewlyEnrolledInHIVCareunder15yrsInd=Indicators.newCohortIndicator("TR:malesnewlyEnrolledInHIVCareunder15yrsInd", malenewlyEnrolledInHIVCareunder15yrs,null);
            
           //5 Total number of new female adult patients (age 15 or more at enrollment) enrolled in HIV care                
@@ -302,7 +319,7 @@ public class SetupTracNetRwandaReportBySite {
           malenewlyEnrolledInHIVCareOver15yrs.setCompositionString("1 AND 2 AND 3 ");
           CohortIndicator malesnewlyEnrolledInHIVCareOver15yrsInd=Indicators.newCohortIndicator("TR:malesnewlyEnrolledInHIVCareOver15yrsInd", malenewlyEnrolledInHIVCareOver15yrs,null);
           
-          //9 Total number of female adult patient (age 15+) curently in Pre-ART   
+          //7 Total Number of pediatric patient (age< 15 years) currently in Pre-ART
           PatientStateCohortDefinition onFollowingEver = Cohorts.createPatientStateEverCohortDefinition("onFollowingEver", OnFollowingstates);      
           CompositionCohortDefinition everOnPreArtduringPeriod = new CompositionCohortDefinition();
           everOnPreArtduringPeriod.setName("TR:everOnPreArtduringPeriod");
@@ -310,6 +327,23 @@ public class SetupTracNetRwandaReportBySite {
           everOnPreArtduringPeriod.getSearches().put("2",new Mapped<CohortDefinition>(onFollowingEver, null));
           everOnPreArtduringPeriod.setCompositionString("1 AND 2");
             
+          CompositionCohortDefinition pedienrolledInHIVCareUnder15 = new CompositionCohortDefinition();
+          pedienrolledInHIVCareUnder15.setName("TR:pedienrolledInHIVCareUnder15");
+          pedienrolledInHIVCareUnder15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, null));
+          pedienrolledInHIVCareUnder15.getSearches().put("2",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
+          pedienrolledInHIVCareUnder15.setCompositionString("1 AND 2");
+          CohortIndicator under15InHIVcareInAllProgram=Indicators.newCohortIndicator("TR:under15InHIVcareInAllProgram", pedienrolledInHIVCareUnder15, null);
+         
+          //8 Total Number of adult patient (age 15+ ) currently in Pre-ART		
+          CompositionCohortDefinition pedienrolledInHIVCareOver15 = new CompositionCohortDefinition();
+          pedienrolledInHIVCareOver15.setName("TR:pedienrolledInHIVCareOver15");
+          pedienrolledInHIVCareOver15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, null));
+          pedienrolledInHIVCareOver15.getSearches().put("2",new Mapped<CohortDefinition>(over15YrsAtEnrol,null));
+          pedienrolledInHIVCareOver15.setCompositionString("1 AND 2");
+          CohortIndicator pedienrolledInHIVCareOver15Indi=Indicators.newCohortIndicator("TR:pedienrolledInHIVCareOver15Indi", pedienrolledInHIVCareOver15, null);
+         
+          
+          //9 Total number of female adult patient (age 15+) curently in Pre-ART   
           CompositionCohortDefinition enrolledInHIVCareFemaleOver15 = new CompositionCohortDefinition();
           enrolledInHIVCareFemaleOver15.setName("TR:enrolledInHIVCareFemaleOver15");
           enrolledInHIVCareFemaleOver15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, null));
@@ -347,18 +381,42 @@ public class SetupTracNetRwandaReportBySite {
                           
           //13 Number of patients on Cotrimoxazole Prophylaxis this month
            SqlCohortDefinition startedCotrimoXazoleDuringP = Cohorts.getPatientsCotrimoRegimenBasedOnStartDateEndDate("startedCotrimoXazoleDuringP", cotrimoxazole);
-           InStateCohortDefinition preArtStartedInPeriod = Cohorts.createInCurrentState("TR: started on pre-Art", OnFollowingstates,onOrAfterOnOrBefore);
+           SqlCohortDefinition testedFluconazoleAndDapsone=new SqlCohortDefinition();
+           testedFluconazoleAndDapsone.setName("TR:testedFluconazoleAndDapsone");
+           testedFluconazoleAndDapsone.setQuery("select distinct patient_id from orders where concept_id in (747,92)"+
+           		"and start_date <= :endDate and discontinued=0 and discontinued_date is NULL and voided=0  ");
+           testedFluconazoleAndDapsone.addParameter(new Parameter("endDate", "endDate", Date.class));
+          
+           CompositionCohortDefinition preArtAndARTOnCotrimoComposition = new CompositionCohortDefinition();
+           preArtAndARTOnCotrimoComposition.setName("preArtAndARTOnCotrimoComposition");
+           preArtAndARTOnCotrimoComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
+           preArtAndARTOnCotrimoComposition.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateHIVClinic,null));
+           preArtAndARTOnCotrimoComposition.getSearches().put("2", new Mapped<CohortDefinition>(testedFluconazoleAndDapsone,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+           preArtAndARTOnCotrimoComposition.setCompositionString("1 AND 2");
            
+           CompositionCohortDefinition allARTpatientsOnPreArt = new CompositionCohortDefinition();
+           allARTpatientsOnPreArt.setName("allARTpatientsOnPreArt");
+           allARTpatientsOnPreArt.addParameter(new Parameter("endDate", "endDate", Date.class));
+           allARTpatientsOnPreArt.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateHIVClinic,null));
+           allARTpatientsOnPreArt.getSearches().put("2", new Mapped<CohortDefinition>(preArtAndARTOnCotrimoComposition,null));
+           allARTpatientsOnPreArt.setCompositionString("1 AND (NOT 2)");
+         
            CompositionCohortDefinition patientsInHIVonCotrimoOrBactrim = new CompositionCohortDefinition();
            patientsInHIVonCotrimoOrBactrim.setName("patientsInHIVonCotrimoOrBactrim");
            patientsInHIVonCotrimoOrBactrim.addParameter(new Parameter("startDate", "startDate", Date.class));
            patientsInHIVonCotrimoOrBactrim.addParameter(new Parameter("endDate", "endDate", Date.class));
-           patientsInHIVonCotrimoOrBactrim.getSearches().put("1",new Mapped<CohortDefinition>(inPediAndAdultprogram,ParameterizableUtil.createParameterMappings("onDate=${now}")));
-           patientsInHIVonCotrimoOrBactrim.getSearches().put("2", new Mapped<CohortDefinition>(preArtStartedInPeriod, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}")));
-           patientsInHIVonCotrimoOrBactrim.getSearches().put("3",new Mapped<CohortDefinition>(startedCotrimoXazoleDuringP, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-           patientsInHIVonCotrimoOrBactrim.setCompositionString("1 AND 2 AND 3 ");
-           CohortIndicator patientsInHIVonCotrimoOrBactrimInd=Indicators.newCohortIndicator("TR:patientsInHIVonCotrimoOrBactrimInd", patientsInHIVonCotrimoOrBactrim,null);
-           
+           patientsInHIVonCotrimoOrBactrim.getSearches().put("1",new Mapped<CohortDefinition>(onFollowingStateHIVClinic,null));
+           patientsInHIVonCotrimoOrBactrim.getSearches().put("2",new Mapped<CohortDefinition>(startedCotrimoXazoleDuringP, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+           patientsInHIVonCotrimoOrBactrim.setCompositionString("1 AND 2");
+            
+           CompositionCohortDefinition allARTpatientsOnPreArtonCotrimo = new CompositionCohortDefinition();
+           allARTpatientsOnPreArtonCotrimo.setName("allARTpatientsOnPreArtonCotrimo");
+           allARTpatientsOnPreArtonCotrimo.addParameter(new Parameter("endDate", "endDate", Date.class));
+           allARTpatientsOnPreArtonCotrimo.getSearches().put("1",new Mapped<CohortDefinition>(allARTpatientsOnPreArt,null));
+           allARTpatientsOnPreArtonCotrimo.getSearches().put("2", new Mapped<CohortDefinition>(patientsInHIVonCotrimoOrBactrim,null));
+           allARTpatientsOnPreArtonCotrimo.setCompositionString("1 OR 2");
+           CohortIndicator patientsInHIVonCotrimoOrBactrimInd=Indicators.newCohortIndicator("TR:patientsInHIVonCotrimoOrBactrimInd", allARTpatientsOnPreArtonCotrimo,null);
+
            //14 Number of new patients screened for active TB at enrollment this month
            CodedObsCohortDefinition patientsWithTBinHIVForms = Cohorts.createCodedObsCohortDefinition("patientsWithTBinHIVForms",onOrAfterOnOrBefore, tbScreeningtest,null, SetComparator.IN, TimeModifier.LAST);
            CodedObsCohortDefinition tbScreenngPosTest = Cohorts.createCodedObsCohortDefinition("patientsWithTBinHIVForms",onOrAfterOnOrBefore, tbScreeningtest,positiveStatus, SetComparator.IN, TimeModifier.LAST);
@@ -369,7 +427,7 @@ public class SetupTracNetRwandaReportBySite {
            screenedForTbInHIVProgramsComp.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithTBinHIVForms,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
            screenedForTbInHIVProgramsComp.setCompositionString("1 AND 2");
            CohortIndicator screenedForTbInHIVProgramsIndi=Indicators.newCohortIndicator("screenedForTbInHIVProgramsIndi", screenedForTbInHIVProgramsComp, null);
-           
+            
            //15 Number of new patients screened for active TB Positive at enrollment this month
            CompositionCohortDefinition screenedForTbPosInHIVProgramsComp = new CompositionCohortDefinition();
            screenedForTbPosInHIVProgramsComp.setName("TR:screenedForTbPosInHIVProgramsComp");
@@ -436,14 +494,36 @@ public class SetupTracNetRwandaReportBySite {
            ltfDuringPeriod.getSearches().put("1",new Mapped<CohortDefinition>(clinicalEncWithoutLab,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")));
            ltfDuringPeriod.setCompositionString("NOT 1");
         
-           //21 Number of PRE-ARV patients lost to folow up (> 3months)
+           //21 Number of PRE-ARV patients lost to follow up (> 3months)
            CompositionCohortDefinition patientsinHIVcareLostTofolowUp = new CompositionCohortDefinition();
            patientsinHIVcareLostTofolowUp.setName("patientsinHIVcareLostTofolowUp");
            patientsinHIVcareLostTofolowUp.getSearches().put("1",new Mapped<CohortDefinition>(onFollowingStateHIVClinic,null));
            patientsinHIVcareLostTofolowUp.getSearches().put("2",new Mapped<CohortDefinition>(ltfDuringPeriod,null));
-           patientsinHIVcareLostTofolowUp.setCompositionString("1 AND 2");
+           patientsinHIVcareLostTofolowUp.getSearches().put("3",new Mapped<CohortDefinition>(nonActivePatients,null));
+           patientsinHIVcareLostTofolowUp.setCompositionString("1 AND 2 AND (NOT 3)");
            CohortIndicator patientsinHIVcareLostTofolowUpInd=Indicators.newCohortIndicator("patientsinHIVcareLostTofolowUpInd", patientsinHIVcareLostTofolowUp, null);
-              
+           
+           //22 Number of PRe-ART patients lost to follow up (> 3months) back to program
+           SqlCohortDefinition lostbacktoProgramThismonth=new SqlCohortDefinition();
+           lostbacktoProgramThismonth.setName("TR:lostbacktoProgramThismonth");
+           lostbacktoProgramThismonth.setQuery("select DISTINCT patient_id FROM encounter WHERE patient_id " +
+           	"IN (select DISTINCT e.patient_id FROM encounter e, patient p WHERE e.patient_id=p.patient_id " +
+           	"AND DATEDIFF(:startDate, e.encounter_datetime) >= 90 AND e.encounter_type IN (1,2,3,4,24,25) " +
+           	"AND p.voided=0 AND e.voided=0) AND encounter_datetime >= :startDate AND encounter_datetime <= :endDate AND voided=0  ");
+           lostbacktoProgramThismonth.addParameter(new Parameter("startDate", "startDate", Date.class));
+           lostbacktoProgramThismonth.addParameter(new Parameter("endDate", "endDate", Date.class));
+           
+           CompositionCohortDefinition patientsinLostAndBackToPRogramThismonth = new CompositionCohortDefinition();
+           patientsinLostAndBackToPRogramThismonth.setName("patientsinLostAndBackToPRogramThismonth");
+           patientsinLostAndBackToPRogramThismonth.addParameter(new Parameter("startDate","startDate",Date.class));
+           patientsinLostAndBackToPRogramThismonth.addParameter(new Parameter("endDate","endDate",Date.class));
+           patientsinLostAndBackToPRogramThismonth.getSearches().put("1",new Mapped<CohortDefinition>(lostbacktoProgramThismonth,
+        		   ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+           patientsinLostAndBackToPRogramThismonth.getSearches().put("2",new Mapped<CohortDefinition>(onFollowingStateHIVClinic,null));
+           patientsinLostAndBackToPRogramThismonth.getSearches().put("3",new Mapped<CohortDefinition>(nonActivePatients,null));
+           patientsinLostAndBackToPRogramThismonth.setCompositionString("1 AND 2 AND (NOT 3)");
+           CohortIndicator patientsinLostAndBackToPRogramThismonthInd=Indicators.newCohortIndicator("patientsinLostAndBackToPRogramThismonth", patientsinLostAndBackToPRogramThismonth, null);
+           
           // -------------------------------------------
           //       ART CATEGORY
           //-------------------------------------------
@@ -496,7 +576,7 @@ public class SetupTracNetRwandaReportBySite {
           pedMalesonARTStateHIVClinicunder15.setCompositionString("1 AND 2 AND 3");
           CohortIndicator pedMalesonARTStateHIVClinicunder15Ind=Indicators.newCohortIndicator("pedMalesonARTStateHIVClinicunder15Ind", pedMalesonARTStateHIVClinicunder15, null);
           
-          //Total number of pediatric patients who are on First Line Regimen
+          //5 Total number of pediatric patients who are on First Line Regimen
           CompositionCohortDefinition patientOnArtOrPMTCTPrograms = new CompositionCohortDefinition();
           patientOnArtOrPMTCTPrograms.setName("patientOnArtOrPMTCTPrograms");
           patientOnArtOrPMTCTPrograms.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
@@ -515,7 +595,7 @@ public class SetupTracNetRwandaReportBySite {
           notOnCurrentKaletraDrugOrder.setCompositionString("1 AND 2 AND (NOT 3)");
           CohortIndicator notOnCurrentKaletraDrugOrderInd=Indicators.newCohortIndicator("notOnCurrentKaletraDrugOrderInd", notOnCurrentKaletraDrugOrder, null);
           
-          //Total number of pediatric patients who are on Second Line Regimen 
+          //6 Total number of pediatric patients who are on Second Line Regimen 
           CompositionCohortDefinition onCurrentKaletraDrugOrderComp = new CompositionCohortDefinition();
           onCurrentKaletraDrugOrderComp.setName("activeOnCurrentKaletraDrugOrderComp");
           onCurrentKaletraDrugOrderComp.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -526,7 +606,7 @@ public class SetupTracNetRwandaReportBySite {
           onCurrentKaletraDrugOrderComp.setCompositionString("1 AND 2 AND 3");
           CohortIndicator activeOnCurrentKaletraDrugOrderInd=Indicators.newCohortIndicator("activeOnCurrentKaletraDrugOrderInd", onCurrentKaletraDrugOrderComp,null);
           
-          //Total number of female adult patients (age 15 or older) who are currently on ARV treatment
+          //7 Total number of female adult patients (age 15 or older) who are currently on ARV treatment
           CompositionCohortDefinition onARTStateInPMTCTprogrs = new CompositionCohortDefinition();
           onARTStateInPMTCTprogrs.setName("TR:onARTStateInPMTCTprogrs");
           onARTStateInPMTCTprogrs.getSearches().put("1",new Mapped<CohortDefinition>(onARTDrugs, null));
@@ -545,7 +625,7 @@ public class SetupTracNetRwandaReportBySite {
           femaleOnArtStateinAllHIVPrograms.setCompositionString("(1 OR 2) AND 3 AND 4");
           CohortIndicator femalesOnArtStateinAllHIVProgramsInd=Indicators.newCohortIndicator("femalesOnArtStateinAllHIVProgramsInd", femaleOnArtStateinAllHIVPrograms, null);
           
-          //Total number of male adult patients (age 15 or older) who are currently on ARV treatment
+          //8 Total number of male adult patients (age 15 or older) who are currently on ARV treatment
           CompositionCohortDefinition malesOnArtStateinAllHIVPrograms = new CompositionCohortDefinition();
           malesOnArtStateinAllHIVPrograms.setName("malesOnArtStateinAllHIVPrograms");
           malesOnArtStateinAllHIVPrograms.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -571,15 +651,15 @@ public class SetupTracNetRwandaReportBySite {
           //10 Total number of adult patients who are on Second Line Regimen
           CompositionCohortDefinition adultonCurrentKaletraDrugOrderCompo = new CompositionCohortDefinition();
           adultonCurrentKaletraDrugOrderCompo.setName("adultonCurrentKaletraDrugOrderCompo");
-          adultsnotOnCurrentKaletraDrugOrder.addParameter(new Parameter("endDate", "endDate", Date.class));
-          adultsnotOnCurrentKaletraDrugOrder.addParameter(new Parameter("dateborn","dateborn",Date.class));
+          adultonCurrentKaletraDrugOrderCompo.addParameter(new Parameter("endDate", "endDate", Date.class));
+          adultonCurrentKaletraDrugOrderCompo.addParameter(new Parameter("dateborn","dateborn",Date.class));
           adultonCurrentKaletraDrugOrderCompo.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateHIVClinic,null));
           adultonCurrentKaletraDrugOrderCompo.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
           adultonCurrentKaletraDrugOrderCompo.getSearches().put("3",new Mapped<CohortDefinition>(onCurrentKaletraDrugOrder,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           adultonCurrentKaletraDrugOrderCompo.setCompositionString("1 AND 2 AND 3");
           CohortIndicator adultonCurrentKaletraDrugOrderCompoInd=Indicators.newCohortIndicator("adultonCurrentKaletraDrugOrderCompoInd", adultonCurrentKaletraDrugOrderCompo, null);
           
-          //Number of new pediatric patients (<18 months) starting ARV treatment this month
+          //11 Number of new pediatric patients (<18 months) starting ARV treatment this month
           SqlCohortDefinition under18monthsAtstartOfArt = Cohorts.createUnder18monthsAtStartOfArtbyStartEndDate("TR:under18monthsAtstartOfArt", pediatrichivProgram,pediOnART);
           CompositionCohortDefinition pedsPatientsNotOnArtStateNotOnFolowing = new CompositionCohortDefinition();
           pedsPatientsNotOnArtStateNotOnFolowing.setName("pedsPatientsNotOnArtStateNotOnFolowing");
@@ -589,7 +669,7 @@ public class SetupTracNetRwandaReportBySite {
           pedsPatientsNotOnArtStateNotOnFolowing.setCompositionString("1");
           CohortIndicator pedsPatientsNotOnArtStateNotOnFolowingInd=Indicators.newCohortIndicator("pedsPatientsNotOnArtStateNotOnFolowingInd", pedsPatientsNotOnArtStateNotOnFolowing, null);
           
-          //Number of new  pediatric patients (age <5 years) starting ARV treatment this month
+          //12 Number of new  pediatric patients (age <5 years) starting ARV treatment this month
           SqlCohortDefinition under5yearsAtstartOfArt = Cohorts.createUnder5yrsAtStartOfArtbyStartEndDate("TR:under5yearsAtstartOfArt", pediatrichivProgram,pediOnART);
           CompositionCohortDefinition under5PatientsNotOnArtStateNotOnFolowing = new CompositionCohortDefinition();
           under5PatientsNotOnArtStateNotOnFolowing.setName("under5PatientsNotOnArtStateNotOnFolowing");
@@ -700,7 +780,6 @@ public class SetupTracNetRwandaReportBySite {
           CohortIndicator pediOnArtStateInWhoStageXInd=Indicators.newCohortIndicator("pediOnArtStateInWhoStageXInd", pediOnArtStateInWhoStageX, null);
           
           //20 Number of new female adult patients (age 15 or more) starting ARV treatment this month
-          
           SqlCohortDefinition over15yearsAtstartOfArtAd = Cohorts.createOver15yrsAtStartOfArtbyStartEndDate("TR:over15yearsAtstartOfArtAd", adulthivProgram, adultOnART);
           SqlCohortDefinition over15yearsAtstartOfArtP = Cohorts.createOver15yrsAtStartOfArtbyStartEndDate("TR:over15yearsAtstartOfArtP", pediatrichivProgram, pediOnART);
           SqlCohortDefinition over15yearsAtstartOfArtPMTCT = Cohorts.createOver15yrsAtStartOfArtbyStartEndDate("TR:over15yearsAtstartOfArtPMTCT", pmtctPregnancyProgram, pmtctOnART);
@@ -754,7 +833,7 @@ public class SetupTracNetRwandaReportBySite {
           adultsOnArtStateinWhostage4.setCompositionString("1 AND 2");
           CohortIndicator adultsOnArtStateinWhostage4Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage4Ind", adultsOnArtStateinWhostage4, null);
          
-          //Number of new adult patients who are WHO stage 3 this month
+          //23 Number of new adult patients who are WHO stage 3 this month
           SqlCohortDefinition whoStage3ad = Cohorts.getPatientsWithlastObservation("whoStage3ad", whostage,whostage3adlt);
           
           CompositionCohortDefinition adultsOnArtStateinWhostage3 = new CompositionCohortDefinition();
@@ -766,7 +845,7 @@ public class SetupTracNetRwandaReportBySite {
           adultsOnArtStateinWhostage3.setCompositionString("1 AND 2");
           CohortIndicator adultsOnArtStateinWhostage3Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage3Ind", adultsOnArtStateinWhostage3, null);
          
-          //Number of new adult patients who are WHO stage 2 this month
+          //24 Number of new adult patients who are WHO stage 2 this month
           SqlCohortDefinition whoStage2ad = Cohorts.getPatientsWithlastObservation("whoStage2ad", whostage,whostage2adlt);
           CompositionCohortDefinition adultsOnArtStateinWhostage2 = new CompositionCohortDefinition();
           adultsOnArtStateinWhostage2.setName("adultsOnArtStateinWhostage2");
@@ -777,7 +856,7 @@ public class SetupTracNetRwandaReportBySite {
           adultsOnArtStateinWhostage2.setCompositionString("1 AND 2 ");
           CohortIndicator adultsOnArtStateinWhostage2Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage2Ind", adultsOnArtStateinWhostage2, null);
           
-          //Number of new adult patients who are WHO stage 1 this month
+          //25 Number of new adult patients who are WHO stage 1 this month
           SqlCohortDefinition whoStage1ad = Cohorts.getPatientsWithlastObservation("whoStage1ad", whostage,whostage1adlt);
           CompositionCohortDefinition adultsOnArtStateinWhostage1 = new CompositionCohortDefinition();
           adultsOnArtStateinWhostage1.setName("adultsOnArtStateinWhostage1");
@@ -788,7 +867,7 @@ public class SetupTracNetRwandaReportBySite {
           adultsOnArtStateinWhostage1.setCompositionString("1 AND 2");
           CohortIndicator adultsOnArtStateinWhostage1Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage1Ind", adultsOnArtStateinWhostage1, null);
           
-          //Number of new adult patients who are WHO stage undefined this month
+          //26 Number of new adult patients who are WHO stage undefined this month
           CompositionCohortDefinition allWhoStageAdult = new CompositionCohortDefinition();
           allWhoStageAdult.setName("allWhoStageAdult");
           allWhoStageAdult.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
@@ -806,7 +885,29 @@ public class SetupTracNetRwandaReportBySite {
           adultsOnArtStateinWhostageX.setCompositionString("1 AND (NOT 2)");
           CohortIndicator adultsOnArtStateinWhostageXInd=Indicators.newCohortIndicator("adultsOnArtStateinWhostageXInd", adultsOnArtStateinWhostageX, null);
           
-          //Number of ARV patients (age <15) who have died this month
+          //27 Number of ARV patients (age < 15) who have had their treatment interrupted this month
+          SqlCohortDefinition pediArtDrugsInteruptedThisMonth=new SqlCohortDefinition();
+          pediArtDrugsInteruptedThisMonth.setName("pediArtDrugsInteruptedThisMonth");
+          pediArtDrugsInteruptedThisMonth.setQuery("select DISTINCT pp.patient_id FROM person p,patient_program pp,patient pa,patient_state ps " +
+          "WHERE p.person_id=pp.patient_id AND ps.patient_program_id = pp.patient_program_id AND pp.patient_id = pa.patient_id " +
+          "AND pp.program_id=10 AND ps.state=332 AND DATEDIFF(ps.start_date,p.birthdate) < 5479 " +
+          "AND (ps.end_date between :startDate and :endDate) AND p.voided=0 AND pp.voided=0 AND pa.voided=0 AND ps.voided=0 ");
+          pediArtDrugsInteruptedThisMonth.addParameter(new Parameter("startDate", "startDate", Date.class));
+          pediArtDrugsInteruptedThisMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
+          CohortIndicator pediArtDrugsInteruptedThisMonthInd=Indicators.newCohortIndicator("adultsOnArtStateinWhostageXInd", pediArtDrugsInteruptedThisMonth,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+          
+          //28 Number of ARV patients (age 15+) who have had their treatment interrupted this month   
+          SqlCohortDefinition adultArtDrugsInteruptedThisMonth=new SqlCohortDefinition();
+          adultArtDrugsInteruptedThisMonth.setName("adultArtDrugsInteruptedThisMonth");
+          adultArtDrugsInteruptedThisMonth.setQuery("select DISTINCT pp.patient_id FROM person p,patient_program pp,patient pa,patient_state ps " +
+          "WHERE p.person_id=pp.patient_id AND ps.patient_program_id = pp.patient_program_id AND pp.patient_id = pa.patient_id " +
+          "AND pp.program_id=3 AND ps.state=10 AND DATEDIFF(ps.start_date,p.birthdate) >= 5479 " +
+          "AND (ps.end_date between :startDate and :endDate) AND p.voided=0 AND pp.voided=0 AND pa.voided=0 AND ps.voided=0 ");
+          adultArtDrugsInteruptedThisMonth.addParameter(new Parameter("startDate", "startDate", Date.class));
+          adultArtDrugsInteruptedThisMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
+          CohortIndicator adultArtDrugsInteruptedThisMonthInd=Indicators.newCohortIndicator("adultsOnArtStateinWhostageXInd", adultArtDrugsInteruptedThisMonth,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+          
+          //29 Number of ARV patients (age <15) who have died this month
           SqlCohortDefinition pediOnArtBeforeExitedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("TR:pediOnArtBeforeExitedFromCare", pediatrichivProgram,pediOnART,pediPreAndArtDiedState);
           SqlCohortDefinition adultOnArtBeforeExitedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("TR:adultOnArtBeforeExitedFromCare", adulthivProgram,adultOnART,adultPreAndArtDiedState);
           
@@ -836,7 +937,7 @@ public class SetupTracNetRwandaReportBySite {
           preArtPediAndDiedThisMonth.setCompositionString("1 AND 2");
           CohortIndicator preArtPediAndDiedThisMonthInd=Indicators.newCohortIndicator("pedionARTDiedDuringPInd", preArtPediAndDiedThisMonth, null);
           
-          //Number of ARV patients (age 15 or more) who have died this month
+          //30 Number of ARV patients (age 15 or more) who have died this month
           CompositionCohortDefinition preArtAdultAndDiedThisMonth = new CompositionCohortDefinition();
           preArtAdultAndDiedThisMonth.setName("preArtAdultAndDiedThisMonth");
           preArtAdultAndDiedThisMonth.addParameter(new Parameter("dateborn", "dateborn", Date.class));
@@ -846,32 +947,35 @@ public class SetupTracNetRwandaReportBySite {
           preArtAdultAndDiedThisMonth.setCompositionString("1 AND 2");
           CohortIndicator preArtAdultAndDiedThisMonthInd=Indicators.newCohortIndicator("adultsonARTDiedDuringPInd", preArtAdultAndDiedThisMonth, null);
           
-          //Number of ARV patients (age <15) lost to follow up (>3 months)
+          //31 Number of ARV patients (age <15) lost to follow up (>3 months)
           EncounterCohortDefinition patientWithHIVEncounters = Cohorts.createEncounterParameterizedByDate("patientWithHIVEncounters", onOrAfterOnOrBefore,pediAdnAdultEncounters);
+          CompositionCohortDefinition artLostAdActive = new CompositionCohortDefinition();
+          artLostAdActive.setName("artLostAdActive");
+          artLostAdActive.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
+          artLostAdActive.getSearches().put("2", new Mapped<CohortDefinition>(patientWithHIVEncounters,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
+          artLostAdActive.getSearches().put("3",new Mapped<CohortDefinition>(nonActivePatients,null));
+          artLostAdActive.setCompositionString("1 AND 2 AND (NOT 3) ");
+          
           CompositionCohortDefinition pedsOnArtLostAndwithHIVForms = new CompositionCohortDefinition();
           pedsOnArtLostAndwithHIVForms.setName("pedsOnArtLostAndwithHIVForms");
           pedsOnArtLostAndwithHIVForms.addParameter(new Parameter("dateborn", "dateborn", Date.class));
           pedsOnArtLostAndwithHIVForms.addParameter(new Parameter("endDate", "endDate", Date.class));
-          pedsOnArtLostAndwithHIVForms.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
-          pedsOnArtLostAndwithHIVForms.getSearches().put("2",new Mapped<CohortDefinition>(onARTStateInPMTCTClinic,null));
+          pedsOnArtLostAndwithHIVForms.getSearches().put("1",new Mapped<CohortDefinition>(artLostAdActive,null));
           pedsOnArtLostAndwithHIVForms.getSearches().put("3",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
-          pedsOnArtLostAndwithHIVForms.getSearches().put("4", new Mapped<CohortDefinition>(patientWithHIVEncounters,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
-          pedsOnArtLostAndwithHIVForms.setCompositionString("(1 OR 2) AND 3 AND (NOT 4) ");
+          pedsOnArtLostAndwithHIVForms.setCompositionString("1 AND 3 ");
           CohortIndicator pedsOnArtLostAndwithHIVFormsInd=Indicators.newCohortIndicator("pedsOnArtLostAndwithHIVFormsInd", pedsOnArtLostAndwithHIVForms, null);
          
-          //Number of ARV patients (age 15 or more) lost to follow up (>3 months)
+          //32 Number of ARV patients (age 15 or more) lost to follow up (>3 months)
           CompositionCohortDefinition adultOnArtLostAndwithHIVForms = new CompositionCohortDefinition();
           adultOnArtLostAndwithHIVForms.setName("adultOnArtLostAndwithHIVForms");
           adultOnArtLostAndwithHIVForms.addParameter(new Parameter("dateborn", "dateborn", Date.class));
           adultOnArtLostAndwithHIVForms.addParameter(new Parameter("endDate", "endDate", Date.class));
-          adultOnArtLostAndwithHIVForms.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
-          adultOnArtLostAndwithHIVForms.getSearches().put("2",new Mapped<CohortDefinition>(onARTStateInPMTCTClinic,null));
-          adultOnArtLostAndwithHIVForms.getSearches().put("3",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
-          adultOnArtLostAndwithHIVForms.getSearches().put("4", new Mapped<CohortDefinition>(patientWithHIVEncounters,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
-          adultOnArtLostAndwithHIVForms.setCompositionString("(1 OR 2) AND 3 AND (NOT 4) ");
+          adultOnArtLostAndwithHIVForms.getSearches().put("1",new Mapped<CohortDefinition>(artLostAdActive,null));
+          adultOnArtLostAndwithHIVForms.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          adultOnArtLostAndwithHIVForms.setCompositionString("1 AND 2");
           CohortIndicator adultOnArtLostAndwithHIVFormsInd=Indicators.newCohortIndicator("adultOnArtLostAndwithHIVFormsInd", adultOnArtLostAndwithHIVForms, null);
           
-           //Number of male patients on treatment 12 months after initiation of ARVs this month
+           //33 Number of male patients on treatment 12 months after initiation of ARVs this month
            CompositionCohortDefinition malesOnArtLostforMoreThan12months = new CompositionCohortDefinition();
            malesOnArtLostforMoreThan12months.setName("malesOnArtLostforMoreThan12months");
            malesOnArtLostforMoreThan12months.getSearches().put("1",new Mapped<CohortDefinition>(onARTstatesStateCohort,ParameterizableUtil.createParameterMappings("onDate=${startDate-12m}")));
@@ -880,7 +984,7 @@ public class SetupTracNetRwandaReportBySite {
            malesOnArtLostforMoreThan12months.setCompositionString("1 AND 2 AND 3 ");
            CohortIndicator malesOnArtLostforMoreThan12monthsInd=Indicators.newCohortIndicator("malesOnArtLostforMoreThan12monthsInd", malesOnArtLostforMoreThan12months, null);
                  
-           //Number of female patients on treatment 12 months after initiation of ARVs this month
+           //34 Number of female patients on treatment 12 months after initiation of ARVs this month
            CompositionCohortDefinition femalesOnArtLostforMoreThan12months = new CompositionCohortDefinition();
            femalesOnArtLostforMoreThan12months.setName("femalesOnArtLostforMoreThan12months");
            femalesOnArtLostforMoreThan12months.addParameter(new Parameter("startDate", "startDate",Date.class));
@@ -890,7 +994,7 @@ public class SetupTracNetRwandaReportBySite {
            femalesOnArtLostforMoreThan12months.setCompositionString("1 AND 2 AND 3 ");
            CohortIndicator femalesOnArtLostforMoreThan12monthsInd=Indicators.newCohortIndicator("femalesOnArtLostforMoreThan12monthsInd", femalesOnArtLostforMoreThan12months, null);
           
-           //Number of  ARV patients (age <15) who have been transferred out this month
+           //35 Number of  ARV patients (age <15) who have been transferred out this month
            SqlCohortDefinition pediOnArtBeforeTranferedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("pediOnArtBeforeTranferedFromCare", pediatrichivProgram,pediOnART,peditransferedOutState);
            SqlCohortDefinition adultOnArtBeforeTransferedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("adultOnArtBeforeTransferedFromCare", adulthivProgram,adultOnART,adulttransferedOutState);        
            
@@ -912,7 +1016,7 @@ public class SetupTracNetRwandaReportBySite {
            pedionARTTransferedOutDuringP.setCompositionString("1 AND 2");
            CohortIndicator pedionARTTransferedOutDuringPInd=Indicators.newCohortIndicator("pedionARTTransferedOutDuringPInd", pedionARTTransferedOutDuringP, null);
                   
-           //Number of  ARV patients (age 15 or more) who have been transferred out this month
+           //36 Number of  ARV patients (age 15 or more) who have been transferred out this month
            
            CompositionCohortDefinition adultsonARTTransferedOutDuringP = new CompositionCohortDefinition();
            adultsonARTTransferedOutDuringP.setName("adultsonARTTransferedOutDuringP");
@@ -923,7 +1027,7 @@ public class SetupTracNetRwandaReportBySite {
            adultsonARTTransferedOutDuringP.setCompositionString("1 AND 2");
            CohortIndicator adultsonARTTransferedOutDuringPInd=Indicators.newCohortIndicator("adultsonARTTransferedOutDuringPInd", adultsonARTTransferedOutDuringP, null);
            
-           //Number of  ARV patients (age <15) who have been transferred in this month
+           //37 Number of  ARV patients (age <15) who have been transferred in this month
            CompositionCohortDefinition pedionWithTransferEncounter = new CompositionCohortDefinition();
            pedionWithTransferEncounter.setName("pedionWithTransferEncounter");
            pedionWithTransferEncounter.addParameter(new Parameter("dateborn", "dateborn", Date.class));
@@ -934,7 +1038,7 @@ public class SetupTracNetRwandaReportBySite {
            pedionWithTransferEncounter.setCompositionString("1 AND 2 AND 3");
            CohortIndicator pedionWithTransferInFormInd=Indicators.newCohortIndicator("pedionWithTransferInFormInd", pedionWithTransferEncounter, null);
            
-           ////Number of ARV patients (age 15 or more) who have been transferred in this month
+           //38 Number of ARV patients (age 15 or more) who have been transferred in this month
            CompositionCohortDefinition adultsOnWithTransferEncounter = new CompositionCohortDefinition();
            adultsOnWithTransferEncounter.setName("adultsOnWithTransferEncounter");
            adultsOnWithTransferEncounter.addParameter(new Parameter("dateborn", "dateborn", Date.class));
@@ -945,6 +1049,57 @@ public class SetupTracNetRwandaReportBySite {
            adultsOnWithTransferEncounter.setCompositionString("1 AND 2 AND 3");
            CohortIndicator adultsOnWithTransferEncounterInd=Indicators.newCohortIndicator("adultsOnWithTransferEncounterInd", adultsOnWithTransferEncounter, null);
                  
+           //39 Number of PRe-ART patients lost to follow up (> 3months) back to program
+           SqlCohortDefinition lostbacktoProgramThismonthinART=new SqlCohortDefinition();
+           lostbacktoProgramThismonthinART.setName("TR:lostbacktoProgramThismonthinART");
+           lostbacktoProgramThismonthinART.setQuery("select DISTINCT patient_id FROM encounter WHERE patient_id " +
+           	"IN (select DISTINCT e.patient_id FROM encounter e, patient p WHERE e.patient_id=p.patient_id " +
+           	"AND DATEDIFF(:startDate, e.encounter_datetime) >= 90 AND e.encounter_type IN (1,2,3,4,24,25) " +
+           	"AND p.voided=0 AND e.voided=0) AND encounter_datetime >= :startDate AND encounter_datetime <= :endDate AND voided=0  ");
+           lostbacktoProgramThismonthinART.addParameter(new Parameter("startDate", "startDate", Date.class));
+           lostbacktoProgramThismonthinART.addParameter(new Parameter("endDate", "endDate", Date.class));
+           
+           CompositionCohortDefinition patientsinLostAndBackToProgramThismonthART = new CompositionCohortDefinition();
+           patientsinLostAndBackToProgramThismonthART.setName("patientsinLostAndBackToProgramThismonthART");
+           patientsinLostAndBackToProgramThismonthART.addParameter(new Parameter("startDate","startDate",Date.class));
+           patientsinLostAndBackToProgramThismonthART.addParameter(new Parameter("endDate","endDate",Date.class));
+           patientsinLostAndBackToProgramThismonthART.getSearches().put("1",new Mapped<CohortDefinition>(lostbacktoProgramThismonthinART,
+        		   ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+           patientsinLostAndBackToProgramThismonthART.getSearches().put("2",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
+           patientsinLostAndBackToProgramThismonthART.setCompositionString("1 AND 2");
+           CohortIndicator patientsinLostAndBackToProgramThismonthARTInd=Indicators.newCohortIndicator("patientsinLostAndBackToProgramThismonthARTInd", patientsinLostAndBackToProgramThismonthART, null);
+           
+           //40 Number of new pediatric patient (age<15 years) starting ART second line regimen this month   
+           SqlCohortDefinition onSecondLineDuringP=new SqlCohortDefinition();
+           onSecondLineDuringP.setName("TR:onSecondLineDuringP");
+           onSecondLineDuringP.setQuery("select DISTINCT patient_id FROM orders WHERE concept_id=794 " +
+          "AND start_date BETWEEN :startDate AND :endDate AND discontinued=0 AND discontinued_date is NULL AND voided=0 ");
+           onSecondLineDuringP.addParameter(new Parameter("startDate", "startDate", Date.class));
+           onSecondLineDuringP.addParameter(new Parameter("endDate", "endDate", Date.class));
+           
+           CompositionCohortDefinition pediStartedSecondLineThisMonth = new CompositionCohortDefinition();
+           pediStartedSecondLineThisMonth.setName("pediStartedSecondLineThisMonth");
+           pediStartedSecondLineThisMonth.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           pediStartedSecondLineThisMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
+           pediStartedSecondLineThisMonth.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd, null));
+           pediStartedSecondLineThisMonth.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+           pediStartedSecondLineThisMonth.getSearches().put("3", new Mapped<CohortDefinition>(onSecondLineDuringP,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+           pediStartedSecondLineThisMonth.setCompositionString("1 AND 2 AND 3");
+           CohortIndicator pediOnArtStartedSecondLineThisMonthInd=Indicators.newCohortIndicator("pediOnArtStartedSecondLineThisMonthInd", pediStartedSecondLineThisMonth, null);
+   
+            //41 Number of new pediatric patient (age 15+) starting ART second line regimen this month   
+           CompositionCohortDefinition adultStartedSecondLineThisMonth1 = new CompositionCohortDefinition();
+           adultStartedSecondLineThisMonth1.setName("adultStartedSecondLineThisMonth1");
+           adultStartedSecondLineThisMonth1.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           adultStartedSecondLineThisMonth1.addParameter(new Parameter("endDate", "endDate", Date.class));
+           adultStartedSecondLineThisMonth1.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd, null));
+           adultStartedSecondLineThisMonth1.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+           adultStartedSecondLineThisMonth1.getSearches().put("3", new Mapped<CohortDefinition>(onSecondLineDuringP,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+           adultStartedSecondLineThisMonth1.setCompositionString("1 AND 2 AND 3");
+           CohortIndicator adultOnArtStartedSecondLineThisMonthInd=Indicators.newCohortIndicator("adultOnArtStartedSecondLineThisMonthInd", adultStartedSecondLineThisMonth1, null);
+   
+           
+           
            //Add global filters to the report
            //PRE-ART DATA ELEMENT
            dsd.addColumn("1a","rwandareports.tracnetreport.indicator.preart.newPedsUnderEighteenMonthsInHivCare",new Mapped(newlyEnrolledInHIVCareunder18monthsInd, null), "");
@@ -953,6 +1108,8 @@ public class SetupTracNetRwandaReportBySite {
            dsd.addColumn("4a","rwandareports.tracnetreport.indicator.preart.newMaleUnderFifteenInHivCare",new Mapped(malesnewlyEnrolledInHIVCareunder15yrsInd,null),"");
            dsd.addColumn("5a","rwandareports.tracnetreport.indicator.preart.newFemaleMoreThanFifteenInHivCare",new Mapped(femalesnewlyEnrolledInHIVCareOver15yrsInd,null),"");
            dsd.addColumn("6a","rwandareports.tracnetreport.indicator.preart.newMaleMoreThanFifteenInHivCare",new Mapped(malesnewlyEnrolledInHIVCareOver15yrsInd,null),"");
+           dsd.addColumn("7a","rwandareports.tracnetreport.indicator.preart.pedUnderFifteenCurentlyInHiv",new Mapped(under15InHIVcareInAllProgram,null),"");
+           dsd.addColumn("8a","rwandareports.tracnetreport.indicator.preart.pedsOverFifteenCurentlyInHiv",new Mapped(pedienrolledInHIVCareOver15Indi,null),"");
            dsd.addColumn("9a","rwandareports.tracnetreport.indicator.preart.femaleMoreThanFifteenEverInHiv",new Mapped(Over15FemalenHIVcareInd,null),"");
            dsd.addColumn("10a","rwandareports.tracnetreport.indicator.preart.femalePedsUnderFifteenEverInHiv",new Mapped(under15FemaleInHIVcareInAllProgram,null),"");
            dsd.addColumn("11a","rwandareports.tracnetreport.indicator.preart.maleMoreThanFifteenEverInHiv",new Mapped(Over15MalenHIVcareInd,null),"");
@@ -962,11 +1119,12 @@ public class SetupTracNetRwandaReportBySite {
            dsd.addColumn("15a","rwandareports.tracnetreport.indicator.preart.patientsTbPositiveAtEnrolThisMonth",new Mapped(screenedForTbPosInHIVProgramsInd,null),"");
            dsd.addColumn("16a","rwandareports.tracnetreport.indicator.preart.newEnrolledPedsStartTbTreatThisMonth",new Mapped(patientsOnTBdrugInHIvProgramsUnder15Ind,null),"");
            dsd.addColumn("17a","rwandareports.tracnetreport.indicator.preart.newEnrolledAdultsStartTbTreatThisMonth",new Mapped(patientsOnTBdrugInHIvProgramsOver15Ind,null),"");
-           dsd.addColumn("18a","rwandareports.tracnetreport.indicator.preart.PatientsInPreARVDiedThisMonth",new Mapped(patientsDiedandNotOnARTInd,null),"");
-           dsd.addColumn("19a","rwandareports.tracnetreport.indicator.preart.PatientsInPreARVTransferredInThisMonth",new Mapped(patientsTransferedIntAndnotOnARTInd,null),"");
-           dsd.addColumn("20a","rwandareports.tracnetreport.indicator.preart.PatientsInPreARVTransferredOutThisMonth",new Mapped(patientsTransferedoutAndnotOnARTInd,null),"");  
-           dsd.addColumn("21a","rwandareports.tracnetreport.indicator.preart.PatientsInPreARVTLostToFollowUpThisMonth",new Mapped(patientsinHIVcareLostTofolowUpInd,null),"");
-           
+           dsd.addColumn("18a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVDiedThisMonth",new Mapped(patientsDiedandNotOnARTInd,null),"");
+           dsd.addColumn("19a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTransferredInThisMonth",new Mapped(patientsTransferedIntAndnotOnARTInd,null),"");
+           dsd.addColumn("20a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTransferredOutThisMonth",new Mapped(patientsTransferedoutAndnotOnARTInd,null),"");  
+           dsd.addColumn("21a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTLostToFollowUpThisMonth",new Mapped(patientsinHIVcareLostTofolowUpInd,null),"");
+           dsd.addColumn("22a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTLostToFollowUpNotLostThisMonth",new Mapped(patientsinLostAndBackToPRogramThismonthInd,null),"");
+                                
            // ART DATA ELEMENTS
            dsd.addColumn("1b","rwandareports.tracnetreport.indicator.art.pedsUnderEighteenMonthsCurrentOnArv",new Mapped(pedsonARTStateHIVClinicInd,null),"");
            dsd.addColumn("2b","rwandareports.tracnetreport.indicator.art.pedsUnderFiveCurrentOnArv",new Mapped(pedsonARTStateHIVClinicunder5Ind,null),"");  
@@ -994,6 +1152,8 @@ public class SetupTracNetRwandaReportBySite {
            dsd.addColumn("24b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageTwoThisMonth",new Mapped(adultsOnArtStateinWhostage2Ind,null),"");  
            dsd.addColumn("25b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageOneThisMonth",new Mapped(adultsOnArtStateinWhostage1Ind,null),"");  
            dsd.addColumn("26b","rwandareports.tracnetreport.indicator.art.newAdultUndefinedWhoStageThisMonth",new Mapped(adultsOnArtStateinWhostageXInd,null),"");  
+           dsd.addColumn("27b","rwandareports.tracnetreport.indicator.art.arvPedsFifteenInterruptTreatThisMonth",new Mapped(pediArtDrugsInteruptedThisMonthInd,null),"");  
+           dsd.addColumn("28b","rwandareports.tracnetreport.indicator.art.arvAdultFifteenInterruptTreatThisMonth",new Mapped(adultArtDrugsInteruptedThisMonthInd,null),"");  
            dsd.addColumn("29b","rwandareports.tracnetreport.indicator.art.arvPedsDiedThisMonth",new Mapped(preArtPediAndDiedThisMonthInd,null),"");  
            dsd.addColumn("30b","rwandareports.tracnetreport.indicator.art.arvAdultDiedThisMonth",new Mapped(preArtAdultAndDiedThisMonthInd,null),"");  
            dsd.addColumn("31b","rwandareports.tracnetreport.indicator.art.arvPedsLostFollowupMoreThreeMonths",new Mapped(pedsOnArtLostAndwithHIVFormsInd,null),"");  
@@ -1004,6 +1164,9 @@ public class SetupTracNetRwandaReportBySite {
            dsd.addColumn("36b","rwandareports.tracnetreport.indicator.art.arvAdultTransferredOutThisMonth",new Mapped(adultsonARTTransferedOutDuringPInd,null),"");  
            dsd.addColumn("37b","rwandareports.tracnetreport.indicator.art.arvPedsTransferredInThisMonth",new Mapped(pedionWithTransferInFormInd,null),"");
            dsd.addColumn("38b","rwandareports.tracnetreport.indicator.art.arvAdultTransferreInThisMonth",new Mapped(adultsOnWithTransferEncounterInd,null),"");  
+           dsd.addColumn("39b","rwandareports.tracnetreport.indicator.art.patientsInARVTLostToFollowUpNotLostThisMonth",new Mapped(patientsinLostAndBackToProgramThismonthARTInd,null),"");  
+           dsd.addColumn("40b","rwandareports.tracnetreport.indicator.art.pediInARVTstartingARVSecondLineThisMonth",new Mapped(pediOnArtStartedSecondLineThisMonthInd,null),"");  
+           dsd.addColumn("41b","rwandareports.tracnetreport.indicator.art.adultInARVTstartingARVSecondLineThisMonth",new Mapped(adultOnArtStartedSecondLineThisMonthInd,null),"");  
            
            return dsd;     
         }
@@ -1029,6 +1192,7 @@ public class SetupTracNetRwandaReportBySite {
             reasonForExitingCare= gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
             patientDied = gp.getConcept(GlobalPropertiesManagement.PATIENT_DIED);
             patientTransferedOut=gp.getConcept(GlobalPropertiesManagement.TRASNFERED_OUT);
+            patientDefaulted=MetadataLookup.getConcept("PIH:1743");
             allergypediForm = gp.getForm(GlobalPropertiesManagement.PEDI_ALLERGY);
             allergyadultForm = gp.getForm(GlobalPropertiesManagement.ADULT_ALLERGY);
             medicationForms.add(allergypediForm);
@@ -1053,6 +1217,8 @@ public class SetupTracNetRwandaReportBySite {
             whostage2adlt = gp.getConcept(GlobalPropertiesManagement.WHOSTAGE2AD);
             whostage1adlt = gp.getConcept(GlobalPropertiesManagement.WHOSTAGE1AD);
             cotrimoxazole = gp.getConcept(GlobalPropertiesManagement.COTRIMOXAZOLE_DRUG);
+//            fluconazole=gp.getConcept(GlobalPropertiesManagement.FLUCONAZOLE_DRUG);
+//            dapsone=gp.getConcept(GlobalPropertiesManagement.DAPSONE_DRUG);
            
         }
         

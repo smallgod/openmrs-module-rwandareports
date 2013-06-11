@@ -48,6 +48,7 @@ public class SetupOncologyDailyDrugList {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:6-14,dataset:dataset|sheet:1,row:17,dataset:dataset2");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		h.saveReportDesign(design);

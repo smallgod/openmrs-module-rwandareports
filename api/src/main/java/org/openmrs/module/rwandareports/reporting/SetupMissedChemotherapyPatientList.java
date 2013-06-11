@@ -50,8 +50,8 @@ public class SetupMissedChemotherapyPatientList {
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
+		props.put("sortWeight","5000");
 		design.setProperties(props);
-		
 		h.saveReportDesign(design);
 	}
 	

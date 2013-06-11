@@ -193,7 +193,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    "HF_Monthly_Indicator_Report.xls", "Heart Failure Indicator Monthly Report (Excel)", null);
 		Properties monthlyProps = new Properties();
 		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set");
-		
+		monthlyProps.put("sortWeight","5000");
 		monthlyDesign.setProperties(monthlyProps);
 		h.saveReportDesign(monthlyDesign);
 		
@@ -201,7 +201,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 			    "HF_Quarterly_Indicator_Report.xls", "Heart Failure Quarterly Indicator Report (Excel)", null);
 			Properties quarterlyProps = new Properties();
 			quarterlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
-			
+			quarterlyProps.put("sortWeight","5000");
 			quarterlyDesign.setProperties(quarterlyProps);
 			h.saveReportDesign(quarterlyDesign);
 		

@@ -56,9 +56,11 @@ public class SetupDiabetesConsultAndLTFU {
 		
 		Properties consultProps = new Properties();
 		consultProps.put("repeatingSections", "sheet:1,row:9,dataset:dataset1");
+		consultProps.put("sortWeight","5000");
 		
 		Properties ltfuProps = new Properties();
 		ltfuProps.put("repeatingSections", "sheet:1,row:8,dataset:dataset2");
+		ltfuProps.put("sortWeight","5000");
 		
 		consultReporDesign.setProperties(consultProps);
 		ltfuReporDesign.setProperties(ltfuProps);

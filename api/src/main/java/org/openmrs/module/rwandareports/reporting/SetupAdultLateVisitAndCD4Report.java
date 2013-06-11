@@ -118,7 +118,7 @@ public class SetupAdultLateVisitAndCD4Report {
 		props.put(
 		    "repeatingSections",
 		    "sheet:1,row:8,dataset:AdultARTLateVisit|sheet:2,row:8,dataset:AdultHIVLateCD4Count|sheet:3,row:8,dataset:HIVLostToFollowup|sheet:4,row:8,dataset:HIVLowBMI|sheet:5,row:8,dataset:ViralLoadGreaterThan20InTheLast3Months");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 		
@@ -126,7 +126,7 @@ public class SetupAdultLateVisitAndCD4Report {
 		propsp.put(
 		    "repeatingSections",
 		    "sheet:1,row:8,dataset:AdultPreARTLateVisit|sheet:2,row:8,dataset:AdultHIVLateCD4Count|sheet:3,row:8,dataset:HIVLostToFollowup|sheet:4,row:8,dataset:PreARTBelow350CD4|sheet:5,row:8,dataset:HIVLowBMI");
-		
+		propsp.put("sortWeight","5000");
 		designp.setProperties(propsp);
 		h.saveReportDesign(designp);
 		

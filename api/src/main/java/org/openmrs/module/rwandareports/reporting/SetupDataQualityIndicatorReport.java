@@ -116,10 +116,10 @@ public class SetupDataQualityIndicatorReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-
-		h.purgeReportDefinition("DQ-Data Quality Report By Site");
-		h.purgeReportDefinition("DQ-Data Quality Report For All Sites");
-		h.purgeReportDefinition("DQ-Data Quality Report for NCD");
+		
+		h.purgeReportDefinition("DQ-Data Quality HIV/TB Report By Site");
+		h.purgeReportDefinition("DQ-Data Quality HIV/TB Report For All Sites");
+		h.purgeReportDefinition("DQ-Data Quality NCD/ONCOLOGY Report By Site");
 	}
 
 	// DQ Report by Site
@@ -131,7 +131,7 @@ public class SetupDataQualityIndicatorReport {
 		rd.removeParameter(ReportingConstants.LOCATION_PARAMETER);
 		rd.addParameter(new Parameter("location", "Location", Location.class));
 
-		rd.setName("DQ-Data Quality Report By Site");
+		rd.setName("DQ-Data Quality HIV/TB Report By Site");
 
 		rd.setupDataSetDefinition();
 
@@ -160,7 +160,7 @@ public class SetupDataQualityIndicatorReport {
 		rdsites.removeParameter(ReportingConstants.END_DATE_PARAMETER);
 		rdsites.removeParameter(ReportingConstants.LOCATION_PARAMETER);
 
-		rdsites.setName("DQ-Data Quality Report For All Sites");
+		rdsites.setName("DQ-Data Quality HIV/TB Report For All Sites");
 
 		rdsites.setupDataSetDefinition();
 
@@ -183,7 +183,7 @@ public class SetupDataQualityIndicatorReport {
 		rd.removeParameter(ReportingConstants.LOCATION_PARAMETER);
 		rd.addParameter(new Parameter("location", "Location", Location.class));
 
-		rd.setName("DQ-Data Quality Report for NCD");
+		rd.setName("DQ-Data Quality NCD/ONCOLOGY Report By Site");
 
 		rd.setupDataSetDefinition();
 
@@ -202,8 +202,8 @@ public class SetupDataQualityIndicatorReport {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public CohortIndicatorDataSetDefinition createIndicatorsForReports() {
-		CohortIndicatorDataSetDefinition reportDefinition=new CohortIndicatorDataSetDefinition();
-		reportDefinition.setName("defaultDataSetGlobal");
+		CohortIndicatorDataSetDefinition dataSetDefinition=new CohortIndicatorDataSetDefinition();
+		dataSetDefinition.setName("defaultDataSetGlobal");
 		// ======================================================================================================================================================================================================
 		// 1. Any patients who are in Pediatric HIV program or in the Adult HIV
 		// program AND on ART whose accompagnateur is not listed in EMR (or who
@@ -668,39 +668,39 @@ public class SetupDataQualityIndicatorReport {
 		// Add global filters to the report
 		// ======================================================================================
 
-		reportDefinition.addColumn("1","patients who are in Pediatric or Adult HIV program AND on ART whose accompagnateur is not listed in EMR",
+		dataSetDefinition.addColumn("1","patients who are in Pediatric or Adult HIV program AND on ART whose accompagnateur is not listed in EMR",
 			 new Mapped(patientsInHIVOnARTWithoutAccompIndicator,null),"");
-		reportDefinition.addColumn("2","Patients enrolled in PMTCT Pregnancy for more than 8 months and a half",
+		dataSetDefinition.addColumn("2","Patients enrolled in PMTCT Pregnancy for more than 8 months and a half",
 			 new Mapped(patientsInPMTCTTooLongIndicator,null),"");
-		reportDefinition.addColumn("3","Patients enrolled in Combined Clinic Mother for more than 19 months",
+		dataSetDefinition.addColumn("3","Patients enrolled in Combined Clinic Mother for more than 19 months",
 			 new Mapped(patientsInPMTCTCCMTooLongIndicator,null),"");
-		reportDefinition.addColumn("4","Patients enrolled in Combined Clinic Infant for more than 19 months",
+		dataSetDefinition.addColumn("4","Patients enrolled in Combined Clinic Infant for more than 19 months",
 			 new Mapped(patientsInPMTCTCCITooLongIndicator,null),"");
-		reportDefinition.addColumn("5","Patients in PMTCT-pregnancy or PMTCT Combine Clinic - mother while a 'male' patient",
+		dataSetDefinition.addColumn("5","Patients in PMTCT-pregnancy or PMTCT Combine Clinic - mother while a 'male' patient",
 			 new Mapped(malesInPMTCTAndPMTCTCCMIndicator,null),"");
-		reportDefinition.addColumn("6","Patients with current ARV regimen with incorrect treatment status(not 'On ART')",
+		dataSetDefinition.addColumn("6","Patients with current ARV regimen with incorrect treatment status(not 'On ART')",
 			 new Mapped(patientsOnARTRegimenNotOnARTStatus,null),"");
-		reportDefinition.addColumn("7","Patients with treatment status 'On Antiretrovirals' without an ARV regimen",
+		dataSetDefinition.addColumn("7","Patients with treatment status 'On Antiretrovirals' without an ARV regimen",
 			 new Mapped(patientsOnARTStatusNotOnARTRegimen,null),"");
-		reportDefinition.addColumn("8","Patients with current TB regimen not currently in TB program (excluding patients in HF program)",
+		dataSetDefinition.addColumn("8","Patients with current TB regimen not currently in TB program (excluding patients in HF program)",
 			 new Mapped(patientsOnTBRegimenNotInTBProgramHFExcluded,null),"");
-		reportDefinition.addColumn("9","On initial TB treatment for longer than 8 months",
+		dataSetDefinition.addColumn("9","On initial TB treatment for longer than 8 months",
 			 new Mapped(patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimenIndicator,null),"");
-		reportDefinition.addColumn("10","Patients whose status deceased but enrolled in program",
+		dataSetDefinition.addColumn("10","Patients whose status deceased but enrolled in program",
 			 new Mapped(patientExitedfromcareinProgramsIndicator,null),"");
-		reportDefinition.addColumn("11","Patients whose ART start date or 'on ART' workflow are before any programs began AND do not have a 'transfer in form",
+		dataSetDefinition.addColumn("11","Patients whose ART start date or 'on ART' workflow are before any programs began AND do not have a 'transfer in form",
 			new Mapped(patientsOnArtbeforeHivEnrollmentIndicator, null),"");
-		reportDefinition.addColumn("12","Patients currently enrolled in the PMTCT Combined Clinic Infant program who don't have a non-voided Mother/Child relationship",
+		dataSetDefinition.addColumn("12","Patients currently enrolled in the PMTCT Combined Clinic Infant program who don't have a non-voided Mother/Child relationship",
 			new Mapped(infantsWithNoMotherAccIndicator,null),"");
 		
-		return reportDefinition;
+		return dataSetDefinition;
 
 	}
 	
 	
 	public CohortIndicatorDataSetDefinition createreportForNCDreport() {
-		CohortIndicatorDataSetDefinition reportDefinition=new CohortIndicatorDataSetDefinition();
-		reportDefinition.setName("defaultDataSetncd");
+		CohortIndicatorDataSetDefinition dataSetDefinition=new CohortIndicatorDataSetDefinition();
+		dataSetDefinition.setName("defaultDataSetncd");
 				
 				// ======================================================================================
 				// 1. Patients with imb invalid identifier type
@@ -929,27 +929,27 @@ public class SetupDataQualityIndicatorReport {
 				// Add global filters to the report
 				// ======================================================================================
 
-				reportDefinition.addColumn("1", "Patients with invalid IMB ID",
+				dataSetDefinition.addColumn("1", "Patients with invalid IMB ID",
 						new Mapped(patientsWithInvalidIdInd, null),"");
-				reportDefinition.addColumn("2", "Active patients with no IMB or PHC ID",
+				dataSetDefinition.addColumn("2", "Active patients with no IMB or PHC ID",
 						new Mapped(patientsWithIMBOrPCIdentiferanyEncounterLastYearFromNowIndicator, null),"");
-				reportDefinition.addColumn("3", "Patients over 100 years old",
+				dataSetDefinition.addColumn("3", "Patients over 100 years old",
 						new Mapped(patientsOver100YearsoldIndicator,null),"");
-				reportDefinition.addColumn("4","Patients with a visit in last 12 months who do not have a correctly structured address",
+				dataSetDefinition.addColumn("4","Patients with a visit in last 12 months who do not have a correctly structured address",
 						new Mapped(patientsWithNoStructuredAddressWithAnyEncounterLastYearFromNowIndicator,null),"");
-				reportDefinition.addColumn("5","Patients who status is transferred out but is currently enrolled in program ",
+				dataSetDefinition.addColumn("5","Patients who status is transferred out but is currently enrolled in program ",
 						new Mapped(patientTransferedOutinProgramsIndicator,null),"");
-				reportDefinition.addColumn("6", "Patients with no health center",
+				dataSetDefinition.addColumn("6", "Patients with no health center",
 						new Mapped(patientWithnohealthCenterIndicator,null),"");
-				reportDefinition.addColumn("7", "Patients with no encounter",
+				dataSetDefinition.addColumn("7", "Patients with no encounter",
 						new Mapped(patientsWithNoEncounterInProgramIndicator,null),"");
-				reportDefinition.addColumn("8", "Patients With BMI <12 or >35",
+				dataSetDefinition.addColumn("8", "Patients With BMI <12 or >35",
 						new Mapped(patientsWithBMIMoreThan35,null),"");
-				reportDefinition.addColumn("9","Patients With Missing program enrollment start date",
+				dataSetDefinition.addColumn("9","Patients With Missing program enrollment start date",
 						new Mapped(patientsMissingprogramsEnrolStartDateindicator,null),"");
 				
 				
-				return reportDefinition;
+				return dataSetDefinition;
 				
 
 	  }

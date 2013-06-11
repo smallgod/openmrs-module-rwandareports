@@ -108,7 +108,7 @@ public class SetupMonthlyCD4DeclineReport {
 		props.put(
 		    "repeatingSections",
 		    "sheet:1,dataset:dataSet|sheet:1,row:9,dataset:decline50PercPedi");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 		
@@ -116,7 +116,7 @@ public class SetupMonthlyCD4DeclineReport {
 		propsp.put(
 		    "repeatingSections",
 		    "sheet:1,dataset:dataSet|sheet:1,row:9,dataset:decline50CC");
-		
+		propsp.put("sortWeight","5000");
 		designp.setProperties(propsp);
 		h.saveReportDesign(designp);
 		
@@ -124,7 +124,7 @@ public class SetupMonthlyCD4DeclineReport {
 		propsa.put(
 		    "repeatingSections",
 		    "sheet:1,dataset:dataSet|sheet:1,row:9,dataset:decline50Perc|sheet:2,dataset:dataSet|sheet:2,row:9,dataset:decline50");
-		
+		propsa.put("sortWeight","5000");
 		designa.setProperties(propsa);
 		h.saveReportDesign(designa);
 		
