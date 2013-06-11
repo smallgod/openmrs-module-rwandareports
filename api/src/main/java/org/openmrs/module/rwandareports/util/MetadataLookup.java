@@ -61,6 +61,9 @@ public class MetadataLookup {
 				else if (workflowLookup.equalsIgnoreCase(programWorkflow.getUuid())) {
 					wf = programWorkflow;
 				}
+				else if (workflowLookup.equalsIgnoreCase(programWorkflow.getId().toString())) {
+					wf = programWorkflow;
+				}
 			}
 		}
 		if (wf == null) {
@@ -81,6 +84,9 @@ public class MetadataLookup {
 					s = state;
 				}
 				else if (stateLookup.equalsIgnoreCase(state.getUuid())) {
+					s = state;
+				}
+				else if (stateLookup.equalsIgnoreCase(state.getId().toString())) {
 					s = state;
 				}
 			}
