@@ -116,6 +116,8 @@ $(function() {
 <c:set var="__openmrs_hide_report_link" value="true" />
 <c:set var="dataSetMaps" value="${__openmrs_report_data.dataSets}" />
 <c:set var="mapDataSet" value="${dataSetMaps['defaultDataSet'].data}"/> 
+<c:set var="mapDataSet" value="${dataSetMaps['defaultDataSetGlobal'].data}"/> 
+<c:set var="mapDataSet" value="${dataSetMaps['defaultDataSetncd'].data}"/> 
 <openmrs:portlet url="currentReportHeader" moduleId="reporting" parameters="showDiscardButton=true"/>
 
 <div id="page" style="display:block;">
@@ -127,11 +129,16 @@ $(function() {
 		<c:set var="patientsNumInOneDataSet" value="${fn:length(cohort.dataSet.rows)}" />
 		<c:set var="patientsNumInAllDataSets" value="${patientsNumInAllDataSets + patientsNumInOneDataSet}" />				
 		</c:forEach>
-		<br /><h3>There are ${patientsNumInAllDataSets} total data problems</h3> <br /><br />
-		 <c:forEach var="cohortResults" items="${dQRList}" varStatus="loopTimes">
-			<div class="cohortResultsColumn">				
+		 <c:forEach var="cohort" items="${dQRList}" varStatus="count" begin="1" end="1">
+		<c:if test="${!empty cohort.dataSet}">
+		<br/><h3>There are ${patientsNumInAllDataSets} total data problems</h3> <br/><br />
+		</c:if>
+		</c:forEach> 
+		<c:forEach var="cohortResults" items="${dQRList}" varStatus="loopTimes">
+		 <c:if test="${!empty cohortResults.dataSet}">
+		 
+		<div class="cohortResultsColumn">				
 			
-		
 					<h3>${cohortResults.selectedColumn.name}: ${cohortResults.selectedColumn.label} (${fn:length(cohortResults.dataSet.rows)} <spring:message code="Patient.header"/>)</h3>
         
 		 <c:if test="${!empty cohortResults.dataSet}">
@@ -185,20 +192,31 @@ $(function() {
 		
 								
 			</div><!-- column -->
+			</c:if>
+			<c:if test="${empty cohortResults.dataSet}"></c:if>
+			
+			
 			</c:forEach>
 		</div><!-- portal -->
 		
-		
+		 
 		<!-- ENCOUNTER DATA PROBLEM -->
 		<div id="portal">
 		<c:forEach var="cohort" items="${dQRListenc}" varStatus="cohortNum">
 		<c:set var="patientsNumInOneDataSetenc" value="${fn:length(cohort.encounters)}" />
 		<c:set var="patientsNumInAllDataSetsenc" value="${patientsNumInOneDataSetenc + patientsNumInOneDataSetenc}" />				
 		</c:forEach>
-		<br /><h3>There are ${patientsNumInOneDataSetenc} total encounters problems</h3> <br /><br />
+
+		<c:forEach var="cohort" items="${dQRList}" varStatus="count" begin="1" end="1">
+		<c:if test="${!empty cohort.dataSet}">
+		<br/><h3>There are ${patientsNumInOneDataSetenc} total encounters problems</h3> <br/><br />
+		</c:if>
+		</c:forEach> 
+		
 		 <c:forEach var="cohortResults" items="${dQRListenc}" varStatus="loopTimes">
+		 
 			<div class="cohortResultsColumn">				
-			
+			<c:if test="${!empty cohortResults.selectedEncounter}">
 		
 					<h3>${cohortResults.selectedEncounter}: ${cohortResults.selectedEncounter} (${fn:length(cohortResults.encounters)} encounters)</h3>
         
@@ -241,13 +259,92 @@ $(function() {
 						</table>
 					</c:if>
 		
-								
-			</div>
-		<br clear="both"/>
+			</c:if>
+			<c:if test="${empty cohortResults.selectedEncounter}"></c:if>			
+			</div><!-- column --> 
+			
 			</c:forEach>
 		
 		</div>
+		
 		<br/>
+		
+		 <!-- INDICATOR DATASET FOR NCD -->
+		
+	 	 <div id="portal">
+		<c:forEach var="cohort" items="${dQRListncd}" varStatus="cohortNum">
+		<c:set var="patientsNumInOneDataSetncd" value="${fn:length(cohort.dataSet.rows)}" />
+		<c:set var="patientsNumInAllDataSetsncd" value="${patientsNumInAllDataSetsncd + patientsNumInOneDataSetncd}" />				
+		</c:forEach>
+		
+		<c:forEach var="cohort" items="${dQRListncd}" varStatus="count" begin="1" end="1">
+		<c:if test="${!empty cohort.dataSet}">
+		<h3>There are ${patientsNumInAllDataSetsncd} total data problems for NCD</h3> <br/><br />
+		</c:if>
+		</c:forEach> 
+		
+		 <c:forEach var="cohortResults" items="${dQRListncd}" varStatus="loopTimes">
+		  <c:if test="${!empty cohortResults.dataSet}">
+			<div class="cohortResultsColumn">				
+			
+		
+					<h3>${cohortResults.selectedColumn.name}: ${cohortResults.selectedColumn.label} (${fn:length(cohortResults.dataSet.rows)} <spring:message code="Patient.header"/>)</h3>
+        
+		 <c:if test="${!empty cohortResults.dataSet}">
+						<table class="display">
+							<thead>
+														
+								<tr>
+									<c:forEach var="column" items="${cohortResults.dataSet.metaData.columns}" varStatus="varStatus">				
+										<c:if test="${column.label!='patientId'}">
+										<th>
+									<br /><br />
+											${column.label}
+										</th>
+										</c:if>
+									</c:forEach>
+								</tr>
+							</thead>
+							<tbody>
+									<c:set var="patientsNumInOneDataSetncd" value="${fn:length(cohortResults.dataSet.rows)}" />
+									<c:choose>
+									<c:when test='${patientsNumInOneDataSetncd > "0"}'>
+									
+									<c:forEach var="dataSetRow" items="${cohortResults.dataSet.rows}" varStatus="varStatus">
+										<c:set var="patId" value="${dataSetRow.columnValuesByKey['patientId']}"/>
+										<tr>
+											<c:forEach var="column" items="${cohortResults.dataSet.metaData.columns}" varStatus="varStatus">
+												<c:if test="${column.label!='patientId'}">
+												<td>
+													<c:if test="${!empty patId}"><a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patId}" target="_blank"></c:if>
+														${dataSetRow.columnValues[column]}
+													<c:if test="${!empty patId}"></a></c:if>
+												</td>
+												</c:if>
+											</c:forEach>										
+										</tr>
+									</c:forEach>
+									</c:when>
+									<c:otherwise>
+									<tr> <td colspan="5" align="center">
+							<table class="display">
+							<thead><tr></tr></thead>
+						    </table>
+                                      No matching records found </td></tr>	
+									</c:otherwise>
+								</c:choose>			
+							</tbody>
+							<tfoot>
+							</tfoot>
+						</table>
+					</c:if>
+		
+								
+			</div><!-- column --> 
+			</c:if>
+			<c:if test="${empty cohortResults.dataSet}"></c:if>
+			</c:forEach>
+		</div>   
 	</div>
 </div>
 

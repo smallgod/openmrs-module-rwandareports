@@ -82,6 +82,8 @@ public Helper h = new Helper();
         
         private Concept cd4Concept;
         
+        private Concept cd4PercentConcept;
+        
         private Concept weightConcept;
         
         private EncounterType adultHIVEncounterType;
@@ -295,6 +297,9 @@ public Helper h = new Helper();
                 
                 NumericObsCohortDefinition cd4 = Cohorts.createNumericObsCohortDefinition("obsQD: CD4 count recorded",
                     onOrAfterOnOrBefore, cd4Concept, 0, null, TimeModifier.ANY);
+                
+                NumericObsCohortDefinition cd4Percent = Cohorts.createNumericObsCohortDefinition("obsQD: CD4% count recorded",
+                        onOrAfterOnOrBefore, cd4PercentConcept, 0, null, TimeModifier.ANY);
                 
                 NumericObsCohortDefinition weight = Cohorts.createNumericObsCohortDefinition("obsQD: weight recorded",
                     onOrAfterOnOrBefore, weightConcept, 0, null, TimeModifier.ANY);
@@ -517,8 +522,9 @@ public Helper h = new Helper();
                 preArtWithACD4Under15.getSearches().put("1",new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
                 preArtWithACD4Under15.getSearches().put("2",new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
                 preArtWithACD4Under15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")));
-                preArtWithACD4Under15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                preArtWithACD4Under15.setCompositionString("1 AND 2 AND 3 AND 4");
+                preArtWithACD4Under15.getSearches().put("4", new Mapped(cd4Percent, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")));
+                preArtWithACD4Under15.getSearches().put("5",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+                preArtWithACD4Under15.setCompositionString("1 AND 2 AND (3 OR 4) AND 5");
                 
                 CompositionCohortDefinition preArtWithACD4Over15 = new CompositionCohortDefinition();
                 preArtWithACD4Over15.setName("HIVQ: preArt in Hiv program with a CD4 count in period -3 months and over 15");
@@ -547,8 +553,9 @@ public Helper h = new Helper();
                 artWithACD4Under15.getSearches().put("1",new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
                 artWithACD4Under15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
                 artWithACD4Under15.getSearches().put("3",new Mapped(cd4, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")));
-                artWithACD4Under15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                artWithACD4Under15.setCompositionString("1 AND 2 AND 3 AND 4");
+                artWithACD4Under15.getSearches().put("4", new Mapped(cd4Percent, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")));
+                artWithACD4Under15.getSearches().put("5",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+                artWithACD4Under15.setCompositionString("1 AND 2 AND (3 OR 4) AND 5");
                 
                 CompositionCohortDefinition hivWithAWeightUnder15 = new CompositionCohortDefinition();
                 hivWithAWeightUnder15.setName("HIVQ: weight recorded in period under 15");
@@ -1666,6 +1673,7 @@ public Helper h = new Helper();
                 hivEncounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.HIV_ENCOUNTER_TYPES,":");
                 
                 cd4Concept = gp.getConcept(GlobalPropertiesManagement.CD4_TEST);
+                cd4PercentConcept=gp.getConcept(GlobalPropertiesManagement.CD4_PERCENTAGE_TEST);
                 weightConcept = gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);
                 
                 onOrAfterOnOrBefore.add("onOrAfter");
