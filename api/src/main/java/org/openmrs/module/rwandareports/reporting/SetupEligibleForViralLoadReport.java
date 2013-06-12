@@ -29,6 +29,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InverseCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -161,8 +162,8 @@ public class SetupEligibleForViralLoadReport {
 		NumericObsCohortDefinition viralLoad = Cohorts.createNumericObsCohortDefinition("obsQD: Viral Load recorded",
 		    onOrAfterOnOrBefore, viralLoadConcept, 0, null, TimeModifier.LAST);
 		
-		NumericObsCohortDefinition noViralLoad = Cohorts.createNumericObsCohortDefinition("obsQD: Viral Load recorded",
-		    onOrAfterOnOrBefore, viralLoadConcept, 0, null, TimeModifier.NO);
+		InverseCohortDefinition noViralLoad = new InverseCohortDefinition(viralLoad);
+		noViralLoad.setName("patientsWithNoViralLoadRecorded");
 		
 		SqlCohortDefinition withNoResults=new SqlCohortDefinition("select distinct ord.patient_id from orders ord left join obs o on ord.order_id = o.order_id where o.order_id is null and ord.concept_id="+viralLoadConcept.getConceptId()+" and ord.start_date<= :onOrBefore and ord.voided=0 and ord.discontinued=0;");
 		withNoResults.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
