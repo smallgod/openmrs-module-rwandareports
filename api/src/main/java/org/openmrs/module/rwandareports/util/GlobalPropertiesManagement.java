@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -16,6 +18,8 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 
 public class GlobalPropertiesManagement {
+	
+	protected final static Log log = LogFactory.getLog(GlobalPropertiesManagement.class);
 
 	public Program getProgram(String globalPropertyName) {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
@@ -100,6 +104,7 @@ public class GlobalPropertiesManagement {
 		String workflowGp = Context.getAdministrationService().getGlobalProperty(workflowName);
 		String stateGp = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
 		return MetadataLookup.getProgramWorkflowState(programGp, workflowGp, stateGp);
+
 	}
 	
 	public Map<Concept, Double> getVialSizes() {
@@ -126,7 +131,7 @@ public class GlobalPropertiesManagement {
 	}
 
 	//Programs
-	public final static String ADULT_HIV_PROGRAM = "hiv.programid.adult"; 
+	public final static String ADULT_HIV_PROGRAM = "reports.adulthivprogramname"; 
 	
 	public final static String PMTCT_COMBINED_CLINIC_PROGRAM = "reports.pmtctcombinedprogramname";
 	
@@ -694,6 +699,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String NORMAL_SALINE = "reports.normalSaline";
 	
+    public final static String FLUCONAZOLE_DRUG="reports.fluconazole";
+	
+	public final static String DAPSONE_DRUG="reports.dapsone";
+	
 	//Drug set concepts
 	public final static String ART_DRUGS_SET = "reports.allArtDrugsConceptSet";
 	
@@ -789,6 +798,7 @@ public class GlobalPropertiesManagement {
 	public final static String SOCIO_ECONOMIC_ASSISTANCE_RECOMENDED="reports.socioeconomicassistance";
 	public final static String NUTRITIONAL_AID="report.nutritionalaid";
 	public final static String TRASNFERED_OUT="report.patienttransferedOut";
+	public final static String PATIENT_DEFAULTED="report.patiendefaulted";
 	public final static String TRASNFERED_IN="report.patienttransferedIn";
 	public final static String WHOSTAGE="reports.whostage";
 	public final static String WHOSTAGE4PED="reports.whostage4p";
