@@ -651,6 +651,12 @@
 		<description>the current state used when a patient is transfered out
 			for different purposes</description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.patiendefaulted</property>
+		<defaultValue>PATIENT DEFAULTED</defaultValue>
+		<description>the current state used when a patient is Defaulted for different purposes</description>
+	</globalProperty>
 
 	<globalProperty>
 		<property>reports.hivencountertypes</property>
@@ -882,11 +888,11 @@
 	</globalProperty>
 
 	<globalProperty>
-		<property>hiv.programid.adult</property>
-		<defaultValue>3</defaultValue>
+		<property>reports.adulthivprogramname</property>
+		<defaultValue>Adult HIV PROGRAM</defaultValue>
 		<description>Id for Adult HIV program</description>
 	</globalProperty>
-
+	
 	<globalProperty>
 		<property>reports.oncologyprogram</property>
 		<defaultValue>Oncology Program</defaultValue>
@@ -2380,7 +2386,17 @@
 		<defaultValue>57b07582-2b35-4656-8cb2-939bb09cc02c</defaultValue>
 		<description>The id of the form for the hypertension ddb</description>
 	</globalProperty>
-
+<globalProperty>
+		<property>reports.fluconazole</property>
+		<defaultValue>747</defaultValue>
+		<description>The concept id of fluconazole drug concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.dapsone</property>
+		<defaultValue>92</defaultValue>
+		<description>The concept id of dapsone drug concept</description>
+	</globalProperty>
 	<globalProperty>
 		<property>reports.hypertensionFlowVisit</property>
 		<defaultValue>c6276c2d-b17e-45e3-87ff-2efd341b1e20</defaultValue>
