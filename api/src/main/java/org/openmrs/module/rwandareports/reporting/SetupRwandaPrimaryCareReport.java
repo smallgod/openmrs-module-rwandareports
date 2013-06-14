@@ -3,6 +3,7 @@ package org.openmrs.module.rwandareports.reporting;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -100,7 +101,13 @@ public class SetupRwandaPrimaryCareReport {
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition(registration, vitals);
-		h.createXlsCalendarOverview(rd, "rwandacalendarprimarycarereporttemplate.xls", "Primary_Care_Report_Template", null);
+		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "rwandacalendarprimarycarereporttemplate.xls","Primary_Care_Report_Template", null);
+		Properties props = new Properties();
+        props.put("sortWeight","5000");
+        design.setProperties(props);
+        h.saveReportDesign(design);
+		//h.createXlsCalendarOverview(rd, "rwandacalendarprimarycarereporttemplate.xls", "Primary_Care_Report_Template", null);
+		
 	}
 	
 	public void delete() {
@@ -157,6 +164,8 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and p.voided = 0 and pat.voided = 0 and e.patient_id = p.person_id and p.person_id = pat.patient_id and (YEAR(:endDate)-YEAR(p.birthdate)) - (RIGHT(:endDate,5)<RIGHT(p.birthdate,5)) < 5 and e.encounter_datetime > :startDate and e.encounter_datetime <= :endDate and e.location_id = :location");
 		patientsUnder5WithoutTemperatureInVitals.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsUnder5WithoutTemperatureInVitals.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsUnder5WithoutTemperatureInVitals.addParameter(new Parameter("location", "Location", Location.class));
+		
 		
 		SqlObjectGroupDefinition patientsUnder5InRegistration = new SqlObjectGroupDefinition();
 		patientsUnder5InRegistration.setName("patientsUnder5InRegistration");
@@ -166,13 +175,14 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.patient_id = p.person_id and p.voided = 0 and (YEAR(:endDate)-YEAR(p.birthdate)) - (RIGHT(:endDate,5)<RIGHT(p.birthdate,5)) < 5 and e.patient_id = pa.patient_id and pa.voided = 0 and e.encounter_datetime > :startDate and e.encounter_datetime <= :endDate and e.location_id = :location");
 		patientsUnder5InRegistration.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsUnder5InRegistration.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsUnder5InRegistration.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator patientsWithoutTemperatureInVitalsIndicator = Indicators.newFractionIndicatorObjectGroupIndicator(
 		    "patientsWithoutTemperatureInVitalsIndicator", patientsUnder5WithoutTemperatureInVitals,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"),
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"),
 
 		    patientsUnder5InRegistration,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 2.2 Percent of children under 5 who did have observation for
 		
@@ -191,6 +201,7 @@ public class SetupRwandaPrimaryCareReport {
 		patientsUnder5WithTemperatureGreaterThanNormalInVitals.addParameter(new Parameter("startDate", "startDate",
 		        Date.class));
 		patientsUnder5WithTemperatureGreaterThanNormalInVitals.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsUnder5WithTemperatureGreaterThanNormalInVitals.addParameter(new Parameter("location", "Location", Location.class));
 		
 		SqlObjectGroupDefinition patientsUnder5WithTemperatureInVitals = new SqlObjectGroupDefinition();
 		patientsUnder5WithTemperatureInVitals.setName("patientsUnder5WithTemperatureInVitals");
@@ -202,13 +213,14 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.patient_id = p.person_id and (YEAR(:endDate)-YEAR(p.birthdate)) - (RIGHT(:endDate,5)<RIGHT(p.birthdate,5)) < 5 and p.voided = 0 and p.person_id = pa.patient_id and pa.voided = 0 and e.encounter_datetime > :startDate and e.encounter_datetime <= :endDate and e.location_id = :location");
 		patientsUnder5WithTemperatureInVitals.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsUnder5WithTemperatureInVitals.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsUnder5WithTemperatureInVitals.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator patientsWithTemperatureGreaterThanNormalInVitalsIndicator = Indicators
 		        .newFractionIndicatorObjectGroupIndicator("patientsWithTemperatureGreaterThanNormalInVitalsIndicator",
 		            patientsUnder5WithTemperatureGreaterThanNormalInVitals,
-		            ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"),
+		            ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"),
 		            patientsUnder5WithTemperatureInVitals,
-		            ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		            ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 2.3 Percent of all registered patients under 5 who had a fever
 		
@@ -216,9 +228,9 @@ public class SetupRwandaPrimaryCareReport {
 		        .newFractionIndicatorObjectGroupIndicator(
 		            "allRegisteredPatientsWithTemperatureGreaterThanNormalInVitalsIndicator",
 		            patientsUnder5WithTemperatureGreaterThanNormalInVitals,
-		            ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"),
+		            ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"),
 		            patientsUnder5InRegistration,
-		            ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		            ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// ========================================================================
 		// 3. Registration Speed during Peak Hours
@@ -234,6 +246,8 @@ public class SetupRwandaPrimaryCareReport {
 		peakHours.addParameter(new Parameter("endDate", "endDate", Date.class));
 		peakHours.addParameter(new Parameter("startTime", "startTime", Date.class));
 		peakHours.addParameter(new Parameter("endTime", "endTime", Date.class));
+		peakHours.addParameter(new Parameter("location", "location", Location.class));
+		
 		
 		// number of weekdays between startDate and stopDate / 2
 		
@@ -242,7 +256,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "peakHoursIndicator",
 		            peakHours,
 		            ParameterizableUtil
-		                    .createParameterMappings("startDate=${startDate},endDate=${endDate},startTime=08:00:00,endTime=10:00:00"),
+		                    .createParameterMappings("startDate=${startDate},endDate=${endDate},startTime=08:00:00,endTime=10:00:00,location=${location}"),
 		            Integer.valueOf(2));
 		
 		// ========================================================================
@@ -483,6 +497,7 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided=0 and e.location_id = :location group by e.patient_id) as patientregistrationtimes where timesofregistration=1 and encounter_datetime>= :startDate and encounter_datetime<= :endDate");
 		patientsWithOneVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithOneVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithOneVisit.addParameter(new Parameter("location", "Location", Location.class));
 		
 		SqlCohortDefinition patientsWithTwoVisits = new SqlCohortDefinition();
 		patientsWithTwoVisits.setName("patientsWithTwoVisits");
@@ -492,6 +507,7 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided=0 and e.location_id = :location group by e.patient_id) as patientregistrationtimes where timesofregistration=2 and encounter_datetime>= :startDate and encounter_datetime<= :endDate");
 		patientsWithTwoVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithTwoVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithTwoVisits.addParameter(new Parameter("location", "Location", Location.class));
 		
 		SqlCohortDefinition patientsWithThreeVisits = new SqlCohortDefinition();
 		patientsWithThreeVisits.setName("patientsWithThreeVisits");
@@ -501,6 +517,7 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided=0 and e.location_id = :location group by e.patient_id) as patientregistrationtimes where timesofregistration=3 and encounter_datetime>= :startDate and encounter_datetime<= :endDate");
 		patientsWithThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		
 		SqlCohortDefinition patientsWithGreaterThanThreeVisits = new SqlCohortDefinition();
 		patientsWithGreaterThanThreeVisits.setName("patientsWithGreaterThanThreeVisits");
@@ -510,6 +527,7 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided=0 and e.location_id = :location group by e.patient_id) as patientregistrationtimes where timesofregistration>3 and encounter_datetime>= :startDate and encounter_datetime<= :endDate ");
 		patientsWithGreaterThanThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithGreaterThanThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithGreaterThanThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		
 		// 5.1.1 Patients with Mutuelle Insurance and 1 visit
 		CompositionCohortDefinition patientsWithMUTUELLEInsAndOneVisit = new CompositionCohortDefinition();
@@ -518,10 +536,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMUTUELLEInsAndOneVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMUTUELLEInsAndOneVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMUTUELLEInsAndOneVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMUTUELLEInsAndOneVisit.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMUTUELLEInsAndOneVisit.getSearches().put(
 		    "patientsWithOneVisit",
 		    new Mapped<CohortDefinition>(patientsWithOneVisit, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMUTUELLEInsAndOneVisit.getSearches().put(
 		    "MUTUELLEInsCohortDef",
 		    new Mapped<CohortDefinition>(MUTUELLEInsCohortDef, ParameterizableUtil
@@ -533,7 +552,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMUTUELLEInsAndOneVisitIndicator",
 		            patientsWithMUTUELLEInsAndOneVisit,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.1.2 Patients with RAMA Insurance and 1 visit
 		CompositionCohortDefinition patientsWithRAMAInsAndOneVisit = new CompositionCohortDefinition();
@@ -542,10 +561,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithRAMAInsAndOneVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithRAMAInsAndOneVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithRAMAInsAndOneVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithRAMAInsAndOneVisit.addParameter(new Parameter("location","Location",Location.class));
 		patientsWithRAMAInsAndOneVisit.getSearches().put(
 		    "patientsWithOneVisit",
 		    new Mapped<CohortDefinition>(patientsWithOneVisit, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithRAMAInsAndOneVisit.getSearches().put(
 		    "RAMAInsCohortDef",
 		    new Mapped<CohortDefinition>(RAMAInsCohortDef, ParameterizableUtil
@@ -557,7 +577,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithRAMAInsAndOneVisitIndicator",
 		            patientsWithRAMAInsAndOneVisit,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.1.3 Patients with MMI Insurance and 1 visit
 		CompositionCohortDefinition patientsWithMMIInsAndOneVisit = new CompositionCohortDefinition();
@@ -566,10 +586,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMMIInsAndOneVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMMIInsAndOneVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMMIInsAndOneVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMMIInsAndOneVisit.addParameter(new Parameter("location","Location",Location.class));
 		patientsWithMMIInsAndOneVisit.getSearches().put(
 		    "patientsWithOneVisit",
 		    new Mapped<CohortDefinition>(patientsWithOneVisit, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMMIInsAndOneVisit.getSearches().put(
 		    "MMIInsCohortDef",
 		    new Mapped<CohortDefinition>(MMIInsCohortDef, ParameterizableUtil
@@ -581,7 +602,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMMIInsAndOneVisitIndicator",
 		            patientsWithMMIInsAndOneVisit,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.1.4 Patients with MEDIPLAN Insurance and 1 visit
 		CompositionCohortDefinition patientsWithMEDIPLANInsAndOneVisit = new CompositionCohortDefinition();
@@ -590,10 +611,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMEDIPLANInsAndOneVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMEDIPLANInsAndOneVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMEDIPLANInsAndOneVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMEDIPLANInsAndOneVisit.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMEDIPLANInsAndOneVisit.getSearches().put(
 		    "patientsWithOneVisit",
 		    new Mapped<CohortDefinition>(patientsWithOneVisit, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMEDIPLANInsAndOneVisit.getSearches().put(
 		    "MEDIPLANInsCohortDef",
 		    new Mapped<CohortDefinition>(MEDIPLANInsCohortDef, ParameterizableUtil
@@ -605,7 +627,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMEDIPLANInsAndOneVisitIndicator",
 		            patientsWithMEDIPLANInsAndOneVisit,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.1.5 Patients with CORAR Insurance and 1 visit
 		CompositionCohortDefinition patientsWithCORARInsAndOneVisit = new CompositionCohortDefinition();
@@ -614,10 +636,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithCORARInsAndOneVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithCORARInsAndOneVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithCORARInsAndOneVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithCORARInsAndOneVisit.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithCORARInsAndOneVisit.getSearches().put(
 		    "patientsWithOneVisit",
 		    new Mapped<CohortDefinition>(patientsWithOneVisit, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithCORARInsAndOneVisit.getSearches().put(
 		    "CORARInsCohortDef",
 		    new Mapped<CohortDefinition>(CORARInsCohortDef, ParameterizableUtil
@@ -629,7 +652,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithCORARInsAndOneVisitIndicator",
 		            patientsWithCORARInsAndOneVisit,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.1.6 Patients with NONE Insurance and 1 visit
 		CompositionCohortDefinition patientsWithNONEInsAndOneVisit = new CompositionCohortDefinition();
@@ -638,10 +661,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithNONEInsAndOneVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithNONEInsAndOneVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithNONEInsAndOneVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithNONEInsAndOneVisit.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithNONEInsAndOneVisit.getSearches().put(
 		    "patientsWithOneVisit",
 		    new Mapped<CohortDefinition>(patientsWithOneVisit, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithNONEInsAndOneVisit.getSearches().put(
 		    "NONEInsCohortDef",
 		    new Mapped<CohortDefinition>(NONEInsCohortDef, ParameterizableUtil
@@ -653,7 +677,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithNONEInsAndOneVisitIndicator",
 		            patientsWithNONEInsAndOneVisit,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.1.7 Patients without Insurance and 1 visit
 		CompositionCohortDefinition patientsWithMissingInsAndOneVisit = new CompositionCohortDefinition();
@@ -662,10 +686,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMissingInsAndOneVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMissingInsAndOneVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMissingInsAndOneVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMissingInsAndOneVisit.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMissingInsAndOneVisit.getSearches().put(
 		    "patientsWithOneVisit",
 		    new Mapped<CohortDefinition>(patientsWithOneVisit, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMissingInsAndOneVisit.getSearches().put(
 		    "patientsMissingIns",
 		    new Mapped<CohortDefinition>(patientsMissingIns, ParameterizableUtil
@@ -677,7 +702,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMissingInsAndOneVisitIndicator",
 		            patientsWithMissingInsAndOneVisit,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.2.1 Patients with Mutuelle Insurance and 2 visits
 		CompositionCohortDefinition patientsWithMUTUELLEInsAndTwoVisits = new CompositionCohortDefinition();
@@ -686,10 +711,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMUTUELLEInsAndTwoVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMUTUELLEInsAndTwoVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMUTUELLEInsAndTwoVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMUTUELLEInsAndTwoVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMUTUELLEInsAndTwoVisits.getSearches().put(
 		    "patientsWithTwoVisits",
 		    new Mapped<CohortDefinition>(patientsWithTwoVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMUTUELLEInsAndTwoVisits.getSearches().put(
 		    "MUTUELLEInsCohortDef",
 		    new Mapped<CohortDefinition>(MUTUELLEInsCohortDef, ParameterizableUtil
@@ -701,7 +727,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMUTUELLEInsAndTwoVisitsIndicator",
 		            patientsWithMUTUELLEInsAndTwoVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.2.2 Patients with RAMA Insurance and 2 visits
 		CompositionCohortDefinition patientsWithRAMAInsAndTwoVisits = new CompositionCohortDefinition();
@@ -710,10 +736,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithRAMAInsAndTwoVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithRAMAInsAndTwoVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithRAMAInsAndTwoVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithRAMAInsAndTwoVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithRAMAInsAndTwoVisits.getSearches().put(
 		    "patientsWithTwoVisits",
 		    new Mapped<CohortDefinition>(patientsWithTwoVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithRAMAInsAndTwoVisits.getSearches().put(
 		    "RAMAInsCohortDef",
 		    new Mapped<CohortDefinition>(RAMAInsCohortDef, ParameterizableUtil
@@ -725,7 +752,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithRAMAInsAndTwoVisitsIndicator",
 		            patientsWithRAMAInsAndTwoVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.2.3 Patients with MMI Insurance and 2 visits
 		CompositionCohortDefinition patientsWithMMIInsAndTwoVisits = new CompositionCohortDefinition();
@@ -734,10 +761,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMMIInsAndTwoVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMMIInsAndTwoVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMMIInsAndTwoVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMMIInsAndTwoVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMMIInsAndTwoVisits.getSearches().put(
 		    "patientsWithTwoVisits",
 		    new Mapped<CohortDefinition>(patientsWithTwoVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMMIInsAndTwoVisits.getSearches().put(
 		    "MMIInsCohortDef",
 		    new Mapped<CohortDefinition>(MMIInsCohortDef, ParameterizableUtil
@@ -749,7 +777,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMMIInsAndTwoVisitsIndicator",
 		            patientsWithMMIInsAndTwoVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.2.4 Patients with MEDIPLAN Insurance and 2 visits
 		CompositionCohortDefinition patientsWithMEDIPLANInsAndTwoVisits = new CompositionCohortDefinition();
@@ -758,10 +786,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMEDIPLANInsAndTwoVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMEDIPLANInsAndTwoVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMEDIPLANInsAndTwoVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMEDIPLANInsAndTwoVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMEDIPLANInsAndTwoVisits.getSearches().put(
 		    "patientsWithTwoVisits",
 		    new Mapped<CohortDefinition>(patientsWithTwoVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMEDIPLANInsAndTwoVisits.getSearches().put(
 		    "MEDIPLANInsCohortDef",
 		    new Mapped<CohortDefinition>(MEDIPLANInsCohortDef, ParameterizableUtil
@@ -773,7 +802,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMEDIPLANInsAndTwoVisitsIndicator",
 		            patientsWithMEDIPLANInsAndTwoVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.2.5 Patients with CORAR Insurance and 2 visits
 		CompositionCohortDefinition patientsWithCORARInsAndTwoVisits = new CompositionCohortDefinition();
@@ -782,10 +811,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithCORARInsAndTwoVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithCORARInsAndTwoVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithCORARInsAndTwoVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithCORARInsAndTwoVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithCORARInsAndTwoVisits.getSearches().put(
 		    "patientsWithTwoVisits",
 		    new Mapped<CohortDefinition>(patientsWithTwoVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithCORARInsAndTwoVisits.getSearches().put(
 		    "CORARInsCohortDef",
 		    new Mapped<CohortDefinition>(CORARInsCohortDef, ParameterizableUtil
@@ -797,7 +827,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithCORARInsAndTwoVisitsIndicator",
 		            patientsWithCORARInsAndTwoVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.2.6 Patients with NONE Insurance and 2 visits
 		CompositionCohortDefinition patientsWithNONEInsAndTwoVisits = new CompositionCohortDefinition();
@@ -806,10 +836,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithNONEInsAndTwoVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithNONEInsAndTwoVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithNONEInsAndTwoVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithNONEInsAndTwoVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithNONEInsAndTwoVisits.getSearches().put(
 		    "patientsWithTwoVisits",
 		    new Mapped<CohortDefinition>(patientsWithTwoVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithNONEInsAndTwoVisits.getSearches().put(
 		    "NONEInsCohortDef",
 		    new Mapped<CohortDefinition>(NONEInsCohortDef, ParameterizableUtil
@@ -821,7 +852,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithNONEInsAndTwoVisitsIndicator",
 		            patientsWithNONEInsAndTwoVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.2.7 Patients without Insurance and 2 visits
 		CompositionCohortDefinition patientsWithMissingInsAndTwoVisits = new CompositionCohortDefinition();
@@ -830,10 +861,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMissingInsAndTwoVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMissingInsAndTwoVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMissingInsAndTwoVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMissingInsAndTwoVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMissingInsAndTwoVisits.getSearches().put(
 		    "patientsWithTwoVisits",
 		    new Mapped<CohortDefinition>(patientsWithTwoVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMissingInsAndTwoVisits.getSearches().put(
 		    "patientsMissingIns",
 		    new Mapped<CohortDefinition>(patientsMissingIns, ParameterizableUtil
@@ -845,7 +877,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMissingInsAndTwoVisitsIndicator",
 		            patientsWithMissingInsAndTwoVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.3.1 Patients with Mutuelle Insurance and 3 visits
 		CompositionCohortDefinition patientsWithMUTUELLEInsAndThreeVisits = new CompositionCohortDefinition();
@@ -854,10 +886,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMUTUELLEInsAndThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMUTUELLEInsAndThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMUTUELLEInsAndThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMUTUELLEInsAndThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMUTUELLEInsAndThreeVisits.getSearches().put(
 		    "patientsWithThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMUTUELLEInsAndThreeVisits.getSearches().put(
 		    "MUTUELLEInsCohortDef",
 		    new Mapped<CohortDefinition>(MUTUELLEInsCohortDef, ParameterizableUtil
@@ -869,7 +902,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMUTUELLEInsAndThreeVisitsIndicator",
 		            patientsWithMUTUELLEInsAndThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.3.2 Patients with RAMA Insurance and 3 visits
 		CompositionCohortDefinition patientsWithRAMAInsAndThreeVisits = new CompositionCohortDefinition();
@@ -878,10 +911,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithRAMAInsAndThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithRAMAInsAndThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithRAMAInsAndThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithRAMAInsAndThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithRAMAInsAndThreeVisits.getSearches().put(
 		    "patientsWithThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithRAMAInsAndThreeVisits.getSearches().put(
 		    "RAMAInsCohortDef",
 		    new Mapped<CohortDefinition>(RAMAInsCohortDef, ParameterizableUtil
@@ -893,7 +927,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithRAMAInsAndThreeVisitsIndicator",
 		            patientsWithRAMAInsAndThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.3.3 Patients with MMI Insurance and 3 visits
 		CompositionCohortDefinition patientsWithMMIInsAndThreeVisits = new CompositionCohortDefinition();
@@ -902,10 +936,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMMIInsAndThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMMIInsAndThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMMIInsAndThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMMIInsAndThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMMIInsAndThreeVisits.getSearches().put(
 		    "patientsWithThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMMIInsAndThreeVisits.getSearches().put(
 		    "MMIInsCohortDef",
 		    new Mapped<CohortDefinition>(MMIInsCohortDef, ParameterizableUtil
@@ -917,7 +952,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMMIInsAndThreeVisitsIndicator",
 		            patientsWithMMIInsAndThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.3.4 Patients with MEDIPLAN Insurance and 3 visits
 		CompositionCohortDefinition patientsWithMEDIPLANInsAndThreeVisits = new CompositionCohortDefinition();
@@ -926,10 +961,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMEDIPLANInsAndThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMEDIPLANInsAndThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMEDIPLANInsAndThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMEDIPLANInsAndThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMEDIPLANInsAndThreeVisits.getSearches().put(
 		    "patientsWithThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMEDIPLANInsAndThreeVisits.getSearches().put(
 		    "MEDIPLANInsCohortDef",
 		    new Mapped<CohortDefinition>(MEDIPLANInsCohortDef, ParameterizableUtil
@@ -941,7 +977,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMEDIPLANInsAndThreeVisitsIndicator",
 		            patientsWithMEDIPLANInsAndThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.3.5 Patients with CORAR Insurance and 3 visits
 		CompositionCohortDefinition patientsWithCORARInsAndThreeVisits = new CompositionCohortDefinition();
@@ -950,10 +986,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithCORARInsAndThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithCORARInsAndThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithCORARInsAndThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithCORARInsAndThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithCORARInsAndThreeVisits.getSearches().put(
 		    "patientsWithThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithCORARInsAndThreeVisits.getSearches().put(
 		    "CORARInsCohortDef",
 		    new Mapped<CohortDefinition>(CORARInsCohortDef, ParameterizableUtil
@@ -965,7 +1002,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithCORARInsAndThreeVisitsIndicator",
 		            patientsWithCORARInsAndThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.3.6 Patients with NONE Insurance and 3 visits
 		CompositionCohortDefinition patientsWithNONEInsAndThreeVisits = new CompositionCohortDefinition();
@@ -974,10 +1011,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithNONEInsAndThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithNONEInsAndThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithNONEInsAndThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithNONEInsAndThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithNONEInsAndThreeVisits.getSearches().put(
 		    "patientsWithThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithNONEInsAndThreeVisits.getSearches().put(
 		    "NONEInsCohortDef",
 		    new Mapped<CohortDefinition>(NONEInsCohortDef, ParameterizableUtil
@@ -989,7 +1027,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithNONEInsAndThreeVisitsIndicator",
 		            patientsWithNONEInsAndThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.3.7 Patients without Insurance and 3 visits
 		CompositionCohortDefinition patientsWithMissingInsAndThreeVisits = new CompositionCohortDefinition();
@@ -998,10 +1036,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMissingInsAndThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMissingInsAndThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMissingInsAndThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMissingInsAndThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMissingInsAndThreeVisits.getSearches().put(
 		    "patientsWithThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMissingInsAndThreeVisits.getSearches().put(
 		    "patientsMissingIns",
 		    new Mapped<CohortDefinition>(patientsMissingIns, ParameterizableUtil
@@ -1013,7 +1052,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMissingInsAndThreeVisitsIndicator",
 		            patientsWithMissingInsAndThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.4.1 Patients with Mutuelle Insurance and greater than 3 visits
 		CompositionCohortDefinition patientsWithMUTUELLEInsAndGreaterThanThreeVisits = new CompositionCohortDefinition();
@@ -1022,10 +1061,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMUTUELLEInsAndGreaterThanThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMUTUELLEInsAndGreaterThanThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMUTUELLEInsAndGreaterThanThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMUTUELLEInsAndGreaterThanThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMUTUELLEInsAndGreaterThanThreeVisits.getSearches().put(
 		    "patientsWithGreaterThanThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithGreaterThanThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMUTUELLEInsAndGreaterThanThreeVisits.getSearches().put(
 		    "MUTUELLEInsCohortDef",
 		    new Mapped<CohortDefinition>(MUTUELLEInsCohortDef, ParameterizableUtil
@@ -1038,7 +1078,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMUTUELLEInsAndGreaterThanThreeVisitsIndicator",
 		            patientsWithMUTUELLEInsAndGreaterThanThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.4.2 Patients with RAMA Insurance and greater than 3 visits
 		CompositionCohortDefinition patientsWithRAMAInsAndGreaterThanThreeVisits = new CompositionCohortDefinition();
@@ -1047,10 +1087,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithRAMAInsAndGreaterThanThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithRAMAInsAndGreaterThanThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithRAMAInsAndGreaterThanThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithRAMAInsAndGreaterThanThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithRAMAInsAndGreaterThanThreeVisits.getSearches().put(
 		    "patientsWithGreaterThanThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithGreaterThanThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithRAMAInsAndGreaterThanThreeVisits.getSearches().put(
 		    "RAMAInsCohortDef",
 		    new Mapped<CohortDefinition>(RAMAInsCohortDef, ParameterizableUtil
@@ -1063,7 +1104,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithRAMAInsAndGreaterThanThreeVisitsIndicator",
 		            patientsWithRAMAInsAndGreaterThanThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.4.3 Patients with MMI Insurance and greater than 3 visits
 		CompositionCohortDefinition patientsWithMMIInsAndGreaterThanThreeVisits = new CompositionCohortDefinition();
@@ -1072,10 +1113,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMMIInsAndGreaterThanThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMMIInsAndGreaterThanThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMMIInsAndGreaterThanThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMMIInsAndGreaterThanThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMMIInsAndGreaterThanThreeVisits.getSearches().put(
 		    "patientsWithGreaterThanThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithGreaterThanThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMMIInsAndGreaterThanThreeVisits.getSearches().put(
 		    "MMIInsCohortDef",
 		    new Mapped<CohortDefinition>(MMIInsCohortDef, ParameterizableUtil
@@ -1088,7 +1130,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMMIInsAndGreaterThanThreeVisitsIndicator",
 		            patientsWithMMIInsAndGreaterThanThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.4.4 Patients with MEDIPLAN Insurance and greater than 3 visits
 		CompositionCohortDefinition patientsWithMEDIPLANInsAndGreaterThanThreeVisits = new CompositionCohortDefinition();
@@ -1097,10 +1139,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMEDIPLANInsAndGreaterThanThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMEDIPLANInsAndGreaterThanThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMEDIPLANInsAndGreaterThanThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMEDIPLANInsAndGreaterThanThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMEDIPLANInsAndGreaterThanThreeVisits.getSearches().put(
 		    "patientsWithGreaterThanThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithGreaterThanThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMEDIPLANInsAndGreaterThanThreeVisits.getSearches().put(
 		    "MEDIPLANInsCohortDef",
 		    new Mapped<CohortDefinition>(MEDIPLANInsCohortDef, ParameterizableUtil
@@ -1113,7 +1156,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMEDIPLANInsAndGreaterThanThreeVisitsIndicator",
 		            patientsWithMEDIPLANInsAndGreaterThanThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.4.5 Patients with CORAR Insurance and greater than 3 visits
 		CompositionCohortDefinition patientsWithCORARInsAndGreaterThanThreeVisits = new CompositionCohortDefinition();
@@ -1122,10 +1165,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithCORARInsAndGreaterThanThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithCORARInsAndGreaterThanThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithCORARInsAndGreaterThanThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithCORARInsAndGreaterThanThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithCORARInsAndGreaterThanThreeVisits.getSearches().put(
 		    "patientsWithGreaterThanThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithGreaterThanThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithCORARInsAndGreaterThanThreeVisits.getSearches().put(
 		    "CORARInsCohortDef",
 		    new Mapped<CohortDefinition>(CORARInsCohortDef, ParameterizableUtil
@@ -1138,7 +1182,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithCORARInsAndGreaterThanThreeVisitsIndicator",
 		            patientsWithCORARInsAndGreaterThanThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.4.6 Patients with NONE Insurance and greater than 3 visits
 		CompositionCohortDefinition patientsWithNONEInsAndGreaterThanThreeVisits = new CompositionCohortDefinition();
@@ -1147,10 +1191,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithNONEInsAndGreaterThanThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithNONEInsAndGreaterThanThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithNONEInsAndGreaterThanThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithNONEInsAndGreaterThanThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithNONEInsAndGreaterThanThreeVisits.getSearches().put(
 		    "patientsWithGreaterThanThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithGreaterThanThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithNONEInsAndGreaterThanThreeVisits.getSearches().put(
 		    "NONEInsCohortDef",
 		    new Mapped<CohortDefinition>(NONEInsCohortDef, ParameterizableUtil
@@ -1163,7 +1208,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithNONEInsAndGreaterThanThreeVisitsIndicator",
 		            patientsWithNONEInsAndGreaterThanThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 5.4.7 Patients without Insurance and greater than 3 visits
 		CompositionCohortDefinition patientsWithMissingInsAndGreaterThanThreeVisits = new CompositionCohortDefinition();
@@ -1172,10 +1217,11 @@ public class SetupRwandaPrimaryCareReport {
 		patientsWithMissingInsAndGreaterThanThreeVisits.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		patientsWithMissingInsAndGreaterThanThreeVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithMissingInsAndGreaterThanThreeVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithMissingInsAndGreaterThanThreeVisits.addParameter(new Parameter("location", "Location", Location.class));
 		patientsWithMissingInsAndGreaterThanThreeVisits.getSearches().put(
 		    "patientsWithGreaterThanThreeVisits",
 		    new Mapped<CohortDefinition>(patientsWithGreaterThanThreeVisits, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		            .createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")));
 		patientsWithMissingInsAndGreaterThanThreeVisits.getSearches().put(
 		    "patientsMissingIns",
 		    new Mapped<CohortDefinition>(patientsMissingIns, ParameterizableUtil
@@ -1188,7 +1234,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "patientsWithMissingInsAndGreaterThanThreeVisitsIndicator",
 		            patientsWithMissingInsAndGreaterThanThreeVisits,
 		            ParameterizableUtil
-		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// ========================================================================
 		// 6. Age breakdown by gender
@@ -1205,6 +1251,7 @@ public class SetupRwandaPrimaryCareReport {
 		ageBreakdownByGender.addParameter(new Parameter("maxAgeExclusive", "maxAgeExclusive", Integer.class));
 		ageBreakdownByGender.addParameter(new Parameter("minAgeInclusive", "minAgeInclusive", Integer.class));
 		ageBreakdownByGender.addParameter(new Parameter("gender", "gender", String.class));
+		ageBreakdownByGender.addParameter(new Parameter("location", "Location", Location.class));
 		
 		// "6.1.m", "Male with age (0-1)",
 		// maleWithRegistrationAndAgeZeroToOneIndicator);
@@ -1214,7 +1261,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Male with age (0-1)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=M,maxAgeExclusive=1,minAgeInclusive=0,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=M,maxAgeExclusive=1,minAgeInclusive=0,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.1.f", "Female with age (0-1)",
 		// femaleWithRegistrationAndAgeZeroToOneIndicator);
@@ -1224,7 +1271,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Female with age (0-1)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=F,maxAgeExclusive=1,minAgeInclusive=0,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=F,maxAgeExclusive=1,minAgeInclusive=0,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.2.m", "Male with age (1-2)",
 		// maleWithRegistrationAndAgeOneToTwoIndicator);
@@ -1234,7 +1281,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Male with age (1-2)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=M,maxAgeExclusive=2,minAgeInclusive=1,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=M,maxAgeExclusive=2,minAgeInclusive=1,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.2.f", "Female with age (1-2)",
 		// femaleWithRegistrationAndAgeOneToTwoIndicator);
@@ -1244,7 +1291,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Female with age (1-2)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=F,maxAgeExclusive=2,minAgeInclusive=1,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=F,maxAgeExclusive=2,minAgeInclusive=1,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.3.m", "Male with age (2-3)",
 		// maleWithRegistrationAndAgeTwoToThreeIndicator);
@@ -1254,7 +1301,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Male with age (2-3)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=M,maxAgeExclusive=3,minAgeInclusive=2,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=M,maxAgeExclusive=3,minAgeInclusive=2,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.3.f", "Female with age (2-3)",
 		// femaleWithRegistrationAndAgeTwoToThreeIndicator);
@@ -1264,7 +1311,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Female with age (2-3)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=F,maxAgeExclusive=3,minAgeInclusive=2,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=F,maxAgeExclusive=3,minAgeInclusive=2,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.4.m", "Male with age (3-4)",
 		// maleWithRegistrationAndAgeThreeToFourIndicator);
@@ -1274,7 +1321,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Male with age (3-4)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=M,maxAgeExclusive=4,minAgeInclusive=3,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=M,maxAgeExclusive=4,minAgeInclusive=3,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.4.f", "Female with age (3-4)",
 		// femaleWithRegistrationAndAgeThreeToFourIndicator);
@@ -1284,7 +1331,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Female with age (3-4)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=F,maxAgeExclusive=4,minAgeInclusive=3,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=F,maxAgeExclusive=4,minAgeInclusive=3,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.5.m", "Male with age (4-5)",
 		// maleWithRegistrationAndAgeFourToFiveIndicator);
@@ -1294,7 +1341,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Male with age (4-5)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=M,maxAgeExclusive=5,minAgeInclusive=4,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=M,maxAgeExclusive=5,minAgeInclusive=4,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.5.f", "Female with age (4-5)",
 		// femaleWithRegistrationAndAgeFourToFiveIndicator);
@@ -1304,7 +1351,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Female with age (4-5)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=F,maxAgeExclusive=5,minAgeInclusive=4,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=F,maxAgeExclusive=5,minAgeInclusive=4,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.6.m", "Male with age (5-15)",
 		// maleWithRegistrationAndAgeFiveToFifteenIndicator);
@@ -1314,7 +1361,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Male with age (5-15)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=M,maxAgeExclusive=15,minAgeInclusive=5,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=M,maxAgeExclusive=15,minAgeInclusive=5,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.6.f", "Female with age (5-15)",
 		// femaleWithRegistrationAndAgeFiveToFifteenIndicator);
@@ -1324,7 +1371,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Female with age (5-15)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=F,maxAgeExclusive=15,minAgeInclusive=5,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=F,maxAgeExclusive=15,minAgeInclusive=5,startDate=${startDate},endDate=${endDate},location=${location}"));
 		// rd.addIndicator("6.7.m", "Male with age (15+)",
 		// maleWithRegistrationAndAgeFifteenAndPlusIndicator);
 		
@@ -1333,7 +1380,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Male with age (15+)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=M,maxAgeExclusive=150,minAgeInclusive=15,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=M,maxAgeExclusive=150,minAgeInclusive=15,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// rd.addIndicator("6.7.f", "Female with age (15+)",
 		// femaleWithRegistrationAndAgeFifteenAndPlusIndicator);
@@ -1343,7 +1390,7 @@ public class SetupRwandaPrimaryCareReport {
 		            "Female with age (15+)",
 		            ageBreakdownByGender,
 		            ParameterizableUtil
-		                    .createParameterMappings("gender=F,maxAgeExclusive=150,minAgeInclusive=15,startDate=${startDate},endDate=${endDate}"));
+		                    .createParameterMappings("gender=F,maxAgeExclusive=150,minAgeInclusive=15,startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// ========================================================================
 		// 7. Primary care service requested
@@ -1361,10 +1408,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientsrequestPrimCare.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientsrequestPrimCare.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientsrequestPrimCare.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestPrimCareInRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestPrimCareInRegistrationIndicator", femalePatientsrequestPrimCare,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.1.m Female Total number of patient requested primary care
 		
@@ -1378,10 +1426,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientsrequestPrimCare.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientsrequestPrimCare.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientsrequestPrimCare.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestPrimCareInRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestPrimCareInRegistrationIndicator", malePatientsrequestPrimCare,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.2.f Female Number of patients requested VCT PROGRAM
 		
@@ -1397,10 +1446,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestVCTProgram.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestVCTProgram.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestVCTProgram.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestVCTProgramInRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestVCTProgramInRegistrationIndicator", femalePatientRequestVCTProgram,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.2.m Male Number of patients requested VCT PROGRAM
 		SqlObjectGroupDefinition malePatientRequestVCTProgram = new SqlObjectGroupDefinition();
@@ -1415,10 +1465,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestVCTProgram.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestVCTProgram.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestVCTProgram.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestVCTProgramInRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestVCTProgramInRegistrationIndicator", malePatientRequestVCTProgram,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.3.f Female Number of patients requested ANTENATAL CLINIC
 		
@@ -1434,10 +1485,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestAntenatalClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestAntenatalClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestAntenatalClinic.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestAntenatalClinicInRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestAntenatalClinicInRegistrationIndicator", femalePatientRequestAntenatalClinic,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.3.m Male Number of patients requested ANTENATAL CLINIC
 		SqlObjectGroupDefinition malePatientRequestAntenatalClinic = new SqlObjectGroupDefinition();
@@ -1452,10 +1504,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestAntenatalClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestAntenatalClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestAntenatalClinic.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestAntenatalClinicInRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestAntenatalClinicInRegistrationIndicator", malePatientRequestAntenatalClinic,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.4.f Female Number of patients requested FAMILY PLANNING SERVICES
 		SqlObjectGroupDefinition femalepatientRequestFamilyPlaningServices = new SqlObjectGroupDefinition();
@@ -1470,10 +1523,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalepatientRequestFamilyPlaningServices.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalepatientRequestFamilyPlaningServices.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientRequestFamilyPlaningServices.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestFamilyPlaningServicesRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestFamilyPlaningServicesRegistrationIndicator", femalepatientRequestFamilyPlaningServices,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.4.m Male Number of patients requested FAMILY PLANNING SERVICES
 		SqlObjectGroupDefinition malepatientRequestFamilyPlaningServices = new SqlObjectGroupDefinition();
@@ -1488,10 +1542,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malepatientRequestFamilyPlaningServices.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malepatientRequestFamilyPlaningServices.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientRequestFamilyPlaningServices.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestFamilyPlaningServicesRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestFamilyPlaningServicesRegistrationIndicator", malepatientRequestFamilyPlaningServices,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.5.f Female Number of patients requested MUTUELLE SERVICE
 		
@@ -1507,10 +1562,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestMutuelleService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestMutuelleService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestMutuelleService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestMutuelleServiceRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestMutuelleServiceRegistrationIndicator", femalePatientRequestMutuelleService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.5.m Male Number of patients requested MUTUELLE SERVICE
 		
@@ -1526,10 +1582,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestMutuelleService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestMutuelleService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestMutuelleService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestMutuelleServiceRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestMutuelleServiceRegistrationIndicator", malePatientRequestMutuelleService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.6.f Female Number of patients requested ACCOUNTING OFFICE SERVICE
 		
@@ -1545,11 +1602,12 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestAccountingOfficeService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestAccountingOfficeService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestAccountingOfficeService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestAccountingOfficeServiceRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestAccountingOfficeServiceRegistrationIndicator",
 		    femalePatientRequestAccountingOfficeService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.6.m Male Number of patients requested ACCOUNTING OFFICE SERVICE
 		
@@ -1565,10 +1623,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestAccountingOfficeService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestAccountingOfficeService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestAccountingOfficeService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestAccountingOfficeServiceRegistrationIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestAccountingOfficeServiceRegistrationIndicator", malePatientRequestAccountingOfficeService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.7.f Female Number of patients requested INTEGRATED MANAGEMENT OF
 		// ADULT ILLNESS SERVICE
@@ -1585,10 +1644,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestAdultIllnessService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestAdultIllnessService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestAdultIllnessService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestAdultIllnessServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestAdultIllnessServiceIndicator", femalePatientRequestAdultIllnessService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.7.m Male Number of patients requested INTEGRATED MANAGEMENT OF
 		// ADULT ILLNESS SERVICE
@@ -1604,10 +1664,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestAdultIllnessService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestAdultIllnessService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestAdultIllnessService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestAdultIllnessServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestAdultIllnessServiceIndicator", malePatientRequestAdultIllnessService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.8.f Female Number of patients requested INTEGRATED MANAGEMENT OF
 		// CHILDHOOD ILLNESS Service
@@ -1624,10 +1685,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestChildIllnessService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestChildIllnessService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestChildIllnessService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestChildIllnessServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestChildIllnessServiceIndicator", femalePatientRequestChildIllnessService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.8.m Male Number of patients requested INTEGRATED MANAGEMENT OF
 		// CHILDHOOD ILLNESS Service
@@ -1643,10 +1705,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestChildIllnessService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestChildIllnessService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestChildIllnessService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestChildIllnessServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestChildIllnessServiceIndicator", malePatientRequestChildIllnessService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.9.f Female Number of patients requested INFECTIOUS DISEASES CLINIC
 		// SERVICE
@@ -1663,10 +1726,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestInfectiousDiseasesService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestInfectiousDiseasesService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestInfectiousDiseasesService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestInfectiousDiseasesServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestInfectiousDiseasesServiceIndicator", femalePatientRequestInfectiousDiseasesService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.9.m Male Number of patients requested INFECTIOUS DISEASES CLINIC
 		// SERVICE
@@ -1683,10 +1747,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestInfectiousDiseasesService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestInfectiousDiseasesService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestInfectiousDiseasesService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestInfectiousDiseasesServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestInfectiousDiseasesServiceIndicator", malePatientRequestInfectiousDiseasesService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.10.f Female Number of patients requested SOCIAL WORKER SERVICE
 		
@@ -1702,10 +1767,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestSocialWorkerService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestSocialWorkerService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestSocialWorkerService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestSocialWorkerServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestSocialWorkerServiceIndicator", femalePatientRequestSocialWorkerService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.10.m Male Number of patients requested SOCIAL WORKER SERVICE
 		SqlObjectGroupDefinition malePatientRequestSocialWorkerService = new SqlObjectGroupDefinition();
@@ -1720,10 +1786,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestSocialWorkerService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestSocialWorkerService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestSocialWorkerService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestSocialWorkerServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestSocialWorkerServiceIndicator", malePatientRequestSocialWorkerService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.11.f Female Number of patients requested PREVENTION OF MOTHER TO
 		// CHILD TRANSMISSION SERVICE
@@ -1740,10 +1807,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestPMTCTService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestPMTCTService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestPMTCTService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestPMTCTServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestPMTCTServiceIndicator", femalePatientRequestPMTCTService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.11.f Male Number of patients requested PREVENTION OF MOTHER TO
 		// CHILD TRANSMISSION SERVICE
@@ -1760,10 +1828,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestPMTCTService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestPMTCTService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestPMTCTService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestPMTCTServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestPMTCTServiceIndicator", malePatientRequestPMTCTService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.12.f. Female Number of patients requested LABORATORY SERVICE
 		
@@ -1779,10 +1848,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestLabService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestLabService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestLabService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestLabServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestLabServiceIndicator", femalePatientRequestLabService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.12.m Male Number of patients requested LABORATORY SERVICE
 		SqlObjectGroupDefinition malePatientRequestLabService = new SqlObjectGroupDefinition();
@@ -1797,10 +1867,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestLabService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestLabService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestLabService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestLabServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestLabServiceIndicator", malePatientRequestLabService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.13.f. Female Number of patients requested PHARMACY SERVICES
 		
@@ -1816,10 +1887,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestPharmacyService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestPharmacyService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestPharmacyService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestPharmacyServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestPharmacyServiceIndicator", femalePatientRequestPharmacyService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.13.m Male Number of patients requested PHARMACY SERVICE
 		
@@ -1835,10 +1907,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestPharmacyService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestPharmacyService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestPharmacyService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestPharmacyServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestPharmacyServiceIndicator", malePatientRequestPharmacyService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		// 7.14.f. Female Number of patients requested MATERNITY SERVICES
 		
 		SqlObjectGroupDefinition femalePatientRequestMaternityService = new SqlObjectGroupDefinition();
@@ -1853,10 +1926,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestMaternityService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestMaternityService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestMaternityService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestMaternityServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestMaternityServiceIndicator", femalePatientRequestMaternityService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.14.m Male Number of patients requested MATERNITY SERVICE
 		
@@ -1872,10 +1946,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestMaternityService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestMaternityService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestMaternityService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestMaternityServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestMaternityServiceIndicator", malePatientRequestMaternityService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.15.f Female Number of patients requested HOSPITALIZATION SERVICE
 		
@@ -1891,10 +1966,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestHospitalizationService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestHospitalizationService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestHospitalizationService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestHospitalizationServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestHospitalizationServiceIndicator", femalePatientRequestHospitalizationService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.15.m Male Number of patients requested HOSPITALIZATION SERVICE
 		
@@ -1910,10 +1986,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestHospitalizationService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestHospitalizationService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestHospitalizationService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestHospitalizationServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestHospitalizationServiceIndicator", malePatientRequestHospitalizationService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.16.f Female Number of patients requested VACCINATION SERVICE
 		
@@ -1929,10 +2006,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		femalePatientRequestVaccinationService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femalePatientRequestVaccinationService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalePatientRequestVaccinationService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator femalePatientsrequestVaccinationServiceIndicator = Indicators.objectGroupIndicator(
 		    "femalePatientsrequestVaccinationServiceIndicator", femalePatientRequestVaccinationService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// 7.16.m Male Number of patients requested VACCINATION SERVICE
 		
@@ -1948,10 +2026,11 @@ public class SetupRwandaPrimaryCareReport {
 		                + " and e.voided = 0 and o.voided = 0 and p.voided = 0 and e.location_id = :location");
 		malePatientRequestVaccinationService.addParameter(new Parameter("startDate", "startDate", Date.class));
 		malePatientRequestVaccinationService.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malePatientRequestVaccinationService.addParameter(new Parameter("location", "Location", Location.class));
 		
 		ObjectGroupIndicator malePatientsrequestVaccinationServiceIndicator = Indicators.objectGroupIndicator(
 		    "malePatientsrequestVaccinationServiceIndicator", malePatientRequestVaccinationService,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
 		// add global filter to the report
 		

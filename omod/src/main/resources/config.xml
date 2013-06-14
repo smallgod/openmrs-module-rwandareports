@@ -1146,7 +1146,7 @@
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.breastfeedingStateOne</property>
+		<property>reports.RollingDailyCalendarWebReportRenderer</property>
 		<defaultValue>6966</defaultValue>
 		<description>The state id for breast feeding one</description>
 	</globalProperty>
