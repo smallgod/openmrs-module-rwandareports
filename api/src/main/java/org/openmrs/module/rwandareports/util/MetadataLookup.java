@@ -1,5 +1,7 @@
 package org.openmrs.module.rwandareports.util;
- 
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -13,12 +15,13 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.ObjectUtil;
- 
+
 import java.util.ArrayList;
 import java.util.List;
- 
-public class MetadataLookup {
 
+public class MetadataLookup {
+	
+	protected final static Log log=LogFactory.getLog(MetadataLookup.class);
 
 	/**
 	 * @return the Program that matches the passed uuid, concept name, name, or primary key id
@@ -81,14 +84,20 @@ public class MetadataLookup {
 		ProgramWorkflowState s = wf.getStateByName(stateLookup);
 		if (s == null) {
 			for (ProgramWorkflowState state : wf.getStates()) {
-				if (stateLookup.equalsIgnoreCase(state.getName())) {
+				if (stateLookup.equalsIgnoreCase(state.getConcept().getName().toString())) {
+					s = state;
+				}
+				else if (stateLookup.equalsIgnoreCase(state.getConcept().getUuid())) {
+					s = state;
+				}
+				else if (Integer.parseInt(stateLookup)==state.getConcept().getId()) {
 					s = state;
 				}
 				else if (stateLookup.equalsIgnoreCase(state.getUuid())) {
 					s = state;
 				}
 				else if (stateLookup.equalsIgnoreCase(state.getId().toString())) {
-					s = state;
+					s = state;					
 				}
 			}
 		}
@@ -97,7 +106,7 @@ public class MetadataLookup {
 		}
 		return s;
 	}
-	
+
 	/**
 	 * @return the PatientIdentifier that matches the passed uuid, name, or primary key id
 	 */
