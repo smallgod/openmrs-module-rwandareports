@@ -650,7 +650,12 @@ public class RwandaSetupReportsFormController {
 		new SetupDataEntryDelayReport().setup();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
-
+	
+	@RequestMapping("/module/rwandareports/remove_dataDelay")
+	public ModelAndView removeDataDelay() throws Exception {
+		new SetupDataEntryDelayReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 	// Epilepsy Consult
 	@RequestMapping("/module/rwandareports/register_epilepsyConsultSheet")
 	public ModelAndView registerEpilepsyConsultSheet() throws Exception {
@@ -670,10 +675,10 @@ public class RwandaSetupReportsFormController {
 		new SetupEpilepsyLateVisit().setup();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
-
-	@RequestMapping("/module/rwandareports/remove_dataDelay")
-	public ModelAndView removeDataDelay() throws Exception {
-		new SetupDataEntryDelayReport().delete();
+	
+	@RequestMapping("/module/rwandareports/remove_epilepsyLateVisit")
+	public ModelAndView removeEpilepsyLateVisit() throws Exception {
+		new SetupEpilepsyLateVisit().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
