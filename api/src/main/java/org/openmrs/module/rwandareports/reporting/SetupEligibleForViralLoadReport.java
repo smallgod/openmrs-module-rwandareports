@@ -97,7 +97,7 @@ public class SetupEligibleForViralLoadReport {
 		props.put(
 		    "repeatingSections",
 		    "sheet:1,row:8,dataset:WithViralLoadRecorded|sheet:2,row:8,dataset:WithNoViralLoadRecorded|sheet:3,row:8,dataset:WithViralLoadOrder");
-		
+		props.put("sortWeight","5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
 		
