@@ -37,6 +37,7 @@ import org.openmrs.module.rwandareports.reporting.SetupDataEntryDelayReport;
 import org.openmrs.module.rwandareports.reporting.SetupDataQualityIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupDiabetesConsultAndLTFU;
 import org.openmrs.module.rwandareports.reporting.SetupDiabetesQuarterlyAndMonthReport;
+import org.openmrs.module.rwandareports.reporting.SetupEligibleForViralLoadReport;
 import org.openmrs.module.rwandareports.reporting.SetupEpilepsyConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupEpilepsyLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupExposedClinicInfantMonthly;
@@ -184,6 +185,7 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupQuarterlyCrossSiteIndicatorByDistrictReport().setup();	
 			new SetupQuarterlyViralLoadReport().setup();
 			new SetupPMTCTFormCompletionSheet().setup();
+			new SetupEligibleForViralLoadReport().setup();
     }
 	public static void registerSiteReports() throws Exception {
 			new SetupDataQualityIndicatorReport().setup();
