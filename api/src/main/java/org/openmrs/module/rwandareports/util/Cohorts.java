@@ -184,6 +184,20 @@ public class Cohorts {
 		return patientsWithBaseLineObservation;
 	}
 	
+	public static SqlCohortDefinition createPatientInProgramDuringTime(String name){
+		Program adultProgramId = gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
+		Program pediProgramId = gp.getProgram(GlobalPropertiesManagement.PEDI_HIV_PROGRAM);
+		
+		SqlCohortDefinition patientInhivProgram = new SqlCohortDefinition(
+				"select distinct p.patient_id from patient_program pp, patient p where p.patient_id=pp.patient_id and pp.program_id= " 
+				+adultProgramId.getId()+ " OR pp.program_id="+pediProgramId.getId()
+				+ " and pp.voided=0 and p.voided=0 and pp.date_enrolled between :startDate and :endDate order by p.patient_id");
+		patientInhivProgram.setName(name);
+		patientInhivProgram.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientInhivProgram.addParameter(new Parameter("endDate", "endDate", Location.class));
+		return patientInhivProgram;
+
+	}
 	public static SqlCohortDefinition createPatientsWithBaseLineObservation(Concept concept,
 	                                                                       Concept drugOrderSet,
 	                                                                        Integer daysBefore, Integer daysAfter) {
@@ -492,7 +506,45 @@ public class Cohorts {
 
        return over15tstartOfART;
      }
-	public static SqlCohortDefinition createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod(String name, Program program,ProgramWorkflowState state1,ProgramWorkflowState state2) {
+	
+	
+	public static SqlCohortDefinition createUnder15yrsAtStartOfArtbyCompletedDuringP(String name, Program program,
+            ProgramWorkflowState state) {
+       SqlCohortDefinition over15tstartOfARTCompleted = new SqlCohortDefinition(
+        "select DISTINCT pp.patient_id FROM person p,patient_program pp,patient pa,patient_state ps "
+        + "WHERE p.person_id=pp.patient_id AND ps.patient_program_id = pp.patient_program_id AND pp.patient_id = pa.patient_id "
+        + "AND pp.program_id="
+        + program.getProgramId()
+        + " AND ps.state="
+        + state.getId()
+        + " AND DATEDIFF(ps.start_date,p.birthdate) < 5479 "
+        + "AND (ps.end_date between :startDate and :endDate) AND p.voided=0 AND pp.voided=0 AND pa.voided=0 AND ps.voided=0 ");
+       over15tstartOfARTCompleted.setName(name);
+       over15tstartOfARTCompleted.addParameter(new Parameter("startDate", "startDate", Date.class));
+       over15tstartOfARTCompleted.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+       return over15tstartOfARTCompleted;
+	}
+	
+	public static SqlCohortDefinition createOver15yrsAtStartOfArtbyCompletedDuringP(String name, Program program,
+            ProgramWorkflowState state) {
+       SqlCohortDefinition over15tstartOfARTCompleted = new SqlCohortDefinition(
+        "select DISTINCT pp.patient_id FROM person p,patient_program pp,patient pa,patient_state ps "
+        + "WHERE p.person_id=pp.patient_id AND ps.patient_program_id = pp.patient_program_id AND pp.patient_id = pa.patient_id "
+        + "AND pp.program_id="
+        + program.getProgramId()
+        + " AND ps.state="
+        + state.getId()
+        + " AND DATEDIFF(ps.start_date,p.birthdate) >= 5479 "
+        + "AND (ps.end_date between :startDate and :endDate) AND p.voided=0 AND pp.voided=0 AND pa.voided=0 AND ps.voided=0 ");
+       over15tstartOfARTCompleted.setName(name);
+       over15tstartOfARTCompleted.addParameter(new Parameter("startDate", "startDate", Date.class));
+       over15tstartOfARTCompleted.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+       return over15tstartOfARTCompleted;
+	}
+    
+    public static SqlCohortDefinition createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod(String name, Program program,ProgramWorkflowState state1,ProgramWorkflowState state2) {
             SqlCohortDefinition preOnpreArtandActiveOnDiedState = new SqlCohortDefinition(
         "select DISTINCT pp.patient_id FROM person p,patient_program pp,patient pa,patient_state ps1,patient_state ps2  "
         + "WHERE p.person_id=pp.patient_id AND ps1.patient_program_id = pp.patient_program_id AND ps2.patient_program_id = pp.patient_program_id AND pp.patient_id = pa.patient_id "
@@ -509,7 +561,18 @@ public class Cohorts {
          return preOnpreArtandActiveOnDiedState;
             		
      }
-	
+    public static SqlCohortDefinition createPatientBackToProgramThisYear(String name){
+    	SqlCohortDefinition patientBackToProgram=new SqlCohortDefinition("select DISTINCT patient_id FROM encounter WHERE patient_id " +
+    	"IN (select DISTINCT e.patient_id FROM encounter e, patient p WHERE e.patient_id=p.patient_id " +
+    	"AND DATEDIFF(:startDate, e.encounter_datetime) >= 90 AND e.encounter_type IN  ("+Context.getAdministrationService().getGlobalProperty("ClinicalencounterTypeIds.labTestExcl")+" ) "+
+    	"AND p.voided=0 AND e.voided=0) AND encounter_datetime >= :startDate AND encounter_datetime <= :endDate AND voided=0  ");
+    	patientBackToProgram.setName("TR:lostbacktoProgramThismonthinART");
+    	patientBackToProgram.addParameter(new Parameter("startDate", "startDate", Date.class));
+    	patientBackToProgram.addParameter(new Parameter("endDate", "endDate", Date.class));
+		return patientBackToProgram;
+    	
+    }
+    
 	
 	public static InProgramCohortDefinition createInProgram(String name, Program program) {
 		InProgramCohortDefinition inProgram = new InProgramCohortDefinition();
