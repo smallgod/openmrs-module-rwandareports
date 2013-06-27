@@ -405,8 +405,8 @@ public class SetupAdultLateVisitAndCD4Report {
 		                + weight.getUuid()
 		                + "' order by o.obs_datetime desc) as lastweight group by lastweight.person_id) w,(select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.name ='Health Center' and pat.person_attribute_type_id = pa.person_attribute_type_id and pa.voided = 0 and pa.value = :location) loc where loc.patient_id=w.person_id and w.person_id=h.person_id and ROUND(((w.value_numeric*10000)/(h.value_numeric*h.value_numeric)),2)<16.0");
 		patientWithLowBMI.addParameter(new Parameter("location", "location", Location.class));
-		dataSetDefinition6.addFilter(patientWithLowBMI, new HashMap<String, Object>());
-		dataSetDefinition6_1.addFilter(patientWithLowBMI, new HashMap<String, Object>());
+		dataSetDefinition6.addFilter(patientWithLowBMI, ParameterizableUtil.createParameterMappings("location=${location}"));
+		dataSetDefinition6_1.addFilter(patientWithLowBMI,ParameterizableUtil.createParameterMappings("location=${location}"));
 		
 		//==================================================================
 		//                7 . Patients Declining in CD4 by more than 50

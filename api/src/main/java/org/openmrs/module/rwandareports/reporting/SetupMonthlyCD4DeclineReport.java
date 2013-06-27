@@ -235,9 +235,9 @@ public class SetupMonthlyCD4DeclineReport {
 		//Patients Declining in CD4 by more than 50
 		SqlCohortDefinition deciningInCD4MoreThan50 = Cohorts.createPatientsWithDecline("deciningInCD4MoreThan50", cd4, 50);
 		dataSetDefinitionA2.addFilter(deciningInCD4MoreThan50,
-		    ParameterizableUtil.createParameterMappings("beforeDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("beforeDate=${endDate},location=${location}"));
 		dataSetDefinitionCC.addFilter(deciningInCD4MoreThan50,
-		    ParameterizableUtil.createParameterMappings("beforeDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("beforeDate=${endDate},location=${location}"));
 		
 		
 		//==================================================================
@@ -245,11 +245,11 @@ public class SetupMonthlyCD4DeclineReport {
 		//==================================================================
 		SqlCohortDefinition cd4declineOfMoreThan50Percent = Cohorts.createPatientsWithDeclineFromBaseline("cd4decline", cd4, onART);
 		dataSetDefinitionA1.addFilter(cd4declineOfMoreThan50Percent,
-		    ParameterizableUtil.createParameterMappings("beforeDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("beforeDate=${endDate},location=${location}"));
 		
 		SqlCohortDefinition cd4declineOfMoreThan50PercentPedi = Cohorts.createPatientsWithDeclineFromBaseline("cd4decline", cd4, onARTPedi);
 		dataSetDefinitionP.addFilter(cd4declineOfMoreThan50PercentPedi,
-		    ParameterizableUtil.createParameterMappings("beforeDate=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("beforeDate=${endDate},location=${location}"));
 		
 		//==================================================================
 		//                 Columns of report settings

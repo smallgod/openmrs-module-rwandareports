@@ -690,8 +690,8 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		patientsOnSalbutamolAlone.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientsOnSalbutamolAlone.addSearch("1", patientsWithAsthmaVisit,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		patientsOnSalbutamolAlone.addSearch("2", patientsWithCurrentSalbutamolDrugOrder, null);
-		patientsOnSalbutamolAlone.addSearch("3", patientsWithAnyOtherCurrentAsthmaDrugOrder, null);
+		patientsOnSalbutamolAlone.addSearch("2", patientsWithCurrentSalbutamolDrugOrder, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		patientsOnSalbutamolAlone.addSearch("3", patientsWithAnyOtherCurrentAsthmaDrugOrder, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		patientsOnSalbutamolAlone.setCompositionString("1 AND 2 AND (NOT 3)");
 		
 		CohortIndicator patientsOnSalbutamolAloneIndicator = Indicators.newCountIndicator(
@@ -719,8 +719,8 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		patientsOnSalbutamolAndBeclomethasone.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientsOnSalbutamolAndBeclomethasone.addSearch("1", patientsWithAsthmaVisit,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		patientsOnSalbutamolAndBeclomethasone.addSearch("2", patientsWithCurrentSalbutamolDrugOrder, null);
-		patientsOnSalbutamolAndBeclomethasone.addSearch("3", patientsWithCurrentBeclomethasoneDrugOrder, null);
+		patientsOnSalbutamolAndBeclomethasone.addSearch("2", patientsWithCurrentSalbutamolDrugOrder,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		patientsOnSalbutamolAndBeclomethasone.addSearch("3", patientsWithCurrentBeclomethasoneDrugOrder, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		patientsOnSalbutamolAndBeclomethasone.setCompositionString("1 AND 2 AND 3");
 		
 		CohortIndicator patientsOnSalbutamolAndBeclomethasoneIndicator = Indicators.newCountIndicator(
@@ -746,7 +746,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		patientsPrescribedOralPrednisolone.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientsPrescribedOralPrednisolone.addSearch("1", patientsWithAsthmaVisit,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		patientsPrescribedOralPrednisolone.addSearch("2", patientsPrescribedOralPrednisoloneInTheLastQuarter, null);
+		patientsPrescribedOralPrednisolone.addSearch("2", patientsPrescribedOralPrednisoloneInTheLastQuarter, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		patientsPrescribedOralPrednisolone.setCompositionString("1 AND 2");
 		
 		CohortIndicator patientsPrescribedOralPrednisoloneIndicator = Indicators.newCountIndicator(
@@ -938,19 +938,20 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		adultMalePatientsTestedForpeakFlow.setName("adultMalePatientsTestedForForpeakFlow");
 		adultMalePatientsTestedForpeakFlow.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		adultMalePatientsTestedForpeakFlow.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultMalePatientsTestedForpeakFlow.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		
 		adultMalePatientsTestedForpeakFlow.getSearches().put("1",new Mapped<CohortDefinition>(patientsTestedForpeakFlow, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		
 		adultMalePatientsTestedForpeakFlow.getSearches().put("2", new Mapped<CohortDefinition>(malesDefinition, null));
 		
-		adultMalePatientsTestedForpeakFlow.getSearches().put("3",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		adultMalePatientsTestedForpeakFlow.getSearches().put("3",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
 		
 		adultMalePatientsTestedForpeakFlow.setCompositionString("1 AND 2 AND 3");
 		
 		CohortIndicator adultMalePatientsTestedForpeakFlowIndicator = Indicators
 		        .newCountIndicator("adultMalePatientsTestedForpeakFlowIndicator",
 		        	adultMalePatientsTestedForpeakFlow,
-		            ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-3m+1d}"));
+		            ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-3m+1d},effectiveDate=${endDate}"));
 		
 		
 		NumericObsCohortDefinition patientsWithLastPeakflowGreaterThan580 = Cohorts.createNumericObsCohortDefinition(
@@ -961,10 +962,11 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		adultMalePatientsTestedForpeakFlowGreaterThan580.setName("adultMalePatientsTestedForpeakFlowGreaterThan580");
 		adultMalePatientsTestedForpeakFlowGreaterThan580.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		adultMalePatientsTestedForpeakFlowGreaterThan580.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultMalePatientsTestedForpeakFlowGreaterThan580.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		adultMalePatientsTestedForpeakFlowGreaterThan580.getSearches().put(
 		    "1",
 		    new Mapped<CohortDefinition>(adultMalePatientsTestedForpeakFlow, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},effectiveDate=${effectiveDate}")));
 		adultMalePatientsTestedForpeakFlowGreaterThan580.getSearches().put("2",
 		    new Mapped<CohortDefinition>(patientsWithLastPeakflowGreaterThan580, null));
 		adultMalePatientsTestedForpeakFlowGreaterThan580.setCompositionString("1 AND 2");
@@ -972,7 +974,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		CohortIndicator adultMalePatientsTestedForpeakFlowGreaterThan580Indicator = Indicators
         .newCountIndicator("adultMalePatientsTestedForpeakFlowGreaterThan580Indicator",
         	adultMalePatientsTestedForpeakFlowGreaterThan580,
-            ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-3m+1d}"));
+            ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-3m+1d},effectiveDate=${endDate}"));
 		
 		//========================================================
 		//        Adding columns to data set definition         //
@@ -999,19 +1001,20 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		adultFemalePatientsTestedForpeakFlow.setName("adultFemalePatientsTestedForpeakFlow");
 		adultFemalePatientsTestedForpeakFlow.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		adultFemalePatientsTestedForpeakFlow.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultFemalePatientsTestedForpeakFlow.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		
 		adultFemalePatientsTestedForpeakFlow.getSearches().put("1",new Mapped<CohortDefinition>(patientsTestedForpeakFlow, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		
 		adultFemalePatientsTestedForpeakFlow.getSearches().put("2", new Mapped<CohortDefinition>(femalesDefinition, null));
 		
-		adultFemalePatientsTestedForpeakFlow.getSearches().put("3",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+		adultFemalePatientsTestedForpeakFlow.getSearches().put("3",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
 		
 		adultFemalePatientsTestedForpeakFlow.setCompositionString("1 AND 2 AND 3");
 		
 		CohortIndicator adultFemalePatientsTestedForpeakFlowIndicator = Indicators
 		        .newCountIndicator("adultFemalePatientsTestedForpeakFlowIndicator",
 		        	adultFemalePatientsTestedForpeakFlow,
-		            ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-3m+1d}"));
+		            ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-3m+1d},effectiveDate=${endDate}"));
 		
 		
 		NumericObsCohortDefinition patientsWithLastPeakflowGreaterThan400 = Cohorts.createNumericObsCohortDefinition(
@@ -1022,8 +1025,9 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		adultFemalePatientsTestedForpeakFlowGreaterThan400.setName("adultFemalePatientsTestedForpeakFlowGreaterThan400");
 		adultFemalePatientsTestedForpeakFlowGreaterThan400.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		adultFemalePatientsTestedForpeakFlowGreaterThan400.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultFemalePatientsTestedForpeakFlowGreaterThan400.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		adultFemalePatientsTestedForpeakFlowGreaterThan400.getSearches().put("1",new Mapped<CohortDefinition>(adultFemalePatientsTestedForpeakFlow, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},effectiveDate=${effectiveDate}")));
 		
 		adultFemalePatientsTestedForpeakFlowGreaterThan400.getSearches().put("2",
 		    new Mapped<CohortDefinition>(patientsWithLastPeakflowGreaterThan400, null));
@@ -1032,7 +1036,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		CohortIndicator adultFemalePatientsTestedForpeakFlowGreaterThan400Indicator = Indicators
         .newCountIndicator("adultFemalePatientsTestedForpeakFlowGreaterThan400Indicator",
         	adultFemalePatientsTestedForpeakFlowGreaterThan400,
-            ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-3m+1d}"));
+            ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-3m+1d},effectiveDate=${endDate}"));
 		
 		//========================================================
 		//        Adding columns to data set definition         //

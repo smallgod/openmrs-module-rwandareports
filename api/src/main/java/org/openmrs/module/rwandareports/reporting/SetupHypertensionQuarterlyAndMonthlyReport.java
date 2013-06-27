@@ -406,6 +406,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patientsUnderFifteenComposition.setName("patientsUnderFifteenComposition");
 		patientsUnderFifteenComposition.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		patientsUnderFifteenComposition.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		patientsUnderFifteenComposition.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		patientsUnderFifteenComposition.getSearches().put(
 		    "1",
 		    new Mapped<CohortDefinition>(patientEnrolledInHypertensionProgram, ParameterizableUtil
@@ -413,12 +414,12 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patientsUnderFifteenComposition.getSearches().put(
 		    "2",
 		    new Mapped<CohortDefinition>(under15Cohort, ParameterizableUtil
-		            .createParameterMappings("effectiveDate=${endDate}")));
+		            .createParameterMappings("effectiveDate=${effectiveDate}")));
 		patientsUnderFifteenComposition.setCompositionString("1 AND 2");
 		
 		CohortIndicator patientsUnderFifteenCountIndicator = Indicators.newCountIndicator(
 		    "patientsUnderFifteenCountIndicator", patientsUnderFifteenComposition,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate},effectiveDate=${endDate}"));
 		
 		//=================================================
 		//     Adding columns to data set definition     //
@@ -439,6 +440,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patients16To30Cohort.setName("patients16To30CohortComposition");
 		patients16To30Cohort.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		patients16To30Cohort.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		patients16To30Cohort.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		patients16To30Cohort.getSearches().put(
 		    "1",
 		    new Mapped<CohortDefinition>(patientEnrolledInHypertensionProgram, ParameterizableUtil
@@ -446,12 +448,12 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patients16To30Cohort.getSearches().put(
 		    "2",
 		    new Mapped<CohortDefinition>(age16To30Cohort, ParameterizableUtil
-		            .createParameterMappings("effectiveDate=${endDate}")));
+		            .createParameterMappings("effectiveDate=${effectiveDate}")));
 		patients16To30Cohort.setCompositionString("1 AND 2");
 		
 		CohortIndicator patients16To30CohortIndicator = Indicators.newCountIndicator("patientsUnderFifteenCountIndicator",
 		    patients16To30Cohort,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate},effectiveDate=${endDate}"));
 		
 		//=================================================
 		//     Adding columns to data set definition     //
@@ -469,6 +471,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patients31To45Cohort.setName("patients31To45CohortComposition");
 		patients31To45Cohort.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		patients31To45Cohort.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		patients31To45Cohort.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		patients31To45Cohort.getSearches().put(
 		    "1",
 		    new Mapped<CohortDefinition>(patientEnrolledInHypertensionProgram, ParameterizableUtil
@@ -476,12 +479,12 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patients31To45Cohort.getSearches().put(
 		    "2",
 		    new Mapped<CohortDefinition>(age31To45Cohort, ParameterizableUtil
-		            .createParameterMappings("effectiveDate=${endDate}")));
+		            .createParameterMappings("effectiveDate=${effectiveDate}")));
 		patients31To45Cohort.setCompositionString("1 AND 2");
 		
 		CohortIndicator patients31To45CohortIndicator = Indicators.newCountIndicator("patients31To45CohortIndicator",
 		    patients31To45Cohort,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate},effectiveDate=${endDate}"));
 		
 		//=================================================
 		//     Adding columns to data set definition     //
@@ -498,6 +501,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patients46To60Cohort.setName("patients46To60CohortComposition");
 		patients46To60Cohort.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		patients46To60Cohort.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		patients46To60Cohort.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		patients46To60Cohort.getSearches().put(
 		    "1",
 		    new Mapped<CohortDefinition>(patientEnrolledInHypertensionProgram, ParameterizableUtil
@@ -505,12 +509,12 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patients46To60Cohort.getSearches().put(
 		    "2",
 		    new Mapped<CohortDefinition>(age46To60Cohort, ParameterizableUtil
-		            .createParameterMappings("effectiveDate=${endDate}")));
+		            .createParameterMappings("effectiveDate=${effectiveDate}")));
 		patients46To60Cohort.setCompositionString("1 AND 2");
 		
 		CohortIndicator patients46To60CohortIndicator = Indicators.newCountIndicator("patients46To60CohortIndicator",
 		    patients46To60Cohort,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate},effectiveDate=${endDate}"));
 		
 		//=================================================
 		//     Adding columns to data set definition     //
@@ -528,6 +532,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patients61To75Cohort.setName("patients61To75CohortComposition");
 		patients61To75Cohort.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		patients61To75Cohort.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		patients61To75Cohort.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		patients61To75Cohort.getSearches().put(
 		    "1",
 		    new Mapped<CohortDefinition>(patientEnrolledInHypertensionProgram, ParameterizableUtil
@@ -535,12 +540,12 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patients61To75Cohort.getSearches().put(
 		    "2",
 		    new Mapped<CohortDefinition>(age61To75Cohort, ParameterizableUtil
-		            .createParameterMappings("effectiveDate=${endDate}")));
+		            .createParameterMappings("effectiveDate=${effectiveDate}")));
 		patients61To75Cohort.setCompositionString("1 AND 2");
 		
 		CohortIndicator patients61To75CohortIndicator = Indicators.newCountIndicator("patients61To75CohortIndicator",
 		    patients61To75Cohort,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate},effectiveDate=${endDate}"));
 		
 		//=================================================
 		//     Adding columns to data set definition     //
@@ -558,6 +563,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patientsOver76Composition.setName("patientsUnderFifteenComposition");
 		patientsOver76Composition.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		patientsOver76Composition.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		patientsOver76Composition.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		patientsOver76Composition.getSearches().put(
 		    "1",
 		    new Mapped<CohortDefinition>(patientEnrolledInHypertensionProgram, ParameterizableUtil
@@ -565,12 +571,12 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patientsOver76Composition.getSearches().put(
 		    "2",
 		    new Mapped<CohortDefinition>(over76Cohort, ParameterizableUtil
-		            .createParameterMappings("effectiveDate=${endDate}")));
+		            .createParameterMappings("effectiveDate=${effectiveDate}")));
 		patientsOver76Composition.setCompositionString("1 AND 2");
 		
 		CohortIndicator patientsOver76CountIndicator = Indicators.newCountIndicator("patientsOver76CountIndicator",
 		    patientsOver76Composition,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate}"));
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate},effectiveDate=${endDate}"));
 		
 		//=================================================
 		//     Adding columns to data set definition     //
@@ -857,7 +863,8 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		patientsEnrolledWithSmokingHistory.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientsEnrolledWithSmokingHistory.addSearch("1", patientsWithSmokingHistory,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		patientsEnrolledWithSmokingHistory.addSearch("2", patientEnrolledInHypertensionProgram, null);
+		patientsEnrolledWithSmokingHistory.addSearch("2", patientEnrolledInHypertensionProgram,
+				ParameterizableUtil.createParameterMappings("startDate=${endDate-1m+1d},endDate=${endDate}"));
 		patientsEnrolledWithSmokingHistory.setCompositionString("1 AND 2");
 		
 		CohortIndicator patientsEnrolledWithSmokingHistoryIndicator = Indicators.newCountIndicator(
@@ -980,9 +987,11 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 			patientsOnHydrochlorothiazide.setName("patientsOnHydrochlorothiazide");
 			patientsOnHydrochlorothiazide.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 			patientsOnHydrochlorothiazide.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+			patientsOnHydrochlorothiazide.addParameter(new Parameter("endDate", "endDate", Date.class));
 			patientsOnHydrochlorothiazide.addSearch("1", patientsWithHypertensionVisit,
 				ParameterizableUtil.createParameterMappings("endDate=${onOrBefore},startDate=${onOrAfter}"));
-			patientsOnHydrochlorothiazide.addSearch("2", patientsWithCurrentHydrochlorothiazideDrugOrder, null);
+			patientsOnHydrochlorothiazide.addSearch("2", patientsWithCurrentHydrochlorothiazideDrugOrder, 
+					ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 			patientsOnHydrochlorothiazide.setCompositionString("1 AND 2");
 			
 			CohortIndicator patientsOnHydrochlorothiazideIndicator = Indicators.newCountIndicator(

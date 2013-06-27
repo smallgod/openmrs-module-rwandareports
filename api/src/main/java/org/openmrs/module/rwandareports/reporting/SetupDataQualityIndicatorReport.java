@@ -141,7 +141,7 @@ public class SetupDataQualityIndicatorReport {
 						.createParameterMappings("location=${location}"));
 
 		rd.addDataSetDefinition(createIndicatorsForReports(), null);
-		h.saveReportDefinition(rd);
+		//h.saveReportDefinition(rd);
 		rd.addDataSetDefinition(createObsDataSet(), ParameterizableUtil
 				.createParameterMappings("location=${location}"));
 		h.saveReportDefinition(rd);
@@ -165,12 +165,12 @@ public class SetupDataQualityIndicatorReport {
 		rdsites.setupDataSetDefinition();
 
 		rdsites.addDataSetDefinition(createIndicatorsForReports(), null);
-		h.saveReportDefinition(rdsites);
-		createCustomWebRendererForSites(rdsites, "DataWebRenderer");
-		
+		//h.saveReportDefinition(rdsites);
 		rdsites.addDataSetDefinition(createObsDataSet(), ParameterizableUtil
 				.createParameterMappings("location=${location}"));
 		h.saveReportDefinition(rdsites);
+		createCustomWebRendererForSites(rdsites, "DataWebRenderer");
+		
 		return rdsites;
 
 	}
@@ -1099,7 +1099,6 @@ public class SetupDataQualityIndicatorReport {
 		design.setName(name);
 		design.setReportDefinition(rd);
 		design.setRendererType(DataQualityReportWebRenderer.class);
-
 		ReportService rs = Context.getService(ReportService.class);
 		return rs.saveReportDesign(design);
 	}

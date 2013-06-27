@@ -81,13 +81,14 @@ public class SetupTracNetRwandaReportBySite {
         private Form allergyadultForm;
         private List<Form> medicationForms = new ArrayList<Form>();
         private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
+        private List<String> onOrAfterDateOnOrBeforeDate = new ArrayList<String>();
         private List<EncounterType> clinicalEnountersIncLab;
         private List<EncounterType> pediAdnAdultEncounters;
         private EncounterType patientTransferEncounterType;
         private Concept kaletra;
         private Concept cotrimoxazole;
-        //private Concept fluconazole;
-        //private Concept dapsone;
+        private Concept fluconazole;
+        private Concept dapsone;
         public Concept whostage;
         public Concept whostage4p;
         public Concept whostage3p;
@@ -155,6 +156,7 @@ public class SetupTracNetRwandaReportBySite {
          dsd.setName("TracNet Report Indicators");
          dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
          dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+         
          
          //Gender Cohort definitions
          GenderCohortDefinition femaleCohort = Cohorts.createFemaleCohortDefinition("femalesDefinition");
@@ -242,9 +244,9 @@ public class SetupTracNetRwandaReportBySite {
           onARTStateHIVClinic.getSearches().put("2",new Mapped<CohortDefinition>(inPediAndAdultprogram,ParameterizableUtil.createParameterMappings("onDate=${now}")));
           onARTStateHIVClinic.setCompositionString("1 AND 2");
           EncounterCohortDefinition patientTransferEncounter = Cohorts.createEncounterParameterizedByDate("patientTransferEncounter", onOrAfterOnOrBefore,patientTransferEncounterType);
-                         
+                       
           //------------------------------
-          //     PRE- ART START
+          //     PRE-ART START
           //------------------------------ 
                  
           //1 Total number of new pediatric patients (age <=18 months at enrolment) enrolled in HIV care this month  
@@ -252,141 +254,176 @@ public class SetupTracNetRwandaReportBySite {
           SqlCohortDefinition under5YrsAtEnrol = Cohorts.createUnder5AtEnrollmentCohort("under5YrsAtEnrol", pediatrichivProgram);
           SqlCohortDefinition under15YrsAtEnrol = Cohorts.createUnder15AtEnrollmentCohort("under15YrsAtEnrol", pediatrichivProgram);
           SqlCohortDefinition over15YrsAtEnrol = Cohorts.create15orOverAtEnrollmentCohort("over15YrsAtEnrol", adulthivProgram);
+          SqlCohortDefinition enrolledInAdultProgram = Cohorts.createPatientInProgramDuringTime("Enrolled In adult HIV Program");
+          
           
           CompositionCohortDefinition preArtduringPeriod = new CompositionCohortDefinition();
+          preArtduringPeriod.addParameter(new Parameter("startDate","startDate",Date.class));
+          preArtduringPeriod.addParameter(new Parameter("endDate","endDate",Date.class));
           preArtduringPeriod.setName("TR:preArtduringPeriod");
           preArtduringPeriod.getSearches().put("1",new Mapped<CohortDefinition>(onFollowingStateCohort,ParameterizableUtil.createParameterMappings("onDate=${now}")));
-          preArtduringPeriod.getSearches().put("2",new Mapped<CohortDefinition>(patientEnrolledInPediAndAdultProgram, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}")));
+          preArtduringPeriod.getSearches().put("2",new Mapped<CohortDefinition>(enrolledInAdultProgram, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           preArtduringPeriod.setCompositionString("1 AND 2");
                   
           CompositionCohortDefinition newlyEnrolledInHIVCareunder18months = new CompositionCohortDefinition();
+          newlyEnrolledInHIVCareunder18months.addParameter(new Parameter("startDate","startDate",Date.class));
+          newlyEnrolledInHIVCareunder18months.addParameter(new Parameter("endDate","endDate",Date.class));
           newlyEnrolledInHIVCareunder18months.setName("TR:newlyEnrolledInHIVCareunder18months");
-          newlyEnrolledInHIVCareunder18months.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod,null));
+          newlyEnrolledInHIVCareunder18months.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           newlyEnrolledInHIVCareunder18months.getSearches().put("2",new Mapped<CohortDefinition>(under18monthsAtEnrol,null));
           newlyEnrolledInHIVCareunder18months.setCompositionString("1 AND 2 ");
-          CohortIndicator newlyEnrolledInHIVCareunder18monthsInd=Indicators.newCohortIndicator("TR:newlyEnrolledInHIVCareunder18monthsInd", newlyEnrolledInHIVCareunder18months,null);
-  
-          //2 Total number of new pediatric patients (age <5 years) enrolled in HIV care this month   
+          CohortIndicator newlyEnrolledInHIVCareunder18monthsInd=Indicators.newCohortIndicator("TR:enrolledInAdultProgramInd",
+        		  newlyEnrolledInHIVCareunder18months,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+         
+          
+         //2 Total number of new pediatric patients (age <5 years) enrolled in HIV care this month   
           CompositionCohortDefinition newlyEnrolledInHIVCareunder5yrs = new CompositionCohortDefinition();
+          newlyEnrolledInHIVCareunder5yrs.addParameter(new Parameter("startDate","startDate",Date.class));
+          newlyEnrolledInHIVCareunder5yrs.addParameter(new Parameter("endDate","endDate",Date.class));
           newlyEnrolledInHIVCareunder5yrs.setName("TR:newlyEnrolledInHIVCareunder5yrs");
-          newlyEnrolledInHIVCareunder5yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, null));
+          newlyEnrolledInHIVCareunder5yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           newlyEnrolledInHIVCareunder5yrs.getSearches().put("2",new Mapped<CohortDefinition>(under5YrsAtEnrol,null));
           newlyEnrolledInHIVCareunder5yrs.setCompositionString("1 AND 2 ");
-          CohortIndicator newlyEnrolledInHIVCareunder5yrsInd=Indicators.newCohortIndicator("TR:newlyEnrolledInHIVCareunder5yrsInd", newlyEnrolledInHIVCareunder5yrs,null);
+          CohortIndicator newlyEnrolledInHIVCareunder5yrsInd=Indicators.newCohortIndicator("TR:newlyEnrolledInHIVCareunder5yrsInd", newlyEnrolledInHIVCareunder5yrs,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //3 Total number of new female pediatric patients (age < 15 years) enrolled in HIV care
           CompositionCohortDefinition nonActivePatients=new CompositionCohortDefinition();
+          nonActivePatients.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+          nonActivePatients.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          nonActivePatients.addParameter(new Parameter("endDate","endDate",Date.class));
           nonActivePatients.setName("TR:nonActivePatients");
-          nonActivePatients.getSearches().put("1", new Mapped<CohortDefinition>(exitedCareWithDeadStatus,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
-          nonActivePatients.getSearches().put("2", new Mapped<CohortDefinition>(exitedCareWithtransferStatus,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
-          nonActivePatients.getSearches().put("3", new Mapped<CohortDefinition>(exitedCareWithDefaultedStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          nonActivePatients.getSearches().put("1", new Mapped<CohortDefinition>(exitedCareWithDeadStatus,null));
+          nonActivePatients.getSearches().put("2", new Mapped<CohortDefinition>(exitedCareWithtransferStatus,null));
+          nonActivePatients.getSearches().put("3", new Mapped<CohortDefinition>(exitedCareWithDefaultedStatus,null));
           nonActivePatients.setCompositionString("1 OR 2 OR 3");
           
           CompositionCohortDefinition femalenewlyEnrolledInHIVCareunder15yrs = new CompositionCohortDefinition();
           femalenewlyEnrolledInHIVCareunder15yrs.setName("femalenewlyEnrolledInHIVCareunder15yrs");
-          femalenewlyEnrolledInHIVCareunder15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, null));
+          femalenewlyEnrolledInHIVCareunder15yrs.addParameter(new Parameter("startDate","startDate",Date.class));
+          femalenewlyEnrolledInHIVCareunder15yrs.addParameter(new Parameter("endDate","endDate",Date.class));
+          //femalenewlyEnrolledInHIVCareunder15yrs.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+          //femalenewlyEnrolledInHIVCareunder15yrs.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          femalenewlyEnrolledInHIVCareunder15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           femalenewlyEnrolledInHIVCareunder15yrs.getSearches().put("2",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
           femalenewlyEnrolledInHIVCareunder15yrs.getSearches().put("3",new Mapped<CohortDefinition>(femaleCohort,null));
           femalenewlyEnrolledInHIVCareunder15yrs.getSearches().put("4",new Mapped<CohortDefinition>(nonActivePatients,null));
           femalenewlyEnrolledInHIVCareunder15yrs.setCompositionString("1 AND 2 AND 3 AND (NOT 4) ");
-          CohortIndicator femalesnewlyEnrolledInHIVCareunder15yrsInd=Indicators.newCohortIndicator("TR:femalesnewlyEnrolledInHIVCareunder15yrsInd", femalenewlyEnrolledInHIVCareunder15yrs,null);
+          CohortIndicator femalesnewlyEnrolledInHIVCareunder15yrsInd=Indicators.newCohortIndicator("TR:femalesnewlyEnrolledInHIVCareunder15yrsInd", femalenewlyEnrolledInHIVCareunder15yrs,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //4 Total number of new male pediatric patients (age < 15 years at enrollment) enrolled in HIV care   
           CompositionCohortDefinition malenewlyEnrolledInHIVCareunder15yrs = new CompositionCohortDefinition();
+          malenewlyEnrolledInHIVCareunder15yrs.addParameter(new Parameter("startDate","startDate",Date.class));
+          malenewlyEnrolledInHIVCareunder15yrs.addParameter(new Parameter("endDate","endDate",Date.class));
+          malenewlyEnrolledInHIVCareunder15yrs.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+          malenewlyEnrolledInHIVCareunder15yrs.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
           malenewlyEnrolledInHIVCareunder15yrs.setName("MalenewlyEnrolledInHIVCareunder15yrs");
-          malenewlyEnrolledInHIVCareunder15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, null));
+          malenewlyEnrolledInHIVCareunder15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           malenewlyEnrolledInHIVCareunder15yrs.getSearches().put("2",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
           malenewlyEnrolledInHIVCareunder15yrs.getSearches().put("3",new Mapped<CohortDefinition>(maleCohort,null));
           malenewlyEnrolledInHIVCareunder15yrs.getSearches().put("4",new Mapped<CohortDefinition>(nonActivePatients,null));
           malenewlyEnrolledInHIVCareunder15yrs.setCompositionString("1 AND 2 AND 3 AND (NOT 4) ");
-          CohortIndicator malesnewlyEnrolledInHIVCareunder15yrsInd=Indicators.newCohortIndicator("TR:malesnewlyEnrolledInHIVCareunder15yrsInd", malenewlyEnrolledInHIVCareunder15yrs,null);
+          CohortIndicator malesnewlyEnrolledInHIVCareunder15yrsInd=Indicators.newCohortIndicator("TR:malesnewlyEnrolledInHIVCareunder15yrsInd", malenewlyEnrolledInHIVCareunder15yrs,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
            
           //5 Total number of new female adult patients (age 15 or more at enrollment) enrolled in HIV care                
           CompositionCohortDefinition femalenewlyEnrolledInHIVCareOver15yrs = new CompositionCohortDefinition();
+          femalenewlyEnrolledInHIVCareOver15yrs.addParameter(new Parameter("startDate","startDate",Date.class));
+          femalenewlyEnrolledInHIVCareOver15yrs.addParameter(new Parameter("endDate","endDate",Date.class));
           femalenewlyEnrolledInHIVCareOver15yrs.setName("femalenewlyEnrolledInHIVCareOver15yrs");
-          femalenewlyEnrolledInHIVCareOver15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, null));
+          femalenewlyEnrolledInHIVCareOver15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           femalenewlyEnrolledInHIVCareOver15yrs.getSearches().put("2",new Mapped<CohortDefinition>(over15YrsAtEnrol,null));
           femalenewlyEnrolledInHIVCareOver15yrs.getSearches().put("3",new Mapped<CohortDefinition>(femaleCohort,null));
           femalenewlyEnrolledInHIVCareOver15yrs.setCompositionString("1 AND 2 AND 3 ");
-          CohortIndicator femalesnewlyEnrolledInHIVCareOver15yrsInd=Indicators.newCohortIndicator("TR:femalesnewlyEnrolledInHIVCareOver15yrsInd", femalenewlyEnrolledInHIVCareOver15yrs,null);
+          CohortIndicator femalesnewlyEnrolledInHIVCareOver15yrsInd=Indicators.newCohortIndicator("TR:femalesnewlyEnrolledInHIVCareOver15yrsInd", femalenewlyEnrolledInHIVCareOver15yrs,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //6 Total number of new male adult patients (age 15 or more) enrolled in HIV care 
           CompositionCohortDefinition malenewlyEnrolledInHIVCareOver15yrs = new CompositionCohortDefinition();
+          malenewlyEnrolledInHIVCareOver15yrs.addParameter(new Parameter("startDate","startDate",Date.class));
+          malenewlyEnrolledInHIVCareOver15yrs.addParameter(new Parameter("endDate","endDate",Date.class));
           malenewlyEnrolledInHIVCareOver15yrs.setName("malenewlyEnrolledInHIVCareOver15yrs");
-          malenewlyEnrolledInHIVCareOver15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, null));
+          malenewlyEnrolledInHIVCareOver15yrs.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           malenewlyEnrolledInHIVCareOver15yrs.getSearches().put("2",new Mapped<CohortDefinition>(over15YrsAtEnrol,null));
           malenewlyEnrolledInHIVCareOver15yrs.getSearches().put("3",new Mapped<CohortDefinition>(maleCohort,null));
           malenewlyEnrolledInHIVCareOver15yrs.setCompositionString("1 AND 2 AND 3 ");
-          CohortIndicator malesnewlyEnrolledInHIVCareOver15yrsInd=Indicators.newCohortIndicator("TR:malesnewlyEnrolledInHIVCareOver15yrsInd", malenewlyEnrolledInHIVCareOver15yrs,null);
+          CohortIndicator malesnewlyEnrolledInHIVCareOver15yrsInd=Indicators.newCohortIndicator("TR:malesnewlyEnrolledInHIVCareOver15yrsInd", malenewlyEnrolledInHIVCareOver15yrs,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //7 Total Number of pediatric patient (age< 15 years) currently in Pre-ART
           PatientStateCohortDefinition onFollowingEver = Cohorts.createPatientStateEverCohortDefinition("onFollowingEver", OnFollowingstates);      
           CompositionCohortDefinition everOnPreArtduringPeriod = new CompositionCohortDefinition();
+          everOnPreArtduringPeriod.addParameter(new Parameter("endDate","endDate",Date.class));
           everOnPreArtduringPeriod.setName("TR:everOnPreArtduringPeriod");
-          everOnPreArtduringPeriod.getSearches().put("1",new Mapped<CohortDefinition>(patientEnrolledInPediAndAdultProgram, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}")));
+          everOnPreArtduringPeriod.getSearches().put("1",new Mapped<CohortDefinition>(enrolledInAdultProgram, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           everOnPreArtduringPeriod.getSearches().put("2",new Mapped<CohortDefinition>(onFollowingEver, null));
           everOnPreArtduringPeriod.setCompositionString("1 AND 2");
-            
+           
           CompositionCohortDefinition pedienrolledInHIVCareUnder15 = new CompositionCohortDefinition();
+          pedienrolledInHIVCareUnder15.addParameter(new Parameter("endDate","endDate",Date.class));
           pedienrolledInHIVCareUnder15.setName("TR:pedienrolledInHIVCareUnder15");
-          pedienrolledInHIVCareUnder15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, null));
+          pedienrolledInHIVCareUnder15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           pedienrolledInHIVCareUnder15.getSearches().put("2",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
           pedienrolledInHIVCareUnder15.setCompositionString("1 AND 2");
-          CohortIndicator under15InHIVcareInAllProgram=Indicators.newCohortIndicator("TR:under15InHIVcareInAllProgram", pedienrolledInHIVCareUnder15, null);
+          CohortIndicator under15InHIVcareInAllProgram=Indicators.newCohortIndicator("TR:under15InHIVcareInAllProgram", pedienrolledInHIVCareUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
          
           //8 Total Number of adult patient (age 15+ ) currently in Pre-ART		
           CompositionCohortDefinition pedienrolledInHIVCareOver15 = new CompositionCohortDefinition();
+          pedienrolledInHIVCareOver15.addParameter(new Parameter("endDate","endDate",Date.class));
           pedienrolledInHIVCareOver15.setName("TR:pedienrolledInHIVCareOver15");
-          pedienrolledInHIVCareOver15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, null));
+          pedienrolledInHIVCareOver15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           pedienrolledInHIVCareOver15.getSearches().put("2",new Mapped<CohortDefinition>(over15YrsAtEnrol,null));
           pedienrolledInHIVCareOver15.setCompositionString("1 AND 2");
-          CohortIndicator pedienrolledInHIVCareOver15Indi=Indicators.newCohortIndicator("TR:pedienrolledInHIVCareOver15Indi", pedienrolledInHIVCareOver15, null);
+          CohortIndicator pedienrolledInHIVCareOver15Indi=Indicators.newCohortIndicator("TR:pedienrolledInHIVCareOver15Indi", pedienrolledInHIVCareOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
          
           
           //9 Total number of female adult patient (age 15+) curently in Pre-ART   
           CompositionCohortDefinition enrolledInHIVCareFemaleOver15 = new CompositionCohortDefinition();
+          enrolledInHIVCareFemaleOver15.addParameter(new Parameter("endDate","endDate",Date.class));
           enrolledInHIVCareFemaleOver15.setName("TR:enrolledInHIVCareFemaleOver15");
-          enrolledInHIVCareFemaleOver15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, null));
+          enrolledInHIVCareFemaleOver15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           enrolledInHIVCareFemaleOver15.getSearches().put("2",new Mapped<CohortDefinition>(femaleCohort, null));
           enrolledInHIVCareFemaleOver15.getSearches().put("3",new Mapped<CohortDefinition>(over15YrsAtEnrol,null));
           enrolledInHIVCareFemaleOver15.setCompositionString("1 AND 2 AND 3");
-          CohortIndicator Over15FemalenHIVcareInd=Indicators.newCohortIndicator("TR:Over15FemalenHIVcareInd", enrolledInHIVCareFemaleOver15,null);
+          CohortIndicator Over15FemalenHIVcareInd=Indicators.newCohortIndicator("TR:Over15FemalenHIVcareInd", enrolledInHIVCareFemaleOver15,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
           
           //10 Total number of male adult patient (age 15+) curently in Pre-ART 
           CompositionCohortDefinition enrolledInHIVCareFemaleUnde15 = new CompositionCohortDefinition();
+          enrolledInHIVCareFemaleUnde15.addParameter(new Parameter("endDate","endDate",Date.class));
           enrolledInHIVCareFemaleUnde15.setName("TR:enrolledInHIVCareFemaleUnde15");
-          enrolledInHIVCareFemaleUnde15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, null));
+          enrolledInHIVCareFemaleUnde15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           enrolledInHIVCareFemaleUnde15.getSearches().put("2",new Mapped<CohortDefinition>(femaleCohort, null));
           enrolledInHIVCareFemaleUnde15.getSearches().put("3",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
           enrolledInHIVCareFemaleUnde15.setCompositionString("1 AND 2 AND 3");
-          CohortIndicator under15FemaleInHIVcareInAllProgram=Indicators.newCohortIndicator("TR:under15FemaleInHIVcareInAllProgram", enrolledInHIVCareFemaleUnde15, null);
+          CohortIndicator under15FemaleInHIVcareInAllProgram=Indicators.newCohortIndicator("TR:under15FemaleInHIVcareInAllProgram", enrolledInHIVCareFemaleUnde15, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));;
           
           //11 Total number of male adult patient (age 15+) curently in Pre-ART   
           CompositionCohortDefinition enrolledInHIVCareMaleOver15 = new CompositionCohortDefinition();
+          enrolledInHIVCareMaleOver15.addParameter(new Parameter("endDate","endDate",Date.class));
           enrolledInHIVCareMaleOver15.setName("TR:enrolledInHIVCareMaleOver15");
-          enrolledInHIVCareMaleOver15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, null));
+          enrolledInHIVCareMaleOver15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           enrolledInHIVCareMaleOver15.getSearches().put("2",new Mapped<CohortDefinition>(maleCohort, null));
           enrolledInHIVCareMaleOver15.getSearches().put("3",new Mapped<CohortDefinition>(over15YrsAtEnrol,null));
           enrolledInHIVCareMaleOver15.setCompositionString("1 AND 2 AND 3");
-          CohortIndicator Over15MalenHIVcareInd=Indicators.newCohortIndicator("TR:Over15MalenHIVcareInd", enrolledInHIVCareMaleOver15,null);
+          CohortIndicator Over15MalenHIVcareInd=Indicators.newCohortIndicator("TR:Over15MalenHIVcareInd", enrolledInHIVCareMaleOver15,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
           
           // 12 Total number of female pediatric patients (age <15 years) ever enrolled in HIV care 
           CompositionCohortDefinition enrolledInHIVCareMaleUnde15 = new CompositionCohortDefinition();
+          enrolledInHIVCareMaleUnde15.addParameter(new Parameter("endDate","endDate",Date.class));
           enrolledInHIVCareMaleUnde15.setName("TR:enrolledInHIVCareMaleUnde15");
-          enrolledInHIVCareMaleUnde15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, null));
+          enrolledInHIVCareMaleUnde15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           enrolledInHIVCareMaleUnde15.getSearches().put("2",new Mapped<CohortDefinition>(maleCohort, null));
           enrolledInHIVCareMaleUnde15.getSearches().put("3",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
           enrolledInHIVCareMaleUnde15.setCompositionString("1 AND 2 AND 3");
-          CohortIndicator under15MalenHIVcare=Indicators.newCohortIndicator("TR:under15MalenHIVcare", enrolledInHIVCareMaleUnde15,null);
-                          
+          CohortIndicator under15MalenHIVcare=Indicators.newCohortIndicator("TR:under15MalenHIVcare", enrolledInHIVCareMaleUnde15,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+                      
           //13 Number of patients on Cotrimoxazole Prophylaxis this month
            SqlCohortDefinition startedCotrimoXazoleDuringP = Cohorts.getPatientsCotrimoRegimenBasedOnStartDateEndDate("startedCotrimoXazoleDuringP", cotrimoxazole);
-           SqlCohortDefinition testedFluconazoleAndDapsone=new SqlCohortDefinition();
-           testedFluconazoleAndDapsone.setName("TR:testedFluconazoleAndDapsone");
-           testedFluconazoleAndDapsone.setQuery("select distinct patient_id from orders where concept_id in (747,92)"+
-           		"and start_date <= :endDate and discontinued=0 and discontinued_date is NULL and voided=0  ");
+           SqlCohortDefinition testedFluconazole = Cohorts.getPatientsOnCurrentRegimenBasedOnEndDate("testedFluconazole", fluconazole);
+           SqlCohortDefinition testedDapsone = Cohorts.getPatientsOnCurrentRegimenBasedOnEndDate("testedDapsone", dapsone);
+           CompositionCohortDefinition testedFluconazoleAndDapsone = new CompositionCohortDefinition();
+           testedFluconazoleAndDapsone.setName("testedFluconazoleAndDapsone");
            testedFluconazoleAndDapsone.addParameter(new Parameter("endDate", "endDate", Date.class));
-          
+           testedFluconazoleAndDapsone.getSearches().put("1",new Mapped<CohortDefinition>(testedFluconazole,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+           testedFluconazoleAndDapsone.getSearches().put("2", new Mapped<CohortDefinition>(testedDapsone,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+           testedFluconazoleAndDapsone.setCompositionString("1 OR 2");
+           
            CompositionCohortDefinition preArtAndARTOnCotrimoComposition = new CompositionCohortDefinition();
            preArtAndARTOnCotrimoComposition.setName("preArtAndARTOnCotrimoComposition");
            preArtAndARTOnCotrimoComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -422,86 +459,127 @@ public class SetupTracNetRwandaReportBySite {
            CodedObsCohortDefinition tbScreenngPosTest = Cohorts.createCodedObsCohortDefinition("patientsWithTBinHIVForms",onOrAfterOnOrBefore, tbScreeningtest,positiveStatus, SetComparator.IN, TimeModifier.LAST);
            
            CompositionCohortDefinition screenedForTbInHIVProgramsComp = new CompositionCohortDefinition();
+           screenedForTbInHIVProgramsComp.addParameter(new Parameter("startDate", "startDate", Date.class));
+           screenedForTbInHIVProgramsComp.addParameter(new Parameter("endDate", "endDate", Date.class));
+           screenedForTbInHIVProgramsComp.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           screenedForTbInHIVProgramsComp.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            screenedForTbInHIVProgramsComp.setName("screenedForTbInHIVProgramsComp");
-           screenedForTbInHIVProgramsComp.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod,null));
-           screenedForTbInHIVProgramsComp.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithTBinHIVForms,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+           screenedForTbInHIVProgramsComp.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+           screenedForTbInHIVProgramsComp.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithTBinHIVForms,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
            screenedForTbInHIVProgramsComp.setCompositionString("1 AND 2");
-           CohortIndicator screenedForTbInHIVProgramsIndi=Indicators.newCohortIndicator("screenedForTbInHIVProgramsIndi", screenedForTbInHIVProgramsComp, null);
+           CohortIndicator screenedForTbInHIVProgramsIndi=Indicators.newCohortIndicator("screenedForTbInHIVProgramsIndi", screenedForTbInHIVProgramsComp,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrAfter}"));
+           screenedForTbInHIVProgramsIndi.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           screenedForTbInHIVProgramsIndi.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
             
            //15 Number of new patients screened for active TB Positive at enrollment this month
            CompositionCohortDefinition screenedForTbPosInHIVProgramsComp = new CompositionCohortDefinition();
+           screenedForTbPosInHIVProgramsComp.addParameter(new Parameter("startDate", "startDate", Date.class));
+           screenedForTbPosInHIVProgramsComp.addParameter(new Parameter("endDate", "endDate", Date.class));
+           screenedForTbPosInHIVProgramsComp.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           screenedForTbPosInHIVProgramsComp.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            screenedForTbPosInHIVProgramsComp.setName("TR:screenedForTbPosInHIVProgramsComp");
-           screenedForTbPosInHIVProgramsComp.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, null));
-           screenedForTbPosInHIVProgramsComp.getSearches().put("2",new Mapped<CohortDefinition>(tbScreenngPosTest,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+           screenedForTbPosInHIVProgramsComp.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+           screenedForTbPosInHIVProgramsComp.getSearches().put("2",new Mapped<CohortDefinition>(tbScreenngPosTest,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
            screenedForTbPosInHIVProgramsComp.setCompositionString("1 AND 2 ");
-           CohortIndicator screenedForTbPosInHIVProgramsInd=Indicators.newCohortIndicator("screenedForTbPosInHIVProgramsInd", screenedForTbPosInHIVProgramsComp, null);
-          
+           CohortIndicator screenedForTbPosInHIVProgramsInd=Indicators.newCohortIndicator("screenedForTbPosInHIVProgramsInd", screenedForTbPosInHIVProgramsComp, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}"));
+           screenedForTbPosInHIVProgramsInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           screenedForTbPosInHIVProgramsInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+            
            //16 Number of newly enrolled patients (age <15 years) who started TB treatment this month
            SqlCohortDefinition onTbDrugduringPeriod = Cohorts.geOnTBDrugsByStartEndDate("on TB drug");
            CompositionCohortDefinition patientsOnTBdrugInHIvProgramsUnder15 = new CompositionCohortDefinition();
+           patientsOnTBdrugInHIvProgramsUnder15.addParameter(new Parameter("startDate", "startDate", Date.class));
+           patientsOnTBdrugInHIvProgramsUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
            patientsOnTBdrugInHIvProgramsUnder15.setName("patientsOnTBdrugInHIvProgramsUnder15");
-           patientsOnTBdrugInHIvProgramsUnder15.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod,null));
+           patientsOnTBdrugInHIvProgramsUnder15.getSearches().put("1",new Mapped<CohortDefinition>(preArtduringPeriod,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            patientsOnTBdrugInHIvProgramsUnder15.getSearches().put("2",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
            patientsOnTBdrugInHIvProgramsUnder15.getSearches().put("3",new Mapped<CohortDefinition>(onTbDrugduringPeriod,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            patientsOnTBdrugInHIvProgramsUnder15.setCompositionString("1 AND 2 AND 3");
-           CohortIndicator patientsOnTBdrugInHIvProgramsUnder15Ind=Indicators.newCohortIndicator("patientsOnTBdrugInHIvProgramsUnder15Ind", patientsOnTBdrugInHIvProgramsUnder15, null);
+           CohortIndicator patientsOnTBdrugInHIvProgramsUnder15Ind=Indicators.newCohortIndicator("patientsOnTBdrugInHIvProgramsUnder15Ind", patientsOnTBdrugInHIvProgramsUnder15,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
             
            //17 Number of newly enrolled patients (age 15 or more years) who started TB treatment this month
            CompositionCohortDefinition patientsOnTBdrugInHIvProgramsOver15 = new CompositionCohortDefinition();
+           patientsOnTBdrugInHIvProgramsOver15.addParameter(new Parameter("startDate", "startDate", Date.class));
+           patientsOnTBdrugInHIvProgramsOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
            patientsOnTBdrugInHIvProgramsOver15.setName("patientsOnTBdrugInHIvProgramsOver15");
-           patientsOnTBdrugInHIvProgramsOver15.getSearches().put("1",new Mapped<CohortDefinition>(femalenewlyEnrolledInHIVCareOver15yrs,null));
-           patientsOnTBdrugInHIvProgramsOver15.getSearches().put("2",new Mapped<CohortDefinition>(malenewlyEnrolledInHIVCareOver15yrs,null));
+           patientsOnTBdrugInHIvProgramsOver15.getSearches().put("1",new Mapped<CohortDefinition>(femalenewlyEnrolledInHIVCareOver15yrs,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+           patientsOnTBdrugInHIvProgramsOver15.getSearches().put("2",new Mapped<CohortDefinition>(malenewlyEnrolledInHIVCareOver15yrs,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            patientsOnTBdrugInHIvProgramsOver15.getSearches().put("3",new Mapped<CohortDefinition>(onTbDrugduringPeriod,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            patientsOnTBdrugInHIvProgramsOver15.setCompositionString("(1 OR 2) AND 3");
-           CohortIndicator patientsOnTBdrugInHIvProgramsOver15Ind=Indicators.newCohortIndicator("patientsOnTBdrugInHIvProgramsOver15Ind", patientsOnTBdrugInHIvProgramsOver15, null);
+           CohortIndicator patientsOnTBdrugInHIvProgramsOver15Ind=Indicators.newCohortIndicator("patientsOnTBdrugInHIvProgramsOver15Ind", patientsOnTBdrugInHIvProgramsOver15, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
            
            //18 Number of PRE-ARV patients who have died this month
            SqlCohortDefinition pediOnpreArtBeforeExitedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("TR:pediOnpreArtBeforeExitedFromCare", pediatrichivProgram,pediOnFollowing,pediPreAndArtDiedState);
            SqlCohortDefinition adultOnpreArtBeforeExitedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("TR:adultOnpreArtBeforeExitedFromCare", adulthivProgram,adultOnFollowing,pediPreAndArtDiedState);
  
            CompositionCohortDefinition patientsDiedandNotOnART = new CompositionCohortDefinition();
+           patientsDiedandNotOnART.addParameter(new Parameter("startDate", "startDate", Date.class));
+           patientsDiedandNotOnART.addParameter(new Parameter("endDate", "endDate", Date.class));
+           patientsDiedandNotOnART.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsDiedandNotOnART.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            patientsDiedandNotOnART.setName("patientsDiedandNotOnART");
            patientsDiedandNotOnART.getSearches().put("1",new Mapped<CohortDefinition>(pediOnpreArtBeforeExitedFromCare,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            patientsDiedandNotOnART.getSearches().put("2",new Mapped<CohortDefinition>(adultOnpreArtBeforeExitedFromCare,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-           patientsDiedandNotOnART.getSearches().put("3",new Mapped<CohortDefinition>(exitedCareWithDeadStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+           patientsDiedandNotOnART.getSearches().put("3",new Mapped<CohortDefinition>(exitedCareWithDeadStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
            patientsDiedandNotOnART.setCompositionString("(1 OR 2) AND 3 ");
-           CohortIndicator patientsDiedandNotOnARTInd=Indicators.newCohortIndicator("patientsDiedandNotOnARTInd", patientsDiedandNotOnART, null);
+           CohortIndicator patientsDiedandNotOnARTInd=Indicators.newCohortIndicator("patientsDiedandNotOnARTInd", patientsDiedandNotOnART, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}"));
+           patientsDiedandNotOnARTInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsDiedandNotOnARTInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            
            //19 Number of PRE-ARV patients who have been transferred in this month
            CompositionCohortDefinition patientsTransferedIntAndnotOnART = new CompositionCohortDefinition();
+           patientsTransferedIntAndnotOnART.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
+           patientsTransferedIntAndnotOnART.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsTransferedIntAndnotOnART.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            patientsTransferedIntAndnotOnART.setName("patientsTransferedIntAndnotOnART");
-           patientsTransferedIntAndnotOnART.getSearches().put("1",new Mapped<CohortDefinition>(patientEnrolledInPediAndAdultProgram, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate}")));
-           patientsTransferedIntAndnotOnART.getSearches().put("2", new Mapped<CohortDefinition>(patientTransferEncounter,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}")));
+           patientsTransferedIntAndnotOnART.getSearches().put("1",new Mapped<CohortDefinition>(patientEnrolledInPediAndAdultProgram, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter}")));
+           patientsTransferedIntAndnotOnART.getSearches().put("2", new Mapped<CohortDefinition>(patientTransferEncounter,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
            patientsTransferedIntAndnotOnART.getSearches().put("3", new Mapped<CohortDefinition>(onARTStateHIVClinic,null));
            patientsTransferedIntAndnotOnART.setCompositionString("1 AND 2 AND (NOT 3)");
-           CohortIndicator patientsTransferedIntAndnotOnARTInd=Indicators.newCohortIndicator("patientsTransferedIntAndnotOnARTInd", patientsTransferedIntAndnotOnART, null);
+          
+           CohortIndicator patientsTransferedIntAndnotOnARTInd=Indicators.newCohortIndicator("patientsTransferedIntAndnotOnARTInd", patientsTransferedIntAndnotOnART, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}"));
+           patientsTransferedIntAndnotOnARTInd.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
+           patientsTransferedIntAndnotOnARTInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsTransferedIntAndnotOnARTInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            
           //20 Number of PRE-ARV patients who have been transferred out this month
            SqlCohortDefinition pediOnpreArtBeforeTranferedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("TR:pediOnpreArtBeforeTranferedFromCare", pediatrichivProgram,pediOnFollowing,peditransferedOutState);
            SqlCohortDefinition adultOnpreArtBeforeTransferedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("TR:adultOnpreArtBeforeTransferedFromCare", adulthivProgram,adultOnFollowing,adulttransferedOutState);        
            
            CompositionCohortDefinition patientsTransferedoutAndnotOnART = new CompositionCohortDefinition();
+           patientsTransferedoutAndnotOnART.addParameter(new Parameter("startDate", "startDate", Date.class));
+           patientsTransferedoutAndnotOnART.addParameter(new Parameter("endDate", "endDate", Date.class));
+           patientsTransferedoutAndnotOnART.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsTransferedoutAndnotOnART.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            patientsTransferedoutAndnotOnART.setName("patientsTransferedoutAndnotOnART");
            patientsTransferedoutAndnotOnART.getSearches().put("1",new Mapped<CohortDefinition>(pediOnpreArtBeforeTranferedFromCare, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            patientsTransferedoutAndnotOnART.getSearches().put("2", new Mapped<CohortDefinition>(adultOnpreArtBeforeTransferedFromCare,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-           patientsTransferedoutAndnotOnART.getSearches().put("3",new Mapped<CohortDefinition>(exitedCareWithtransferStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+           patientsTransferedoutAndnotOnART.getSearches().put("3",new Mapped<CohortDefinition>(exitedCareWithtransferStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
            patientsTransferedoutAndnotOnART.setCompositionString("(1 OR 2) AND 3");
-           CohortIndicator patientsTransferedoutAndnotOnARTInd=Indicators.newCohortIndicator("patientsTransferedoutAndnotOnARTInd", patientsTransferedoutAndnotOnART, null);
-                
+           CohortIndicator patientsTransferedoutAndnotOnARTInd=Indicators.newCohortIndicator("patientsTransferedoutAndnotOnARTInd", patientsTransferedoutAndnotOnART, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}"));
+           patientsTransferedoutAndnotOnARTInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsTransferedoutAndnotOnARTInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+           
            EncounterCohortDefinition clinicalEncWithoutLab = Cohorts.createEncounterParameterizedByDate("clinicalEncWithoutLab", onOrAfterOnOrBefore,clinicalEnountersIncLab);
            CompositionCohortDefinition ltfDuringPeriod = new CompositionCohortDefinition();
+           ltfDuringPeriod.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           ltfDuringPeriod.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            ltfDuringPeriod.setName("ltfDuringPeriod");
-           ltfDuringPeriod.getSearches().put("1",new Mapped<CohortDefinition>(clinicalEncWithoutLab,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")));
+           ltfDuringPeriod.getSearches().put("1",new Mapped<CohortDefinition>(clinicalEncWithoutLab,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
            ltfDuringPeriod.setCompositionString("NOT 1");
-        
+          
            //21 Number of PRE-ARV patients lost to follow up (> 3months)
            CompositionCohortDefinition patientsinHIVcareLostTofolowUp = new CompositionCohortDefinition();
+           patientsinHIVcareLostTofolowUp.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsinHIVcareLostTofolowUp.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            patientsinHIVcareLostTofolowUp.setName("patientsinHIVcareLostTofolowUp");
            patientsinHIVcareLostTofolowUp.getSearches().put("1",new Mapped<CohortDefinition>(onFollowingStateHIVClinic,null));
-           patientsinHIVcareLostTofolowUp.getSearches().put("2",new Mapped<CohortDefinition>(ltfDuringPeriod,null));
+           patientsinHIVcareLostTofolowUp.getSearches().put("2",new Mapped<CohortDefinition>(ltfDuringPeriod,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
            patientsinHIVcareLostTofolowUp.getSearches().put("3",new Mapped<CohortDefinition>(nonActivePatients,null));
            patientsinHIVcareLostTofolowUp.setCompositionString("1 AND 2 AND (NOT 3)");
-           CohortIndicator patientsinHIVcareLostTofolowUpInd=Indicators.newCohortIndicator("patientsinHIVcareLostTofolowUpInd", patientsinHIVcareLostTofolowUp, null);
+           CohortIndicator patientsinHIVcareLostTofolowUpInd=Indicators.newCohortIndicator("patientsinHIVcareLostTofolowUpInd", patientsinHIVcareLostTofolowUp, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}"));
+           patientsinHIVcareLostTofolowUpInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsinHIVcareLostTofolowUpInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            
            //22 Number of PRe-ART patients lost to follow up (> 3months) back to program
            SqlCohortDefinition lostbacktoProgramThismonth=new SqlCohortDefinition();
@@ -517,12 +595,11 @@ public class SetupTracNetRwandaReportBySite {
            patientsinLostAndBackToPRogramThismonth.setName("patientsinLostAndBackToPRogramThismonth");
            patientsinLostAndBackToPRogramThismonth.addParameter(new Parameter("startDate","startDate",Date.class));
            patientsinLostAndBackToPRogramThismonth.addParameter(new Parameter("endDate","endDate",Date.class));
-           patientsinLostAndBackToPRogramThismonth.getSearches().put("1",new Mapped<CohortDefinition>(lostbacktoProgramThismonth,
-        		   ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+           patientsinLostAndBackToPRogramThismonth.getSearches().put("1",new Mapped<CohortDefinition>(lostbacktoProgramThismonth,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            patientsinLostAndBackToPRogramThismonth.getSearches().put("2",new Mapped<CohortDefinition>(onFollowingStateHIVClinic,null));
            patientsinLostAndBackToPRogramThismonth.getSearches().put("3",new Mapped<CohortDefinition>(nonActivePatients,null));
            patientsinLostAndBackToPRogramThismonth.setCompositionString("1 AND 2 AND (NOT 3)");
-           CohortIndicator patientsinLostAndBackToPRogramThismonthInd=Indicators.newCohortIndicator("patientsinLostAndBackToPRogramThismonth", patientsinLostAndBackToPRogramThismonth, null);
+           CohortIndicator patientsinLostAndBackToPRogramThismonthInd=Indicators.newCohortIndicator("patientsinLostAndBackToPRogramThismonth", patientsinLostAndBackToPRogramThismonth, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
            
           // -------------------------------------------
           //       ART CATEGORY
@@ -530,56 +607,72 @@ public class SetupTracNetRwandaReportBySite {
                  
           InStateCohortDefinition onArtatEndDatePeriod = Cohorts.createInCurrentState("TR: started on Art", onARTstates,onOrAfterOnOrBefore);
           CompositionCohortDefinition onARTStateatTheEnd = new CompositionCohortDefinition();
+          onARTStateatTheEnd.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
           onARTStateatTheEnd.setName("onARTStateatTheEnd");
-          onARTStateatTheEnd.getSearches().put("1", new Mapped<CohortDefinition>(onArtatEndDatePeriod, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
+          onARTStateatTheEnd.getSearches().put("1", new Mapped<CohortDefinition>(onArtatEndDatePeriod, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
           onARTStateatTheEnd.getSearches().put("2",new Mapped<CohortDefinition>(inPediAndAdultprogram,ParameterizableUtil.createParameterMappings("onDate=${now}")));
           onARTStateatTheEnd.setCompositionString("1 AND 2");
-          
-          CompositionCohortDefinition onARTStateatDuringP = new CompositionCohortDefinition();
+          // ntahantu na hamwe imappinze
+         /* CompositionCohortDefinition onARTStateatDuringP = new CompositionCohortDefinition();
+          onARTStateatDuringP.addParameter(new Parameter("startDate","startDate",Date.class));
           onARTStateatDuringP.setName("onARTStateatDuringP");
-          onARTStateatDuringP.getSearches().put("1", new Mapped<CohortDefinition>(onARTStateatTheEnd, null));
+          onARTStateatDuringP.getSearches().put("1", new Mapped<CohortDefinition>(onARTStateatTheEnd, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
           onARTStateatDuringP.getSearches().put("2",new Mapped<CohortDefinition>(inPediAndAdultprogram,ParameterizableUtil.createParameterMappings("onDate=${now}")));
-          onARTStateatDuringP.setCompositionString("1 AND 2");
-          
+          onARTStateatDuringP.setCompositionString("1 AND 2");*/
+          //1
           CompositionCohortDefinition pedsonARTStateHIVClinic = new CompositionCohortDefinition();
+          pedsonARTStateHIVClinic.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          pedsonARTStateHIVClinic.addParameter(new Parameter("effectiveDate","effectiveDate",Date.class));
           pedsonARTStateHIVClinic.setName("pedsonARTStateHIVClinic");
-          pedsonARTStateHIVClinic.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
-          pedsonARTStateHIVClinic.getSearches().put("2",new Mapped<CohortDefinition>(at18monthsOfAge,ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+          pedsonARTStateHIVClinic.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+          pedsonARTStateHIVClinic.getSearches().put("2",new Mapped<CohortDefinition>(at18monthsOfAge,ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
           pedsonARTStateHIVClinic.setCompositionString("1 AND 2");
-          CohortIndicator pedsonARTStateHIVClinicInd=Indicators.newCohortIndicator("pedsonARTStateHIVClinicInd", pedsonARTStateHIVClinic, null);
+          CohortIndicator pedsonARTStateHIVClinicInd=Indicators.newCohortIndicator("pedsonARTStateHIVClinicInd", pedsonARTStateHIVClinic, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},effectiveDate=${effectiveDate}"));
+          pedsonARTStateHIVClinicInd.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          pedsonARTStateHIVClinicInd.addParameter(new Parameter("effectiveDate","effectiveDate",Date.class));
+          //2
           CompositionCohortDefinition pedsonARTStateHIVClinicunder5 = new CompositionCohortDefinition();
+          pedsonARTStateHIVClinicunder5.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
           pedsonARTStateHIVClinicunder5.setName("pedsonARTStateHIVClinicunder5");
-          pedsonARTStateHIVClinicunder5.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
+          pedsonARTStateHIVClinicunder5.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
           pedsonARTStateHIVClinicunder5.getSearches().put("2",new Mapped<CohortDefinition>(underFive,null));
           pedsonARTStateHIVClinicunder5.setCompositionString("1 AND 2");
-          CohortIndicator pedsonARTStateHIVClinicunder5Ind=Indicators.newCohortIndicator("pedsonARTStateHIVClinicunder5Ind", pedsonARTStateHIVClinicunder5, null);
-          
+          CohortIndicator pedsonARTStateHIVClinicunder5Ind=Indicators.newCohortIndicator("pedsonARTStateHIVClinicunder5Ind", pedsonARTStateHIVClinicunder5, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}"));
+          pedsonARTStateHIVClinicunder5Ind.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          //3
           CompositionCohortDefinition patientEnrolledInPediDuringP= Cohorts.createEnrolledInProgramDuringPeriod("patientEnrolledInPediPrograms",pediatrichivProgram);
           CompositionCohortDefinition enrolledInPMTCTProgramsDuringP= Cohorts.createEnrolledInProgramDuringPeriod("enrolledInPMTCTProgramsDuringP",adulthivProgram);
           CompositionCohortDefinition enrolledInAdultProgramsDuringP= Cohorts.createEnrolledInProgramDuringPeriod("enrolledInAdultProgramsDuringP",pmtctcombinedMother);
           
           CompositionCohortDefinition pedFemalesonARTStateHIVClinicunder15 = new CompositionCohortDefinition();
-          pedFemalesonARTStateHIVClinicunder15.setName("pedFemalesonARTStateHIVClinicunder15");
+          pedFemalesonARTStateHIVClinicunder15.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
           pedFemalesonARTStateHIVClinicunder15.addParameter(new Parameter("dateborn","dateborn",Date.class));
-          pedFemalesonARTStateHIVClinicunder15.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
-          pedFemalesonARTStateHIVClinicunder15.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          pedFemalesonARTStateHIVClinicunder15.setName("pedFemalesonARTStateHIVClinicunder15");
+          pedFemalesonARTStateHIVClinicunder15.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+          pedFemalesonARTStateHIVClinicunder15.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           pedFemalesonARTStateHIVClinicunder15.getSearches().put("3",new Mapped<CohortDefinition>(femaleCohort,null));
           pedFemalesonARTStateHIVClinicunder15.setCompositionString("1 AND 2 AND 3");
-          CohortIndicator pedFemalesonARTStateHIVClinicunder15Ind=Indicators.newCohortIndicator("pedFemalesonARTStateHIVClinicunder15Ind", pedFemalesonARTStateHIVClinicunder15, null);
-                 
+          CohortIndicator pedFemalesonARTStateHIVClinicunder15Ind=Indicators.newCohortIndicator("pedFemalesonARTStateHIVClinicunder15Ind", pedFemalesonARTStateHIVClinicunder15,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},dateborn=${dateborn}"));
+          pedFemalesonARTStateHIVClinicunder15Ind.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          pedFemalesonARTStateHIVClinicunder15Ind.addParameter(new Parameter("dateborn","dateborn",Date.class));
+          //4     
           CompositionCohortDefinition pedMalesonARTStateHIVClinicunder15 = new CompositionCohortDefinition();
-          pedMalesonARTStateHIVClinicunder15.setName("pedMalesonARTStateHIVClinicunder15");
+          pedMalesonARTStateHIVClinicunder15.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
           pedMalesonARTStateHIVClinicunder15.addParameter(new Parameter("dateborn","dateborn",Date.class));
-          pedMalesonARTStateHIVClinicunder15.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
-          pedMalesonARTStateHIVClinicunder15.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          pedMalesonARTStateHIVClinicunder15.setName("pedMalesonARTStateHIVClinicunder15");
+          pedMalesonARTStateHIVClinicunder15.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+          pedMalesonARTStateHIVClinicunder15.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           pedMalesonARTStateHIVClinicunder15.getSearches().put("3",new Mapped<CohortDefinition>(maleCohort,null));
           pedMalesonARTStateHIVClinicunder15.setCompositionString("1 AND 2 AND 3");
-          CohortIndicator pedMalesonARTStateHIVClinicunder15Ind=Indicators.newCohortIndicator("pedMalesonARTStateHIVClinicunder15Ind", pedMalesonARTStateHIVClinicunder15, null);
+          CohortIndicator pedMalesonARTStateHIVClinicunder15Ind=Indicators.newCohortIndicator("pedMalesonARTStateHIVClinicunder15Ind", pedMalesonARTStateHIVClinicunder15, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},dateborn=${dateborn}"));
+          pedMalesonARTStateHIVClinicunder15Ind.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          pedMalesonARTStateHIVClinicunder15Ind.addParameter(new Parameter("dateborn","dateborn",Date.class));
           
           //5 Total number of pediatric patients who are on First Line Regimen
           CompositionCohortDefinition patientOnArtOrPMTCTPrograms = new CompositionCohortDefinition();
+          patientOnArtOrPMTCTPrograms.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
           patientOnArtOrPMTCTPrograms.setName("patientOnArtOrPMTCTPrograms");
-          patientOnArtOrPMTCTPrograms.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
+          patientOnArtOrPMTCTPrograms.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
           patientOnArtOrPMTCTPrograms.getSearches().put("2",new Mapped<CohortDefinition>(inPmtctPregnancyprogram,ParameterizableUtil.createParameterMappings("onDate=${now}")));
           patientOnArtOrPMTCTPrograms.getSearches().put("3",new Mapped<CohortDefinition>(inPmtctMotherprogram,ParameterizableUtil.createParameterMappings("onDate=${now}")));
           patientOnArtOrPMTCTPrograms.setCompositionString("1 OR 2 OR 3");
@@ -589,22 +682,28 @@ public class SetupTracNetRwandaReportBySite {
           notOnCurrentKaletraDrugOrder.setName("notOnCurrentKaletraDrugOrder");
           notOnCurrentKaletraDrugOrder.addParameter(new Parameter("endDate", "endDate", Date.class));
           notOnCurrentKaletraDrugOrder.addParameter(new Parameter("dateborn","dateborn",Date.class));
-          notOnCurrentKaletraDrugOrder.getSearches().put("1",new Mapped<CohortDefinition>(patientOnArtOrPMTCTPrograms,null));
-          notOnCurrentKaletraDrugOrder.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          notOnCurrentKaletraDrugOrder.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          notOnCurrentKaletraDrugOrder.getSearches().put("1",new Mapped<CohortDefinition>(patientOnArtOrPMTCTPrograms,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+          notOnCurrentKaletraDrugOrder.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           notOnCurrentKaletraDrugOrder.getSearches().put("3",new Mapped<CohortDefinition>(onCurrentKaletraDrugOrder,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           notOnCurrentKaletraDrugOrder.setCompositionString("1 AND 2 AND (NOT 3)");
-          CohortIndicator notOnCurrentKaletraDrugOrderInd=Indicators.newCohortIndicator("notOnCurrentKaletraDrugOrderInd", notOnCurrentKaletraDrugOrder, null);
+          CohortIndicator notOnCurrentKaletraDrugOrderInd=Indicators.newCohortIndicator("notOnCurrentKaletraDrugOrderInd", notOnCurrentKaletraDrugOrder, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},endDate=${endDate},dateborn=${dateborn}"));
+          notOnCurrentKaletraDrugOrderInd.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          notOnCurrentKaletraDrugOrderInd.addParameter(new Parameter("dateborn","dateborn",Date.class));
           
           //6 Total number of pediatric patients who are on Second Line Regimen 
           CompositionCohortDefinition onCurrentKaletraDrugOrderComp = new CompositionCohortDefinition();
           onCurrentKaletraDrugOrderComp.setName("activeOnCurrentKaletraDrugOrderComp");
           onCurrentKaletraDrugOrderComp.addParameter(new Parameter("endDate", "endDate", Date.class));
           onCurrentKaletraDrugOrderComp.addParameter(new Parameter("dateborn","dateborn",Date.class));
-          onCurrentKaletraDrugOrderComp.getSearches().put("1",new Mapped<CohortDefinition>(patientOnArtOrPMTCTPrograms,null));
-          onCurrentKaletraDrugOrderComp.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          onCurrentKaletraDrugOrderComp.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+          onCurrentKaletraDrugOrderComp.getSearches().put("1",new Mapped<CohortDefinition>(patientOnArtOrPMTCTPrograms,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+          onCurrentKaletraDrugOrderComp.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           onCurrentKaletraDrugOrderComp.getSearches().put("3",new Mapped<CohortDefinition>(onCurrentKaletraDrugOrder,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           onCurrentKaletraDrugOrderComp.setCompositionString("1 AND 2 AND 3");
-          CohortIndicator activeOnCurrentKaletraDrugOrderInd=Indicators.newCohortIndicator("activeOnCurrentKaletraDrugOrderInd", onCurrentKaletraDrugOrderComp,null);
+          CohortIndicator activeOnCurrentKaletraDrugOrderInd=Indicators.newCohortIndicator("activeOnCurrentKaletraDrugOrderInd", onCurrentKaletraDrugOrderComp,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},dateborn=${dateborn},endDate=${endDate}"));
+          activeOnCurrentKaletraDrugOrderInd.addParameter(new Parameter("dateborn","dateborn",Date.class));
+          activeOnCurrentKaletraDrugOrderInd.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
           
           //7 Total number of female adult patients (age 15 or older) who are currently on ARV treatment
           CompositionCohortDefinition onARTStateInPMTCTprogrs = new CompositionCohortDefinition();
@@ -616,69 +715,59 @@ public class SetupTracNetRwandaReportBySite {
           
           CompositionCohortDefinition femaleOnArtStateinAllHIVPrograms = new CompositionCohortDefinition();
           femaleOnArtStateinAllHIVPrograms.setName("femaleOnArtStateinAllHIVPrograms");
-          femaleOnArtStateinAllHIVPrograms.addParameter(new Parameter("endDate", "endDate", Date.class));
           femaleOnArtStateinAllHIVPrograms.addParameter(new Parameter("dateborn","dateborn",Date.class));
           femaleOnArtStateinAllHIVPrograms.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateHIVClinic,null));
           femaleOnArtStateinAllHIVPrograms.getSearches().put("2", new Mapped<CohortDefinition>(onARTStateInPMTCTprogrs,null));
           femaleOnArtStateinAllHIVPrograms.getSearches().put("3", new Mapped<CohortDefinition>(femaleCohort,null));
-          femaleOnArtStateinAllHIVPrograms.getSearches().put("4", new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          femaleOnArtStateinAllHIVPrograms.getSearches().put("4", new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           femaleOnArtStateinAllHIVPrograms.setCompositionString("(1 OR 2) AND 3 AND 4");
-          CohortIndicator femalesOnArtStateinAllHIVProgramsInd=Indicators.newCohortIndicator("femalesOnArtStateinAllHIVProgramsInd", femaleOnArtStateinAllHIVPrograms, null);
+          CohortIndicator femalesOnArtStateinAllHIVProgramsInd=Indicators.newCohortIndicator("femalesOnArtStateinAllHIVProgramsInd", femaleOnArtStateinAllHIVPrograms, ParameterizableUtil.createParameterMappings("dateborn=${dateborn}"));
+          femalesOnArtStateinAllHIVProgramsInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
           
           //8 Total number of male adult patients (age 15 or older) who are currently on ARV treatment
           CompositionCohortDefinition malesOnArtStateinAllHIVPrograms = new CompositionCohortDefinition();
           malesOnArtStateinAllHIVPrograms.setName("malesOnArtStateinAllHIVPrograms");
-          malesOnArtStateinAllHIVPrograms.addParameter(new Parameter("endDate", "endDate", Date.class));
           malesOnArtStateinAllHIVPrograms.addParameter(new Parameter("dateborn","dateborn",Date.class));
           malesOnArtStateinAllHIVPrograms.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateHIVClinic,null));
           malesOnArtStateinAllHIVPrograms.getSearches().put("2", new Mapped<CohortDefinition>(onARTStateInPMTCTprogrs,null));
           malesOnArtStateinAllHIVPrograms.getSearches().put("3", new Mapped<CohortDefinition>(maleCohort,null));
-          malesOnArtStateinAllHIVPrograms.getSearches().put("4", new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          malesOnArtStateinAllHIVPrograms.getSearches().put("4", new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           malesOnArtStateinAllHIVPrograms.setCompositionString("(1 OR 2) AND 3 AND 4");
-          CohortIndicator malesOnArtStateinAllHIVProgramsInd=Indicators.newCohortIndicator("malesOnArtStateinAllHIVProgramsInd", malesOnArtStateinAllHIVPrograms, null);
-                 
+          CohortIndicator malesOnArtStateinAllHIVProgramsInd=Indicators.newCohortIndicator("malesOnArtStateinAllHIVProgramsInd", malesOnArtStateinAllHIVPrograms, ParameterizableUtil.createParameterMappings("dateborn=${dateborn}"));
+          malesOnArtStateinAllHIVProgramsInd.addParameter(new Parameter("dateborn","dateborn",Date.class)); 
+          
           //9 Total number of adult patients who are on First Line Regimen
           CompositionCohortDefinition adultsnotOnCurrentKaletraDrugOrder = new CompositionCohortDefinition();
           adultsnotOnCurrentKaletraDrugOrder.setName("adultsnotOnCurrentKaletraDrugOrder");
           adultsnotOnCurrentKaletraDrugOrder.addParameter(new Parameter("endDate", "endDate", Date.class));
           adultsnotOnCurrentKaletraDrugOrder.addParameter(new Parameter("dateborn","dateborn",Date.class));
           adultsnotOnCurrentKaletraDrugOrder.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateHIVClinic,null));
-          adultsnotOnCurrentKaletraDrugOrder.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          adultsnotOnCurrentKaletraDrugOrder.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           adultsnotOnCurrentKaletraDrugOrder.getSearches().put("3",new Mapped<CohortDefinition>(onCurrentKaletraDrugOrder,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           adultsnotOnCurrentKaletraDrugOrder.setCompositionString("1 AND 2 AND (NOT 3)");
-          CohortIndicator notoadultsOnCurrentKaletraDrugOrderInd=Indicators.newCohortIndicator("notoadultsOnCurrentKaletraDrugOrderInd", adultsnotOnCurrentKaletraDrugOrder, null);
-                 
+          CohortIndicator notoadultsOnCurrentKaletraDrugOrderInd=Indicators.newCohortIndicator("notoadultsOnCurrentKaletraDrugOrderInd", adultsnotOnCurrentKaletraDrugOrder, ParameterizableUtil.createParameterMappings("dateborn=${dateborn},endDate=${endDate}"));
+          notoadultsOnCurrentKaletraDrugOrderInd.addParameter(new Parameter("dateborn","dateborn",Date.class));  
+          
           //10 Total number of adult patients who are on Second Line Regimen
           CompositionCohortDefinition adultonCurrentKaletraDrugOrderCompo = new CompositionCohortDefinition();
           adultonCurrentKaletraDrugOrderCompo.setName("adultonCurrentKaletraDrugOrderCompo");
           adultonCurrentKaletraDrugOrderCompo.addParameter(new Parameter("endDate", "endDate", Date.class));
           adultonCurrentKaletraDrugOrderCompo.addParameter(new Parameter("dateborn","dateborn",Date.class));
           adultonCurrentKaletraDrugOrderCompo.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateHIVClinic,null));
-          adultonCurrentKaletraDrugOrderCompo.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          adultonCurrentKaletraDrugOrderCompo.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           adultonCurrentKaletraDrugOrderCompo.getSearches().put("3",new Mapped<CohortDefinition>(onCurrentKaletraDrugOrder,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
           adultonCurrentKaletraDrugOrderCompo.setCompositionString("1 AND 2 AND 3");
-          CohortIndicator adultonCurrentKaletraDrugOrderCompoInd=Indicators.newCohortIndicator("adultonCurrentKaletraDrugOrderCompoInd", adultonCurrentKaletraDrugOrderCompo, null);
+          CohortIndicator adultonCurrentKaletraDrugOrderCompoInd=Indicators.newCohortIndicator("adultonCurrentKaletraDrugOrderCompoInd", adultonCurrentKaletraDrugOrderCompo, ParameterizableUtil.createParameterMappings("dateborn=${dateborn},endDate=${endDate}"));
+          adultonCurrentKaletraDrugOrderCompoInd.addParameter(new Parameter("dateborn","dateborn",Date.class));
           
           //11 Number of new pediatric patients (<18 months) starting ARV treatment this month
           SqlCohortDefinition under18monthsAtstartOfArt = Cohorts.createUnder18monthsAtStartOfArtbyStartEndDate("TR:under18monthsAtstartOfArt", pediatrichivProgram,pediOnART);
-          CompositionCohortDefinition pedsPatientsNotOnArtStateNotOnFolowing = new CompositionCohortDefinition();
-          pedsPatientsNotOnArtStateNotOnFolowing.setName("pedsPatientsNotOnArtStateNotOnFolowing");
-          pedsPatientsNotOnArtStateNotOnFolowing.addParameter(new Parameter("startDate", "startDate", Date.class));
-          pedsPatientsNotOnArtStateNotOnFolowing.addParameter(new Parameter("endDate", "endDate", Date.class));
-          pedsPatientsNotOnArtStateNotOnFolowing.getSearches().put("1",new Mapped<CohortDefinition>(under18monthsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-          pedsPatientsNotOnArtStateNotOnFolowing.setCompositionString("1");
-          CohortIndicator pedsPatientsNotOnArtStateNotOnFolowingInd=Indicators.newCohortIndicator("pedsPatientsNotOnArtStateNotOnFolowingInd", pedsPatientsNotOnArtStateNotOnFolowing, null);
+          CohortIndicator pedsPatientsNotOnArtStateNotOnFolowingInd=Indicators.newCohortIndicator("pedsPatientsNotOnArtStateNotOnFolowingInd", under18monthsAtstartOfArt, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //12 Number of new  pediatric patients (age <5 years) starting ARV treatment this month
           SqlCohortDefinition under5yearsAtstartOfArt = Cohorts.createUnder5yrsAtStartOfArtbyStartEndDate("TR:under5yearsAtstartOfArt", pediatrichivProgram,pediOnART);
-          CompositionCohortDefinition under5PatientsNotOnArtStateNotOnFolowing = new CompositionCohortDefinition();
-          under5PatientsNotOnArtStateNotOnFolowing.setName("under5PatientsNotOnArtStateNotOnFolowing");
-          under5PatientsNotOnArtStateNotOnFolowing.addParameter(new Parameter("startDate", "startDate", Date.class));
-          under5PatientsNotOnArtStateNotOnFolowing.addParameter(new Parameter("endDate", "endDate", Date.class));
-          under5PatientsNotOnArtStateNotOnFolowing.getSearches().put("1",new Mapped<CohortDefinition>(under5yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-          under5PatientsNotOnArtStateNotOnFolowing.setCompositionString("1");
-          CohortIndicator under5PatientsNotOnArtStateNotOnFolowingInd=Indicators.newCohortIndicator("under5PatientsNotOnArtStateNotOnFolowingInd", under5PatientsNotOnArtStateNotOnFolowing, null);
-         
+          CohortIndicator under5PatientsNotOnArtStateNotOnFolowingInd=Indicators.newCohortIndicator("under5PatientsNotOnArtStateNotOnFolowingInd", under5yearsAtstartOfArt, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+          
           //13 Number of new female pediatric patients (age <15 years) starting ARV treatment this month
           SqlCohortDefinition under15yearsAtstartOfArt = Cohorts.createUnder15yrsAtStartOfArtbyStartEndDate("TR:under15yearsAtstartOfArt", pediatrichivProgram,pediOnART);
           CompositionCohortDefinition femalesPedsNotOnArtStateNotOnFolowing = new CompositionCohortDefinition();
@@ -687,9 +776,8 @@ public class SetupTracNetRwandaReportBySite {
           femalesPedsNotOnArtStateNotOnFolowing.addParameter(new Parameter("endDate", "endDate", Date.class));
           femalesPedsNotOnArtStateNotOnFolowing.getSearches().put("1",new Mapped<CohortDefinition>(under15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           femalesPedsNotOnArtStateNotOnFolowing.getSearches().put("2",new Mapped<CohortDefinition>(femaleCohort,null));
-          //femalesPedsNotOnArtStateNotOnFolowing.getSearches().put("3",new Mapped<CohortDefinition>(onFollowingStateHIVClinic,null));
           femalesPedsNotOnArtStateNotOnFolowing.setCompositionString("1 AND 2 ");
-          CohortIndicator femalesPedsNotOnArtStateNotOnFolowingInd=Indicators.newCohortIndicator("femalesPedsNotOnArtStateNotOnFolowingInd", femalesPedsNotOnArtStateNotOnFolowing, null);
+          CohortIndicator femalesPedsNotOnArtStateNotOnFolowingInd=Indicators.newCohortIndicator("femalesPedsNotOnArtStateNotOnFolowingInd", femalesPedsNotOnArtStateNotOnFolowing, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //14 Number of new male pediatric patients (age <15 years) starting ARV treatment this month
           CompositionCohortDefinition malesPedsNotOnArtStateNotOnFolowing = new CompositionCohortDefinition();
@@ -699,15 +787,16 @@ public class SetupTracNetRwandaReportBySite {
           malesPedsNotOnArtStateNotOnFolowing.getSearches().put("1",new Mapped<CohortDefinition>(under15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           malesPedsNotOnArtStateNotOnFolowing.getSearches().put("2",new Mapped<CohortDefinition>(maleCohort,null));
           malesPedsNotOnArtStateNotOnFolowing.setCompositionString("1 AND 2");
-          CohortIndicator malesPedsNotOnArtStateNotOnFolowingInd=Indicators.newCohortIndicator("malesPedsNotOnArtStateNotOnFolowingInd", malesPedsNotOnArtStateNotOnFolowing, null);
-         
-          CompositionCohortDefinition allHivProgOnORnotArt = new CompositionCohortDefinition();
+          CohortIndicator malesPedsNotOnArtStateNotOnFolowingInd=Indicators.newCohortIndicator("malesPedsNotOnArtStateNotOnFolowingInd", malesPedsNotOnArtStateNotOnFolowing,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+        
+          //nta handi hantu na hamwe ikoreshejwe
+        /*  CompositionCohortDefinition allHivProgOnORnotArt = new CompositionCohortDefinition();
           allHivProgOnORnotArt.setName("allHivProgOnORnotArt");
           allHivProgOnORnotArt.getSearches().put("1",new Mapped<CohortDefinition>(patientEnrolledInPediDuringP,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           allHivProgOnORnotArt.getSearches().put("2",new Mapped<CohortDefinition>(enrolledInAdultProgramsDuringP,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           allHivProgOnORnotArt.getSearches().put("3",new Mapped<CohortDefinition>(enrolledInPMTCTProgramsDuringP,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           allHivProgOnORnotArt.setCompositionString("(1 AND 2 ) OR 3");
-       
+       */
           //15 Number of new pediatric patients who are WHO stage 4 this month
           SqlCohortDefinition whoStage4p = Cohorts.getPatientsWithlastObservation("whoStage4p", whostage,whostage4p);
           CompositionCohortDefinition pediOnArtStateinWhostage4 = new CompositionCohortDefinition();
@@ -717,9 +806,11 @@ public class SetupTracNetRwandaReportBySite {
           pediOnArtStateinWhostage4.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           pediOnArtStateinWhostage4.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           pediOnArtStateinWhostage4.getSearches().put("1",new Mapped<CohortDefinition>(under15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-          pediOnArtStateinWhostage4.getSearches().put("2",new Mapped<CohortDefinition>(whoStage4p,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          pediOnArtStateinWhostage4.getSearches().put("2",new Mapped<CohortDefinition>(whoStage4p,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           pediOnArtStateinWhostage4.setCompositionString("1 AND 2");
-          CohortIndicator pediOnArtStateinWhostage4Ind=Indicators.newCohortIndicator("pediOnArtStateinWhostage4Ind", pediOnArtStateinWhostage4, null);
+          CohortIndicator pediOnArtStateinWhostage4Ind=Indicators.newCohortIndicator("pediOnArtStateinWhostage4Ind", pediOnArtStateinWhostage4, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},startDate=${startDate},endDate=${endDate}"));
+          pediOnArtStateinWhostage4Ind.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          pediOnArtStateinWhostage4Ind.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           
           //16 Number of new pediatric patients who are WHO stage 3 this month
           SqlCohortDefinition whoStage3p = Cohorts.getPatientsWithlastObservation("whoStage3p", whostage,whostage3p);
@@ -730,10 +821,12 @@ public class SetupTracNetRwandaReportBySite {
           pediOnArtStateinWhostage3.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           pediOnArtStateinWhostage3.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           pediOnArtStateinWhostage3.getSearches().put("1",new Mapped<CohortDefinition>(under15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-          pediOnArtStateinWhostage3.getSearches().put("2",new Mapped<CohortDefinition>(whoStage3p,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          pediOnArtStateinWhostage3.getSearches().put("2",new Mapped<CohortDefinition>(whoStage3p,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           pediOnArtStateinWhostage3.setCompositionString("1 AND 2 ");
-          CohortIndicator pediOnArtStateinWhostage3Ind=Indicators.newCohortIndicator("pediOnArtStateinWhostage3Ind", pediOnArtStateinWhostage3, null);
-                 
+          CohortIndicator pediOnArtStateinWhostage3Ind=Indicators.newCohortIndicator("pediOnArtStateinWhostage3Ind", pediOnArtStateinWhostage3, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},startDate=${startDate},endDate=${endDate}"));
+          pediOnArtStateinWhostage3Ind.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          pediOnArtStateinWhostage3Ind.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          
           //17 Number of new pediatric patients who are WHO stage 2 this month
           SqlCohortDefinition whoStage2p = Cohorts.getPatientsWithlastObservation("whoStage2p", whostage,whostage2p);
           CompositionCohortDefinition pediOnArtStateinWhostage2 = new CompositionCohortDefinition();
@@ -743,10 +836,12 @@ public class SetupTracNetRwandaReportBySite {
           pediOnArtStateinWhostage2.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           pediOnArtStateinWhostage2.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           pediOnArtStateinWhostage2.getSearches().put("1",new Mapped<CohortDefinition>(under15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-          pediOnArtStateinWhostage2.getSearches().put("2",new Mapped<CohortDefinition>(whoStage2p,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          pediOnArtStateinWhostage2.getSearches().put("2",new Mapped<CohortDefinition>(whoStage2p,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           pediOnArtStateinWhostage2.setCompositionString("1 AND 2");
-          CohortIndicator pediOnArtStateinWhostage2Ind=Indicators.newCohortIndicator("pediOnArtStateinWhostage2Ind", pediOnArtStateinWhostage2, null);
-                 
+          CohortIndicator pediOnArtStateinWhostage2Ind=Indicators.newCohortIndicator("pediOnArtStateinWhostage2Ind", pediOnArtStateinWhostage2, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},startDate=${startDate},endDate=${endDate}"));
+          pediOnArtStateinWhostage2Ind.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          pediOnArtStateinWhostage2Ind.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          
           //18 Number of new pediatric patients who are WHO stage 1 this month
           SqlCohortDefinition whoStage1p = Cohorts.getPatientsWithlastObservation("whoStage1p", whostage,whostage1p);
           CompositionCohortDefinition pediOnArtStateinWhostage1 = new CompositionCohortDefinition();
@@ -756,28 +851,34 @@ public class SetupTracNetRwandaReportBySite {
           pediOnArtStateinWhostage1.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           pediOnArtStateinWhostage1.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           pediOnArtStateinWhostage1.getSearches().put("1",new Mapped<CohortDefinition>(under15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-          pediOnArtStateinWhostage1.getSearches().put("2",new Mapped<CohortDefinition>(whoStage1p,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          pediOnArtStateinWhostage1.getSearches().put("2",new Mapped<CohortDefinition>(whoStage1p,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrBefore},onOrBefore=${onOrBefore}")));
           pediOnArtStateinWhostage1.setCompositionString("1 AND 2");
-          CohortIndicator pediOnArtStateinWhostage1Ind=Indicators.newCohortIndicator("pediOnArtStateinWhostage1Ind", pediOnArtStateinWhostage1, null);
+          CohortIndicator pediOnArtStateinWhostage1Ind=Indicators.newCohortIndicator("pediOnArtStateinWhostage1Ind", pediOnArtStateinWhostage1, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},startDate=${startDate},endDate=${endDate}"));
+          pediOnArtStateinWhostage1Ind.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          pediOnArtStateinWhostage1Ind.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           
           //19 Number of new pediatric patients whose WHO Stage is undefined this month
           CompositionCohortDefinition allWhoStage = new CompositionCohortDefinition();
           allWhoStage.setName("allWhoStage");
           allWhoStage.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           allWhoStage.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-          allWhoStage.getSearches().put("1",new Mapped<CohortDefinition>(whoStage4p,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
-          allWhoStage.getSearches().put("2",new Mapped<CohortDefinition>(whoStage3p,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
-          allWhoStage.getSearches().put("3",new Mapped<CohortDefinition>(whoStage2p,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
-          allWhoStage.getSearches().put("4",new Mapped<CohortDefinition>(whoStage1p,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          allWhoStage.getSearches().put("1",new Mapped<CohortDefinition>(whoStage4p,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+          allWhoStage.getSearches().put("2",new Mapped<CohortDefinition>(whoStage3p,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+          allWhoStage.getSearches().put("3",new Mapped<CohortDefinition>(whoStage2p,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+          allWhoStage.getSearches().put("4",new Mapped<CohortDefinition>(whoStage1p,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           allWhoStage.setCompositionString("1 OR 2 OR 3 OR 4");
           
           CompositionCohortDefinition pediOnArtStateInWhoStageX = new CompositionCohortDefinition();
           pediOnArtStateInWhoStageX.addParameter(new Parameter("startDate", "startDate", Date.class));
           pediOnArtStateInWhoStageX.addParameter(new Parameter("endDate", "endDate", Date.class));
+          pediOnArtStateInWhoStageX.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          pediOnArtStateInWhoStageX.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           pediOnArtStateInWhoStageX.getSearches().put("1",new Mapped<CohortDefinition>(under15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-          pediOnArtStateInWhoStageX.getSearches().put("2",new Mapped<CohortDefinition>(allWhoStage,null));
+          pediOnArtStateInWhoStageX.getSearches().put("2",new Mapped<CohortDefinition>(allWhoStage,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           pediOnArtStateInWhoStageX.setCompositionString("1 AND (NOT 2)");
-          CohortIndicator pediOnArtStateInWhoStageXInd=Indicators.newCohortIndicator("pediOnArtStateInWhoStageXInd", pediOnArtStateInWhoStageX, null);
+          CohortIndicator pediOnArtStateInWhoStageXInd=Indicators.newCohortIndicator("pediOnArtStateInWhoStageXInd", pediOnArtStateInWhoStageX, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},startDate=${startDate},endDate=${endDate}"));
+          pediOnArtStateInWhoStageXInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          pediOnArtStateInWhoStageXInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           
           //20 Number of new female adult patients (age 15 or more) starting ARV treatment this month
           SqlCohortDefinition over15yearsAtstartOfArtAd = Cohorts.createOver15yrsAtStartOfArtbyStartEndDate("TR:over15yearsAtstartOfArtAd", adulthivProgram, adultOnART);
@@ -799,40 +900,50 @@ public class SetupTracNetRwandaReportBySite {
           patientneverTakenorStoppedOnARTBeforeComp.addParameter(new Parameter("onOrAfter", "onOrAfter",Date.class));
           patientneverTakenorStoppedOnARTBeforeComp.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           patientneverTakenorStoppedOnARTBeforeComp.getSearches().put("1",new Mapped(inPmtctMotherprogram, ParameterizableUtil.createParameterMappings("onDate=${now}")));
-          patientneverTakenorStoppedOnARTBeforeComp.getSearches().put("2",new Mapped(patientstakingARTfortheFirstTimes, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          patientneverTakenorStoppedOnARTBeforeComp.getSearches().put("2",new Mapped(patientstakingARTfortheFirstTimes, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrAfter}")));
           patientneverTakenorStoppedOnARTBeforeComp.setCompositionString("1 AND 2 ");
           
           CompositionCohortDefinition adultsEnrolledInPMTCNewToArtorMotherProg= new CompositionCohortDefinition();
           adultsEnrolledInPMTCNewToArtorMotherProg.setName("TR:adultsEnrolledInPMTCTHIVforTheFirstTime");
+          adultsEnrolledInPMTCNewToArtorMotherProg.addParameter(new Parameter("onOrAfter", "onOrAfter",Date.class));
+          adultsEnrolledInPMTCNewToArtorMotherProg.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           adultsEnrolledInPMTCNewToArtorMotherProg.addParameter(new Parameter("startDate", "startDate",Date.class));
           adultsEnrolledInPMTCNewToArtorMotherProg.addParameter(new Parameter("endDate", "endDate", Date.class));
-          adultsEnrolledInPMTCNewToArtorMotherProg.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,null));
-          adultsEnrolledInPMTCNewToArtorMotherProg.getSearches().put("2",new Mapped<CohortDefinition>(patientneverTakenorStoppedOnARTBeforeComp,null));
+          adultsEnrolledInPMTCNewToArtorMotherProg.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+          adultsEnrolledInPMTCNewToArtorMotherProg.getSearches().put("2",new Mapped<CohortDefinition>(patientneverTakenorStoppedOnARTBeforeComp,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrAfter}")));
           adultsEnrolledInPMTCNewToArtorMotherProg.getSearches().put("3",new Mapped<CohortDefinition>(femaleCohort,null));
           adultsEnrolledInPMTCNewToArtorMotherProg.setCompositionString("(1 OR 2) AND 3");
-          CohortIndicator femaleAdultsadultsOnArtStateInd=Indicators.newCohortIndicator("femaleAdultsadultsOnArtStateInd", adultsEnrolledInPMTCNewToArtorMotherProg, null);
+          CohortIndicator femaleAdultsadultsOnArtStateInd=Indicators.newCohortIndicator("femaleAdultsadultsOnArtStateInd", adultsEnrolledInPMTCNewToArtorMotherProg, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrAfter},startDate=${startDate},endDate=${endDate}"));
+          femaleAdultsadultsOnArtStateInd.addParameter(new Parameter("onOrAfter", "onOrAfter",Date.class));
+          femaleAdultsadultsOnArtStateInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         
           //21 Number of new male adult patients (age 15 or more) starting ARV treatment this month
          
           CompositionCohortDefinition maleAdultsadultsOnArtState= new CompositionCohortDefinition();
+          maleAdultsadultsOnArtState.addParameter(new Parameter("startDate", "startDate",Date.class));
+          maleAdultsadultsOnArtState.addParameter(new Parameter("endDate", "endDate", Date.class));
           maleAdultsadultsOnArtState.setName("maleAdultsadultsOnArtState");
-          maleAdultsadultsOnArtState.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,null));
+          maleAdultsadultsOnArtState.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           maleAdultsadultsOnArtState.getSearches().put("2",new Mapped<CohortDefinition>(maleCohort,null));
           maleAdultsadultsOnArtState.setCompositionString("1 AND 2 ");
-          CohortIndicator maleAdultsadultsOnArtStateInd=Indicators.newCohortIndicator("maleAdultsadultsOnArtStateInd", maleAdultsadultsOnArtState, null);
+          CohortIndicator maleAdultsadultsOnArtStateInd=Indicators.newCohortIndicator("maleAdultsadultsOnArtStateInd", maleAdultsadultsOnArtState,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //22 Number of new adult patients who are WHO stage 4 this month
           SqlCohortDefinition whoStage4ad = Cohorts.getPatientsWithlastObservation("whoStage4ad", whostage,whostage4adlt);
           
           CompositionCohortDefinition adultsOnArtStateinWhostage4 = new CompositionCohortDefinition();
+          adultsOnArtStateinWhostage4.addParameter(new Parameter("startDate", "startDate",Date.class));
+          adultsOnArtStateinWhostage4.addParameter(new Parameter("endDate", "endDate", Date.class));
           adultsOnArtStateinWhostage4.setName("adultsOnArtStateinWhostage4");
           adultsOnArtStateinWhostage4.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           adultsOnArtStateinWhostage4.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-          adultsOnArtStateinWhostage4.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,null));
-          adultsOnArtStateinWhostage4.getSearches().put("2",new Mapped<CohortDefinition>(whoStage4ad,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          adultsOnArtStateinWhostage4.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+          adultsOnArtStateinWhostage4.getSearches().put("2",new Mapped<CohortDefinition>(whoStage4ad,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           adultsOnArtStateinWhostage4.setCompositionString("1 AND 2");
-          CohortIndicator adultsOnArtStateinWhostage4Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage4Ind", adultsOnArtStateinWhostage4, null);
-         
+          CohortIndicator adultsOnArtStateinWhostage4Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage4Ind", adultsOnArtStateinWhostage4, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}"));
+          adultsOnArtStateinWhostage4Ind.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          adultsOnArtStateinWhostage4Ind.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class)); 
+          
           //23 Number of new adult patients who are WHO stage 3 this month
           SqlCohortDefinition whoStage3ad = Cohorts.getPatientsWithlastObservation("whoStage3ad", whostage,whostage3adlt);
           
@@ -840,21 +951,29 @@ public class SetupTracNetRwandaReportBySite {
           adultsOnArtStateinWhostage3.setName("adultsOnArtStateinWhostage3");
           adultsOnArtStateinWhostage3.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           adultsOnArtStateinWhostage3.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-          adultsOnArtStateinWhostage3.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,null));
-          adultsOnArtStateinWhostage3.getSearches().put("2",new Mapped<CohortDefinition>(whoStage3ad,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          adultsOnArtStateinWhostage3.addParameter(new Parameter("startDate", "startDate", Date.class));
+          adultsOnArtStateinWhostage3.addParameter(new Parameter("endDate", "endDate", Date.class));
+          adultsOnArtStateinWhostage3.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+          adultsOnArtStateinWhostage3.getSearches().put("2",new Mapped<CohortDefinition>(whoStage3ad,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           adultsOnArtStateinWhostage3.setCompositionString("1 AND 2");
-          CohortIndicator adultsOnArtStateinWhostage3Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage3Ind", adultsOnArtStateinWhostage3, null);
-         
+          CohortIndicator adultsOnArtStateinWhostage3Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage3Ind", adultsOnArtStateinWhostage3, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrAfter},startDate=${startDate},endDate=${endDate}"));
+          adultsOnArtStateinWhostage3Ind.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          adultsOnArtStateinWhostage3Ind.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          
           //24 Number of new adult patients who are WHO stage 2 this month
           SqlCohortDefinition whoStage2ad = Cohorts.getPatientsWithlastObservation("whoStage2ad", whostage,whostage2adlt);
           CompositionCohortDefinition adultsOnArtStateinWhostage2 = new CompositionCohortDefinition();
           adultsOnArtStateinWhostage2.setName("adultsOnArtStateinWhostage2");
           adultsOnArtStateinWhostage2.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           adultsOnArtStateinWhostage2.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-          adultsOnArtStateinWhostage2.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,null));
-          adultsOnArtStateinWhostage2.getSearches().put("2",new Mapped<CohortDefinition>(whoStage2ad,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          adultsOnArtStateinWhostage2.addParameter(new Parameter("startDate", "startDate", Date.class));
+          adultsOnArtStateinWhostage2.addParameter(new Parameter("endDate", "endDate", Date.class));
+          adultsOnArtStateinWhostage2.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+          adultsOnArtStateinWhostage2.getSearches().put("2",new Mapped<CohortDefinition>(whoStage2ad,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           adultsOnArtStateinWhostage2.setCompositionString("1 AND 2 ");
-          CohortIndicator adultsOnArtStateinWhostage2Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage2Ind", adultsOnArtStateinWhostage2, null);
+          CohortIndicator adultsOnArtStateinWhostage2Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage2Ind", adultsOnArtStateinWhostage2, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrAfter},startDate=${startDate},endDate=${endDate}"));
+          adultsOnArtStateinWhostage2Ind.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          adultsOnArtStateinWhostage2Ind.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           
           //25 Number of new adult patients who are WHO stage 1 this month
           SqlCohortDefinition whoStage1ad = Cohorts.getPatientsWithlastObservation("whoStage1ad", whostage,whostage1adlt);
@@ -862,49 +981,45 @@ public class SetupTracNetRwandaReportBySite {
           adultsOnArtStateinWhostage1.setName("adultsOnArtStateinWhostage1");
           adultsOnArtStateinWhostage1.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           adultsOnArtStateinWhostage1.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-          adultsOnArtStateinWhostage1.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,null));
-          adultsOnArtStateinWhostage1.getSearches().put("2",new Mapped<CohortDefinition>(whoStage1ad,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          adultsOnArtStateinWhostage1.addParameter(new Parameter("startDate", "startDate", Date.class));
+          adultsOnArtStateinWhostage1.addParameter(new Parameter("endDate", "endDate", Date.class));
+          adultsOnArtStateinWhostage1.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+          adultsOnArtStateinWhostage1.getSearches().put("2",new Mapped<CohortDefinition>(whoStage1ad,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           adultsOnArtStateinWhostage1.setCompositionString("1 AND 2");
-          CohortIndicator adultsOnArtStateinWhostage1Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage1Ind", adultsOnArtStateinWhostage1, null);
+          CohortIndicator adultsOnArtStateinWhostage1Ind=Indicators.newCohortIndicator("adultsOnArtStateinWhostage1Ind", adultsOnArtStateinWhostage1, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrAfter},startDate=${startDate},endDate=${endDate}"));
+          adultsOnArtStateinWhostage1Ind.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          adultsOnArtStateinWhostage1Ind.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           
           //26 Number of new adult patients who are WHO stage undefined this month
           CompositionCohortDefinition allWhoStageAdult = new CompositionCohortDefinition();
           allWhoStageAdult.setName("allWhoStageAdult");
           allWhoStageAdult.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           allWhoStageAdult.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-          allWhoStageAdult.getSearches().put("1",new Mapped<CohortDefinition>(whoStage4ad,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
-          allWhoStageAdult.getSearches().put("2",new Mapped<CohortDefinition>(whoStage3ad,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
-          allWhoStageAdult.getSearches().put("3",new Mapped<CohortDefinition>(whoStage2ad,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
-          allWhoStageAdult.getSearches().put("4",new Mapped<CohortDefinition>(whoStage1ad,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          allWhoStageAdult.getSearches().put("1",new Mapped<CohortDefinition>(whoStage4ad,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+          allWhoStageAdult.getSearches().put("2",new Mapped<CohortDefinition>(whoStage3ad,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+          allWhoStageAdult.getSearches().put("3",new Mapped<CohortDefinition>(whoStage2ad,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+          allWhoStageAdult.getSearches().put("4",new Mapped<CohortDefinition>(whoStage1ad,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           allWhoStageAdult.setCompositionString("1 OR 2 OR 3 OR 4");
           
           CompositionCohortDefinition adultsOnArtStateinWhostageX = new CompositionCohortDefinition();
+          adultsOnArtStateinWhostageX.addParameter(new Parameter("startDate", "startDate", Date.class));
+          adultsOnArtStateinWhostageX.addParameter(new Parameter("endDate", "endDate", Date.class));
+          adultsOnArtStateinWhostageX.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          adultsOnArtStateinWhostageX.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           adultsOnArtStateinWhostageX.setName("adultsOnArtStateinWhostageX");
-          adultsOnArtStateinWhostageX.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,null));
-          adultsOnArtStateinWhostageX.getSearches().put("2",new Mapped<CohortDefinition>(allWhoStageAdult,null));
+          adultsOnArtStateinWhostageX.getSearches().put("1",new Mapped<CohortDefinition>(over15yearsAtstartOfArt,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+          adultsOnArtStateinWhostageX.getSearches().put("2",new Mapped<CohortDefinition>(allWhoStageAdult,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           adultsOnArtStateinWhostageX.setCompositionString("1 AND (NOT 2)");
-          CohortIndicator adultsOnArtStateinWhostageXInd=Indicators.newCohortIndicator("adultsOnArtStateinWhostageXInd", adultsOnArtStateinWhostageX, null);
+          CohortIndicator adultsOnArtStateinWhostageXInd=Indicators.newCohortIndicator("adultsOnArtStateinWhostageXInd", adultsOnArtStateinWhostageX, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrAfter},startDate=${startDate},endDate=${endDate}"));
+          adultsOnArtStateinWhostageXInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          adultsOnArtStateinWhostageXInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
           
           //27 Number of ARV patients (age < 15) who have had their treatment interrupted this month
-          SqlCohortDefinition pediArtDrugsInteruptedThisMonth=new SqlCohortDefinition();
-          pediArtDrugsInteruptedThisMonth.setName("pediArtDrugsInteruptedThisMonth");
-          pediArtDrugsInteruptedThisMonth.setQuery("select DISTINCT pp.patient_id FROM person p,patient_program pp,patient pa,patient_state ps " +
-          "WHERE p.person_id=pp.patient_id AND ps.patient_program_id = pp.patient_program_id AND pp.patient_id = pa.patient_id " +
-          "AND pp.program_id=10 AND ps.state=332 AND DATEDIFF(ps.start_date,p.birthdate) < 5479 " +
-          "AND (ps.end_date between :startDate and :endDate) AND p.voided=0 AND pp.voided=0 AND pa.voided=0 AND ps.voided=0 ");
-          pediArtDrugsInteruptedThisMonth.addParameter(new Parameter("startDate", "startDate", Date.class));
-          pediArtDrugsInteruptedThisMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
+          SqlCohortDefinition pediArtDrugsInteruptedThisMonth = Cohorts.createUnder15yrsAtStartOfArtbyCompletedDuringP("TR:pediArtDrugsInteruptedThisMonth", pediatrichivProgram, pediOnART);
+          SqlCohortDefinition adultArtDrugsInteruptedThisMonth = Cohorts.createOver15yrsAtStartOfArtbyCompletedDuringP("TR:adultArtDrugsInteruptedThisMonth", adulthivProgram, adultOnART);
           CohortIndicator pediArtDrugsInteruptedThisMonthInd=Indicators.newCohortIndicator("adultsOnArtStateinWhostageXInd", pediArtDrugsInteruptedThisMonth,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //28 Number of ARV patients (age 15+) who have had their treatment interrupted this month   
-          SqlCohortDefinition adultArtDrugsInteruptedThisMonth=new SqlCohortDefinition();
-          adultArtDrugsInteruptedThisMonth.setName("adultArtDrugsInteruptedThisMonth");
-          adultArtDrugsInteruptedThisMonth.setQuery("select DISTINCT pp.patient_id FROM person p,patient_program pp,patient pa,patient_state ps " +
-          "WHERE p.person_id=pp.patient_id AND ps.patient_program_id = pp.patient_program_id AND pp.patient_id = pa.patient_id " +
-          "AND pp.program_id=3 AND ps.state=10 AND DATEDIFF(ps.start_date,p.birthdate) >= 5479 " +
-          "AND (ps.end_date between :startDate and :endDate) AND p.voided=0 AND pp.voided=0 AND pa.voided=0 AND ps.voided=0 ");
-          adultArtDrugsInteruptedThisMonth.addParameter(new Parameter("startDate", "startDate", Date.class));
-          adultArtDrugsInteruptedThisMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
           CohortIndicator adultArtDrugsInteruptedThisMonthInd=Indicators.newCohortIndicator("adultsOnArtStateinWhostageXInd", adultArtDrugsInteruptedThisMonth,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //29 Number of ARV patients (age <15) who have died this month
@@ -922,183 +1037,244 @@ public class SetupTracNetRwandaReportBySite {
           over15inDaysDead.addParameter(new Parameter("dateborn", "dateborn", Date.class));
   	
           CompositionCohortDefinition adultspatientsDiedandNotOnART = new CompositionCohortDefinition();
+          adultspatientsDiedandNotOnART.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          adultspatientsDiedandNotOnART.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          adultspatientsDiedandNotOnART.addParameter(new Parameter("startDate", "startDate", Date.class));
+          adultspatientsDiedandNotOnART.addParameter(new Parameter("endDate", "endDate", Date.class));
           adultspatientsDiedandNotOnART.setName("adultspatientsDiedandNotOnART");
           adultspatientsDiedandNotOnART.getSearches().put("1",new Mapped<CohortDefinition>(pediOnArtBeforeExitedFromCare,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
           adultspatientsDiedandNotOnART.getSearches().put("2",new Mapped<CohortDefinition>(adultOnArtBeforeExitedFromCare,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-          adultspatientsDiedandNotOnART.getSearches().put("3",new Mapped<CohortDefinition>(exitedCareWithDeadStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+          adultspatientsDiedandNotOnART.getSearches().put("3",new Mapped<CohortDefinition>(exitedCareWithDeadStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           adultspatientsDiedandNotOnART.setCompositionString("(1 OR 2) AND 3  ");
          
           CompositionCohortDefinition preArtPediAndDiedThisMonth = new CompositionCohortDefinition();
           preArtPediAndDiedThisMonth.setName("preArtPediAndDiedThisMonth");
           preArtPediAndDiedThisMonth.addParameter(new Parameter("dateborn", "dateborn", Date.class));
           preArtPediAndDiedThisMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
-          preArtPediAndDiedThisMonth.getSearches().put("1",new Mapped<CohortDefinition>(under15inDaysDead,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
-          preArtPediAndDiedThisMonth.getSearches().put("2",new Mapped<CohortDefinition>(adultspatientsDiedandNotOnART,null));
+          preArtPediAndDiedThisMonth.addParameter(new Parameter("startDate", "startDate", Date.class));
+          preArtPediAndDiedThisMonth.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          preArtPediAndDiedThisMonth.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          preArtPediAndDiedThisMonth.getSearches().put("1",new Mapped<CohortDefinition>(under15inDaysDead,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
+          preArtPediAndDiedThisMonth.getSearches().put("2",new Mapped<CohortDefinition>(adultspatientsDiedandNotOnART,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           preArtPediAndDiedThisMonth.setCompositionString("1 AND 2");
-          CohortIndicator preArtPediAndDiedThisMonthInd=Indicators.newCohortIndicator("pedionARTDiedDuringPInd", preArtPediAndDiedThisMonth, null);
+          CohortIndicator preArtPediAndDiedThisMonthInd=Indicators.newCohortIndicator("pedionARTDiedDuringPInd", preArtPediAndDiedThisMonth, ParameterizableUtil.createParameterMappings("dateborn=${dateborn},startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}"));
+          preArtPediAndDiedThisMonthInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+          preArtPediAndDiedThisMonthInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          preArtPediAndDiedThisMonthInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           
           //30 Number of ARV patients (age 15 or more) who have died this month
           CompositionCohortDefinition preArtAdultAndDiedThisMonth = new CompositionCohortDefinition();
           preArtAdultAndDiedThisMonth.setName("preArtAdultAndDiedThisMonth");
           preArtAdultAndDiedThisMonth.addParameter(new Parameter("dateborn", "dateborn", Date.class));
           preArtAdultAndDiedThisMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
-          preArtAdultAndDiedThisMonth.getSearches().put("1",new Mapped<CohortDefinition>(over15inDaysDead,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
-          preArtAdultAndDiedThisMonth.getSearches().put("2",new Mapped<CohortDefinition>(adultspatientsDiedandNotOnART,null));
+          preArtAdultAndDiedThisMonth.addParameter(new Parameter("startDate", "startDate", Date.class));
+          preArtAdultAndDiedThisMonth.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          preArtAdultAndDiedThisMonth.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          preArtAdultAndDiedThisMonth.getSearches().put("1",new Mapped<CohortDefinition>(over15inDaysDead,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
+          preArtAdultAndDiedThisMonth.getSearches().put("2",new Mapped<CohortDefinition>(adultspatientsDiedandNotOnART,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           preArtAdultAndDiedThisMonth.setCompositionString("1 AND 2");
-          CohortIndicator preArtAdultAndDiedThisMonthInd=Indicators.newCohortIndicator("adultsonARTDiedDuringPInd", preArtAdultAndDiedThisMonth, null);
+          CohortIndicator preArtAdultAndDiedThisMonthInd=Indicators.newCohortIndicator("adultsonARTDiedDuringPInd", preArtAdultAndDiedThisMonth, ParameterizableUtil.createParameterMappings("dateborn=${dateborn},startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}"));
+          preArtAdultAndDiedThisMonthInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+          preArtAdultAndDiedThisMonthInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          preArtAdultAndDiedThisMonthInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
           
           //31 Number of ARV patients (age <15) lost to follow up (>3 months)
-          EncounterCohortDefinition patientWithHIVEncounters = Cohorts.createEncounterParameterizedByDate("patientWithHIVEncounters", onOrAfterOnOrBefore,pediAdnAdultEncounters);
+         // EncounterCohortDefinition patientWithHIVEncounters = Cohorts.createEncounterParameterizedByDate("patientWithHIVEncounters", onOrAfterOnOrBefore,pediAdnAdultEncounters);
+          EncounterCohortDefinition patientWithHIVEncountersDates = Cohorts.createEncounterParameterizedByDate("patientWithHIVEncounters", onOrAfterDateOnOrBeforeDate,pediAdnAdultEncounters);
           CompositionCohortDefinition artLostAdActive = new CompositionCohortDefinition();
+          artLostAdActive.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          artLostAdActive.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          artLostAdActive.addParameter(new Parameter("onOrAfterDate", "onOrAfterDate", Date.class));
+          artLostAdActive.addParameter(new Parameter("onOrBeforeDate", "onOrBeforeDate", Date.class));
           artLostAdActive.setName("artLostAdActive");
-          artLostAdActive.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
-          artLostAdActive.getSearches().put("2", new Mapped<CohortDefinition>(patientWithHIVEncounters,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate}")));
-          artLostAdActive.getSearches().put("3",new Mapped<CohortDefinition>(nonActivePatients,null));
+          artLostAdActive.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+          artLostAdActive.getSearches().put("2", new Mapped<CohortDefinition>(patientWithHIVEncountersDates,ParameterizableUtil.createParameterMappings("onOrAfterDate=${onOrAfterDate-3m},onOrBeforeDate=${onOrBeforeDate}")));
+          artLostAdActive.getSearches().put("3",new Mapped<CohortDefinition>(nonActivePatients,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
           artLostAdActive.setCompositionString("1 AND 2 AND (NOT 3) ");
           
           CompositionCohortDefinition pedsOnArtLostAndwithHIVForms = new CompositionCohortDefinition();
           pedsOnArtLostAndwithHIVForms.setName("pedsOnArtLostAndwithHIVForms");
           pedsOnArtLostAndwithHIVForms.addParameter(new Parameter("dateborn", "dateborn", Date.class));
-          pedsOnArtLostAndwithHIVForms.addParameter(new Parameter("endDate", "endDate", Date.class));
-          pedsOnArtLostAndwithHIVForms.getSearches().put("1",new Mapped<CohortDefinition>(artLostAdActive,null));
-          pedsOnArtLostAndwithHIVForms.getSearches().put("3",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          pedsOnArtLostAndwithHIVForms.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          pedsOnArtLostAndwithHIVForms.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          pedsOnArtLostAndwithHIVForms.addParameter(new Parameter("onOrAfterDate", "onOrAfterDate", Date.class));
+          pedsOnArtLostAndwithHIVForms.addParameter(new Parameter("onOrBeforeDate", "onOrBeforeDate", Date.class));
+          pedsOnArtLostAndwithHIVForms.getSearches().put("1",new Mapped<CohortDefinition>(artLostAdActive,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},onOrAfterDate=${onOrAfterDate-3m},onOrBeforeDate=${onOrBeforeDate}")));
+          pedsOnArtLostAndwithHIVForms.getSearches().put("3",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           pedsOnArtLostAndwithHIVForms.setCompositionString("1 AND 3 ");
-          CohortIndicator pedsOnArtLostAndwithHIVFormsInd=Indicators.newCohortIndicator("pedsOnArtLostAndwithHIVFormsInd", pedsOnArtLostAndwithHIVForms, null);
-         
+          CohortIndicator pedsOnArtLostAndwithHIVFormsInd=Indicators.newCohortIndicator("pedsOnArtLostAndwithHIVFormsInd", pedsOnArtLostAndwithHIVForms, ParameterizableUtil.createParameterMappings("onOrAfterDate=${onOrAfterDate-3m},onOrBeforeDate=${onOrBeforeDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},dateborn=${dateborn"));
+          pedsOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+          pedsOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          pedsOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          pedsOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("onOrAfterDate", "onOrAfterDate", Date.class));
+          pedsOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("onOrBeforeDate", "onOrBeforeDate", Date.class));
+          
           //32 Number of ARV patients (age 15 or more) lost to follow up (>3 months)
           CompositionCohortDefinition adultOnArtLostAndwithHIVForms = new CompositionCohortDefinition();
           adultOnArtLostAndwithHIVForms.setName("adultOnArtLostAndwithHIVForms");
           adultOnArtLostAndwithHIVForms.addParameter(new Parameter("dateborn", "dateborn", Date.class));
-          adultOnArtLostAndwithHIVForms.addParameter(new Parameter("endDate", "endDate", Date.class));
-          adultOnArtLostAndwithHIVForms.getSearches().put("1",new Mapped<CohortDefinition>(artLostAdActive,null));
-          adultOnArtLostAndwithHIVForms.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+          adultOnArtLostAndwithHIVForms.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          adultOnArtLostAndwithHIVForms.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          adultOnArtLostAndwithHIVForms.addParameter(new Parameter("onOrAfterDate", "onOrAfterDate", Date.class));
+          adultOnArtLostAndwithHIVForms.addParameter(new Parameter("onOrBeforeDate", "onOrBeforeDate", Date.class));
+          adultOnArtLostAndwithHIVForms.getSearches().put("1",new Mapped<CohortDefinition>(artLostAdActive,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},onOrAfterDate=${onOrAfterDate-3m},onOrBeforeDate=${onOrBeforeDate}")));
+          adultOnArtLostAndwithHIVForms.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
           adultOnArtLostAndwithHIVForms.setCompositionString("1 AND 2");
-          CohortIndicator adultOnArtLostAndwithHIVFormsInd=Indicators.newCohortIndicator("adultOnArtLostAndwithHIVFormsInd", adultOnArtLostAndwithHIVForms, null);
+          CohortIndicator adultOnArtLostAndwithHIVFormsInd=Indicators.newCohortIndicator("adultOnArtLostAndwithHIVFormsInd", adultOnArtLostAndwithHIVForms,ParameterizableUtil.createParameterMappings("onOrAfterDate=${onOrAfterDate-3m},onOrBeforeDate=${onOrBeforeDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},dateborn=${dateborn"));
+          adultOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+          adultOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+          adultOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("onOrAfterDate", "onOrAfterDate", Date.class));
+          adultOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("onOrBeforeDate", "onOrBeforeDate", Date.class));
+          adultOnArtLostAndwithHIVFormsInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
           
            //33 Number of male patients on treatment 12 months after initiation of ARVs this month
            CompositionCohortDefinition malesOnArtLostforMoreThan12months = new CompositionCohortDefinition();
            malesOnArtLostforMoreThan12months.setName("malesOnArtLostforMoreThan12months");
-           malesOnArtLostforMoreThan12months.getSearches().put("1",new Mapped<CohortDefinition>(onARTstatesStateCohort,ParameterizableUtil.createParameterMappings("onDate=${startDate-12m}")));
+           malesOnArtLostforMoreThan12months.addParameter(new Parameter("onDate", "onDate", Date.class));
+           malesOnArtLostforMoreThan12months.getSearches().put("1",new Mapped<CohortDefinition>(onARTstatesStateCohort,ParameterizableUtil.createParameterMappings("onDate=${onDate-12m}")));
            malesOnArtLostforMoreThan12months.getSearches().put("2",new Mapped<CohortDefinition>(inPediAndAdultprogram,ParameterizableUtil.createParameterMappings("onDate=${now}")));
            malesOnArtLostforMoreThan12months.getSearches().put("3",new Mapped<CohortDefinition>(maleCohort,null));
            malesOnArtLostforMoreThan12months.setCompositionString("1 AND 2 AND 3 ");
-           CohortIndicator malesOnArtLostforMoreThan12monthsInd=Indicators.newCohortIndicator("malesOnArtLostforMoreThan12monthsInd", malesOnArtLostforMoreThan12months, null);
-                 
+           CohortIndicator malesOnArtLostforMoreThan12monthsInd=Indicators.newCohortIndicator("malesOnArtLostforMoreThan12monthsInd", malesOnArtLostforMoreThan12months,ParameterizableUtil.createParameterMappings("onDate=${onDate-12m}"));
+           malesOnArtLostforMoreThan12monthsInd.addParameter(new Parameter("onDate", "onDate", Date.class)); 
+           
            //34 Number of female patients on treatment 12 months after initiation of ARVs this month
            CompositionCohortDefinition femalesOnArtLostforMoreThan12months = new CompositionCohortDefinition();
            femalesOnArtLostforMoreThan12months.setName("femalesOnArtLostforMoreThan12months");
-           femalesOnArtLostforMoreThan12months.addParameter(new Parameter("startDate", "startDate",Date.class));
-           femalesOnArtLostforMoreThan12months.getSearches().put("1",new Mapped<CohortDefinition>(onARTstatesStateCohort,ParameterizableUtil.createParameterMappings("onDate=${startDate-12m}")));
+           femalesOnArtLostforMoreThan12months.addParameter(new Parameter("onDate", "onDate",Date.class));
+           femalesOnArtLostforMoreThan12months.getSearches().put("1",new Mapped<CohortDefinition>(onARTstatesStateCohort,ParameterizableUtil.createParameterMappings("onDate=${onDate-12m}")));
            femalesOnArtLostforMoreThan12months.getSearches().put("2",new Mapped<CohortDefinition>(inPediAndAdultprogram,ParameterizableUtil.createParameterMappings("onDate=${now}")));
            femalesOnArtLostforMoreThan12months.getSearches().put("3",new Mapped<CohortDefinition>(femaleCohort,null));
            femalesOnArtLostforMoreThan12months.setCompositionString("1 AND 2 AND 3 ");
-           CohortIndicator femalesOnArtLostforMoreThan12monthsInd=Indicators.newCohortIndicator("femalesOnArtLostforMoreThan12monthsInd", femalesOnArtLostforMoreThan12months, null);
-          
+           CohortIndicator femalesOnArtLostforMoreThan12monthsInd=Indicators.newCohortIndicator("femalesOnArtLostforMoreThan12monthsInd", femalesOnArtLostforMoreThan12months, ParameterizableUtil.createParameterMappings("onDate=${onDate-12m}"));
+           femalesOnArtLostforMoreThan12monthsInd.addParameter(new Parameter("onDate", "onDate", Date.class)); 
+           
            //35 Number of  ARV patients (age <15) who have been transferred out this month
            SqlCohortDefinition pediOnArtBeforeTranferedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("pediOnArtBeforeTranferedFromCare", pediatrichivProgram,pediOnART,peditransferedOutState);
            SqlCohortDefinition adultOnArtBeforeTransferedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("adultOnArtBeforeTransferedFromCare", adulthivProgram,adultOnART,adulttransferedOutState);        
            
            CompositionCohortDefinition patientArtTrasferedOut = new CompositionCohortDefinition();
            patientArtTrasferedOut.setName("patientArtTrasferedOut");
-           patientArtTrasferedOut.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           patientArtTrasferedOut.addParameter(new Parameter("startDate", "startDate", Date.class));
            patientArtTrasferedOut.addParameter(new Parameter("endDate", "endDate", Date.class));
+           patientArtTrasferedOut.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientArtTrasferedOut.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            patientArtTrasferedOut.getSearches().put("1",new Mapped<CohortDefinition>(pediOnArtBeforeTranferedFromCare,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            patientArtTrasferedOut.getSearches().put("2",new Mapped<CohortDefinition>(adultOnArtBeforeTransferedFromCare,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-           patientArtTrasferedOut.getSearches().put("3",new Mapped<CohortDefinition>(exitedCareWithtransferStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+           patientArtTrasferedOut.getSearches().put("3",new Mapped<CohortDefinition>(exitedCareWithtransferStatus,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
            patientArtTrasferedOut.setCompositionString("(1 OR 2) AND 3");
                
            CompositionCohortDefinition pedionARTTransferedOutDuringP = new CompositionCohortDefinition();
            pedionARTTransferedOutDuringP.setName("pedionARTTransferedOutDuringP");
-           pedionARTTransferedOutDuringP.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           pedionARTTransferedOutDuringP.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           pedionARTTransferedOutDuringP.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+           pedionARTTransferedOutDuringP.addParameter(new Parameter("startDate", "startDate", Date.class));
            pedionARTTransferedOutDuringP.addParameter(new Parameter("endDate", "endDate", Date.class));
-           pedionARTTransferedOutDuringP.getSearches().put("1",new Mapped<CohortDefinition>(patientArtTrasferedOut,null));
-           pedionARTTransferedOutDuringP.getSearches().put("2", new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+           pedionARTTransferedOutDuringP.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           pedionARTTransferedOutDuringP.getSearches().put("1",new Mapped<CohortDefinition>(patientArtTrasferedOut,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+           pedionARTTransferedOutDuringP.getSearches().put("2", new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
            pedionARTTransferedOutDuringP.setCompositionString("1 AND 2");
-           CohortIndicator pedionARTTransferedOutDuringPInd=Indicators.newCohortIndicator("pedionARTTransferedOutDuringPInd", pedionARTTransferedOutDuringP, null);
-                  
+           CohortIndicator pedionARTTransferedOutDuringPInd=Indicators.newCohortIndicator("pedionARTTransferedOutDuringPInd", pedionARTTransferedOutDuringP,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},dateborn=${dateborn}"));
+           pedionARTTransferedOutDuringPInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           pedionARTTransferedOutDuringPInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class)); 
+           pedionARTTransferedOutDuringPInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+                 
            //36 Number of  ARV patients (age 15 or more) who have been transferred out this month
            
            CompositionCohortDefinition adultsonARTTransferedOutDuringP = new CompositionCohortDefinition();
            adultsonARTTransferedOutDuringP.setName("adultsonARTTransferedOutDuringP");
            adultsonARTTransferedOutDuringP.addParameter(new Parameter("dateborn", "dateborn", Date.class));
-           adultsonARTTransferedOutDuringP.addParameter(new Parameter("endDate", "endDate", Date.class));
-           adultsonARTTransferedOutDuringP.getSearches().put("1",new Mapped<CohortDefinition>(patientArtTrasferedOut,null));
-           adultsonARTTransferedOutDuringP.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+           adultsonARTTransferedOutDuringP.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           adultsonARTTransferedOutDuringP.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class)); 
+           adultsonARTTransferedOutDuringP.addParameter(new Parameter("startDate", "startDate", Date.class));
+           adultsonARTTransferedOutDuringP.addParameter(new Parameter("endDate", "endDate", Date.class)); 
+           adultsonARTTransferedOutDuringP.getSearches().put("1",new Mapped<CohortDefinition>(patientArtTrasferedOut,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+           adultsonARTTransferedOutDuringP.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
            adultsonARTTransferedOutDuringP.setCompositionString("1 AND 2");
-           CohortIndicator adultsonARTTransferedOutDuringPInd=Indicators.newCohortIndicator("adultsonARTTransferedOutDuringPInd", adultsonARTTransferedOutDuringP, null);
+           CohortIndicator adultsonARTTransferedOutDuringPInd=Indicators.newCohortIndicator("adultsonARTTransferedOutDuringPInd", adultsonARTTransferedOutDuringP, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},onOrBefore=${onOrBefore},dateborn=${dateborn}"));
+           adultsonARTTransferedOutDuringPInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           adultsonARTTransferedOutDuringPInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           adultsonARTTransferedOutDuringPInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            
            //37 Number of  ARV patients (age <15) who have been transferred in this month
            CompositionCohortDefinition pedionWithTransferEncounter = new CompositionCohortDefinition();
            pedionWithTransferEncounter.setName("pedionWithTransferEncounter");
            pedionWithTransferEncounter.addParameter(new Parameter("dateborn", "dateborn", Date.class));
-           pedionWithTransferEncounter.addParameter(new Parameter("endDate", "endDate", Date.class));
-           pedionWithTransferEncounter.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd, null));
-           pedionWithTransferEncounter.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
-           pedionWithTransferEncounter.getSearches().put("3", new Mapped<CohortDefinition>(patientTransferEncounter,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}")));
+           pedionWithTransferEncounter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           pedionWithTransferEncounter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+           pedionWithTransferEncounter.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+           pedionWithTransferEncounter.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
+           pedionWithTransferEncounter.getSearches().put("3", new Mapped<CohortDefinition>(patientTransferEncounter,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
            pedionWithTransferEncounter.setCompositionString("1 AND 2 AND 3");
-           CohortIndicator pedionWithTransferInFormInd=Indicators.newCohortIndicator("pedionWithTransferInFormInd", pedionWithTransferEncounter, null);
+           CohortIndicator pedionWithTransferInFormInd=Indicators.newCohortIndicator("pedionWithTransferInFormInd", pedionWithTransferEncounter, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},dateborn=${dateborn}"));
+           pedionWithTransferInFormInd.setName("pedionWithTransferEncounter");
+           pedionWithTransferInFormInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           pedionWithTransferInFormInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           pedionWithTransferInFormInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            
            //38 Number of ARV patients (age 15 or more) who have been transferred in this month
            CompositionCohortDefinition adultsOnWithTransferEncounter = new CompositionCohortDefinition();
            adultsOnWithTransferEncounter.setName("adultsOnWithTransferEncounter");
            adultsOnWithTransferEncounter.addParameter(new Parameter("dateborn", "dateborn", Date.class));
-           adultsOnWithTransferEncounter.addParameter(new Parameter("endDate", "endDate", Date.class));
-           adultsOnWithTransferEncounter.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd, null));
-           adultsOnWithTransferEncounter.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
-           adultsOnWithTransferEncounter.getSearches().put("3", new Mapped<CohortDefinition>(patientTransferEncounter,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}")));
+           adultsOnWithTransferEncounter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           adultsOnWithTransferEncounter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+           adultsOnWithTransferEncounter.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+           adultsOnWithTransferEncounter.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
+           adultsOnWithTransferEncounter.getSearches().put("3", new Mapped<CohortDefinition>(patientTransferEncounter,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
            adultsOnWithTransferEncounter.setCompositionString("1 AND 2 AND 3");
-           CohortIndicator adultsOnWithTransferEncounterInd=Indicators.newCohortIndicator("adultsOnWithTransferEncounterInd", adultsOnWithTransferEncounter, null);
-                 
+           CohortIndicator adultsOnWithTransferEncounterInd=Indicators.newCohortIndicator("adultsOnWithTransferEncounterInd", adultsOnWithTransferEncounter, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},dateborn=${dateborn}"));
+           adultsOnWithTransferEncounterInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           adultsOnWithTransferEncounterInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class)); 
+           adultsOnWithTransferEncounterInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           
            //39 Number of PRe-ART patients lost to follow up (> 3months) back to program
-           SqlCohortDefinition lostbacktoProgramThismonthinART=new SqlCohortDefinition();
-           lostbacktoProgramThismonthinART.setName("TR:lostbacktoProgramThismonthinART");
-           lostbacktoProgramThismonthinART.setQuery("select DISTINCT patient_id FROM encounter WHERE patient_id " +
-           	"IN (select DISTINCT e.patient_id FROM encounter e, patient p WHERE e.patient_id=p.patient_id " +
-           	"AND DATEDIFF(:startDate, e.encounter_datetime) >= 90 AND e.encounter_type IN (1,2,3,4,24,25) " +
-           	"AND p.voided=0 AND e.voided=0) AND encounter_datetime >= :startDate AND encounter_datetime <= :endDate AND voided=0  ");
-           lostbacktoProgramThismonthinART.addParameter(new Parameter("startDate", "startDate", Date.class));
-           lostbacktoProgramThismonthinART.addParameter(new Parameter("endDate", "endDate", Date.class));
+           SqlCohortDefinition lostbacktoProgramThismonthinART=Cohorts.createPatientBackToProgramThisYear("TR:lostbacktoProgramThismonthinART");
            
            CompositionCohortDefinition patientsinLostAndBackToProgramThismonthART = new CompositionCohortDefinition();
            patientsinLostAndBackToProgramThismonthART.setName("patientsinLostAndBackToProgramThismonthART");
            patientsinLostAndBackToProgramThismonthART.addParameter(new Parameter("startDate","startDate",Date.class));
            patientsinLostAndBackToProgramThismonthART.addParameter(new Parameter("endDate","endDate",Date.class));
+           patientsinLostAndBackToProgramThismonthART.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsinLostAndBackToProgramThismonthART.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            patientsinLostAndBackToProgramThismonthART.getSearches().put("1",new Mapped<CohortDefinition>(lostbacktoProgramThismonthinART,
         		   ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-           patientsinLostAndBackToProgramThismonthART.getSearches().put("2",new Mapped<CohortDefinition>(onARTStateatTheEnd,null));
+           patientsinLostAndBackToProgramThismonthART.getSearches().put("2",new Mapped<CohortDefinition>(onARTStateatTheEnd,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
            patientsinLostAndBackToProgramThismonthART.setCompositionString("1 AND 2");
-           CohortIndicator patientsinLostAndBackToProgramThismonthARTInd=Indicators.newCohortIndicator("patientsinLostAndBackToProgramThismonthARTInd", patientsinLostAndBackToProgramThismonthART, null);
+           CohortIndicator patientsinLostAndBackToProgramThismonthARTInd=Indicators.newCohortIndicator("patientsinLostAndBackToProgramThismonthARTInd", patientsinLostAndBackToProgramThismonthART, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},startDate=${startDate},endDate=${endDate}"));
+           patientsinLostAndBackToProgramThismonthARTInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+           patientsinLostAndBackToProgramThismonthARTInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            
            //40 Number of new pediatric patient (age<15 years) starting ART second line regimen this month   
-           SqlCohortDefinition onSecondLineDuringP=new SqlCohortDefinition();
-           onSecondLineDuringP.setName("TR:onSecondLineDuringP");
-           onSecondLineDuringP.setQuery("select DISTINCT patient_id FROM orders WHERE concept_id=794 " +
-          "AND start_date BETWEEN :startDate AND :endDate AND discontinued=0 AND discontinued_date is NULL AND voided=0 ");
-           onSecondLineDuringP.addParameter(new Parameter("startDate", "startDate", Date.class));
-           onSecondLineDuringP.addParameter(new Parameter("endDate", "endDate", Date.class));
-           
+           SqlCohortDefinition onSecondLineDuringP=Cohorts.getPatientsOnCurrentRegimenBasedOnStartDateEndDate("patientOnSecondLine",kaletra);
+   		
            CompositionCohortDefinition pediStartedSecondLineThisMonth = new CompositionCohortDefinition();
            pediStartedSecondLineThisMonth.setName("pediStartedSecondLineThisMonth");
            pediStartedSecondLineThisMonth.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           pediStartedSecondLineThisMonth.addParameter(new Parameter("startDate", "startDate", Date.class));
            pediStartedSecondLineThisMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
-           pediStartedSecondLineThisMonth.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd, null));
-           pediStartedSecondLineThisMonth.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+           pediStartedSecondLineThisMonth.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+           pediStartedSecondLineThisMonth.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+           pediStartedSecondLineThisMonth.getSearches().put("2",new Mapped<CohortDefinition>(under15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
            pediStartedSecondLineThisMonth.getSearches().put("3", new Mapped<CohortDefinition>(onSecondLineDuringP,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            pediStartedSecondLineThisMonth.setCompositionString("1 AND 2 AND 3");
-           CohortIndicator pediOnArtStartedSecondLineThisMonthInd=Indicators.newCohortIndicator("pediOnArtStartedSecondLineThisMonthInd", pediStartedSecondLineThisMonth, null);
-   
+           CohortIndicator pediOnArtStartedSecondLineThisMonthInd=Indicators.newCohortIndicator("pediOnArtStartedSecondLineThisMonthInd", pediStartedSecondLineThisMonth, ParameterizableUtil.createParameterMappings("dateborn=${dateborn},startDate=${startDate},endDate=${endDate},onOrBefore=${onOrBefore}"));
+           pediOnArtStartedSecondLineThisMonthInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           pediOnArtStartedSecondLineThisMonthInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+           
             //41 Number of new pediatric patient (age 15+) starting ART second line regimen this month   
            CompositionCohortDefinition adultStartedSecondLineThisMonth1 = new CompositionCohortDefinition();
            adultStartedSecondLineThisMonth1.setName("adultStartedSecondLineThisMonth1");
            adultStartedSecondLineThisMonth1.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           adultStartedSecondLineThisMonth1.addParameter(new Parameter("startDate", "startDate", Date.class));
            adultStartedSecondLineThisMonth1.addParameter(new Parameter("endDate", "endDate", Date.class));
-           adultStartedSecondLineThisMonth1.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd, null));
-           adultStartedSecondLineThisMonth1.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")));
+           adultStartedSecondLineThisMonth1.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+           adultStartedSecondLineThisMonth1.getSearches().put("1",new Mapped<CohortDefinition>(onARTStateatTheEnd,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+           adultStartedSecondLineThisMonth1.getSearches().put("2",new Mapped<CohortDefinition>(over15inDays,ParameterizableUtil.createParameterMappings("dateborn=${dateborn}")));
            adultStartedSecondLineThisMonth1.getSearches().put("3", new Mapped<CohortDefinition>(onSecondLineDuringP,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
            adultStartedSecondLineThisMonth1.setCompositionString("1 AND 2 AND 3");
-           CohortIndicator adultOnArtStartedSecondLineThisMonthInd=Indicators.newCohortIndicator("adultOnArtStartedSecondLineThisMonthInd", adultStartedSecondLineThisMonth1, null);
-   
-           
+           CohortIndicator adultOnArtStartedSecondLineThisMonthInd=Indicators.newCohortIndicator("adultOnArtStartedSecondLineThisMonthInd", adultStartedSecondLineThisMonth1, ParameterizableUtil.createParameterMappings("dateborn=${dateborn},startDate=${startDate},endDate=${endDate},onOrBefore=${onOrBefore}"));
+           adultOnArtStartedSecondLineThisMonthInd.addParameter(new Parameter("dateborn", "dateborn", Date.class));
+           adultOnArtStartedSecondLineThisMonthInd.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
            
            //Add global filters to the report
            //PRE-ART DATA ELEMENT
@@ -1115,58 +1291,58 @@ public class SetupTracNetRwandaReportBySite {
            dsd.addColumn("11a","rwandareports.tracnetreport.indicator.preart.maleMoreThanFifteenEverInHiv",new Mapped(Over15MalenHIVcareInd,null),"");
            dsd.addColumn("12a","rwandareports.tracnetreport.indicator.preart.malePedsUnderFifteenEverInHiv",new Mapped(under15MalenHIVcare,null),"");
            dsd.addColumn("13a","rwandareports.tracnetreport.indicator.preart.patientsOnCotrimoProphylaxis",new Mapped(patientsInHIVonCotrimoOrBactrimInd,null),"");
-           dsd.addColumn("14a","rwandareports.tracnetreport.indicator.preart.patientsActiveTbAtEnrolThisMonth",new Mapped(screenedForTbInHIVProgramsIndi,null),"");
-           dsd.addColumn("15a","rwandareports.tracnetreport.indicator.preart.patientsTbPositiveAtEnrolThisMonth",new Mapped(screenedForTbPosInHIVProgramsInd,null),"");
+           dsd.addColumn("14a","rwandareports.tracnetreport.indicator.preart.patientsActiveTbAtEnrolThisMonth",new Mapped(screenedForTbInHIVProgramsIndi,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("15a","rwandareports.tracnetreport.indicator.preart.patientsTbPositiveAtEnrolThisMonth",new Mapped(screenedForTbPosInHIVProgramsInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("16a","rwandareports.tracnetreport.indicator.preart.newEnrolledPedsStartTbTreatThisMonth",new Mapped(patientsOnTBdrugInHIvProgramsUnder15Ind,null),"");
            dsd.addColumn("17a","rwandareports.tracnetreport.indicator.preart.newEnrolledAdultsStartTbTreatThisMonth",new Mapped(patientsOnTBdrugInHIvProgramsOver15Ind,null),"");
-           dsd.addColumn("18a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVDiedThisMonth",new Mapped(patientsDiedandNotOnARTInd,null),"");
-           dsd.addColumn("19a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTransferredInThisMonth",new Mapped(patientsTransferedIntAndnotOnARTInd,null),"");
-           dsd.addColumn("20a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTransferredOutThisMonth",new Mapped(patientsTransferedoutAndnotOnARTInd,null),"");  
-           dsd.addColumn("21a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTLostToFollowUpThisMonth",new Mapped(patientsinHIVcareLostTofolowUpInd,null),"");
+           dsd.addColumn("18a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVDiedThisMonth",new Mapped(patientsDiedandNotOnARTInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("19a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTransferredInThisMonth",new Mapped(patientsTransferedIntAndnotOnARTInd,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("20a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTransferredOutThisMonth",new Mapped(patientsTransferedoutAndnotOnARTInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");  
+           dsd.addColumn("21a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTLostToFollowUpThisMonth",new Mapped(patientsinHIVcareLostTofolowUpInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")),"");
            dsd.addColumn("22a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTLostToFollowUpNotLostThisMonth",new Mapped(patientsinLostAndBackToPRogramThismonthInd,null),"");
-                                
+                               
            // ART DATA ELEMENTS
-           dsd.addColumn("1b","rwandareports.tracnetreport.indicator.art.pedsUnderEighteenMonthsCurrentOnArv",new Mapped(pedsonARTStateHIVClinicInd,null),"");
-           dsd.addColumn("2b","rwandareports.tracnetreport.indicator.art.pedsUnderFiveCurrentOnArv",new Mapped(pedsonARTStateHIVClinicunder5Ind,null),"");  
-           dsd.addColumn("3b","rwandareports.tracnetreport.indicator.art.femalePedsUnderFifteenCurrentOnArv",new Mapped(pedFemalesonARTStateHIVClinicunder15Ind,null),"");  
-           dsd.addColumn("4b","rwandareports.tracnetreport.indicator.art.malePedsUnderFifteenCurrentOnArv",new Mapped(pedMalesonARTStateHIVClinicunder15Ind,null),"");
-           dsd.addColumn("5b","rwandareports.tracnetreport.indicator.art.pedsOnFirstLineReg",new Mapped(notOnCurrentKaletraDrugOrderInd,null),"");
-           dsd.addColumn("6b","rwandareports.tracnetreport.indicator.art.pedsOnSecondLineReg",new Mapped(activeOnCurrentKaletraDrugOrderInd,null),"");
-           dsd.addColumn("7b","rwandareports.tracnetreport.indicator.art.femaleMoreThanFifteenCurrentOnArv",new Mapped(femalesOnArtStateinAllHIVProgramsInd,null),"");
-           dsd.addColumn("8b","rwandareports.tracnetreport.indicator.art.maleMoreThanFifteenCurrentOnArv",new Mapped(malesOnArtStateinAllHIVProgramsInd,null),"");
-           dsd.addColumn("9b","rwandareports.tracnetreport.indicator.art.adultOnFirstLineReg",new Mapped(notoadultsOnCurrentKaletraDrugOrderInd,null),"");  
-           dsd.addColumn("10b","rwandareports.tracnetreport.indicator.art.adultOnSecondLineReg",new Mapped(adultonCurrentKaletraDrugOrderCompoInd,null),"");  
+           dsd.addColumn("1b","rwandareports.tracnetreport.indicator.art.pedsUnderEighteenMonthsCurrentOnArv",new Mapped(pedsonARTStateHIVClinicInd,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},effectiveDate=${endDate}")),"");
+           dsd.addColumn("2b","rwandareports.tracnetreport.indicator.art.pedsUnderFiveCurrentOnArv",new Mapped(pedsonARTStateHIVClinicunder5Ind,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")),"");  
+           dsd.addColumn("3b","rwandareports.tracnetreport.indicator.art.femalePedsUnderFifteenCurrentOnArv",new Mapped(pedFemalesonARTStateHIVClinicunder15Ind,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},dateborn=${endDate}")),"");  
+           dsd.addColumn("4b","rwandareports.tracnetreport.indicator.art.malePedsUnderFifteenCurrentOnArv",new Mapped(pedMalesonARTStateHIVClinicunder15Ind,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},dateborn=${endDate}")),"");  
+           dsd.addColumn("5b","rwandareports.tracnetreport.indicator.art.pedsOnFirstLineReg",new Mapped(notOnCurrentKaletraDrugOrderInd,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},dateborn=${endDate}")),"");
+           dsd.addColumn("6b","rwandareports.tracnetreport.indicator.art.pedsOnSecondLineReg",new Mapped(activeOnCurrentKaletraDrugOrderInd,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},dateborn=${endDate}")),"");
+           dsd.addColumn("7b","rwandareports.tracnetreport.indicator.art.femaleMoreThanFifteenCurrentOnArv",new Mapped(femalesOnArtStateinAllHIVProgramsInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")),"");
+           dsd.addColumn("8b","rwandareports.tracnetreport.indicator.art.maleMoreThanFifteenCurrentOnArv",new Mapped(malesOnArtStateinAllHIVProgramsInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")),"");
+           dsd.addColumn("9b","rwandareports.tracnetreport.indicator.art.adultOnFirstLineReg",new Mapped(notoadultsOnCurrentKaletraDrugOrderInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")),"");
+           dsd.addColumn("10b","rwandareports.tracnetreport.indicator.art.adultOnSecondLineReg",new Mapped(adultonCurrentKaletraDrugOrderCompoInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")),""); 
            dsd.addColumn("11b","rwandareports.tracnetreport.indicator.art.newPedsUnderEighteenMonthStartArvThisMonth",new Mapped(pedsPatientsNotOnArtStateNotOnFolowingInd,null),"");  
            dsd.addColumn("12b","rwandareports.tracnetreport.indicator.art.newPedsUnderFiveStartArvThisMonth",new Mapped(under5PatientsNotOnArtStateNotOnFolowingInd,null),"");  
            dsd.addColumn("13b","rwandareports.tracnetreport.indicator.art.newFemalePedsUnderFifteenStartArvThisMonth",new Mapped(femalesPedsNotOnArtStateNotOnFolowingInd,null),"");  
            dsd.addColumn("14b","rwandareports.tracnetreport.indicator.art.newMalePedsUnderFifteenStartArvThisMonth",new Mapped(malesPedsNotOnArtStateNotOnFolowingInd,null),"");
-           dsd.addColumn("15b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageFourThisMonth",new Mapped(pediOnArtStateinWhostage4Ind,null),"");
-           dsd.addColumn("16b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageThreeThisMonth",new Mapped(pediOnArtStateinWhostage3Ind,null),"");  
-           dsd.addColumn("17b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageTwoThisMonth",new Mapped(pediOnArtStateinWhostage2Ind,null),"");  
-           dsd.addColumn("18b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageOneThisMonth",new Mapped(pediOnArtStateinWhostage1Ind,null),"");  
-           dsd.addColumn("19b","rwandareports.tracnetreport.indicator.art.newPedsUndefinedWhoStageThisMonth",new Mapped(pediOnArtStateInWhoStageXInd,null),"");  
-           dsd.addColumn("20b","rwandareports.tracnetreport.indicator.art.newFemaleAdultStartiArvThisMonth",new Mapped(femaleAdultsadultsOnArtStateInd,null),"");  
+           dsd.addColumn("15b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageFourThisMonth",new Mapped(pediOnArtStateinWhostage4Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("16b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageThreeThisMonth",new Mapped(pediOnArtStateinWhostage3Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("17b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageTwoThisMonth",new Mapped(pediOnArtStateinWhostage2Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");  
+           dsd.addColumn("18b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageOneThisMonth",new Mapped(pediOnArtStateinWhostage1Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),""); 
+           dsd.addColumn("19b","rwandareports.tracnetreport.indicator.art.newPedsUndefinedWhoStageThisMonth",new Mapped(pediOnArtStateInWhoStageXInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("20b","rwandareports.tracnetreport.indicator.art.newFemaleAdultStartiArvThisMonth",new Mapped(femaleAdultsadultsOnArtStateInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("21b","rwandareports.tracnetreport.indicator.art.newMaleAdultStartiArvThisMonth",new Mapped(maleAdultsadultsOnArtStateInd,null),"");  
-           dsd.addColumn("22b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageFourThisMonth",new Mapped(adultsOnArtStateinWhostage4Ind,null),"");  
-           dsd.addColumn("23b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageThreeThisMonth",new Mapped(adultsOnArtStateinWhostage3Ind,null),"");  
-           dsd.addColumn("24b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageTwoThisMonth",new Mapped(adultsOnArtStateinWhostage2Ind,null),"");  
-           dsd.addColumn("25b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageOneThisMonth",new Mapped(adultsOnArtStateinWhostage1Ind,null),"");  
-           dsd.addColumn("26b","rwandareports.tracnetreport.indicator.art.newAdultUndefinedWhoStageThisMonth",new Mapped(adultsOnArtStateinWhostageXInd,null),"");  
+           dsd.addColumn("22b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageFourThisMonth",new Mapped(adultsOnArtStateinWhostage4Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");  
+           dsd.addColumn("23b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageThreeThisMonth",new Mapped(adultsOnArtStateinWhostage3Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("24b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageTwoThisMonth",new Mapped(adultsOnArtStateinWhostage2Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("25b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageOneThisMonth",new Mapped(adultsOnArtStateinWhostage1Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),""); 
+           dsd.addColumn("26b","rwandareports.tracnetreport.indicator.art.newAdultUndefinedWhoStageThisMonth",new Mapped(adultsOnArtStateinWhostageXInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),""); 
            dsd.addColumn("27b","rwandareports.tracnetreport.indicator.art.arvPedsFifteenInterruptTreatThisMonth",new Mapped(pediArtDrugsInteruptedThisMonthInd,null),"");  
            dsd.addColumn("28b","rwandareports.tracnetreport.indicator.art.arvAdultFifteenInterruptTreatThisMonth",new Mapped(adultArtDrugsInteruptedThisMonthInd,null),"");  
-           dsd.addColumn("29b","rwandareports.tracnetreport.indicator.art.arvPedsDiedThisMonth",new Mapped(preArtPediAndDiedThisMonthInd,null),"");  
-           dsd.addColumn("30b","rwandareports.tracnetreport.indicator.art.arvAdultDiedThisMonth",new Mapped(preArtAdultAndDiedThisMonthInd,null),"");  
-           dsd.addColumn("31b","rwandareports.tracnetreport.indicator.art.arvPedsLostFollowupMoreThreeMonths",new Mapped(pedsOnArtLostAndwithHIVFormsInd,null),"");  
-           dsd.addColumn("32b","rwandareports.tracnetreport.indicator.art.arvAdultLostFollowupMoreThreeMonths",new Mapped(adultOnArtLostAndwithHIVFormsInd,null),"");
-           dsd.addColumn("33b","rwandareports.tracnetreport.indicator.art.maleOnTreatTwelveAfterInitArv",new Mapped(malesOnArtLostforMoreThan12monthsInd,null),"");  
-           dsd.addColumn("34b","rwandareports.tracnetreport.indicator.art.femaleOnTreatTwelveAfterInitArv",new Mapped(femalesOnArtLostforMoreThan12monthsInd,null),"");  
-           dsd.addColumn("35b","rwandareports.tracnetreport.indicator.art.arvPedsTransferredOutThisMonth",new Mapped(pedionARTTransferedOutDuringPInd,null),"");
-           dsd.addColumn("36b","rwandareports.tracnetreport.indicator.art.arvAdultTransferredOutThisMonth",new Mapped(adultsonARTTransferedOutDuringPInd,null),"");  
-           dsd.addColumn("37b","rwandareports.tracnetreport.indicator.art.arvPedsTransferredInThisMonth",new Mapped(pedionWithTransferInFormInd,null),"");
-           dsd.addColumn("38b","rwandareports.tracnetreport.indicator.art.arvAdultTransferreInThisMonth",new Mapped(adultsOnWithTransferEncounterInd,null),"");  
-           dsd.addColumn("39b","rwandareports.tracnetreport.indicator.art.patientsInARVTLostToFollowUpNotLostThisMonth",new Mapped(patientsinLostAndBackToProgramThismonthARTInd,null),"");  
-           dsd.addColumn("40b","rwandareports.tracnetreport.indicator.art.pediInARVTstartingARVSecondLineThisMonth",new Mapped(pediOnArtStartedSecondLineThisMonthInd,null),"");  
-           dsd.addColumn("41b","rwandareports.tracnetreport.indicator.art.adultInARVTstartingARVSecondLineThisMonth",new Mapped(adultOnArtStartedSecondLineThisMonthInd,null),"");  
+           dsd.addColumn("29b","rwandareports.tracnetreport.indicator.art.arvPedsDiedThisMonth",new Mapped(preArtPediAndDiedThisMonthInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("30b","rwandareports.tracnetreport.indicator.art.arvAdultDiedThisMonth",new Mapped(preArtAdultAndDiedThisMonthInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("31b","rwandareports.tracnetreport.indicator.art.arvPedsLostFollowupMoreThreeMonths",new Mapped(pedsOnArtLostAndwithHIVFormsInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},dateborn=${endDate},onOrAfterDate=${startDate-3m},onOrBeforeDate=${startDate}")),"");  
+           dsd.addColumn("32b","rwandareports.tracnetreport.indicator.art.arvAdultLostFollowupMoreThreeMonths",new Mapped(adultOnArtLostAndwithHIVFormsInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},dateborn=${endDate},onOrAfterDate=${startDate-3m},onOrBeforeDate=${startDate}")),"");  
+           dsd.addColumn("33b","rwandareports.tracnetreport.indicator.art.maleOnTreatTwelveAfterInitArv",new Mapped(malesOnArtLostforMoreThan12monthsInd,ParameterizableUtil.createParameterMappings("onDate=${startDate-12m}")),"");  
+           dsd.addColumn("34b","rwandareports.tracnetreport.indicator.art.femaleOnTreatTwelveAfterInitArv",new Mapped(femalesOnArtLostforMoreThan12monthsInd,ParameterizableUtil.createParameterMappings("onDate=${startDate-12m}")),"");
+           dsd.addColumn("35b","rwandareports.tracnetreport.indicator.art.arvPedsTransferredOutThisMonth",new Mapped(pedionARTTransferedOutDuringPInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("36b","rwandareports.tracnetreport.indicator.art.arvAdultTransferredOutThisMonth",new Mapped(adultsonARTTransferedOutDuringPInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}")),""); 
+           dsd.addColumn("37b","rwandareports.tracnetreport.indicator.art.arvPedsTransferredInThisMonth",new Mapped(pedionWithTransferInFormInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}")),"");
+           dsd.addColumn("38b","rwandareports.tracnetreport.indicator.art.arvAdultTransferreInThisMonth",new Mapped(adultsOnWithTransferEncounterInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}")),"");  
+           dsd.addColumn("39b","rwandareports.tracnetreport.indicator.art.patientsInARVTLostToFollowUpNotLostThisMonth",new Mapped(patientsinLostAndBackToProgramThismonthARTInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");   
+           dsd.addColumn("40b","rwandareports.tracnetreport.indicator.art.pediInARVTstartingARVSecondLineThisMonth",new Mapped(pediOnArtStartedSecondLineThisMonthInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrBefore=${endDate}")),"");   
+           dsd.addColumn("41b","rwandareports.tracnetreport.indicator.art.adultInARVTstartingARVSecondLineThisMonth",new Mapped(adultOnArtStartedSecondLineThisMonthInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrBefore=${endDate}")),"");   
            
            return dsd;     
         }
@@ -1187,6 +1363,8 @@ public class SetupTracNetRwandaReportBySite {
             adultPreAndArtDiedState = gp.getProgramWorkflowState(GlobalPropertiesManagement.PATIENT_DIED_STATE,GlobalPropertiesManagement.TREATMENT_STATUS_WORKFLOW,GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
             onOrAfterOnOrBefore.add("onOrAfter");
             onOrAfterOnOrBefore.add("onOrBefore");
+            onOrAfterDateOnOrBeforeDate.add("onOrAfterDate");
+            onOrAfterDateOnOrBeforeDate.add("onOrBeforeDate");
             tbScreeningtest = gp.getConcept(GlobalPropertiesManagement.TB_SCREENING_TEST);
             positiveStatus = gp.getConcept(GlobalPropertiesManagement.POSITIVE_HIV_TEST_ANSWER);
             reasonForExitingCare= gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
@@ -1217,8 +1395,8 @@ public class SetupTracNetRwandaReportBySite {
             whostage2adlt = gp.getConcept(GlobalPropertiesManagement.WHOSTAGE2AD);
             whostage1adlt = gp.getConcept(GlobalPropertiesManagement.WHOSTAGE1AD);
             cotrimoxazole = gp.getConcept(GlobalPropertiesManagement.COTRIMOXAZOLE_DRUG);
-//            fluconazole=gp.getConcept(GlobalPropertiesManagement.FLUCONAZOLE_DRUG);
-//            dapsone=gp.getConcept(GlobalPropertiesManagement.DAPSONE_DRUG);
+            fluconazole=gp.getConcept(GlobalPropertiesManagement.FLUCONAZOLE_DRUG);
+            dapsone=gp.getConcept(GlobalPropertiesManagement.DAPSONE_DRUG);
            
         }
         

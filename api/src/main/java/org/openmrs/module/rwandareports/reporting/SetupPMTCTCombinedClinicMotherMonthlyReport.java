@@ -224,7 +224,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		                + weight.getUuid()
 		                + "' order by o.obs_datetime desc) as lastweight group by lastweight.person_id) w,(select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.name ='Health Center' and pat.person_attribute_type_id = pa.person_attribute_type_id and pa.voided = 0 and pa.value = :location) loc where loc.patient_id=w.person_id and w.person_id=h.person_id and ROUND(((w.value_numeric*10000)/(h.value_numeric*h.value_numeric)),2)<16.0");
 		patientWithLowBMI.addParameter(new Parameter("location", "location", Location.class));
-		dataSetDefinition4.addFilter(patientWithLowBMI, new HashMap<String, Object>());
+		dataSetDefinition4.addFilter(patientWithLowBMI, ParameterizableUtil.createParameterMappings("location=${location}"));
 		
 		//==================================================================
 		//                6 . Patients with Viral Load >1000 in the last 6 months
