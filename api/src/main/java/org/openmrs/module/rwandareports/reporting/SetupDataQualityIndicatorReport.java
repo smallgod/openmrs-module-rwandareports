@@ -880,13 +880,15 @@ public class SetupDataQualityIndicatorReport {
 						+ "' "+ "and o.voided=0 "
 						+ "order by o.obs_datetime desc) as lastweight group by lastweight.person_id) w "
 						+ "where w.person_id=h.person_id and ROUND(((w.value_numeric*10000)/(h.value_numeric*h.value_numeric)),2)>35.0");
+				
+				AgeCohortDefinition patientsOver15 = new AgeCohortDefinition(15, null, null);
 
 				CompositionCohortDefinition bmimoreorless = new CompositionCohortDefinition();
 				bmimoreorless.setName("bmimoreorless");
 				bmimoreorless.getSearches().put("1", new Mapped(bmilow, null));
 				bmimoreorless.getSearches().put("2", new Mapped(bmihight, null));
-				;
-				bmimoreorless.setCompositionString("1 OR 2");
+				bmimoreorless.getSearches().put("3", new Mapped(patientsOver15, null));
+				bmimoreorless.setCompositionString("3 AND (1 OR 2)");
 
 				CohortIndicator patientsWithBMIMoreThan35 = Indicators
 						.newCountIndicator("BMI >15", bmimoreorless, null);
