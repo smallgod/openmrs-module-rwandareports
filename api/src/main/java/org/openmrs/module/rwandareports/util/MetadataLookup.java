@@ -90,14 +90,14 @@ public class MetadataLookup {
 				else if (stateLookup.equalsIgnoreCase(state.getConcept().getUuid())) {
 					s = state;
 				}
-				else if (Integer.parseInt(stateLookup)==state.getConcept().getId()) {
-					s = state;
-				}
 				else if (stateLookup.equalsIgnoreCase(state.getUuid())) {
 					s = state;
 				}
 				else if (stateLookup.equalsIgnoreCase(state.getId().toString())) {
-					s = state;					
+					s = state;
+				}
+				else if (stateLookup.equalsIgnoreCase(state.getConcept().getId().toString())) {
+					s = state;
 				}
 			}
 		}
