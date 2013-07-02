@@ -12,11 +12,11 @@
 	<url>http://openmrs.org</url>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/rwandareports/trunk/</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/rwandareports/trunk/</developerConnection>
-		<url>http://svn.openmrs.org/openmrs-modules/rwandareports/trunk/</url>
+		<connection>scm:git:https://github.com/PIH/openmrs-module-rwandareports.git</connection>
+		<developerConnection>scm:git:https://github.com/PIH/openmrs-module-rwandareports.git</developerConnection>
+		<url>https://github.com/PIH/openmrs-module-rwandareports.git</url>
 	</scm>
-
+	
 	<modules>
 		<module>api</module>
 		<module>omod</module>
