@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.rwandareports.reporting;
 
+import org.junit.Ignore;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.rwandareports.RwandaReportsTestUtil;
@@ -24,6 +25,7 @@ import java.util.List;
 /**
  * Tests the output of the Adult HIV Consultation Sheet Report
  */
+@Ignore
 public class AdultHIVConsultationSheetTest extends RwandaReportsTest {
 
 	@Override
