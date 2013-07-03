@@ -30,7 +30,7 @@
 		<reportingobjectgroupVersion>1.0.4.4</reportingobjectgroupVersion>
 		<htmlwidgetsVersion>1.6.4</htmlwidgetsVersion>
 		<serializationVersion>0.2.7</serializationVersion>
-		<heightweighttrackerVersion>1.0.1-SNAPSHOT</heightweighttrackerVersion>
+		<heightweighttrackerVersion>1.0.2</heightweighttrackerVersion>
 		<calculationVersion>1.0</calculationVersion>
 		<logicVersion>0.5.2</logicVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
