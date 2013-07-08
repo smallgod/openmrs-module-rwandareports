@@ -141,7 +141,9 @@ public class SetupDiabetesConsultAndLTFU {
 		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getMostRecentCreatinine("RecentCreatinine", "@ddMMMyy"), new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getMostRecentSBP("RecentSBP", "dd-MMM-yy"), new HashMap<String, Object>());
 		alert.setCalculator(new DiabetesAlerts());
-		dataSetDefinition.addColumn(alert, new HashMap<String, Object>());
+		alert.addParameter(new Parameter("endDate","endDate",Date.class));
+		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		
 				
 		CustomCalculationBasedOnMultiplePatientDataDefinitions onInsulin = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		onInsulin.addPatientDataToBeEvaluated(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());

@@ -139,7 +139,8 @@ public class SetupHypertensionLateVisit {
 				new ObservationInMostRecentEncounterOfType(),dateFilter),new HashMap<String, Object>());
         numberofdaysLate.setName("numberofdaysLate");
         numberofdaysLate.setCalculator(new DaysLate());
-		dataSetDefinition1.addColumn(numberofdaysLate, new HashMap<String, Object>());
+        numberofdaysLate.addParameter(new Parameter("endDate","endDate",Date.class));
+		dataSetDefinition1.addColumn(numberofdaysLate,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		MostRecentObservation systolic = RowPerPatientColumns.getMostRecentSystolicPB("systolic", "@ddMMMyy");
 		dataSetDefinition1.addColumn(systolic, new HashMap<String, Object>());

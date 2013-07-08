@@ -146,7 +146,8 @@ public class SetupNCDLateVisitandLTFUReport {
 		    new HashMap<String, Object>());
 		daysLate.setName("daysLate");
 		daysLate.setCalculator(new DaysLate());
-		dataSetDefinition.addColumn(daysLate, new HashMap<String, Object>());
+		daysLate.addParameter(new Parameter("endDate","endDate",Date.class));
+		dataSetDefinition.addColumn(daysLate,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("location", "${location}");

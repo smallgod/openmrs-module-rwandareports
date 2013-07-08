@@ -154,12 +154,11 @@ public class SetupEpilepsyLateVisit {
 				new HashMap<String, Object>());
 
 		CustomCalculationBasedOnMultiplePatientDataDefinitions numberofdaysLate = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
-		numberofdaysLate.addPatientDataToBeEvaluated(RowPerPatientColumns
-				.getNextVisitInMostRecentEncounterOfTypes("nextVisit",epilepsyVisit,new ObservationInMostRecentEncounterOfType(),dateFilter),
-				new HashMap<String, Object>());
+		numberofdaysLate.addPatientDataToBeEvaluated(RowPerPatientColumns.getNextVisitInMostRecentEncounterOfTypes("nextVisit",epilepsyVisit,new ObservationInMostRecentEncounterOfType(),dateFilter),new HashMap<String, Object>());
 		numberofdaysLate.setName("numberofdaysLate");
 		numberofdaysLate.setCalculator(new DaysLate());
-		dataSetDefinition.addColumn(numberofdaysLate,new HashMap<String, Object>());
+		numberofdaysLate.addParameter(new Parameter("endDate","endDate",Date.class));
+		dataSetDefinition.addColumn(numberofdaysLate,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 
 		dataSetDefinition.addColumn(RowPerPatientColumns
 				.getSeizureInMostRecentEncounterOfType("seizure",epilepsyVisit,

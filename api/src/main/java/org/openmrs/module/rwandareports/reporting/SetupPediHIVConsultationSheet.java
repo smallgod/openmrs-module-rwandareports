@@ -1,5 +1,6 @@
 package org.openmrs.module.rwandareports.reporting;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -226,7 +227,8 @@ public class SetupPediHIVConsultationSheet {
 		alert.addPatientDataToBeEvaluated(weight, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(cd4Percent, new HashMap<String, Object>());
 		alert.setCalculator(new HIVPediAlerts());
-		dataSetDefinition.addColumn(alert, new HashMap<String, Object>());
+		alert.addParameter(new Parameter("state", "State",Date.class));
+		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("state=${state}"));
 		
 		CustomCalculationBasedOnMultiplePatientDataDefinitions cd4Decline = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		cd4Decline.setName("cd4Decline");

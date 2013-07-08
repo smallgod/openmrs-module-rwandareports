@@ -106,7 +106,6 @@ public class SetupRwandaPrimaryCareReport {
         props.put("sortWeight","5000");
         design.setProperties(props);
         h.saveReportDesign(design);
-		//h.createXlsCalendarOverview(rd, "rwandacalendarprimarycarereporttemplate.xls", "Primary_Care_Report_Template", null);
 		
 	}
 	

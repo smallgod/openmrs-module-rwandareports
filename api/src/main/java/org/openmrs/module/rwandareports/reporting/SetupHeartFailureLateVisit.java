@@ -148,8 +148,9 @@ public class SetupHeartFailureLateVisit {
 		numberofdaysLate.addPatientDataToBeEvaluated(RowPerPatientColumns.getNextVisitInMostRecentEncounterOfTypes("nextVisit",heartFailureVisit,new ObservationInMostRecentEncounterOfType(),dateFilter),new HashMap<String, Object>());
 		numberofdaysLate.setName("numberofdaysLate");
 		numberofdaysLate.setCalculator(new DaysLate());
-		dataSetDefinition.addColumn(numberofdaysLate,new HashMap<String, Object>());
-
+		numberofdaysLate.addParameter(new Parameter("endDate","endDate",Date.class));
+		dataSetDefinition.addColumn(numberofdaysLate,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getSeizureInMostRecentEncounterOfType("seizure",heartFailureVisit,new ObservationInMostRecentEncounterOfType()),new HashMap<String, Object>());
 
 		PatientAddress address = RowPerPatientColumns.getPatientAddress("Address", true, true, true, true);

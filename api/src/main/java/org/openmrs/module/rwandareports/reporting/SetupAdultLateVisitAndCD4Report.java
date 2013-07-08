@@ -562,11 +562,11 @@ public class SetupAdultLateVisitAndCD4Report {
 		dataSetDefinition4.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition4_1.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition5.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		dataSetDefinition6.addColumn(lateVisitInMonth, new HashMap<String, Object>());
-		dataSetDefinition6_1.addColumn(lateVisitInMonth, new HashMap<String, Object>());
-		dataSetDefinition7.addColumn(lateVisitInMonth, new HashMap<String, Object>());
-		dataSetDefinition8.addColumn(lateVisitInMonth, new HashMap<String, Object>());
-		dataSetDefinition9.addColumn(lateVisitInMonth, new HashMap<String, Object>());
+		dataSetDefinition6.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition6_1.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition7.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition8.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition9.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		MostRecentObservation returnVisitDate = RowPerPatientColumns.getMostRecentReturnVisitDate(
 		    "Date of missed appointment", null);
@@ -605,11 +605,11 @@ public class SetupAdultLateVisitAndCD4Report {
 		dataSetDefinition4.addColumn(lateCD4InMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition4_1.addColumn(lateCD4InMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition5.addColumn(lateCD4InMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		dataSetDefinition6.addColumn(lateCD4InMonths, new HashMap<String, Object>());
-		dataSetDefinition6_1.addColumn(lateCD4InMonths, new HashMap<String, Object>());
-		dataSetDefinition7.addColumn(lateCD4InMonths, new HashMap<String, Object>());
-		dataSetDefinition8.addColumn(lateCD4InMonths, new HashMap<String, Object>());
-		dataSetDefinition9.addColumn(lateCD4InMonths, new HashMap<String, Object>());
+		dataSetDefinition6.addColumn(lateCD4InMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition6_1.addColumn(lateCD4InMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition7.addColumn(lateCD4InMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition8.addColumn(lateCD4InMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition9.addColumn(lateCD4InMonths, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		PatientRelationship accompagnateur = RowPerPatientColumns.getAccompRelationship("Accompagnateur");
 		dataSetDefinition1.addColumn(accompagnateur, new HashMap<String, Object>());

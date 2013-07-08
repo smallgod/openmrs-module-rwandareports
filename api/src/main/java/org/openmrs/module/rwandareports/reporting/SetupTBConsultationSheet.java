@@ -1,5 +1,6 @@
 package org.openmrs.module.rwandareports.reporting;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -152,7 +153,8 @@ public class SetupTBConsultationSheet {
 		alert.addPatientDataToBeEvaluated(io, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(sideEffect, new HashMap<String, Object>());
 		alert.setCalculator(new HIVAdultAlerts());
-		dataSetDefinition.addColumn(alert, new HashMap<String, Object>());
+		alert.addParameter(new Parameter("state", "State",Date.class));
+		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("state=${state}"));
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("state", "${state}");

@@ -62,7 +62,7 @@ public class SetupMissedChemotherapyPatientList {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC- Chemotherapy Missed Patient List");
+		h.purgeReportDefinition("ONC-Chemotherapy Missed Patient List");
 	}
 	
 	private ReportDefinition createReportDefinition() {

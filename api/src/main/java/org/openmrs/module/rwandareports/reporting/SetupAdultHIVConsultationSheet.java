@@ -1,5 +1,6 @@
 package org.openmrs.module.rwandareports.reporting;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -162,7 +163,8 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		alert.addPatientDataToBeEvaluated(io, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(sideEffect, new HashMap<String, Object>());
 		alert.setCalculator(new HIVAdultAlerts());
-		dataSetDefinition.addColumn(alert, new HashMap<String, Object>());
+		alert.addParameter(new Parameter("state", "State",Date.class));
+		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("state=${state}"));
 		
 		CustomCalculationBasedOnMultiplePatientDataDefinitions bmi = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		bmi.setName("bmi");
