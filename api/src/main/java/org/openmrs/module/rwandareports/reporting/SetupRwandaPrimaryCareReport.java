@@ -38,7 +38,7 @@ public class SetupRwandaPrimaryCareReport {
 	protected final static Log log = LogFactory.getLog(SetupRwandaPrimaryCareReport.class);
 	
 	Helper h = new Helper();
-	//adding comments
+	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	// properties
