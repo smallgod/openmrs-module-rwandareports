@@ -148,7 +148,7 @@ public class SetupAsthmaLateVisit {
 		    "nextVisit", asthmaflowsheet, new ObservationInMostRecentEncounterOfType(), dateFilter),
 		    new HashMap<String, Object>());
 		numberofdaysLate.setName("numberofdaysLate");
-		numberofdaysLate.setCalculator(new DaysLate());
+		numberofdaysLate.setCalculator(new DaysLate()); //This means that this definition should have any parameter in use by this custom calculator
 		dataSetDefinition1.addColumn(numberofdaysLate, new HashMap<String, Object>());
 		
 		MostRecentObservation lastpeakflow = RowPerPatientColumns.getMostRecentPeakFlow("Most recent peakflow", "@ddMMMyy");
