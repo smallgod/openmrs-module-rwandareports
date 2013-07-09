@@ -2201,6 +2201,18 @@
 		<defaultValue>Outpatient Oncology</defaultValue>
 		<description>Outpatient oncology encounter type id </description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.NonClinicalOncologyEncounterType</property>
+		<defaultValue>Non Clinical Oncology</defaultValue>
+		<description>Non Clinical Oncology encounter type id </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.TypeOfReferrencingToClinicOrHospital</property>
+		<defaultValue>c3e1d8d4-3040-49dd-ad66-c0928d912941</defaultValue>
+		<description>TYPE OF REFERRING CLINIC OR HOSPITAL concept id </description>
+	</globalProperty>
 
 	<!-- start Asthma consult sheet & asthma monthly quaterly indicator report -->
 	<globalProperty>
@@ -2911,6 +2923,29 @@
 		<property>reports.tissueBiopsy</property>
 		<defaultValue>cffa61ee-9058-4ba5-aece-8164517d6645</defaultValue>
 		<description>The concept id for the tissue biopsy lab test</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.hivStatus</property>
+		<defaultValue>aec6ad18-f4dd-4cfa-b68d-3d7bb6ea908e</defaultValue>
+		<description>The concept id for the HIV STATUS</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.OncoDemoForm</property>
+		<defaultValue>187</defaultValue>
+		<description>The form id for Oncology Demographics form</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.OncoIntakeOutPatientForm</property>
+		<defaultValue>204</defaultValue>
+		<description>The form id for Oncology Intake OutPatient form</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.OncoIntakeInPatientForm</property>
+		<defaultValue>188</defaultValue>
+		<description>The form id for Oncology Intake InPatient form</description>
 	</globalProperty>
 
 </module>

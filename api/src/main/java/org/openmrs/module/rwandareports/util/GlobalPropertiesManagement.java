@@ -508,6 +508,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String TISSUE_BIOPSY = "reports.tissueBiopsy";
 	
+	public final static String TYPE_OF_REFERRING_CLINIC_OR_HOSPITAL="reports.TypeOfReferrencingToClinicOrHospital";
+	
+	public final static String HIV_STATUS="reports.hivStatus";
+	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
 	public static final String VCT_PROGRAM = "reports.vctProgram";							
@@ -563,6 +567,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String LAB_ENCOUNTER_TYPE="reports.labEncounterType";
 	public final static String OUTPATIENT_ONCOLOGY_ENCOUNTER = "reports.OutpatientOncologyEncounterType";
+	
+	public final static String NON_CLINICAL_ONCOLOGY_ENCOUNTER="reports.NonClinicalOncologyEncounterType";
 	
 	public final static String EPILEPSY_VISIT = "reports.EpilepsyEncounterType";
 	
@@ -647,6 +653,13 @@ public class GlobalPropertiesManagement {
 	public final static String CHEMOTHERAPY_TREATMENT_SUMMARY_FORM = "reports.chemoTreatmentSummaryForm";
 	
 	public final static String CHEMOTHERAPY_TREATMENT_SUMMARY_FORM_SHORT = "reports.chemoTreatmentSummaryFormShort";
+	
+	public final static String ONCOLOGY_DEMO_FORM = "reports.OncoDemoForm";
+	
+	public final static String ONCOLOGY_INTAKE_INPATIENT_FORM = "reports.OncoIntakeInPatientForm";
+	
+	public final static String ONCOLOGY_INTAKE_OUTPATIENT_FORM = "reports.OncoIntakeOutPatientForm";
+	
 	
 	//Drug concepts
 	public final static String FUROSEMIDE= "reports.furosemide";

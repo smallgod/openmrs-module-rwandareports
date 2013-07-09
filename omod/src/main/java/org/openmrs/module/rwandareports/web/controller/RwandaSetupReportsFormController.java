@@ -32,6 +32,7 @@ import org.openmrs.module.rwandareports.reporting.SetupMonthlyCD4DeclineReport;
 import org.openmrs.module.rwandareports.reporting.SetupNCDConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupNCDLateVisitandLTFUReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyDailyDrugList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyDataExtractionSheet;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyExternalBiopsyContactList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientAppointmentList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicMissedVisit;
@@ -759,6 +760,19 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_eligibleForViralLoadReport")
 	public ModelAndView removeEligibleForViralLoadReport() throws Exception {
 		new SetupEligibleForViralLoadReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	// Remove/Register Oncology data extraction report
+	@RequestMapping("/module/rwandareports/register_oncologydataextrationSheet")
+	public ModelAndView registerOncologyDataExtrationSheet() throws Exception {
+		new SetupOncologyDataExtractionSheet().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_oncologydataextrationSheet")
+	public ModelAndView removeOncologyDataExtrationSheet() throws Exception {
+		new SetupOncologyDataExtractionSheet().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
