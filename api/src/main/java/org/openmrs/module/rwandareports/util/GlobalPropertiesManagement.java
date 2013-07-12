@@ -194,6 +194,13 @@ public class GlobalPropertiesManagement {
 	
 	public final static String HEART_FAILURE_TREATMENT_STATUS_WORKFLOW  = "reports.heartFailureTreatmentStatusWorkflow";
 	
+	public final static String ONCOLOGY_SURGERY_STATUS_PROGRAM_WORKFLOW="reports.oncologySurgeryStatusProgramWorkflow";
+	
+	public final static String ONCOLOGY_CHEMO_STATUS_PROGRAM_WORKFLOW="reports.oncologyChemoStatusProgramWorkflow";
+	
+	public final static String ONCOLOGY_RADIATION_STATUS_PROGRAM_WORKFLOW="reports.oncologyRadiationStatusProgramWorkflow";
+	
+	
 	
 	//ProgramWorkflowState
 	public final static String ON_ANTIRETROVIRALS_STATE = "reports.hivonartstate";
@@ -368,6 +375,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String SMOKING_HISTORY = "reports.smokingHistory"; 
 	
+	public final static String ALCOHOOL_HISTORY = "reports.alcohoolHistory";
+	
 	public final static String BASIC_INHALER_TRAINING_PROVIDED="reports.basicInhalerTrainingProvided"; 
 	
 	public final static String PROPER_INHALER_TECHNIQUE="reports.properInhalerTechnique"; 
@@ -511,6 +520,26 @@ public class GlobalPropertiesManagement {
 	public final static String TYPE_OF_REFERRING_CLINIC_OR_HOSPITAL="reports.TypeOfReferrencingToClinicOrHospital";
 	
 	public final static String HIV_STATUS="reports.hivStatus";
+	
+	public final static String FAMILY_MEMBER_WITH_CANCER="reports.familyMemberWithCancer";
+	
+	public final static String FAMILY_MEMBER_WITH_CANCER_STATUS="reports.cancerFamilyStatus";
+	
+	public final static String FAMILY_MEMBER_WITH_CANCER_DIAGNOSIS="reports.familyMemberWithCancerDiagnosis";
+	
+	public final static String PERFORMANCE_STATUS="reports.performanceStatus";
+	
+	public final static String PREVIOUS_CANCER_TREATMENT="reports.previousCancerTreatment";
+	
+	public final static String DATE_OF_PATHOLOGY_REPORT="reports.dateOfPathologyReport";
+	
+	public final static String ER_STATUS="reports.erStatus";
+	
+	public final static String HER2_IHC="reports.her2ihc";
+	
+	public final static String HER2_FISH="reports.her2fish";	
+	
+	
 	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
@@ -659,6 +688,8 @@ public class GlobalPropertiesManagement {
 	public final static String ONCOLOGY_INTAKE_INPATIENT_FORM = "reports.OncoIntakeInPatientForm";
 	
 	public final static String ONCOLOGY_INTAKE_OUTPATIENT_FORM = "reports.OncoIntakeOutPatientForm";
+	
+	public final static String DST_FORM="reports.dstPlanForm";
 	
 	
 	//Drug concepts
