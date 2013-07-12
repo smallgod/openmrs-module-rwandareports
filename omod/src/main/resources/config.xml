@@ -2946,6 +2946,90 @@
 		<property>reports.OncoIntakeInPatientForm</property>
 		<defaultValue>188</defaultValue>
 		<description>The form id for Oncology Intake InPatient form</description>
+	</globalProperty>	
+	
+	<globalProperty>
+		<property>reports.alcohoolHistory</property>
+		<defaultValue>1552</defaultValue>
+		<description>concept id for alcohool history concept </description>
+	</globalProperty>	
+	
+	<globalProperty>
+		<property>reports.cancerFamilyStatus</property>
+		<defaultValue>f75eebc1-361e-47c7-bb61-9be3b0ebec3a</defaultValue>
+		<description>concept id for Family member with cancer concept </description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.familyMemberWithCancer</property>
+		<defaultValue>3ce18156-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>concept id for RELATIONSHIP OF RELATIVE TO PATIENT concept </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.familyMemberWithCancerDiagnosis</property>
+		<defaultValue>2af763bf-2992-45e4-9c29-c8a58f66c42a</defaultValue>
+		<description>concept id for Type of cancer diagnosis for a family member  concept </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.performanceStatus</property>
+		<defaultValue>8ad685de-4f19-4b75-b3f1-ee3b06bf05a2</defaultValue>
+		<description>concept id for Performance status concept </description>
+	</globalProperty>
+	<!-- Not programmed -->
+	<globalProperty>
+		<property>reports.previousCancerTreatment</property>
+		<defaultValue>902ccf5d-d71c-47be-a812-a685c4a383dc</defaultValue>
+		<description>concept id for Previous cancer treatment concept </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.dateOfPathologyReport</property>
+		<defaultValue>926dd83d-5c6c-43d9-9fb8-a8c2e364d5f6</defaultValue>
+		<description>concept id for Date of pathology report concept </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.erStatus</property>
+		<defaultValue>1acc8814-ce06-49f3-8cc1-6b5d1efe3f79</defaultValue>
+		<description>concept id for Estrogen receptor concept </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.her2ihc</property>
+		<defaultValue>6270e371-3fc9-4ed1-96fb-84b072067b1b</defaultValue>
+		<description>concept id for HER2 IHC concept </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.her2fish</property>
+		<defaultValue>c40c9293-14bf-4e42-becd-e2af798d217d</defaultValue>
+		<description>concept id for HER2 FISH concept </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.dstPlanForm</property>
+		<defaultValue>Oncology - Diagnosis, Staging and Treatment Plan</defaultValue>
+		<description>Name of Oncology - Diagnosis, Staging and Treatment Plan form </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologySurgeryStatusProgramWorkflow</property>
+		<defaultValue>SURGERY STATUS</defaultValue>
+		<description>Name of SURGERY STATUS program workflow</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologyChemoStatusProgramWorkflow</property>
+		<defaultValue>Chemotherapy Status</defaultValue>
+		<description>Name of Chemotherapy Status program workflow</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologyRadiationStatusProgramWorkflow</property>
+		<defaultValue>Radiation Status</defaultValue>
+		<description>Name of Radiation Status program workflow</description>
+	</globalProperty>	
 
 </module>
