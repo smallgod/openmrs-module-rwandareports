@@ -765,6 +765,7 @@ public class RowPerPatientColumns {
 	public static LastWeekMostRecentObservation getLastWeekMostRecent(
 			String name, Concept concept, String dateFormat) {
 		LastWeekMostRecentObservation mostRecent = new LastWeekMostRecentObservation();
+		mostRecent.addParameter(new Parameter("endDate", "endDate", Date.class));
 		mostRecent.setConcept(concept);
 		mostRecent.setName(name);
 		if (dateFormat != null) {

@@ -138,12 +138,12 @@ public class SetupNCDLateVisitandLTFUReport {
 		
 		dataSetDefinition.addColumn(
 		    RowPerPatientColumns.getLastWeekMostRecentReturnVisitDate("nextVisit", null, dateFilter),
-		    new HashMap<String, Object>());
+		    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		CustomCalculationBasedOnMultiplePatientDataDefinitions daysLate = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		daysLate.addPatientDataToBeEvaluated(
 		    RowPerPatientColumns.getLastWeekMostRecentReturnVisitDate("nextVisit", null, dateFilter),
-		    new HashMap<String, Object>());
+		    ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		daysLate.setName("daysLate");
 		daysLate.setCalculator(new DaysLate());
 		daysLate.addParameter(new Parameter("endDate","endDate",Date.class));
