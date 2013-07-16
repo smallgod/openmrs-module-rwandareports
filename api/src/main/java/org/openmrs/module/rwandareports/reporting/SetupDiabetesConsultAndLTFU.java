@@ -23,6 +23,7 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.DateDiffType;
 import org.openmrs.module.rwandareports.customcalculator.DiabetesAlerts;
 import org.openmrs.module.rwandareports.customcalculator.OnInsulin;
@@ -194,8 +195,10 @@ public class SetupDiabetesConsultAndLTFU {
 						
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName", new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
 		
+		DateDiff daysSinceLastVisit = RowPerPatientColumns.getDifferenceSinceLastEncounter("Days since last Visit", diabetesEncouters, DateDiffType.DAYS);
+			daysSinceLastVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getDifferenceSinceLastEncounter("Days since last Visit", diabetesEncouters, DateDiffType.DAYS), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(daysSinceLastVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("location", "${location}");
