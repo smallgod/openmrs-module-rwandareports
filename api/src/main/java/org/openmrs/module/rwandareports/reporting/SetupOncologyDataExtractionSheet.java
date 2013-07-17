@@ -243,8 +243,8 @@ public class SetupOncologyDataExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("address", true, false, false, false), new HashMap<String, Object>());
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
-		mappings.put("endDate", "${endDate}");
-		mappings.put("startDate", "${startDate}");
+		//mappings.put("endDate", "${endDate}");
+		//mappings.put("startDate", "${startDate}");
 		
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		
