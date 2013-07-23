@@ -510,12 +510,24 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		        .getPatientsWithTwoObservationsBothInFormBetweenStartAndEndDate("patientsWithBothPeakFlowInSameDDBForm",
 		            DDBform, peakFlowAfterSalbutamol, peakFlowBeforeSalbutamol);
 		
+		CompositionCohortDefinition patientsWithBothPeakFlowInSameDDBFormComposition = new CompositionCohortDefinition();
+		patientsWithBothPeakFlowInSameDDBFormComposition.setName("patientsWithBothPeakFlowInSameDDBFormComposition");
+		patientsWithBothPeakFlowInSameDDBFormComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientsWithBothPeakFlowInSameDDBFormComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithBothPeakFlowInSameDDBFormComposition.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(enrolledInAsthmaProgram, 
+		    		ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}")));
+		patientsWithBothPeakFlowInSameDDBFormComposition.getSearches().put("2", new Mapped<CohortDefinition>(patientsWithBothPeakFlowInSameDDBForm, 
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientsWithBothPeakFlowInSameDDBFormComposition.setCompositionString("1 AND 2");
+		
 		CohortIndicator enrolledInAsthmaProgramIndicator = Indicators.newCountIndicator("enrolledInAthmaProgramIndicator",
 		    enrolledInAsthmaProgram,
 		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
 		
 		CohortIndicator patientsWithBothPeakFlowInSameDDBFormIndicator = Indicators.newCountIndicator(
-		    "patientsWithBothPeakFlowInSameDDBFormIndicator", patientsWithBothPeakFlowInSameDDBForm,
+		    "patientsWithBothPeakFlowInSameDDBFormIndicator", patientsWithBothPeakFlowInSameDDBFormComposition,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 		
 		//=================================================
@@ -532,14 +544,26 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 		
 		//===============================================================================================
-		// B4: Of the new patients enrolled in the last month, % with smoking status documented at intake
+		// B4: Of the new patients enrolled in the last quarter, % with smoking status documented at intake
 		//===============================================================================================
 		
 		SqlCohortDefinition patientsWithSmokingHistory = Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate(
 		    "patientsWithSmokingHistory", DDBform, smokingHistory);
 		
+		CompositionCohortDefinition patientsWithSmokingHistoryComposition = new CompositionCohortDefinition();
+		patientsWithSmokingHistoryComposition.setName("patientsWithBothPeakFlowInSameDDBFormComposition");
+		patientsWithSmokingHistoryComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientsWithSmokingHistoryComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithSmokingHistoryComposition.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(enrolledInAsthmaProgram, 
+		    		ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}")));
+		patientsWithSmokingHistoryComposition.getSearches().put("2", new Mapped<CohortDefinition>(patientsWithSmokingHistory, 
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientsWithSmokingHistoryComposition.setCompositionString("1 AND 2");
+		
 		CohortIndicator patientsWithSmokingHistoryIndicator = Indicators.newCountIndicator(
-		    "patientsWithSmokingHistoryIndicator", patientsWithSmokingHistory,
+		    "patientsWithSmokingHistoryIndicator", patientsWithSmokingHistoryComposition,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 		
 		//=================================================
@@ -1069,12 +1093,24 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		        .getPatientsWithTwoObservationsBothInFormBetweenStartAndEndDate("patientsWithBothPeakFlowInSameDDBForm",
 		            DDBform, peakFlowAfterSalbutamol, peakFlowBeforeSalbutamol);
 		
+		CompositionCohortDefinition patientsWithBothPeakFlowInSameDDBFormComposition = new CompositionCohortDefinition();
+		patientsWithBothPeakFlowInSameDDBFormComposition.setName("patientsWithBothPeakFlowInSameDDBFormComposition");
+		patientsWithBothPeakFlowInSameDDBFormComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientsWithBothPeakFlowInSameDDBFormComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithBothPeakFlowInSameDDBFormComposition.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(enrolledInAthmaProgram, ParameterizableUtil
+		            .createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}")));
+		patientsWithBothPeakFlowInSameDDBFormComposition.getSearches().put("2", new Mapped<CohortDefinition>(patientsWithBothPeakFlowInSameDDBForm, 
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientsWithBothPeakFlowInSameDDBFormComposition.setCompositionString("1 AND 2");
+		
 		CohortIndicator enrolledInAthmaProgramIndicator = Indicators.newCountIndicator("enrolledInAthmaProgramIndicator",
 		    enrolledInAthmaProgram,
 		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
 		
 		CohortIndicator patientsWithBothPeakFlowInSameDDBFormIndicator = Indicators.newCountIndicator(
-		    "patientsWithBothPeakFlowInSameDDBFormIndicator", patientsWithBothPeakFlowInSameDDBForm,
+		    "patientsWithBothPeakFlowInSameDDBFormIndicator", patientsWithBothPeakFlowInSameDDBFormComposition,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 		
 		//=======================================================
@@ -1084,8 +1120,20 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		SqlCohortDefinition patientsWithSmokingHistory = Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate(
 		    "patientsWithSmokingHistory", DDBform, smokingHistory);
 		
+		CompositionCohortDefinition patientsWithSmokingHistoryComposition = new CompositionCohortDefinition();
+		patientsWithSmokingHistoryComposition.setName("patientsWithBothPeakFlowInSameDDBFormComposition");
+		patientsWithSmokingHistoryComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientsWithSmokingHistoryComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithSmokingHistoryComposition.getSearches().put(
+		    "1",
+		    new Mapped<CohortDefinition>(enrolledInAthmaProgram, ParameterizableUtil
+		            .createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}")));
+		patientsWithSmokingHistoryComposition.getSearches().put("2", new Mapped<CohortDefinition>(patientsWithSmokingHistory, 
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientsWithSmokingHistoryComposition.setCompositionString("1 AND 2");
+		
 		CohortIndicator patientsWithSmokingHistoryIndicator = Indicators.newCountIndicator(
-		    "patientsWithSmokingHistoryIndicator", patientsWithSmokingHistory,
+		    "patientsWithSmokingHistoryIndicator", patientsWithSmokingHistoryComposition,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 		
 		//=======================================================
