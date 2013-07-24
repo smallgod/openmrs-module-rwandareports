@@ -308,10 +308,10 @@ public Helper h = new Helper();
                 inHIVUnder15.setName("HIVQ: In all programs under 15");
                 inHIVUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
                 inHIVUnder15.getSearches().put("1",
-                    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+                    new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
                 inHIVUnder15.getSearches().put("2",
                     new Mapped(inAnyHIVProgram, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
-                inHIVUnder15.setCompositionString("NOT 1 AND 2");
+                inHIVUnder15.setCompositionString("1 AND 2");
                 
                 CompositionCohortDefinition inHIVOver15 = new CompositionCohortDefinition();
                 inHIVOver15.setName("HIVQ: In all programs over 15");
@@ -348,13 +348,10 @@ public Helper h = new Helper();
                 CompositionCohortDefinition followingUnder15 = new CompositionCohortDefinition();
                 followingUnder15.setName("HIVQ: preArt in Hiv program in period under 15");
                 followingUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
-                followingUnder15.getSearches().put("1",
-                    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-                followingUnder15.getSearches().put("2",
-                    new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                followingUnder15.getSearches().put("3",
-                    new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                followingUnder15.setCompositionString("NOT 1 AND 2 AND 3");
+                followingUnder15.getSearches().put("1",new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+                followingUnder15.getSearches().put("2",new Mapped(preArt, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+                followingUnder15.getSearches().put("3",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+                followingUnder15.setCompositionString("1 AND 2 AND 3");
                 
                 CompositionCohortDefinition followingOver15 = new CompositionCohortDefinition();
                 followingOver15.setName("HIVQ: preArt in Hiv program in period over 15");
@@ -396,19 +393,6 @@ public Helper h = new Helper();
                 preArtActiveOver15.getSearches().put( "5",new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
                 preArtActiveOver15.setCompositionString("1 AND 2 AND 4 AND (3 OR 5)");
                
-                /* didn't see where this composition is being used
-                CompositionCohortDefinition artActiveUnder15 = new CompositionCohortDefinition();
-                artActiveUnder15.setName("HIVQ: Active art in Hiv program with a visit in period - 12 months and under 15");
-                artActiveUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
-                artActiveUnder15.addParameter(new Parameter("startDate", "startDate", Date.class));
-                artActiveUnder15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-                artActiveUnder15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                artActiveUnder15.getSearches().put("3",new Mapped(encounter, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-12m}")));
-                artActiveUnder15.getSearches().put("4",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                artActiveUnder15.getSearches().put("5",new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate-3m}")));
-                artActiveUnder15.setCompositionString("NOT 1 AND 2 AND 4 AND (3 OR 5)");
-                */
-                
                 CompositionCohortDefinition preArtWithAVisitOver15 = new CompositionCohortDefinition();
                 preArtWithAVisitOver15.setName("HIVQ: preArt in Hiv program with a visit in period -3 months and over 15");
                 preArtWithAVisitOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -444,24 +428,16 @@ public Helper h = new Helper();
                 CompositionCohortDefinition currentArtUnder15 = new CompositionCohortDefinition();
                 currentArtUnder15.setName("HIVQ: currently taking ART before end date and under 15");
                 currentArtUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
-                currentArtUnder15.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
-                currentArtUnder15.getSearches().put("1",new Mapped(under15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+                currentArtUnder15.getSearches().put("1",new Mapped(inHIVUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
                 currentArtUnder15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                currentArtUnder15.getSearches().put("3",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                currentArtUnder15.getSearches().put("4",new Mapped(enrolledInPMTCTPregOnOrBeforeEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}")));
-                currentArtUnder15.getSearches().put("5",new Mapped(enrolledInPMTCTCCMotherOnOrBeforeEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}")));
-                currentArtUnder15.setCompositionString("(1 AND 2 AND 3) OR (4 AND 5)");
+                currentArtUnder15.setCompositionString("1 AND 2");
  
                 CompositionCohortDefinition currentArtOver15 = new CompositionCohortDefinition();
                 currentArtOver15.setName("HIVQ: currently taking ART before end date and over 15");
                 currentArtOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
-                currentArtOver15.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
-                currentArtOver15.getSearches().put("1",new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
+                currentArtOver15.getSearches().put("1",new Mapped(inHIVOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
                 currentArtOver15.getSearches().put("2",new Mapped(artCurrently, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                currentArtOver15.getSearches().put("3",new Mapped(inAdultOrPediHIVOnDateProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
-                currentArtOver15.getSearches().put("4",new Mapped(enrolledInPMTCTPregOnOrBeforeEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}")));
-                currentArtOver15.getSearches().put("5",new Mapped(enrolledInPMTCTCCMotherOnOrBeforeEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}")));
-                currentArtOver15.setCompositionString("(1 AND 2 AND 3) OR (4 AND 5)");
+                currentArtOver15.setCompositionString("1 AND 2");
               
                 CompositionCohortDefinition artWithAVisitUnder15 = new CompositionCohortDefinition();
                 artWithAVisitUnder15.setName("HIVQ: on ART in Hiv program with a visit in period -3 months and under 15");
@@ -580,26 +556,7 @@ public Helper h = new Helper();
                 hivWithAWeightOver15.getSearches().put("3",
                     new Mapped(weight, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}")));
                 hivWithAWeightOver15.setCompositionString("1 AND 2 AND 3");
-                /*
-                 * Don't know what these two indicators are doing here. they are not mapped anywhere
-                CompositionCohortDefinition hivOver15 = new CompositionCohortDefinition();
-                hivOver15.setName("HIVQ: HIV Adult or Pedi and over 15");
-                hivOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
-                hivOver15.getSearches().put("1",
-                    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-                hivOver15.getSearches().put("2",
-                    new Mapped(inAdultOrPediHIVProgram, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
-                hivOver15.setCompositionString("1 AND 2");
                 
-                CompositionCohortDefinition hivUnder15 = new CompositionCohortDefinition();
-                hivUnder15.setName("HIVQ: HIV Adult or Pedi and under 15");
-                hivUnder15.addParameter(new Parameter("endDate", "endDate", Date.class));
-                hivUnder15.getSearches().put("1",
-                    new Mapped(over15Cohort, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}")));
-                hivUnder15.getSearches().put("2",
-                    new Mapped(inAdultOrPediHIVProgram, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
-                hivUnder15.setCompositionString("NOT 1 AND 2");
-                */
                 CompositionCohortDefinition hivVisitOver15 = new CompositionCohortDefinition();
                 hivVisitOver15.setName("HIVQ: in Hiv program with a visit in period and over 15");
                 hivVisitOver15.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -814,7 +771,7 @@ public Helper h = new Helper();
                 dsd.addColumn("HIVQ1A", "In All HIV Programs Over 15",
                     new Mapped(oneHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
                 dsd.addColumn("HIVQ1C", "In All HIV Programs Under 15",
-                    new Mapped(twoHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+                    new Mapped(twoHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
                 dsd.addColumn("HIVQ2A", "New In All HIV Programs Over 15",
                     new Mapped(threeHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")),
                     "");
@@ -822,10 +779,10 @@ public Helper h = new Helper();
                     new Mapped(fourHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")),
                     "");
                 dsd.addColumn("HIVQ3A", "Pre ART Over 15",
-                    new Mapped(fiveHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")),
+                    new Mapped(fiveHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate}")),
                     "");
                 dsd.addColumn("HIVQ3C", "Pre ART Under 15",
-                    new Mapped(sixHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+                    new Mapped(sixHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
                 dsd.addColumn("HIVQ4A", "Pre ART Visit in last 2 quarters Over 15",
                     new Mapped(sevenHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")),
                     "");
@@ -838,10 +795,10 @@ public Helper h = new Helper();
                 dsd.addColumn("HIVQ5C", "Ever started on Art at end of review and Under 15",
                     new Mapped(tenHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
                 dsd.addColumn("HIVQ6A", "Currently on Art at end of review and Over 15",
-                    new Mapped(elevenHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")),
+                    new Mapped(elevenHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate}")),
                     "");
                 dsd.addColumn("HIVQ6C", "Currently on Art at end of review and Under 15",
-                    new Mapped(twelveHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")),"");
+                    new Mapped(twelveHIV, ParameterizableUtil.createParameterMappings("endDate=${endDate}")),"");
                 dsd.addColumn("HIVQ7A", "Currently on Art and had a visit in last 2 quarters and Over 15", new Mapped(thirteenHIV,
                         ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
                 dsd.addColumn("HIVQ7C", "Currently on Art and had a visit in last 2 quarters and Under 15", new Mapped(fourteenHIV,
@@ -896,7 +853,6 @@ public Helper h = new Helper();
                                 ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
                 dsd.addColumn("HIVQ15C","HIV preArt CD4 Under 15 in last 3 months",new Mapped(fourtysixHIV,
                                 ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
-                
                 
                 //===================================================================
                 // PMTCT Pregnant Mother Program
