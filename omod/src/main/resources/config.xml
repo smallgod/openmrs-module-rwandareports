@@ -3030,6 +3030,53 @@
 		<property>reports.oncologyRadiationStatusProgramWorkflow</property>
 		<defaultValue>Radiation Status</defaultValue>
 		<description>Name of Radiation Status program workflow</description>
+	</globalProperty>
+	
+	
+	<globalProperty>
+		<property>reports.cancerProgressionStatus</property>
+		<defaultValue>05841055-295e-4313-ad3b-64b13be4118e</defaultValue>
+		<description>concept id for Cancer Progression Status concept</description>
 	</globalProperty>	
-
+	<globalProperty>
+		<property>reports.outpatientClinicVisitsForm</property>
+		<defaultValue>Oncology - Outpatient Flow: Outpatient Clinic visits</defaultValue>
+		<description>Name of Oncology - Outpatient Flow: Outpatient Clinic visits form</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.oncologyExitForm</property>
+		<defaultValue>Oncology - Exit form</defaultValue>
+		<description>Name of Oncology - Exit form</description>
+	</globalProperty>
+	
+	Concept exitReasonReferred=Context.getConceptService().getConceptByUuid("3cd9fe5e-26fe-102b-80cb-0017a47871b2");
+	
+	Concept exitReasonUnExpectedDeath=Context.getConceptService().getConceptByUuid("4ecbbed3-3a37-493a-975a-80142923f60d");
+	
+	Concept exitReasonUnPriorTreatmentDeath=Context.getConceptService().getConceptByUuid("964828b9-cb72-4dbb-bc4c-487753e25570");	
+	<globalProperty>
+		<property>reports.exitReasonReferred</property>
+		<defaultValue>3cd9fe5e-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>concept id for CLINIC SITE OTHER concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.exitReasonUnExpectedDeath</property>
+		<defaultValue>4ecbbed3-3a37-493a-975a-80142923f60d</defaultValue>
+		<description>concept id for Unexpected Death concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.exitReasonUnPriorTreatmentDeath</property>
+		<defaultValue>964828b9-cb72-4dbb-bc4c-487753e25570</defaultValue>
+		<description>concept id for Death occurred prior to curative treatment initiation concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.oncologyDiagnosisStatusProgramWorkflow</property>
+		<defaultValue>Diagnosis Status</defaultValue>
+		<description>Name of Diagnosis Status program workflow</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.oncologyTreatmentIntentProgramWorkflow</property>
+		<defaultValue>Treatment Intent</defaultValue>
+		<description>Name of Treatment Intent program workflow</description>
+	</globalProperty>
 </module>

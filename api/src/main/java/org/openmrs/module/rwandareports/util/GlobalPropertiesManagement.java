@@ -200,6 +200,9 @@ public class GlobalPropertiesManagement {
 	
 	public final static String ONCOLOGY_RADIATION_STATUS_PROGRAM_WORKFLOW="reports.oncologyRadiationStatusProgramWorkflow";
 	
+	public final static String ONCOLOGY_DIAGNOSIS_STATUS_PROGRAM_WORKFLOW="reports.oncologyDiagnosisStatusProgramWorkflow";
+	
+	public final static String ONCOLOGY_TREATMENT_INTENT_PROGRAM_WORKFLOW="reports.oncologyTreatmentIntentProgramWorkflow";
 	
 	
 	//ProgramWorkflowState
@@ -539,6 +542,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String HER2_FISH="reports.her2fish";	
 	
+	public final static String CANCER_PROGRESSION_STATUS="reports.cancerProgressionStatus";
+	
 	
 	
 	//Primary Care Service concepts
@@ -691,6 +696,9 @@ public class GlobalPropertiesManagement {
 	
 	public final static String DST_FORM="reports.dstPlanForm";
 	
+	public final static String OUTPATIENT_CLINIC_VISITS_FORM="reports.outpatientClinicVisitsForm";
+	
+	public final static String ONCOLOGY_EXIT_FORM="reports.oncologyExitForm";
 	
 	//Drug concepts
 	public final static String FUROSEMIDE= "reports.furosemide";

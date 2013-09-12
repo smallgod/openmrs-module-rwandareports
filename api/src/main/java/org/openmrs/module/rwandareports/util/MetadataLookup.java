@@ -57,16 +57,17 @@ public class MetadataLookup {
 	public static ProgramWorkflow getProgramWorkflow(String programLookup, String workflowLookup) {
 		Program p = getProgram(programLookup);
 		ProgramWorkflow wf = p.getWorkflowByName(workflowLookup);
+		
 		if (wf == null) {
 			for (ProgramWorkflow programWorkflow : p.getAllWorkflows()) {
-				if (workflowLookup.equalsIgnoreCase(programWorkflow.getName())) {
-					wf = programWorkflow;
+				if (workflowLookup.equalsIgnoreCase(programWorkflow.getConcept().getName().toString())) {
+					wf = programWorkflow;					
 				}
 				else if (workflowLookup.equalsIgnoreCase(programWorkflow.getUuid())) {
-					wf = programWorkflow;
+						wf = programWorkflow;						
 				}
 				else if (workflowLookup.equalsIgnoreCase(programWorkflow.getId().toString())) {
-					wf = programWorkflow;
+						wf = programWorkflow;
 				}
 			}
 		}
