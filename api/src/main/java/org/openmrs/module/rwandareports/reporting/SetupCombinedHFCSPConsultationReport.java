@@ -12,6 +12,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.common.SortCriteria;
@@ -29,7 +30,9 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfObsA
 import org.openmrs.module.rowperpatientreports.patientdata.definition.EvaluateDefinitionForOtherPersonData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationship;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationshipAndByProgram;
 import org.openmrs.module.rwandareports.filter.BorFStateFilter;
+import org.openmrs.module.rwandareports.filter.HIVPositiveMotherOfChild;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
@@ -82,6 +85,14 @@ public class SetupCombinedHFCSPConsultationReport {
 		
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		
+		
+		Properties stateProperties = new Properties();
+		stateProperties.setProperty("Program", pmtctCombined.getName());
+		stateProperties.setProperty("Workflow", Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.TREATMENT_GROUP_WORKFLOW));
+		reportDefinition.addParameter(new Parameter("state", "Group", ProgramWorkflowState.class, stateProperties));
+		
+		
+		
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
 		
@@ -96,6 +107,15 @@ public class SetupCombinedHFCSPConsultationReport {
 		// Create new dataset definition 
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName(reportDefinition.getName() + " Data Set");
+		
+		
+		dataSetDefinition.addParameter(new Parameter("state", "State", ProgramWorkflowState.class));
+		
+		dataSetDefinition.addFilter(Cohorts.createInCurrentStateParameterized("ccInfant group", "states"),
+		    ParameterizableUtil.createParameterMappings("states=${state},onDate=${now}"));
+		
+		
+		
 		
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDV", SortDirection.ASC);
@@ -112,9 +132,17 @@ public class SetupCombinedHFCSPConsultationReport {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("InfantId"), new HashMap<String, Object>());
 		
-		RetrievePersonByRelationship mother = RowPerPatientColumns.getMother();
+		//RetrievePersonByRelationship mother = RowPerPatientColumns.getMother();
+		
+		RetrievePersonByRelationshipAndByProgram mother = RowPerPatientColumns.getMother(Context.getProgramWorkflowService().getProgram(17));
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMotherRelationship("MotherName"), new HashMap<String, Object>());
+		
+		
+		/*EvaluateDefinitionForOtherPersonData MotherName = RowPerPatientColumns.getDefinitionForOtherPerson("MotherName", mother,
+				RowPerPatientColumns.getMotherRelationship("MotherNames"));
+		dataSetDefinition.addColumn(MotherName, new HashMap<String, Object>());
+		*/
 		
 		EvaluateDefinitionForOtherPersonData motherId = RowPerPatientColumns.getDefinitionForOtherPerson("MotherId", mother,
 		    RowPerPatientColumns.getIMBId("InfantId"));
@@ -191,6 +219,7 @@ public class SetupCombinedHFCSPConsultationReport {
 		    new HashMap<String, Object>());
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
+		mappings.put("state", "${state}");
 		
 		reportDefinition.addDataSetDefinition("dataSet", dataSetDefinition, mappings);
 		

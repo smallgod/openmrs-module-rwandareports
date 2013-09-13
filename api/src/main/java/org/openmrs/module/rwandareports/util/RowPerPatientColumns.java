@@ -36,10 +36,13 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfPati
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramCompletion;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramEnrolment;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfWorkflowStateChange;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DatesOfVisitsByStartDateAndEndDate;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.EvaluateDefinitionForOtherPersonData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugOrderStartedAfterDateRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugOrderStartedRestrictedByConceptSet;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstRecordedObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstRecordedObservationWithCodedConceptAnswer;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstStateOfPatient;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FullHistoryOfProgramWorkflowStates;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObsgroup;
@@ -61,9 +64,11 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEnco
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilter;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationship;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationshipAndByProgram;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
+import org.openmrs.module.rowperpatientreports.patientdata.evaluator.DatesOfVisitsByStartDateAndEndDateEvaluator;
 import org.openmrs.module.rwandareports.customcalculator.BooleanCalculation;
 import org.openmrs.module.rwandareports.definition.ArtSwitch;
 import org.openmrs.module.rwandareports.definition.ArtSwitchDate;
@@ -195,11 +200,36 @@ public class RowPerPatientColumns {
 		mother.setRetrievePersonAorB("A");
 		return mother;
 	}
-
+	
+	public static RetrievePersonByRelationshipAndByProgram getMother(Program program) {
+		RetrievePersonByRelationshipAndByProgram mother = new RetrievePersonByRelationshipAndByProgram();
+		mother.setRelationshipTypeId(gp.getRelationshipType(
+				GlobalPropertiesManagement.MOTHER_RELATIONSHIP)
+				.getRelationshipTypeId());
+		mother.setRetrievePersonAorB("A");
+		mother.setProgram(program);
+		return mother;
+	}
+	
 	public static StateOfPatient getStateOfPatient(String name,
 			Program program, ProgramWorkflow programWorkflow,
 			ResultFilter filter) {
 		StateOfPatient state = new StateOfPatient();
+		state.setPatientProgram(program);
+		state.setPatienProgramWorkflow(programWorkflow);
+		state.setName(name);
+
+		if (filter != null) {
+			state.setFilter(filter);
+		}
+
+		return state;
+	}
+	
+	public static FirstStateOfPatient getFirstStateOfPatient(String name,
+			Program program, ProgramWorkflow programWorkflow,
+			ResultFilter filter) {
+		FirstStateOfPatient state = new FirstStateOfPatient();
 		state.setPatientProgram(program);
 		state.setPatienProgramWorkflow(programWorkflow);
 		state.setName(name);
@@ -910,6 +940,20 @@ public class RowPerPatientColumns {
 		address.setDescription("Address");
 		address.setIncludeCountry(false);
 		address.setIncludeProvince(false);
+		address.setIncludeDistrict(district);
+		address.setIncludeSector(sector);
+		address.setIncludeCell(cell);
+		address.setIncludeUmudugudu(umudugudu);
+		return address;
+	}
+	
+	public static PatientAddress getPatientAddress(String name,boolean country,boolean province,
+			boolean district, boolean sector, boolean cell, boolean umudugudu) {
+		PatientAddress address = new PatientAddress();
+		address.setName(name);
+		address.setDescription("Address");
+		address.setIncludeCountry(country);
+		address.setIncludeProvince(province);
 		address.setIncludeDistrict(district);
 		address.setIncludeSector(sector);
 		address.setIncludeCell(cell);
@@ -1662,5 +1706,26 @@ public class RowPerPatientColumns {
 		}
 
 		return outcome;
+	}
+	
+	public static FirstRecordedObservation getFirstRecordedObservation(String name, Concept question, ResultFilter filter) {
+		FirstRecordedObservation firstRecordedObservation=new FirstRecordedObservation();
+		firstRecordedObservation.setName(name);
+		firstRecordedObservation.setQuestion(question);			
+		if(filter!=null){
+			firstRecordedObservation.setFilter(filter);
+		}		
+		return firstRecordedObservation;		
+	}
+	
+	public static DatesOfVisitsByStartDateAndEndDate getDatesOfVisitsByStartDateAndEndDate(String name,
+			List<EncounterType> encounterTypes, ResultFilter filter) {
+		DatesOfVisitsByStartDateAndEndDate dateOfVisits = new DatesOfVisitsByStartDateAndEndDate();
+		dateOfVisits.addParameter(new Parameter("startDate", "StartDate", Date.class));		
+		dateOfVisits.addParameter(new Parameter("endDate", "EndDate", Date.class));		
+		dateOfVisits.setName(name);
+		dateOfVisits.setEncounterTypes(encounterTypes);
+		dateOfVisits.setFilter(filter);
+		return dateOfVisits;
 	}
 }
