@@ -935,7 +935,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 
 		dsd.addColumn(
 				"D1D",
-				"Total patients seen in the last month with Stage II-III HTN",
+				"Total patients seen in the last quarter with Stage II-III HTN",
 				new Mapped(patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160Indicator, ParameterizableUtil
 						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
