@@ -132,6 +132,8 @@ public class SetupOncologyDataExtractionSheet {
 	
 	private ArrayList<Form> notIntakeForms=new ArrayList<Form>();
 	
+	private ArrayList<Form> changeWorkFlowForms=new ArrayList<Form>();
+	
 	
 	
 	/*private List<String> onOrAfterOnOrBefore = new ArrayList<String>();*/
@@ -270,6 +272,7 @@ public class SetupOncologyDataExtractionSheet {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstStateOfPatient("firstDiagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatientMatchingWithEncounter("encounterMatchdiagnosisStatus", oncologyProgram, diagnosisStatus, changeWorkFlowForms,null), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosisStatus", oncologyProgram, diagnosisStatus, null), new HashMap<String, Object>());
 		
@@ -427,6 +430,14 @@ public class SetupOncologyDataExtractionSheet {
 		
 		notIntakeForms.add(outpatientFlowClinicVisit);
 		notIntakeForms.add(gp.getForm(GlobalPropertiesManagement.DST_FORM));
+		
+		changeWorkFlowForms.add(gp.getForm(GlobalPropertiesManagement.DST_FORM));
+		
+		changeWorkFlowForms.add(gp.getForm(GlobalPropertiesManagement.ONCOLOGY_INTAKE_INPATIENT_FORM));
+		
+		changeWorkFlowForms.add(gp.getForm(GlobalPropertiesManagement.ONCOLOGY_INTAKE_OUTPATIENT_FORM));
+		
+		
 		
 		//exitReason=Context.getConceptService().getConceptByUuid("3cde5ef4-26fe-102b-80cb-0017a47871b2");
 		

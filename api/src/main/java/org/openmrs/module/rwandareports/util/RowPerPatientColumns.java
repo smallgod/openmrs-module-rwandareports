@@ -67,6 +67,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePe
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationshipAndByProgram;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatientMatchWithEncounter;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
 import org.openmrs.module.rowperpatientreports.patientdata.evaluator.DatesOfVisitsByStartDateAndEndDateEvaluator;
 import org.openmrs.module.rwandareports.customcalculator.BooleanCalculation;
@@ -218,6 +219,22 @@ public class RowPerPatientColumns {
 		state.setPatientProgram(program);
 		state.setPatienProgramWorkflow(programWorkflow);
 		state.setName(name);
+
+		if (filter != null) {
+			state.setFilter(filter);
+		}
+
+		return state;
+	}
+	
+	public static StateOfPatientMatchWithEncounter getStateOfPatientMatchingWithEncounter(String name,
+			Program program, ProgramWorkflow programWorkflow,ArrayList<Form> forms,
+			ResultFilter filter) {
+		StateOfPatientMatchWithEncounter state = new StateOfPatientMatchWithEncounter();
+		state.setProgram(program);
+		state.setPatienProgramWorkflow(programWorkflow);
+		state.setName(name);
+		state.setForms(forms);
 
 		if (filter != null) {
 			state.setFilter(filter);

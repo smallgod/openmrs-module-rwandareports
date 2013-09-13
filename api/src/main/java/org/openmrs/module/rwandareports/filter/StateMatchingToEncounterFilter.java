@@ -8,6 +8,8 @@ import java.util.Set;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Obs;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilter;
 
@@ -27,6 +29,20 @@ public Object filter(Object value) {
 	int patientId=Context.getEncounterService().getEncounter(encounterId).getPatientId();
 	
 	List<Encounter> intakevisits=Context.getEncounterService().getEncounters(Context.getPatientService().getPatient(patientId), null, null, null, intakeForms, null, null, null, null, true);
+	
+	List<PatientProgram> patProg=Context.getProgramWorkflowService().getPatientPrograms(Context.getPatientService().getPatient(patientId), Context.getProgramWorkflowService().getProgram(2), null, null, null, null, false);
+	
+	for (PatientProgram patientProgram : patProg) {
+		Set<PatientState> states=patientProgram.getStates();
+		for (PatientState patientState : states) {
+			for (Encounter encounter : intakevisits) {
+				if(patientState.getStartDate().compareTo(encounter.getEncounterDatetime())==0){
+					
+				}
+			}
+		}
+	}
+	
 	
 	
 	
