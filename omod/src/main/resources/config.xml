@@ -35,6 +35,11 @@
 		<class>@MODULE_PACKAGE@.extension.html.TreatmentAdminPlanExt</class>
 	</extension>
 
+	<extension>
+		<point>org.openmrs.patientDashboard.patientActionsContent</point>
+		<class>${project.parent.groupId}.${project.parent.artifactId}.web.extension.PatientDashboardActions</class>
+	</extension>
+
 	<messages>
 		<lang>en</lang>
 		<file>messages.properties</file>
@@ -3153,6 +3158,12 @@
 		<property>reports.mutuelleLevel</property>
 		<defaultValue>a9191adf-c999-422d-94e0-14de5f076127</defaultValue>
 		<description>Id of Mutuelle level concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.diseaseStage</property>
+		<defaultValue>e9cf4aed-34be-4c0a-9004-4294d9bb2d74</defaultValue>
+		<description>Id of Overall oncology Stage concept</description>
 	</globalProperty>
 	
 	
