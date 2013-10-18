@@ -572,6 +572,7 @@ public class GlobalPropertiesManagement {
 	
 	public final static String MUTUELLE_LEVEL="reports.mutuelleLevel";
 	
+	public final static String OVERALL_ONCOLOGY_STAGE = "reports.diseaseStage";
 	
 	
 	

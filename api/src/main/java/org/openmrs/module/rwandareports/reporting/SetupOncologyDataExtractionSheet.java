@@ -137,6 +137,11 @@ public class SetupOncologyDataExtractionSheet {
 	private Concept height;
 	
 	private Concept weight;
+	private Concept diseaseStage;
+	
+	private List<ProgramWorkflow> diagnosisStatusProgramWorkflows=new ArrayList<ProgramWorkflow>();
+	
+	private List<ProgramWorkflow> diagnosisProgramWorkflows=new ArrayList<ProgramWorkflow>();
 	
 	
 	
@@ -263,6 +268,9 @@ public class SetupOncologyDataExtractionSheet {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("alcoholStatus",alcoholHistory,intakeForms,null,null), new HashMap<String, Object>());
 		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("diseaseStage",diseaseStage,intakeForms,null,null), new HashMap<String, Object>());
+		
+		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("cancerFamilyStatus",cancerFamilyStatus,intakeForms,null,null), new HashMap<String, Object>());
 		
 		
@@ -294,9 +302,12 @@ public class SetupOncologyDataExtractionSheet {
 				
 		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatientMatchingWithEncounter("encounterMatchradiationStatus", oncologyProgram, radiationStatus, dstForms,null), new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosisStatus", oncologyProgram, diagnosisStatus, null), new HashMap<String, Object>());
+		//dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosisStatus", oncologyProgram, diagnosisStatus, null), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentProgramWorkflowState("diagnosisStatus", diagnosisStatusProgramWorkflows, null), new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
+		//dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentProgramWorkflowState("diagnosis",diagnosisProgramWorkflows, null), new HashMap<String, Object>());
+		
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("dateOfPathologyReport",dateOfPathologyReport,dstForms,null,null), new HashMap<String, Object>());
 		
@@ -327,9 +338,15 @@ public class SetupOncologyDataExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getRecentEncounter("dateOfVisitSixMonthsPostIntake", intakeForms,null,null, new DateOfVisitSixmonthsPostIntakeFilter(intakeForms,notIntakeForms)), new HashMap<String, Object>());
 		
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstRecordedObservation("performanceStatusAfterSixMonths", performanceStatus, new ObservationValueNumericAfterSixmonthsFilter(performanceStatusForms)), new HashMap<String, Object>());
+		//dataSetDefinition.addColumn(RowPerPatientColumns.getFirstRecordedObservation("performanceStatusAfterSixMonths", performanceStatus, new ObservationValueNumericAfterSixmonthsFilter(performanceStatusForms,intakeForms)), new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstRecordedObservation("cancerProgressionStatusAfterSixMonths",cancerProgressionStatus, new ObservationValueCodedAfterSixmonthsFilter()), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getObsAfterPeriodOfTimeFromEncounterDate("performanceStatusAfterSixMonths", performanceStatus, intakeForms, null, 15552000000L, new ObservationValueNumericAfterSixmonthsFilter()), new HashMap<String, Object>());
+		
+		
+		
+		//dataSetDefinition.addColumn(RowPerPatientColumns.getFirstRecordedObservation("cancerProgressionStatusAfterSixMonths",cancerProgressionStatus, new ObservationValueCodedAfterSixmonthsFilter()), new HashMap<String, Object>());
+		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getObsAfterPeriodOfTimeFromEncounterDate("cancerProgressionStatusAfterSixMonths",cancerProgressionStatus, intakeForms,null,15552000000L,new ObservationValueCodedAfterSixmonthsFilter()), new HashMap<String, Object>());
 		
 		//dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("lastexitReason", exitReason, "dd/MM/yyyy"), new HashMap<String, Object>());
 		
@@ -380,6 +397,9 @@ public class SetupOncologyDataExtractionSheet {
 		
 		diagnosisStatus = gp.getProgramWorkflow(GlobalPropertiesManagement.ONCOLOGY_DIAGNOSIS_STATUS_PROGRAM_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
+		diagnosisStatusProgramWorkflows.add(diagnosisStatus);
+		
+		diagnosisProgramWorkflows.add(diagnosis);
 		
 		//allOncologyEncountertypes.add(nonClinical);
 		
@@ -405,8 +425,7 @@ public class SetupOncologyDataExtractionSheet {
 			
 		familyMemberWithCancerDiagnosis= gp.getConcept(GlobalPropertiesManagement.FAMILY_MEMBER_WITH_CANCER_DIAGNOSIS);			
 			
-		performanceStatus= gp.getConcept(GlobalPropertiesManagement.PERFORMANCE_STATUS);
-		
+		performanceStatus= gp.getConcept(GlobalPropertiesManagement.PERFORMANCE_STATUS);		
 			
 		previousCancerTreatment= gp.getConcept(GlobalPropertiesManagement.PREVIOUS_CANCER_TREATMENT);
 		
@@ -421,32 +440,27 @@ public class SetupOncologyDataExtractionSheet {
 		radiationStatus = gp.getProgramWorkflow(GlobalPropertiesManagement.ONCOLOGY_RADIATION_STATUS_PROGRAM_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
 		treatmentIntent=gp.getProgramWorkflow(GlobalPropertiesManagement.ONCOLOGY_TREATMENT_INTENT_PROGRAM_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
-		
-		
-		
+				
 		erStatus=gp.getConcept(GlobalPropertiesManagement.ER_STATUS);			
 				
 		her2ihc =gp.getConcept(GlobalPropertiesManagement.HER2_IHC);	
 		
 		her2fish = gp.getConcept(GlobalPropertiesManagement.HER2_FISH);
 		
-//to fix in the structure of rwandareports module
-		
 		cancerProgressionStatus=gp.getConcept(GlobalPropertiesManagement.CANCER_PROGRESSION_STATUS);
-			
-			//Context.getConceptService().getConceptByUuid("05841055-295e-4313-ad3b-64b13be4118e");
 		
 		Form outpatientFlowClinicVisit=gp.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_FORM);
-			
-			//Context.getFormService().getForm("Oncology - Outpatient Flow: Outpatient Clinic visits");
 		
 		outpatientFlows.add(outpatientFlowClinicVisit);
 		
 		performanceStatusForms.add(outpatientFlowClinicVisit);
+		
 		performanceStatusForms.add(gp.getForm(GlobalPropertiesManagement.ONCOLOGY_INTAKE_INPATIENT_FORM));
+		
 		performanceStatusForms.add(gp.getForm(GlobalPropertiesManagement.ONCOLOGY_INTAKE_OUTPATIENT_FORM));
 		
 		notIntakeForms.add(outpatientFlowClinicVisit);
+		
 		notIntakeForms.add(gp.getForm(GlobalPropertiesManagement.DST_FORM));
 		
 		dstIntakeForms.add(gp.getForm(GlobalPropertiesManagement.DST_FORM));
@@ -455,26 +469,17 @@ public class SetupOncologyDataExtractionSheet {
 		
 		dstIntakeForms.add(gp.getForm(GlobalPropertiesManagement.ONCOLOGY_INTAKE_OUTPATIENT_FORM));
 		
-		
-		
-		//exitReason=Context.getConceptService().getConceptByUuid("3cde5ef4-26fe-102b-80cb-0017a47871b2");
-		
 		exitForms.add(gp.getForm(GlobalPropertiesManagement.ONCOLOGY_EXIT_FORM));
 		
-		//exitForms.add(Context.getFormService().getForm("Oncology - Exit form"));
-		
 		height=gp.getConcept(GlobalPropertiesManagement.HEIGHT_CONCEPT);
-		weight=gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);
-				
+		
+		weight=gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);				
 		
 		mutuelle=gp.getConcept(GlobalPropertiesManagement.MUTUELLE_RWANDA_INSURANCE);
-			
-		//	Context.getConceptService().getConceptByUuid("8da67e73-776c-43f6-9758-79d1f6786db3");
-
-		mutuelleLevel=gp.getConcept(GlobalPropertiesManagement.MUTUELLE_LEVEL);
-			
-			//Context.getConceptService().getConceptByUuid("a9191adf-c999-422d-94e0-14de5f076127");
 		
+		mutuelleLevel=gp.getConcept(GlobalPropertiesManagement.MUTUELLE_LEVEL);
+		
+		diseaseStage=gp.getConcept(GlobalPropertiesManagement.OVERALL_ONCOLOGY_STAGE);
 		
 	}
 }

@@ -10,7 +10,15 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilt
 public class ObservationValueCodedAfterSixmonthsFilter implements ResultFilter {
 private String obsValueCoded="";
 public Object filter(Object value) {
-	int obsId = Integer.parseInt((String)value);
+	Obs obs=(Obs)value;
+	if(obs!=null && obs.getValueCoded()!=null){
+		obsValueCoded=obs.getValueCoded().getName().toString();
+		return obsValueCoded;
+		}
+		
+			return null;
+	
+	/*int obsId = Integer.parseInt((String)value);
 	
 	Obs ob=Context.getObsService().getObs(obsId);
 	
@@ -51,7 +59,7 @@ public Object filter(Object value) {
 	}
 	
 		return null;
-	}
+*/	}
 public Object filterWhenNull() {
 	// TODO Auto-generated method stub
 	return null;

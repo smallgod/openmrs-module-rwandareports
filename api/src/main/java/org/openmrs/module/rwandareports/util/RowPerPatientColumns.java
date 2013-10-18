@@ -48,6 +48,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecent
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObsgroup;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentProgramWorkflowState;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsAfterPeriodOfTimeFromEncounterDate;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsValueAfterDateOfOtherDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsValueBeforeDateOfOtherDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounter;
@@ -1744,6 +1745,25 @@ public class RowPerPatientColumns {
 			firstRecordedObservation.setFilter(filter);
 		}		
 		return firstRecordedObservation;		
+	}
+	
+	public static ObsAfterPeriodOfTimeFromEncounterDate getObsAfterPeriodOfTimeFromEncounterDate(String name, Concept question,List<Form> forms,List<EncounterType> encounterTypes,long timeDiff, ResultFilter filter) {
+		ObsAfterPeriodOfTimeFromEncounterDate obsAfterPeriodOfTimeFromEncounterDate=new ObsAfterPeriodOfTimeFromEncounterDate();
+		obsAfterPeriodOfTimeFromEncounterDate.setName(name);
+		obsAfterPeriodOfTimeFromEncounterDate.setQuestion(question);
+		obsAfterPeriodOfTimeFromEncounterDate.setTimeDiff(timeDiff);
+		if(filter!=null){
+			obsAfterPeriodOfTimeFromEncounterDate.setFilter(filter);
+		}
+		
+		if (forms!=null) {
+			obsAfterPeriodOfTimeFromEncounterDate.setForms(forms);
+		}
+		
+		if (encounterTypes!=null) {
+			obsAfterPeriodOfTimeFromEncounterDate.setEncounterTypes(encounterTypes);
+		}
+		return obsAfterPeriodOfTimeFromEncounterDate;		
 	}
 	
 	public static DatesOfVisitsByStartDateAndEndDate getDatesOfVisitsByStartDateAndEndDate(String name,
