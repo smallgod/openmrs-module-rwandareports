@@ -14,6 +14,7 @@
 
 package org.openmrs.module.rwandareports.patientsummary;
 
+import org.openmrs.Program;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -47,6 +48,11 @@ public interface PatientSummaryManager {
 	 * @return the description of the Report
 	 */
 	String getDescription();
+
+	/**
+	 * @return the programs this patient summary is for
+	 */
+	List<Program> getRequiredPrograms();
 
 	/**
 	 * @return the parameters of the Report

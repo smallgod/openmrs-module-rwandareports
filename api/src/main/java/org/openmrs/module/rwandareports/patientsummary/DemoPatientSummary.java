@@ -17,6 +17,7 @@ package org.openmrs.module.rwandareports.patientsummary;
 
 import org.openmrs.Obs;
 import org.openmrs.PersonName;
+import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.TimeQualifier;
 import org.openmrs.module.reporting.data.converter.DateConverter;
@@ -26,14 +27,18 @@ import org.openmrs.module.reporting.data.person.definition.ObsForPersonDataDefin
 import org.openmrs.module.reporting.data.person.definition.PreferredNameDataDefinition;
 import org.openmrs.module.reporting.dataset.definition.PatientDataSetDefinition;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
+import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 /**
  * Base implementation of ReportManager that provides some common method implementations
  */
+//@Component
 public class DemoPatientSummary extends BasePatientSummaryManager {
 
 	@Override
@@ -46,6 +51,12 @@ public class DemoPatientSummary extends BasePatientSummaryManager {
 	 */
 	public String getKey() {
 		return "demoPatientSummary";
+	}
+
+	@Override
+	public List<Program> getRequiredPrograms() {
+		Program hivProgram = Context.getProgramWorkflowService().getProgram(3);
+		return Arrays.asList(hivProgram);
 	}
 
 	@Override

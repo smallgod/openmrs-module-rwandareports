@@ -15,6 +15,7 @@
 
 package org.openmrs.module.rwandareports.patientsummary;
 
+import org.openmrs.Program;
 import org.openmrs.module.reporting.common.MessageUtil;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -45,6 +46,11 @@ public abstract class BasePatientSummaryManager implements PatientSummaryManager
 	}
 
 	@Override
+	public List<Program> getRequiredPrograms() {
+		return null;
+	}
+
+	@Override
 	public String getRequiredPrivilege() {
 		return null;
 	}
@@ -53,7 +59,7 @@ public abstract class BasePatientSummaryManager implements PatientSummaryManager
 		String messageCode = "rwandareports."+getKey()+"."+code;
 		String translation = MessageUtil.translate(messageCode);
 		if (messageCode.equals(translation)) {
-			return code;
+			return messageCode;
 		}
 		return translation;
 	}

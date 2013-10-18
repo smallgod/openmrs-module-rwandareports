@@ -35,6 +35,11 @@
 		<class>@MODULE_PACKAGE@.extension.html.TreatmentAdminPlanExt</class>
 	</extension>
 
+	<extension>
+		<point>org.openmrs.patientDashboard.patientActionsContent</point>
+		<class>${project.parent.groupId}.${project.parent.artifactId}.web.extension.PatientDashboardActions</class>
+	</extension>
+
 	<messages>
 		<lang>en</lang>
 		<file>messages.properties</file>
