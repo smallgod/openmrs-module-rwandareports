@@ -13,24 +13,51 @@
  */
 package org.openmrs.module.rwandareports;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.openmrs.Location;
-import org.openmrs.Program;
-import org.openmrs.ProgramWorkflow;
-import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.ObjectUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.report.ReportData;
+import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
-@Ignore
-public class RwandaReportsTestUtil {
+/**
+ * Abstract class for testing Rwanda Reports
+ */
+public abstract class BaseRwandaReportsTest extends BaseModuleContextSensitiveTest {
+
+	@Override
+	public Boolean useInMemoryDatabase() {
+		return false;
+	}
+
+	@Before
+	public void ensureLogin() throws Exception {
+		authenticate();
+	}
+
+	@Override
+	public Properties getRuntimeProperties() {
+		Properties p = super.getRuntimeProperties();
+		p.setProperty("junit.username", "admin");
+		p.setProperty("junit.username", "Test1234");
+		p.setProperty("connection.username", "openmrs");
+		p.setProperty("connection.password", "openmrs");
+		p.setProperty("connection.url", "jdbc:mysql://localhost:3306/openmrs_rwandareports_test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8");
+		return p;
+	}
+
+	public ReportDefinitionService getReportDefinitionService() {
+		return Context.getService(ReportDefinitionService.class);
+	}
 
 	public static Location getLocation(String name) {
 		return Context.getLocationService().getLocation(name);
@@ -94,4 +121,3 @@ public class RwandaReportsTestUtil {
 		System.out.println(output.toString());
 	}
 }
-

@@ -23,14 +23,14 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.service.ReportService;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.module.rwandareports.BaseRwandaReportsTest;
 
 import java.util.List;
 
 /**
  * Abstract class for testing Rwanda Reports
  */
-public abstract class RwandaReportsTest extends BaseModuleContextSensitiveTest {
+public abstract class SetupReportTest extends BaseRwandaReportsTest {
 
 	/**
 	 * @return the name of the report that this is testing
@@ -61,11 +61,6 @@ public abstract class RwandaReportsTest extends BaseModuleContextSensitiveTest {
 	public void setup() throws Exception {
 		authenticate();
 		getSetupReportClass().delete();
-	}
-
-	@Override
-	public Boolean useInMemoryDatabase() {
-		return false;
 	}
 
 	/**
@@ -129,9 +124,4 @@ public abstract class RwandaReportsTest extends BaseModuleContextSensitiveTest {
 		Assert.assertEquals(1, l.size());
 		return l.get(0);
 	}
-
-	private ReportDefinitionService getReportDefinitionService() {
-		return Context.getService(ReportDefinitionService.class);
-	}
-
 }

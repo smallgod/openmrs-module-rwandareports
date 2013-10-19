@@ -15,25 +15,15 @@ package org.openmrs.module.rwandareports.patientsummary;
 
 import junit.framework.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
-import org.openmrs.module.rwandareports.RwandaReportsTestUtil;
-import org.openmrs.module.rwandareports.reporting.RwandaReportsTest;
-import org.openmrs.module.rwandareports.reporting.SetupAdultHIVConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupReport;
-import org.openmrs.module.rwandareports.util.MetadataLookup;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Tests the output of the Adult HIV Consultation Sheet Report
