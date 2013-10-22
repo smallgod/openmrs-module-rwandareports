@@ -13,7 +13,10 @@
  */
 package org.openmrs.module.rwandareports;
 
+import ch.vorburger.mariadb4j.DB;
 import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.ObjectUtil;
@@ -26,13 +29,21 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 /**
  * Abstract class for testing Rwanda Reports
  */
-public abstract class BaseRwandaReportsTest extends BaseModuleContextSensitiveTest {
+public class BaseRwandaReportsTest extends BaseModuleContextSensitiveTest {
+
+	public BaseRwandaReportsTest() {
+		super();
+		DB db = DB.newEmbeddedDB(3307);
+		db.start();
+		db.source("org/openmrs/module/rwandareports/schemaAndMetadata.sql");
+	}
 
 	@Override
 	public Boolean useInMemoryDatabase() {
@@ -40,18 +51,24 @@ public abstract class BaseRwandaReportsTest extends BaseModuleContextSensitiveTe
 	}
 
 	@Before
-	public void ensureLogin() throws Exception {
+	public void setupDatabaseAndLogin() throws Exception {
 		authenticate();
+	}
+
+	@Test
+	public void testAuthenticated() throws Exception {
+		List<Concept> concepts = Context.getConceptService().getAllConcepts();
+		System.out.println("Loaded " + concepts.size() + concepts);
 	}
 
 	@Override
 	public Properties getRuntimeProperties() {
 		Properties p = super.getRuntimeProperties();
 		p.setProperty("junit.username", "admin");
-		p.setProperty("junit.username", "Test1234");
-		p.setProperty("connection.username", "openmrs");
-		p.setProperty("connection.password", "openmrs");
-		p.setProperty("connection.url", "jdbc:mysql://localhost:3306/openmrs_rwandareports_test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8");
+		p.setProperty("junit.password", "Test1234");
+		p.setProperty("connection.username", "root");
+		p.setProperty("connection.password", "");
+		p.setProperty("connection.url", "jdbc:mysql://localhost:3307/test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8");
 		return p;
 	}
 

@@ -10,7 +10,7 @@
 		</layout>
 	</appender>
  
- 	<logger name="org.dbunit">
+ 	<logger name="ch.vorburger.mariadb4j">
 		<level value="INFO" />
 		<appender-ref ref="CONSOLE" />
  	</logger>
