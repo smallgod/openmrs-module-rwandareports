@@ -28,6 +28,11 @@ import java.util.List;
 public class SetupAdultHIVConsultationSheetTest extends SetupReportTest {
 
 	@Override
+	protected void setupTestData() {
+		// TODO: Implement me
+	}
+
+	@Override
 	public String getReportName() {
 		return "HIV-Adult Consultation Sheet";
 	}

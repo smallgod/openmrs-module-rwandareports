@@ -14,53 +14,38 @@
 package org.openmrs.module.rwandareports.patientsummary;
 
 import junit.framework.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.Cohort;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.report.ReportData;
-import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.module.reporting.dataset.DataSetRow;
 
 /**
  * Tests the output of the Adult HIV Consultation Sheet Report
  */
-public class DemoPatientSummaryTest extends BaseModuleContextSensitiveTest {
+public class DemoPatientSummaryTest extends BasePatientSummaryTest {
 
-	@Test
-	public void test() throws Exception {
-		DemoPatientSummary manager = new DemoPatientSummary();
-		ReportDefinition rd = manager.constructReportDefinition();
-		EvaluationContext context = new EvaluationContext();
-		context.setBaseCohort(new Cohort("12088"));
-		ReportData data = Context.getService(ReportDefinitionService.class).evaluate(rd, context);
-
-		Assert.assertEquals(1, data.getDataSets().size());
-
-		SimpleDataSet dataSet = (SimpleDataSet)data.getDataSets().get("patient");
-		Assert.assertNotNull(dataSet);
-
-		Assert.assertEquals(1, dataSet.getRows().size());
-		Assert.assertEquals(5, dataSet.getMetaData().getColumnCount());
-		Assert.assertEquals(12088, dataSet.getColumnValue(12088, "patientId"));
-		Assert.assertEquals("Troy", dataSet.getColumnValue(12088, "givenName"));
-		Assert.assertEquals("Sanders", dataSet.getColumnValue(12088, "familyName"));
-		Assert.assertEquals(48.0, dataSet.getColumnValue(12088, "lastWeight"));
-		Assert.assertEquals("13/Aug/2013", dataSet.getColumnValue(12088, "lastWeightDate"));
+	@Override
+	public void setupTestData() {
+		String patientLookup = "1";
+		tdm.addPatient(patientLookup, "Troy", "Sanders", "M", "1980-02-15", false, "12345");
+		tdm.addObs(patientLookup, "WEIGHT (KG)", "45.0", "2013-04-11");
+		tdm.addObs(patientLookup, "WEIGHT (KG)", "48.0", "2013-08-13");
+		tdm.addObs(patientLookup, "WEIGHT (KG)", "50.0", "2013-06-12");
 	}
 
 	@Override
-	public Boolean useInMemoryDatabase() {
-		return false;
+	public PatientSummaryManager getPatientSummaryManager() {
+		return new DemoPatientSummary();
 	}
 
-	@Before
-	public void setup() throws Exception {
-		authenticate();
+	@Test
+	public void test() throws Exception {
+		String patientLookup = "1";
+		Integer pId = tdm.getPatientId(patientLookup);
+		DataSetRow row = evaluateDataForPatient(patientLookup);
+		Assert.assertEquals(5, row.getColumnValues().size());
+		Assert.assertEquals(pId, row.getColumnValue("patientId"));
+		Assert.assertEquals("Troy", row.getColumnValue("givenName"));
+		Assert.assertEquals("Sanders", row.getColumnValue("familyName"));
+		Assert.assertEquals(48.0, row.getColumnValue("lastWeight"));
+		Assert.assertEquals("13/Aug/2013", row.getColumnValue("lastWeightDate"));
 	}
-
-	// 12088, Troy, Sanders, 48
 }

@@ -14,6 +14,7 @@
 package org.openmrs.module.rwandareports;
 
 import ch.vorburger.mariadb4j.DB;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -36,14 +37,16 @@ import java.util.Properties;
 /**
  * Abstract class for testing Rwanda Reports
  */
-public class BaseRwandaReportsTest extends BaseModuleContextSensitiveTest {
+public abstract class BaseRwandaReportsTest extends BaseModuleContextSensitiveTest {
+
+	protected TestDataManager tdm;
 
 	public BaseRwandaReportsTest() {
 		super();
-		DB db = DB.newEmbeddedDB(3307);
-		db.start();
-		db.source("org/openmrs/module/rwandareports/schemaAndMetadata.sql");
+		tdm = new TestDataManager();
 	}
+
+	protected abstract void setupTestData();
 
 	@Override
 	public Boolean useInMemoryDatabase() {
@@ -51,14 +54,15 @@ public class BaseRwandaReportsTest extends BaseModuleContextSensitiveTest {
 	}
 
 	@Before
-	public void setupDatabaseAndLogin() throws Exception {
+	public void setupRwandaReports() throws Exception {
 		authenticate();
+		setupTestData();
 	}
 
-	@Test
-	public void testAuthenticated() throws Exception {
-		List<Concept> concepts = Context.getConceptService().getAllConcepts();
-		System.out.println("Loaded " + concepts.size() + concepts);
+	@After
+	public void teardownRwandaReports() throws Exception {
+		// TODO: If needed, here is where we need to iterate over the data created in "tdm" and delete from DB
+		// TODO: Though we should check to see if rolling back transactions will do this for us
 	}
 
 	@Override
@@ -69,6 +73,7 @@ public class BaseRwandaReportsTest extends BaseModuleContextSensitiveTest {
 		p.setProperty("connection.username", "root");
 		p.setProperty("connection.password", "");
 		p.setProperty("connection.url", "jdbc:mysql://localhost:3307/test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8");
+		p.setProperty("hibernate.show_sql", "false");
 		return p;
 	}
 

@@ -32,6 +32,8 @@
 		<serializationVersion>0.2.7</serializationVersion>
 		<heightweighttrackerVersion>1.0.2</heightweighttrackerVersion>
 		<calculationVersion>1.0</calculationVersion>
+		<rwandaPrimaryCareVersion>2.0.7-SNAPSHOT</rwandaPrimaryCareVersion>
+		<idgenVersion>2.2</idgenVersion>
 		<logicVersion>0.5.2</logicVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<MODULE_ID>${project.parent.artifactId}</MODULE_ID>
@@ -169,6 +171,20 @@
 			<artifactId>calculation-api</artifactId>
 			<version>${calculationVersion}</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>rwandaprimarycare-api</artifactId>
+			<version>${rwandaPrimaryCareVersion}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>idgen-api</artifactId>
+			<version>${idgenVersion}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
