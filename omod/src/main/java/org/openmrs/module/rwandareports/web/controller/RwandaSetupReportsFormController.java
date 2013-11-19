@@ -37,6 +37,7 @@ import org.openmrs.module.rwandareports.reporting.SetupOncologyExternalBiopsyCon
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientAppointmentList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicMissedVisit;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicPatientList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
@@ -773,6 +774,19 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_oncologydataextrationSheet")
 	public ModelAndView removeOncologyDataExtrationSheet() throws Exception {
 		new SetupOncologyDataExtractionSheet().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	// Remove/Register Oncology quarterly indicato report
+	@RequestMapping("/module/rwandareports/register_oncologyquarterlyindicatorreport")
+	public ModelAndView registerOncologyQuarterlyIndicatorReport() throws Exception {
+		new SetupOncologyQuarterlyIndicatorReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_oncologyquarterlyindicatorreport")
+	public ModelAndView removeOncologyQuarterlyIndicatorReport() throws Exception {
+		new SetupOncologyQuarterlyIndicatorReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
