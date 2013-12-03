@@ -1218,7 +1218,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 			patientsWithStageIIIHTNAndWithRDV6WeeksOrMorePastLastVisitDate.addSearch("1", activeAndSystolicBPGreaterThanOrEqualTo180,
 				ParameterizableUtil.createParameterMappings("endDate=${onOrBefore},startDate=${onOrAfter}"));
 			patientsWithStageIIIHTNAndWithRDV6WeeksOrMorePastLastVisitDate.addSearch("2", patientswithRDV6WeeksOrMorePastLastVisitDate,
-					null);
+					"");
 			patientsWithStageIIIHTNAndWithRDV6WeeksOrMorePastLastVisitDate.setCompositionString("1 AND 2");
 
 			CohortIndicator patientswithRDV6WeeksOrMorePastLastVisitDateIndicator = Indicators.newCountIndicator(
@@ -1338,7 +1338,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		    patientsWithSystolicBPGreaterThanOrEqualTo180,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 		patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180.addSearch("2", enrolledInHypertensionProgram,
-		    null);
+		    "");
 		patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180.setCompositionString("1 AND 2");
 		
 		CohortIndicator patientsWithSystolicBPGreaterThanOrEqualTo180Indicator = Indicators.newCountIndicator(
