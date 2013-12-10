@@ -3,6 +3,7 @@ package org.openmrs.module.rwandareports.reporting;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -49,7 +50,7 @@ import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
 
 public class SetupDataQualityIndicatorReport {
-	Helper h = new Helper();
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
@@ -130,9 +131,9 @@ public class SetupDataQualityIndicatorReport {
 			}
 		}
 		
-		h.purgeReportDefinition("DQ-Data Quality HIV/TB Report By Site");
-		h.purgeReportDefinition("DQ-Data Quality HIV/TB Report For All Sites");
-		h.purgeReportDefinition("DQ-Data Quality NCD/ONCOLOGY Report By Site");
+		Helper.purgeReportDefinition("DQ-Data Quality HIV/TB Report By Site");
+		Helper.purgeReportDefinition("DQ-Data Quality HIV/TB Report For All Sites");
+		Helper.purgeReportDefinition("DQ-Data Quality NCD/ONCOLOGY Report By Site");
 	}
 
 	// DQ Report by Site
@@ -157,7 +158,7 @@ public class SetupDataQualityIndicatorReport {
 		//h.saveReportDefinition(rd);
 		rd.addDataSetDefinition(createObsDataSet(), ParameterizableUtil
 				.createParameterMappings("location=${location}"));
-		h.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rd);
 		createCustomWebRenderer(rd, "DataQualityWebRenderer");
 
 
@@ -181,7 +182,7 @@ public class SetupDataQualityIndicatorReport {
 		//h.saveReportDefinition(rdsites);
 		rdsites.addDataSetDefinition(createObsDataSet(), ParameterizableUtil
 				.createParameterMappings("location=${location}"));
-		h.saveReportDefinition(rdsites);
+		Helper.saveReportDefinition(rdsites);
 		createCustomWebRendererForSites(rdsites, "DataWebRenderer");
 		
 		return rdsites;
@@ -206,7 +207,7 @@ public class SetupDataQualityIndicatorReport {
 						.createParameterMappings("location=${location}"));
 
 		rd.addDataSetDefinition(createreportForNCDreport(), null);
-		h.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rd);
 		createCustomWebRendererForNCDorOncology(rd, "DataWebRendererNCD");
 
 

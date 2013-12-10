@@ -34,8 +34,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupHeartFailureConsultSheet {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -52,7 +50,7 @@ public class SetupHeartFailureConsultSheet {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "HeartFailureConsultSheet.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "HeartFailureConsultSheet.xls",
 		    "HeartFailureConsultSheet.xls_", null);
 		
 		Properties props = new Properties();
@@ -60,7 +58,7 @@ public class SetupHeartFailureConsultSheet {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -70,7 +68,7 @@ public class SetupHeartFailureConsultSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Heart Failure Consultation Sheet");
+		Helper.purgeReportDefinition("NCD-Heart Failure Consultation Sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -83,7 +81,7 @@ public class SetupHeartFailureConsultSheet {
 		reportDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

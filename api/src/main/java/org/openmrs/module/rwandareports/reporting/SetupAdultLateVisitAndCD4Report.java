@@ -45,25 +45,19 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientPro
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
-import org.openmrs.module.rwandareports.customcalculator.BMI;
 import org.openmrs.module.rwandareports.customcalculator.BMICalculation;
 import org.openmrs.module.rwandareports.customcalculator.DeclineHighestCD4;
 import org.openmrs.module.rwandareports.customcalculator.DifferenceBetweenLastTwoObs;
-import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.filter.GroupStateFilter;
 import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
 import org.openmrs.module.rwandareports.filter.TreatmentStateFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
-import org.openmrs.module.rwandareports.widget.AllLocation;
-import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupAdultLateVisitAndCD4Report {
 	
 	protected final static Log log = LogFactory.getLog(SetupAdultLateVisitAndCD4Report.class);
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -97,11 +91,11 @@ public class SetupAdultLateVisitAndCD4Report {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "AdultLateVisitAndCD4Template.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "AdultLateVisitAndCD4Template.xls",
 		    "XlsAdultLateVisitAndCD4Template", null);
 		
 		ReportDefinition rdp = createReportDefinitionPreArt();
-		ReportDesign designp = h.createRowPerPatientXlsOverviewReportDesign(rdp, "AdultLateVisitAndCD4PreARTTemplate.xls",
+		ReportDesign designp = Helper.createRowPerPatientXlsOverviewReportDesign(rdp, "AdultLateVisitAndCD4PreARTTemplate.xls",
 		    "XlsAdultLateVisitAndCD4PreARTTemplate", null);
 		
 //		ReportDefinition artDecline = createReportDefinitionArtDecline();
@@ -110,8 +104,8 @@ public class SetupAdultLateVisitAndCD4Report {
 //		
 		createDataSetDefinition(rd, rdp);
 		
-		h.saveReportDefinition(rd);
-		h.saveReportDefinition(rdp);
+		Helper.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rdp);
 		//h.saveReportDefinition(artDecline);
 		
 		Properties props = new Properties();
@@ -120,7 +114,7 @@ public class SetupAdultLateVisitAndCD4Report {
 		    "sheet:1,row:8,dataset:AdultARTLateVisit|sheet:2,row:8,dataset:AdultHIVLateCD4Count|sheet:3,row:8,dataset:HIVLostToFollowup|sheet:4,row:8,dataset:HIVLowBMI|sheet:5,row:8,dataset:ViralLoadGreaterThan20InTheLast3Months");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 		Properties propsp = new Properties();
 		propsp.put(
@@ -128,7 +122,7 @@ public class SetupAdultLateVisitAndCD4Report {
 		    "sheet:1,row:8,dataset:AdultPreARTLateVisit|sheet:2,row:8,dataset:AdultHIVLateCD4Count|sheet:3,row:8,dataset:HIVLostToFollowup|sheet:4,row:8,dataset:PreARTBelow350CD4|sheet:5,row:8,dataset:HIVLowBMI");
 		propsp.put("sortWeight","5000");
 		designp.setProperties(propsp);
-		h.saveReportDesign(designp);
+		Helper.saveReportDesign(designp);
 		
 //		Properties propsa = new Properties();
 //		propsa.put(
@@ -148,8 +142,8 @@ public class SetupAdultLateVisitAndCD4Report {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-Adult ART Report-Monthly");
-		h.purgeReportDefinition("HIV-Adult Pre ART Report-Monthly");
+		Helper.purgeReportDefinition("HIV-Adult ART Report-Monthly");
+		Helper.purgeReportDefinition("HIV-Adult Pre ART Report-Monthly");
 		//h.purgeReportDefinition("Monthly Adult Art Decline");
 	}
 	

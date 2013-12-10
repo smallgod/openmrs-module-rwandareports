@@ -24,8 +24,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupChemotherapyDailyExpectedPatientList {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -46,7 +44,7 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyDailyExpectedPatientList.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyDailyExpectedPatientList.xls",
 		    "ChemotherapyDailyPatientList.xls_", null);
 		
 		Properties props = new Properties();
@@ -54,9 +52,9 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
-		ReportDesign designTwo = h.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyDailyTreatmentSummary.xls",
+		ReportDesign designTwo = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyDailyTreatmentSummary.xls",
 		    "ChemotherapyDailyTreatmentSummary.xls_", null);
 		
 		Properties propsTwo = new Properties();
@@ -64,7 +62,7 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		props.put("sortWeight","5000");
 		designTwo.setProperties(propsTwo);
 		
-		h.saveReportDesign(designTwo);
+		Helper.saveReportDesign(designTwo);
 	}
 	
 	public void delete() {
@@ -74,7 +72,7 @@ public class SetupChemotherapyDailyExpectedPatientList {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Chemotherapy Daily Expected Patient List");
+		Helper.purgeReportDefinition("ONC-Chemotherapy Daily Expected Patient List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -91,7 +89,7 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

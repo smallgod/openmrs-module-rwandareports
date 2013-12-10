@@ -20,24 +20,16 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
-import org.openmrs.module.rwandareports.customcalculator.AsthmaClassificationAlerts;
-import org.openmrs.module.rwandareports.customcalculator.DiabetesAlerts;
 import org.openmrs.module.rwandareports.customcalculator.EpilepsyAlerts;
-import org.openmrs.module.rwandareports.customcalculator.HIVAdultAlerts;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
-import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
-import org.openmrs.module.rwandareports.filter.LastTwoObsFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupEpilepsyConsultationSheet {
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -56,7 +48,7 @@ public class SetupEpilepsyConsultationSheet {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "EpilepsyConsultationSheet.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "EpilepsyConsultationSheet.xls",
 		    "EpilepsyConsultationSheet.xls_", null);
 		
 		Properties props = new Properties();
@@ -64,7 +56,7 @@ public class SetupEpilepsyConsultationSheet {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -74,7 +66,7 @@ public class SetupEpilepsyConsultationSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Epilepsy Consultation Sheet");
+		Helper.purgeReportDefinition("NCD-Epilepsy Consultation Sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -87,7 +79,7 @@ public class SetupEpilepsyConsultationSheet {
 		reportDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

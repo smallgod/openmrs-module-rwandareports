@@ -40,8 +40,6 @@ public class SetupNCDLateVisitandLTFUReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupNCDLateVisitandLTFUReport.class);
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	// properties retrieved from global variables
@@ -54,7 +52,7 @@ public class SetupNCDLateVisitandLTFUReport {
 	public void setup() throws Exception {
 		setupPrograms();
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "NCDLateVisitAndLTFUSheet.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "NCDLateVisitAndLTFUSheet.xls",
 		    "NCDLateVisitAndLTFUSheet.xls_", null);
 		Properties props = new Properties();
 		props.put(
@@ -62,7 +60,7 @@ public class SetupNCDLateVisitandLTFUReport {
 		    "sheet:1,row:13,dataset:LATE_VISITdataset0|sheet:1,row:15,dataset:LATE_VISITdataset1|sheet:1,row:17,dataset:LATE_VISITdataset2|sheet:1,row:19,dataset:LATE_VISITdataset3|sheet:1,row:21,dataset:LATE_VISITdataset4|sheet:2,row:13,dataset:LTFUdataset0|sheet:2,row:15,dataset:LTFUdataset1|sheet:2,row:17,dataset:LTFUdataset2|sheet:2,row:19,dataset:LTFUdataset3|sheet:2,row:21,dataset:LTFUdataset4");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -72,7 +70,7 @@ public class SetupNCDLateVisitandLTFUReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD Late Visit and Lost to Follow Up");
+		Helper.purgeReportDefinition("NCD Late Visit and Lost to Follow Up");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -91,7 +89,7 @@ public class SetupNCDLateVisitandLTFUReport {
 			}
 		}
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

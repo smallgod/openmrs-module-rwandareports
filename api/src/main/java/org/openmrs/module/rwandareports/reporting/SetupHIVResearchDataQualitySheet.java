@@ -28,7 +28,6 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugO
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
 import org.openmrs.module.rwandareports.customcalculator.DateDiffBetweenTwoDateResults;
 import org.openmrs.module.rwandareports.customcalculator.DiffBetweenStatusAndRegimenManipulation;
-import org.openmrs.module.rwandareports.customcalculator.DrugOrderDateManipulation;
 import org.openmrs.module.rwandareports.customcalculator.ValueDateManipulation;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -38,8 +37,6 @@ import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupHIVResearchDataQualitySheet {
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -82,7 +79,7 @@ public class SetupHIVResearchDataQualitySheet {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "HIVResearchDataQuality.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "HIVResearchDataQuality.xls",
 		    "HIVResearchDataQuality", null);
 		
 		Properties props = new Properties();
@@ -90,7 +87,7 @@ public class SetupHIVResearchDataQualitySheet {
 		props.put("sortWeight","5000");																												
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -100,7 +97,7 @@ public class SetupHIVResearchDataQualitySheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("DQ-HIV Research Data Quality");
+		Helper.purgeReportDefinition("DQ-HIV Research Data Quality");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -114,7 +111,7 @@ public class SetupHIVResearchDataQualitySheet {
 		properties.setProperty("hierarchyFields", "countyDistrict:District");
 		reportDefinition.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

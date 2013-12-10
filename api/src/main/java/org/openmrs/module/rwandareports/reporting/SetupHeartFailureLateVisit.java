@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -31,7 +31,6 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientPro
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
 import org.openmrs.module.rwandareports.customcalculator.OnWarfarin;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
-import org.openmrs.module.rwandareports.filter.AccompagnateurStatusFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -41,9 +40,6 @@ public class SetupHeartFailureLateVisit {
 
 	protected final static Log log = LogFactory
 			.getLog(SetupHeartFailureLateVisit.class);
-
-	Helper h = new Helper();
-
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
 	// Properties retrieved from global variables
@@ -59,14 +55,14 @@ public class SetupHeartFailureLateVisit {
 		setupProperties();
 
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd,"HeartFailureLateVisit.xls", 
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd,"HeartFailureLateVisit.xls", 
 				"XlsHeartFailureLateVisit.xls_", null);
 
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:8,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 
 	public void delete() {
@@ -76,7 +72,7 @@ public class SetupHeartFailureLateVisit {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Heart Failure Late Visit");
+		Helper.purgeReportDefinition("NCD-Heart Failure Late Visit");
 	}
 
 	private ReportDefinition createReportDefinition() {
@@ -91,7 +87,7 @@ public class SetupHeartFailureLateVisit {
 		ParameterizableUtil.createParameterMappings("location=${location}"));
 
 		createDataSetDefinition(reportDefinition);
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 
 		return reportDefinition;
 	}

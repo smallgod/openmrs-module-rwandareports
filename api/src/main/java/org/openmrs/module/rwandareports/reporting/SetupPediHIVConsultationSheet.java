@@ -38,8 +38,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupPediHIVConsultationSheet {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties
@@ -59,31 +57,31 @@ public class SetupPediHIVConsultationSheet {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "PediHIVConsultationSheetV2.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PediHIVConsultationSheetV2.xls",
 		    "PediHIVConsultationSheet.xls_", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
-		ReportDesign design2 = h.createRowPerPatientXlsOverviewReportDesign(rd, "PediPreArtHIVConsultationSheet.xls",
+		ReportDesign design2 = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PediPreArtHIVConsultationSheet.xls",
 		    "PediPreArtHIVConsultationSheet.xls_", null);
 		
 		Properties props2 = new Properties();
 		props2.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
 		props2.put("sortWeight","5000");
 		design2.setProperties(props2);
-		h.saveReportDesign(design2);
+		Helper.saveReportDesign(design2);
 		
-		ReportDesign design3 = h.createRowPerPatientXlsOverviewReportDesign(rd, "BactrimSheet.xls", "Bactrim.xls_", null);
+		ReportDesign design3 = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "BactrimSheet.xls", "Bactrim.xls_", null);
 		
 		Properties props3 = new Properties();
 		props3.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
 		props3.put("sortWeight","5000");
 		design3.setProperties(props3);
-		h.saveReportDesign(design3);
+		Helper.saveReportDesign(design3);
 	}
 	
 	public void delete() {
@@ -94,7 +92,7 @@ public class SetupPediHIVConsultationSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-Pedi Consultation Sheet");
+		Helper.purgeReportDefinition("HIV-Pedi Consultation Sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -115,7 +113,7 @@ public class SetupPediHIVConsultationSheet {
 		
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

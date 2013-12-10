@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Program;
@@ -31,6 +31,7 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.DateDiffType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfNextTestDueFromBirth;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
@@ -38,7 +39,6 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAdd
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.DateDiffType;
 import org.openmrs.module.rwandareports.filter.BorFStateFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
@@ -49,8 +49,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 public class SetupExposedClinicInfantMonthly {
 	
 	protected final static Log log = LogFactory.getLog(SetupExposedClinicInfantMonthly.class);
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -74,7 +72,7 @@ public class SetupExposedClinicInfantMonthly {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "ExposedClinicalinfantMonthly.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "ExposedClinicalinfantMonthly.xls",
 		    "ExposedClinicalinfantMonthly.xls_", null);
 		
 		Properties props = new Properties();
@@ -83,7 +81,7 @@ public class SetupExposedClinicInfantMonthly {
 		    "sheet:1,row:9,dataset:LatePcrTest|sheet:2,row:9,dataset:Latesero|sheet:3,row:9,dataset:LostoFolowup|sheet:4,row:9,dataset:Less6wNotonNvp|sheet:5,row:9,dataset:More6wNotBactrim");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -93,7 +91,7 @@ public class SetupExposedClinicInfantMonthly {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-PMTCT Exposed Infant Clinical Report-Monthly");
+		Helper.purgeReportDefinition("HIV-PMTCT Exposed Infant Clinical Report-Monthly");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -106,7 +104,7 @@ public class SetupExposedClinicInfantMonthly {
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
 		
 		createDataSetDefinition(reportDefinition);
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

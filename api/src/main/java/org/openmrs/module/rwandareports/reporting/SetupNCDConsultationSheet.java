@@ -32,8 +32,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupNCDConsultationSheet {
 	protected final static Log log = LogFactory.getLog(SetupNCDConsultationSheet.class);
-
-	Helper h = new Helper();
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -42,12 +40,12 @@ public class SetupNCDConsultationSheet {
 	public void setup() throws Exception {
 		setupPrograms();
 		ReportDefinition rd = createReportDefinition();	
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "NCDConsultationSheet.xls","NCDConsultationSheet.xls_", null);	
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "NCDConsultationSheet.xls","NCDConsultationSheet.xls_", null);	
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:9,dataset:dataset0|sheet:2,row:9,dataset:dataset1|sheet:3,row:9,dataset:dataset2|sheet:4,row:9,dataset:dataset3");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -57,7 +55,7 @@ public class SetupNCDConsultationSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD Consult Sheet");
+		Helper.purgeReportDefinition("NCD Consult Sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -73,7 +71,7 @@ public class SetupNCDConsultationSheet {
 			createDataSetDefinition(reportDefinition,program,diseases.indexOf(program));			
 		}
 
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

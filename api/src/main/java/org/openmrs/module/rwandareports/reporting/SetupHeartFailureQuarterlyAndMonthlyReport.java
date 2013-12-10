@@ -61,8 +61,6 @@ import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  */
 public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
-	public Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	// properties
@@ -186,24 +184,24 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		quarterlyRd.setBaseCohortDefinition(patientEnrolledInHF,
 			    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
 		
-		h.saveReportDefinition(monthlyRd);
-		h.saveReportDefinition(quarterlyRd);
+		Helper.saveReportDefinition(monthlyRd);
+		Helper.saveReportDefinition(quarterlyRd);
 		
-		ReportDesign monthlyDesign = h.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
+		ReportDesign monthlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
 		    "HF_Monthly_Indicator_Report.xls", "Heart Failure Indicator Monthly Report (Excel)", null);
 		Properties monthlyProps = new Properties();
 		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set");
 		monthlyProps.put("sortWeight","5000");
 		monthlyDesign.setProperties(monthlyProps);
-		h.saveReportDesign(monthlyDesign);
+		Helper.saveReportDesign(monthlyDesign);
 		
-		ReportDesign quarterlyDesign = h.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
+		ReportDesign quarterlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
 			    "HF_Quarterly_Indicator_Report.xls", "Heart Failure Quarterly Indicator Report (Excel)", null);
 			Properties quarterlyProps = new Properties();
 			quarterlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
 			quarterlyProps.put("sortWeight","5000");
 			quarterlyDesign.setProperties(quarterlyProps);
-			h.saveReportDesign(quarterlyDesign);
+			Helper.saveReportDesign(quarterlyDesign);
 		
 	}
 	
@@ -214,8 +212,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Heart Failure Indicator Report-Monthly");
-		h.purgeReportDefinition("NCD-Heart Failure Indicator Report-Quarterly");
+		Helper.purgeReportDefinition("NCD-Heart Failure Indicator Report-Monthly");
+		Helper.purgeReportDefinition("NCD-Heart Failure Indicator Report-Quarterly");
 		
 	}
 	

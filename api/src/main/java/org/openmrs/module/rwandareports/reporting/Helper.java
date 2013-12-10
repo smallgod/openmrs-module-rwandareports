@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.poi.util.IOUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.definition.service.SerializedDefinitionService;
-import org.openmrs.module.reporting.evaluation.Definition;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
@@ -19,7 +18,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 
 public class Helper {
 	
-	public void purgeReportDefinition(String name) {
+	public static void purgeReportDefinition(String name) {
 		ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
 		try {
 			ReportDefinition findDefinition = findReportDefinition(name);
@@ -32,29 +31,7 @@ public class Helper {
 		}
 	}
 	
-	
-	public Definition findDefinition(Class clazz, String name) {
-		SerializedDefinitionService s = (SerializedDefinitionService) Context.getService(SerializedDefinitionService.class);
-		List<Definition> defs = s.getDefinitions(clazz, name, true);
-		for (Definition def : defs) {
-			return def;
-		}
-		throw new RuntimeException("Couldn't find Definition " + name);
-	}
-	public void purgeDefinition(Class clazz, String name) {
-		SerializedDefinitionService s = (SerializedDefinitionService) Context.getService(SerializedDefinitionService.class);
-		try {
-			if (findDefinition(clazz, name) != null) {
-				s.purgeDefinition(findDefinition(clazz, name));
-			}
-		}
-		catch (RuntimeException e) {
-		//	log.warn("Could not delete definition", e);
-		}
-	}
-	
-	
-	public ReportDefinition findReportDefinition(String name) {
+	public static ReportDefinition findReportDefinition(String name) {
 		ReportDefinitionService s = (ReportDefinitionService) Context.getService(ReportDefinitionService.class);
 		List<ReportDefinition> defs = s.getDefinitions(name, true);
 		for (ReportDefinition def : defs) {
@@ -63,7 +40,7 @@ public class Helper {
 		throw new RuntimeException("Couldn't find Definition " + name);
 	}
 	
-	public void saveReportDefinition(ReportDefinition rd) {
+	public static void saveReportDefinition(ReportDefinition rd) {
 		ReportDefinitionService rds = (ReportDefinitionService) Context.getService(ReportDefinitionService.class);
 		
 		//try to find existing report definitions to replace
@@ -84,7 +61,7 @@ public class Helper {
 	}
 	
 	
-	public ReportDesign createRowPerPatientXlsOverviewReportDesign(ReportDefinition rd, String resourceName, String name,
+	public static ReportDesign createRowPerPatientXlsOverviewReportDesign(ReportDefinition rd, String resourceName, String name,
 	                                                               Map<? extends Object, ? extends Object> properties)
 	    throws IOException {
 		
@@ -113,7 +90,7 @@ public class Helper {
 		return design;
 	}
 	
-	public void saveReportDesign(ReportDesign design) {
+	public static void saveReportDesign(ReportDesign design) {
 		ReportService rs = Context.getService(ReportService.class);
 		rs.saveReportDesign(design);
 	}

@@ -30,15 +30,13 @@ import org.openmrs.module.rwandareports.customcalculator.OnInsulin;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.AccompagnateurStatusFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
-import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupDiabetesConsultAndLTFU {
 	protected final static Log log = LogFactory.getLog(SetupDiabetesConsultAndLTFU.class);
-
-	Helper h = new Helper();
+	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	private List<Form> diabetesRendezvousForms = new ArrayList<Form>(); //Diabetes forms which can be used to set a next return visit date
 	
@@ -52,8 +50,8 @@ public class SetupDiabetesConsultAndLTFU {
 		ReportDefinition consultReportDefinition = createConsultReportDefinition();	
 		ReportDefinition ltfuReportDefinition = createLTFUReportDefinition();
 		
-		ReportDesign consultReporDesign = h.createRowPerPatientXlsOverviewReportDesign(consultReportDefinition, "DiabetesConsultSheet.xls","DiabetesConsultSheet.xls_", null);	
-		ReportDesign ltfuReporDesign = h.createRowPerPatientXlsOverviewReportDesign(ltfuReportDefinition, "DiabetesLTFUSheet.xls","DiabetesLTFUSheet.xls_", null);	
+		ReportDesign consultReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(consultReportDefinition, "DiabetesConsultSheet.xls","DiabetesConsultSheet.xls_", null);	
+		ReportDesign ltfuReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(ltfuReportDefinition, "DiabetesLTFUSheet.xls","DiabetesLTFUSheet.xls_", null);	
 		
 		Properties consultProps = new Properties();
 		consultProps.put("repeatingSections", "sheet:1,row:9,dataset:dataset1");
@@ -66,8 +64,8 @@ public class SetupDiabetesConsultAndLTFU {
 		consultReporDesign.setProperties(consultProps);
 		ltfuReporDesign.setProperties(ltfuProps);
 		
-		h.saveReportDesign(consultReporDesign);
-		h.saveReportDesign(ltfuReporDesign);
+		Helper.saveReportDesign(consultReporDesign);
+		Helper.saveReportDesign(ltfuReporDesign);
 	}
 	
 	public void delete() {
@@ -80,8 +78,8 @@ public class SetupDiabetesConsultAndLTFU {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Diabetes Consultation Sheet");
-		h.purgeReportDefinition("NCD-Diabetes Late Visit");
+		Helper.purgeReportDefinition("NCD-Diabetes Consultation Sheet");
+		Helper.purgeReportDefinition("NCD-Diabetes Late Visit");
 		
 	}
 	
@@ -95,7 +93,7 @@ public class SetupDiabetesConsultAndLTFU {
 			    ParameterizableUtil.createParameterMappings("location=${location}"));
 
 		createConsultDataSetDefinition (reportDefinition,diabetesProgram);	
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 
 		return reportDefinition;
 	}
@@ -108,7 +106,7 @@ public class SetupDiabetesConsultAndLTFU {
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
 		createLTFUDataSetDefinition(reportDefinition,diabetesProgram);	
 
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 
 		return reportDefinition;
 	}

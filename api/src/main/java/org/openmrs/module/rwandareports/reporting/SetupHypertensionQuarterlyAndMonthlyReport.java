@@ -54,8 +54,6 @@ import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupHypertensionQuarterlyAndMonthlyReport {
 	
-	public Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	// properties
@@ -137,24 +135,24 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		quarterlyRd.setBaseCohortDefinition(patientEnrolledInHypertensionProgram,
 		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
 		
-		h.saveReportDefinition(monthlyRd);
-		h.saveReportDefinition(quarterlyRd);
+		Helper.saveReportDefinition(monthlyRd);
+		Helper.saveReportDefinition(quarterlyRd);
 		
-		ReportDesign monthlyDesign = h.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
+		ReportDesign monthlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
 		    "Hypertension_Monthly_Indicator_Report.xls", "Hypertension Monthly Indicator Report (Excel)", null);
 		Properties monthlyProps = new Properties();
 		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set");
 		monthlyProps.put("sortWeight","5000");
 		monthlyDesign.setProperties(monthlyProps);
-		h.saveReportDesign(monthlyDesign);
+		Helper.saveReportDesign(monthlyDesign);
 		
-		ReportDesign quarterlyDesign = h.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
+		ReportDesign quarterlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
 		    "Hypertension_Indicator_Quarterly_Report.xls", "Hypertension Quarterly Indicator Report (Excel)", null);
 		Properties quarterlyProps = new Properties();
 		quarterlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
 		quarterlyProps.put("sortWeight","5000");
 		quarterlyDesign.setProperties(quarterlyProps);
-		h.saveReportDesign(quarterlyDesign);
+		Helper.saveReportDesign(quarterlyDesign);
 		
 	}
 	
@@ -166,8 +164,8 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Hypertension Indicator Report-Quarterly");
-		h.purgeReportDefinition("NCD-Hypertension Indicator Report-Monthly");
+		Helper.purgeReportDefinition("NCD-Hypertension Indicator Report-Quarterly");
+		Helper.purgeReportDefinition("NCD-Hypertension Indicator Report-Monthly");
 		
 	}
 	

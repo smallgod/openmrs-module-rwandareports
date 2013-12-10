@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -28,7 +28,6 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePa
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAddress;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
@@ -40,8 +39,6 @@ public class SetupEpilepsyLateVisit {
 
 	protected final static Log log = LogFactory
 			.getLog(SetupEpilepsyLateVisit.class);
-
-	Helper h = new Helper();
 
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
@@ -58,14 +55,14 @@ public class SetupEpilepsyLateVisit {
 		setupProperties();
 
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd,
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd,
 				"EpilepsyLateVisit.xls", "EpilepsyLateVisit.xls_", null);
 
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:8,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 
 	public void delete() {
@@ -75,7 +72,7 @@ public class SetupEpilepsyLateVisit {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Epilepsy Late Visit");
+		Helper.purgeReportDefinition("NCD-Epilepsy Late Visit");
 	}
 
 	private ReportDefinition createReportDefinition() {
@@ -92,7 +89,7 @@ public class SetupEpilepsyLateVisit {
 						.createParameterMappings("location=${location}"));
 
 		createDataSetDefinition(reportDefinition);
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 
 		return reportDefinition;
 	}

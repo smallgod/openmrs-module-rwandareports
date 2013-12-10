@@ -21,8 +21,6 @@ import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
 public class SetupOncologyDailyDrugList {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -43,7 +41,7 @@ public class SetupOncologyDailyDrugList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyDailyDrugList.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyDailyDrugList.xls",
 		    "ChemotherapyDailyDrugList.xls_", null);
 		
 		Properties props = new Properties();
@@ -51,7 +49,7 @@ public class SetupOncologyDailyDrugList {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -61,7 +59,7 @@ public class SetupOncologyDailyDrugList {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Chemotherapy Daily Drug List");
+		Helper.purgeReportDefinition("ONC-Chemotherapy Daily Drug List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -78,7 +76,7 @@ public class SetupOncologyDailyDrugList {
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

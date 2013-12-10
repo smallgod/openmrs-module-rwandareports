@@ -29,8 +29,6 @@ import org.openmrs.module.rwandareports.customcalculator.DDR;
 import org.openmrs.module.rwandareports.customcalculator.DPA;
 import org.openmrs.module.rwandareports.customcalculator.DecisionDate;
 import org.openmrs.module.rwandareports.customcalculator.GestationalAge;
-import org.openmrs.module.rwandareports.dataset.comparator.PMTCTDataSetRowComparator;
-import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.DrugNameFilter;
 import org.openmrs.module.rwandareports.filter.LastThreeObsFilter;
 import org.openmrs.module.rwandareports.filter.ObservationFilter;
@@ -40,8 +38,6 @@ import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupPMTCTPregnancyConsultationReport {
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -64,14 +60,14 @@ public class SetupPMTCTPregnancyConsultationReport {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTPregnancyConsultationSheetV2.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTPregnancyConsultationSheetV2.xls",
 		    "PMTCTPregnancyConsultationSheet.xls_", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:5,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -81,7 +77,7 @@ public class SetupPMTCTPregnancyConsultationReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-PMTCT Pregnancy consultation sheet");
+		Helper.purgeReportDefinition("HIV-PMTCT Pregnancy consultation sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -105,7 +101,7 @@ public class SetupPMTCTPregnancyConsultationReport {
 		
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

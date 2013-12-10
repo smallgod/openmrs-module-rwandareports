@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -28,7 +29,6 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePa
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAddress;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
@@ -39,8 +39,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 public class SetupAsthmaLateVisit {
 	
 	protected final static Log log = LogFactory.getLog(SetupAsthmaLateVisit.class);
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -64,14 +62,14 @@ public class SetupAsthmaLateVisit {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "AsthmaLateVisitTemplate.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "AsthmaLateVisitTemplate.xls",
 		    "AsthmaLateVisitTemplate", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:8,dataset:asthmaLateVisit");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -81,7 +79,7 @@ public class SetupAsthmaLateVisit {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Asthma Late Visit");
+		Helper.purgeReportDefinition("NCD-Asthma Late Visit");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -94,7 +92,7 @@ public class SetupAsthmaLateVisit {
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
 		
 		createDataSetDefinition(reportDefinition);
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

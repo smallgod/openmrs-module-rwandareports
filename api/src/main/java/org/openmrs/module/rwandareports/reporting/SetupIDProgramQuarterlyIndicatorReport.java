@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
- 
+
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
-import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
@@ -46,8 +43,6 @@ import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  
 public class SetupIDProgramQuarterlyIndicatorReport {
-        
-public Helper h = new Helper();
         
         GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
         
@@ -128,15 +123,15 @@ public Helper h = new Helper();
                     ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
                         
                 
-                h.saveReportDefinition(rd);
+                Helper.saveReportDefinition(rd);
                 
                 
-                ReportDesign monthlyDesign = h.createRowPerPatientXlsOverviewReportDesign(rd,"HIVIndicator.xls", "HIVIndicators", null);
+                ReportDesign monthlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(rd,"HIVIndicator.xls", "HIVIndicators", null);
                 Properties monthlyProps = new Properties();
                 monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
                 monthlyProps.put("sortWeight","5000");
                 monthlyDesign.setProperties(monthlyProps);
-                h.saveReportDesign(monthlyDesign);              
+                Helper.saveReportDesign(monthlyDesign);              
                 
                 
         }
@@ -148,7 +143,7 @@ public Helper h = new Helper();
                                 rs.purgeReportDesign(rd);
                         }
                 }
-                h.purgeReportDefinition("HIV-Indicator Report-Quarterly");
+                Helper.purgeReportDefinition("HIV-Indicator Report-Quarterly");
                 
         }
         

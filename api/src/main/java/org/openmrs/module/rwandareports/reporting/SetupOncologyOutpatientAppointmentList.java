@@ -25,8 +25,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupOncologyOutpatientAppointmentList {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -56,7 +54,7 @@ public class SetupOncologyOutpatientAppointmentList {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Oncology Outpatient Clinic Appointment List");
+		Helper.purgeReportDefinition("ONC-Oncology Outpatient Clinic Appointment List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -69,7 +67,7 @@ public class SetupOncologyOutpatientAppointmentList {
 		    ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}
@@ -178,7 +176,7 @@ public class SetupOncologyOutpatientAppointmentList {
 		design.setReportDefinition(rd);
 		design.setRendererType(CalendarWebRenderer.class);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 	}
 }

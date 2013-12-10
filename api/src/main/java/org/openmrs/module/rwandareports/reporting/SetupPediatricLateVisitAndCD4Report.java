@@ -57,8 +57,6 @@ public class SetupPediatricLateVisitAndCD4Report {
 	
 	protected final static Log log = LogFactory.getLog(SetupAdultLateVisitAndCD4Report.class);
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//Properties retrieved from global variables
@@ -89,18 +87,18 @@ public class SetupPediatricLateVisitAndCD4Report {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "PediatricLateVisitAndCD4Template.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PediatricLateVisitAndCD4Template.xls",
 		    "XlsPediatricLateVisitAndCD4Template", null);
 		
 		ReportDefinition rdArtMedication = createReportDefinitionArtMedication();
-		ReportDesign designArtMedication = h.createRowPerPatientXlsOverviewReportDesign(rdArtMedication, "pediatricHivArtReport.xls",
+		ReportDesign designArtMedication = Helper.createRowPerPatientXlsOverviewReportDesign(rdArtMedication, "pediatricHivArtReport.xls",
 		    "pediatricHivArtReport", null);
 		
 		
 		createDataSetDefinition(rd, rdArtMedication);
 		
-		h.saveReportDefinition(rd);
-		h.saveReportDefinition(rdArtMedication);
+		Helper.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rdArtMedication);
 		
 		
 		Properties props = new Properties();
@@ -109,7 +107,7 @@ public class SetupPediatricLateVisitAndCD4Report {
 		    "sheet:1,row:8,dataset:PediatricARTLateVisit|sheet:2,row:8,dataset:PediatricPreARTLateVisit|sheet:3,row:8,dataset:PediatricHIVLateCD4Count|sheet:4,row:8,dataset:PediatricHIVLostToFollowup|sheet:5,row:8,dataset:CD4LessThan350|sheet:6,row:8,dataset:zeroToFiveYears");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 		
 		
@@ -123,7 +121,7 @@ public class SetupPediatricLateVisitAndCD4Report {
 		    "sheet:1,row:8,dataset:Regimen");
 		propsArtMed.put("sortWeight","5000");
 		designArtMedication.setProperties(propsArtMed);
-		h.saveReportDesign(designArtMedication);
+		Helper.saveReportDesign(designArtMedication);
 		
         
 		
@@ -137,8 +135,8 @@ public class SetupPediatricLateVisitAndCD4Report {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-Pedi Report-Monthly");
-		h.purgeReportDefinition("HIV-Pedi ART Medication Report");
+		Helper.purgeReportDefinition("HIV-Pedi Report-Monthly");
+		Helper.purgeReportDefinition("HIV-Pedi ART Medication Report");
 	}
 	
 	private ReportDefinition createReportDefinition() {

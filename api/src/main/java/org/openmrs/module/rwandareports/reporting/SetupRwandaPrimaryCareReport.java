@@ -37,8 +37,6 @@ public class SetupRwandaPrimaryCareReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupRwandaPrimaryCareReport.class);
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	// properties
@@ -101,11 +99,11 @@ public class SetupRwandaPrimaryCareReport {
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition(registration, vitals);
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "rwandacalendarprimarycarereporttemplate.xls","Primary_Care_Report_Template", null);
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "rwandacalendarprimarycarereporttemplate.xls","Primary_Care_Report_Template", null);
 		Properties props = new Properties();
         props.put("sortWeight","5000");
         design.setProperties(props);
-        h.saveReportDesign(design);
+        Helper.saveReportDesign(design);
 		
 	}
 	
@@ -117,7 +115,7 @@ public class SetupRwandaPrimaryCareReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("PC-Rwanda Report");
+		Helper.purgeReportDefinition("PC-Rwanda Report");
 	}
 	
 	private ReportDefinition createReportDefinition(EncounterType reg, EncounterType vitals) {
@@ -2201,7 +2199,7 @@ public class SetupRwandaPrimaryCareReport {
 		rd.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
 		
-		h.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rd);
 		
 		return rd;
 	}

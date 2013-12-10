@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -28,7 +27,6 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePa
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAddress;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
@@ -39,8 +37,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 public class SetupHypertensionLateVisit {
 	
 	protected final static Log log = LogFactory.getLog(SetupHypertensionLateVisit.class);
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -59,7 +55,7 @@ public class SetupHypertensionLateVisit {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "HypertensionLateVisit.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "HypertensionLateVisit.xls",
 		    "XLSHypertensionLateVisit", null);
 		
 		Properties props = new Properties();
@@ -68,7 +64,7 @@ public class SetupHypertensionLateVisit {
 		    "sheet:1,row:8,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -78,7 +74,7 @@ public class SetupHypertensionLateVisit {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Hypertension Late Visit");
+		Helper.purgeReportDefinition("NCD-Hypertension Late Visit");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -92,7 +88,7 @@ public class SetupHypertensionLateVisit {
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
 		
 		createDataSetDefinition(reportDefinition);
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

@@ -26,8 +26,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupPMTCTFoodDistributionReport {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//Properties
@@ -42,14 +40,14 @@ public class SetupPMTCTFoodDistributionReport {
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTFoodDistribution.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTFoodDistribution.xls",
 		    "PMTCTFoodDistribution.xls_", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:4,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -59,7 +57,7 @@ public class SetupPMTCTFoodDistributionReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-PMTCT Food Package Distribution");
+		Helper.purgeReportDefinition("HIV-PMTCT Food Package Distribution");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -73,7 +71,7 @@ public class SetupPMTCTFoodDistributionReport {
 		
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

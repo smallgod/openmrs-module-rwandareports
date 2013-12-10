@@ -1,11 +1,10 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Program;
@@ -38,8 +37,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupCombinedHFCSPConsultationReport {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//Properties retrieved from global variables
@@ -62,14 +59,14 @@ public class SetupCombinedHFCSPConsultationReport {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTCombinedClinicConsultationSheet.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTCombinedClinicConsultationSheet.xls",
 		    "PMTCTCombinedClinicConsultationSheet.xls_", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:4,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -79,7 +76,7 @@ public class SetupCombinedHFCSPConsultationReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-PMTCT Combined Clinic Consultation sheet");
+		Helper.purgeReportDefinition("HIV-PMTCT Combined Clinic Consultation sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -101,7 +98,7 @@ public class SetupCombinedHFCSPConsultationReport {
 		
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

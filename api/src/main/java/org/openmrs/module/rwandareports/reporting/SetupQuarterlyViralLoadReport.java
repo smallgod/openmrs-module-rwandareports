@@ -34,8 +34,6 @@ import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupQuarterlyViralLoadReport {
 	
-	public Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties
@@ -79,15 +77,15 @@ public class SetupQuarterlyViralLoadReport {
     	rd.addDataSetDefinition(createDataSet(),
     	    ParameterizableUtil.createParameterMappings("endDate=${endDate},location=${location}"));
     	
-    	h.saveReportDefinition(rd);
+    	Helper.saveReportDefinition(rd);
 		
-    	ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd,
+    	ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd,
 		    "PIH_Quarterly_Viral_Load.xls", "PIH Quarterly Viral Load (Excel)", null);
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:Data Set");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -97,7 +95,7 @@ public class SetupQuarterlyViralLoadReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("PIH-Boston Viral Load Indicators-Quarterly");
+		Helper.purgeReportDefinition("PIH-Boston Viral Load Indicators-Quarterly");
 		
 	}
 	

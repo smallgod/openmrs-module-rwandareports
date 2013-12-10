@@ -33,8 +33,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupAdultHIVConsultationSheet implements SetupReport {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -48,7 +46,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "AdultHIVConsultationSheetV2.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "AdultHIVConsultationSheetV2.xls",
 		    "AdultHIVConsultationSheet.xls_", null);
 		
 		Properties props = new Properties();
@@ -56,7 +54,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -66,7 +64,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-Adult Consultation Sheet");
+		Helper.purgeReportDefinition("HIV-Adult Consultation Sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -87,7 +85,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

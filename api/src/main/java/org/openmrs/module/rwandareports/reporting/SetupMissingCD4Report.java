@@ -30,8 +30,6 @@ import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupMissingCD4Report {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties
@@ -59,14 +57,14 @@ public class SetupMissingCD4Report {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "MissingCD4ReportTemplate.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "MissingCD4ReportTemplate.xls",
 		    "XlsMissingCD4ReportTemplate", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:dataSet|sheet:1,row:9,dataset:NotCompletedPatientDataSet|sheet:2,dataset:dataSet|sheet:2,row:9,dataset:NoResultPatientDataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -76,7 +74,7 @@ public class SetupMissingCD4Report {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("DQ-HIV CD4 Labs with Missing Data");
+		Helper.purgeReportDefinition("DQ-HIV CD4 Labs with Missing Data");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -90,7 +88,7 @@ public class SetupMissingCD4Report {
 		
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

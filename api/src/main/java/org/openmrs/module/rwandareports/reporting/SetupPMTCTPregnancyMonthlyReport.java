@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -46,8 +47,6 @@ public class SetupPMTCTPregnancyMonthlyReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupPMTCTPregnancyMonthlyReport.class);
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//Properties retrieved from global variables
@@ -67,7 +66,7 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTPregMonthlyTemplate.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTPregMonthlyTemplate.xls",
 		    "PMTCTPregMonthlyTemplate", null);
 		
 		Properties props = new Properties();
@@ -76,7 +75,7 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		    "sheet:1,row:9,dataset:PatientsMissedRdv|sheet:2,row:9,dataset:PatientsWithLastCd4|sheet:3,row:9,dataset:PmtctWithlowBMI|sheet:4,row:9,dataset:ViralLoadAbov1000");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -86,7 +85,7 @@ public class SetupPMTCTPregnancyMonthlyReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-PMTCT Pregnancy Report-Monthly");
+		Helper.purgeReportDefinition("HIV-PMTCT Pregnancy Report-Monthly");
 	}
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
@@ -98,7 +97,7 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
 		
 		createDataSetDefinition(reportDefinition);
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

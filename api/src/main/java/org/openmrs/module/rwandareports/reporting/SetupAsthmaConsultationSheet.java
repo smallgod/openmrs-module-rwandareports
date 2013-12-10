@@ -7,14 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Program;
-import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -25,28 +22,15 @@ import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugOrderStartedRestrictedByConceptSet;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
 import org.openmrs.module.rwandareports.customcalculator.AsthmaClassificationAlerts;
-import org.openmrs.module.rwandareports.customcalculator.BMI;
-import org.openmrs.module.rwandareports.customcalculator.DeclineHighestCD4;
-import org.openmrs.module.rwandareports.customcalculator.HIVAdultAlerts;
-import org.openmrs.module.rwandareports.dataset.comparator.PMTCTDataSetRowComparator;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
-import org.openmrs.module.rwandareports.filter.DrugDosageFrequencyFilter;
-import org.openmrs.module.rwandareports.filter.DrugNameFilter;
-import org.openmrs.module.rwandareports.filter.LastThreeObsFilter;
 import org.openmrs.module.rwandareports.filter.LastTwoObsFilter;
-import org.openmrs.module.rwandareports.filter.ObservationFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupAsthmaConsultationSheet {
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -68,7 +52,7 @@ public class SetupAsthmaConsultationSheet {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "AsthmaConsultationSheet.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "AsthmaConsultationSheet.xls",
 		    "AsthmaConsultationSheet.xls_", null);
 		
 		Properties props = new Properties();
@@ -76,7 +60,7 @@ public class SetupAsthmaConsultationSheet {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -86,7 +70,7 @@ public class SetupAsthmaConsultationSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Asthma Consultation Sheet");
+		Helper.purgeReportDefinition("NCD-Asthma Consultation Sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -99,7 +83,7 @@ public class SetupAsthmaConsultationSheet {
 		reportDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

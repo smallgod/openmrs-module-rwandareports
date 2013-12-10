@@ -26,8 +26,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupChemotherapyExpectedPatientList {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -47,7 +45,7 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyExpectedPatientList.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyExpectedPatientList.xls",
 		    "ChemotherapyPatientList.xls_", null);
 		
 		Properties props = new Properties();
@@ -55,7 +53,7 @@ public class SetupChemotherapyExpectedPatientList {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -65,7 +63,7 @@ public class SetupChemotherapyExpectedPatientList {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Chemotherapy Expected Patient List");
+		Helper.purgeReportDefinition("ONC-Chemotherapy Expected Patient List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -78,7 +76,7 @@ public class SetupChemotherapyExpectedPatientList {
 		reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

@@ -52,8 +52,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
  */
 public class SetupEligibleForViralLoadReport {
 	
-	public Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties
@@ -86,12 +84,12 @@ public class SetupEligibleForViralLoadReport {
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "EligibleForViralLoad.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "EligibleForViralLoad.xls",
 		    "XlsEligibleForViralLoad", null);
 		
 		createDataSetDefinition(rd);
 		
-		h.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rd);
 		
 		Properties props = new Properties();
 		props.put(
@@ -99,7 +97,7 @@ public class SetupEligibleForViralLoadReport {
 		    "sheet:1,row:8,dataset:WithViralLoadRecorded|sheet:2,row:8,dataset:WithNoViralLoadRecorded|sheet:3,row:8,dataset:WithViralLoadOrder");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 	}
 	
@@ -110,7 +108,7 @@ public class SetupEligibleForViralLoadReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("PIH-Eligible For Viral Load");
+		Helper.purgeReportDefinition("PIH-Eligible For Viral Load");
 	}
 	
 	private ReportDefinition createReportDefinition() {

@@ -25,8 +25,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupOncologyTreatmentAdministrationPlan {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	Program oncologyProgram;
@@ -51,7 +49,7 @@ public class SetupOncologyTreatmentAdministrationPlan {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "TreatmentAdministrationPlan.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "TreatmentAdministrationPlan.xls",
 		    "TreatmentAdministrationPlan.xls_", null);
 		
 		Properties props = new Properties();
@@ -59,7 +57,7 @@ public class SetupOncologyTreatmentAdministrationPlan {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -69,7 +67,7 @@ public class SetupOncologyTreatmentAdministrationPlan {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Chemotherapy Treatment Administration Plan");
+		Helper.purgeReportDefinition("ONC-Chemotherapy Treatment Administration Plan");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -84,7 +82,7 @@ public class SetupOncologyTreatmentAdministrationPlan {
 		
 		createDataSetDefinitions(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

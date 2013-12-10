@@ -24,8 +24,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupMissedChemotherapyPatientList {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -45,14 +43,14 @@ public class SetupMissedChemotherapyPatientList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "MissedChemotherapyPatientList.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "MissedChemotherapyPatientList.xls",
 		    "MissedChemotherapyPatientList.xls_", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -62,7 +60,7 @@ public class SetupMissedChemotherapyPatientList {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Chemotherapy Missed Patient List");
+		Helper.purgeReportDefinition("ONC-Chemotherapy Missed Patient List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -78,7 +76,7 @@ public class SetupMissedChemotherapyPatientList {
 		reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

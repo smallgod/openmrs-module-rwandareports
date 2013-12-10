@@ -1,53 +1,25 @@
 package org.openmrs.module.rwandareports.reporting;
  
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
- 
-import org.openmrs.Concept;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
+
 import org.openmrs.Program;
-import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
-import org.openmrs.module.reporting.common.DurationUnit;
-import org.openmrs.module.reporting.common.RangeComparator;
-import org.openmrs.module.reporting.common.SetComparator;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
-import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
-import org.openmrs.module.reporting.indicator.CohortIndicator;
-import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
-import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
-import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
-import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  
 public class SetupOncologyQuarterlyIndicatorReport {
-        
-public Helper h = new Helper();
         
         GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
         
@@ -75,15 +47,15 @@ public Helper h = new Helper();
                     ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
                         
                 
-                h.saveReportDefinition(rd);
+                Helper.saveReportDefinition(rd);
                 
                 
-                ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd,"OncologyQuarterlyIndicatorReport.xls", "OncologyQuarterlyIndicatorReport", null);
+                ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd,"OncologyQuarterlyIndicatorReport.xls", "OncologyQuarterlyIndicatorReport", null);
                 Properties props = new Properties();
                 props.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
                 props.put("sortWeight","5000");
                 design.setProperties(props);
-                h.saveReportDesign(design);              
+                Helper.saveReportDesign(design);              
                 
                 
         }
@@ -95,7 +67,7 @@ public Helper h = new Helper();
                                 rs.purgeReportDesign(rd);
                         }
                 }
-                h.purgeReportDefinition("ONC-Indicator Report-Quarterly");
+                Helper.purgeReportDefinition("ONC-Indicator Report-Quarterly");
                 
         }
         

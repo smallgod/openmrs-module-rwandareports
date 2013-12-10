@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -33,23 +34,18 @@ import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.renderer.RenderingMode;
-import org.openmrs.module.reporting.report.renderer.ReportDesignRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.util.MetadataLookup;
-//import org.openmrs.module.rwandareports.util.MetadataLookup;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  
 public class SetupTracNetRwandaReportBySite {
         
         protected final static Log log = LogFactory.getLog(SetupTracNetRwandaReportBySite.class);
-        
-        Helper h = new Helper();
         
         GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
         //MetadataLookup mlookup=new MetadataLookup();
@@ -105,13 +101,13 @@ public class SetupTracNetRwandaReportBySite {
                 setupProperties();
                 
                 ReportDefinition rd = createReportDefinition();
-                ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "Mohrwandatracnetreporttemplate.xls",
+                ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "Mohrwandatracnetreporttemplate.xls",
                     "Xlstracnetreporttemplate", null);
                 Properties props = new Properties();
                 props.put("repeatingSections", "sheet:1,dataset:TracNet Report Location");
                 props.put("sortWeight","5000");
                 design.setProperties(props);
-                h.saveReportDesign(design);
+                Helper.saveReportDesign(design);
         }
         
         public void delete() {
@@ -121,7 +117,7 @@ public class SetupTracNetRwandaReportBySite {
                                 rs.purgeReportDesign(rd);
                         }
                 }
-                h.purgeReportDefinition("TracNet Report");
+                Helper.purgeReportDefinition("TracNet Report");
         }
         
         private ReportDefinition createReportDefinition() {
@@ -145,7 +141,7 @@ public class SetupTracNetRwandaReportBySite {
             rd.addDataSetDefinition(ldsd,
                 ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
             
-            h.saveReportDefinition(rd);
+            Helper.saveReportDefinition(rd);
             
             return rd;
                 

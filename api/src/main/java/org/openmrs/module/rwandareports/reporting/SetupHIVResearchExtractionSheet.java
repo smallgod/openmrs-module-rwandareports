@@ -25,7 +25,6 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfFirstDrugOrderStartedRestrictedByConceptSet;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfWorkflowStateChange;
 import org.openmrs.module.rwandareports.definition.ArtSwitch;
 import org.openmrs.module.rwandareports.definition.StartOfArt;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -33,8 +32,6 @@ import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupHIVResearchExtractionSheet {
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -145,18 +142,18 @@ public class SetupHIVResearchExtractionSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - Demographics Pediatric");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - Demographics Adult Male");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - Demographics Adult Female");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - OI Pediatric");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - OI Adult Male");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - OI Adult Female");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - SE Pediatric");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - SE Adult Male");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - SE Adult Female");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - Ongoing Pediatric");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - Ongoing Adult Male");
-		h.purgeReportDefinition("Research-Extraction Data for HIV Research - Ongoing Adult Female");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Demographics Pediatric");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Demographics Adult Male");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Demographics Adult Female");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - OI Pediatric");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - OI Adult Male");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - OI Adult Female");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - SE Pediatric");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - SE Adult Male");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - SE Adult Female");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Ongoing Pediatric");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Ongoing Adult Male");
+		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Ongoing Adult Female");
 	}
 	
 	private void createReportPediDefinition() throws Exception {
@@ -172,9 +169,9 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All Pediatic HIV Patients
 		reportDefinition.setBaseCohortDefinition(pedi, new HashMap<String, Object>());
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(reportDefinition, "HIVResearchExtractionDemographicsPedi.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinition, "HIVResearchExtractionDemographicsPedi.xls",
 		    "ResearchDemographicsPediatricExcel", null);
 		
 		Properties props = new Properties();
@@ -182,7 +179,7 @@ public class SetupHIVResearchExtractionSheet {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 		ReportDefinition reportDefinitionOI = new ReportDefinition();
 		reportDefinitionOI.setName("Research-Extraction Data for HIV Research - OI Pediatric");
@@ -192,14 +189,14 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All Pediatic HIV Patients
 		reportDefinitionOI.setBaseCohortDefinition(pedi, mappings);
-		h.saveReportDefinition(reportDefinitionOI);
+		Helper.saveReportDefinition(reportDefinitionOI);
 		
-		ReportDesign designOI = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOI, "HIVResearchExtractionOIPedi.xls",
+		ReportDesign designOI = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOI, "HIVResearchExtractionOIPedi.xls",
 		    "ResearchOIPediatricExcel", null);
 		
 		designOI.setProperties(props);
 		
-		h.saveReportDesign(designOI);
+		Helper.saveReportDesign(designOI);
 		
 		ReportDefinition reportDefinitionSE = new ReportDefinition();
 		reportDefinitionSE.setName("Research-Extraction Data for HIV Research - SE Pediatric");
@@ -209,14 +206,14 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All Pediatic HIV Patients
 		reportDefinitionSE.setBaseCohortDefinition(pedi, mappings);
-		h.saveReportDefinition(reportDefinitionSE);
+		Helper.saveReportDefinition(reportDefinitionSE);
 		
-		ReportDesign designSE = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionSE, "HIVResearchExtractionSEPedi.xls",
+		ReportDesign designSE = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionSE, "HIVResearchExtractionSEPedi.xls",
 		    "ResearchSEPediatricExcel", null);
 		
 		designSE.setProperties(props);
 		
-		h.saveReportDesign(designSE);
+		Helper.saveReportDesign(designSE);
 		
 		ReportDefinition reportDefinitionOn = new ReportDefinition();
 		reportDefinitionOn.setName("Research-Extraction Data for HIV Research - Ongoing Pediatric");
@@ -226,14 +223,14 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All Pediatic HIV Patients
 		reportDefinitionOn.setBaseCohortDefinition(pedi, mappings);
-		h.saveReportDefinition(reportDefinitionOn);
+		Helper.saveReportDefinition(reportDefinitionOn);
 		
-		ReportDesign designOn = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingPedi.xls",
+		ReportDesign designOn = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingPedi.xls",
 		    "ResearchOngoingPediatricExcel", null);
 		
 		designOn.setProperties(props);
 		
-		h.saveReportDesign(designOn);
+		Helper.saveReportDesign(designOn);
 	}
 	
 	private void createReportFemaleDefinition() throws Exception {
@@ -249,9 +246,9 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All HIV Patients
 		reportDefinition.setBaseCohortDefinition(allHiv, mappings);
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(reportDefinition, "HIVResearchExtractionDemographicsAdult.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinition, "HIVResearchExtractionDemographicsAdult.xls",
 		    "ResearchDemographicsAdultFemaleExcel", null);
 		
 		Properties props = new Properties();
@@ -259,7 +256,7 @@ public class SetupHIVResearchExtractionSheet {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 		ReportDefinition reportDefinitionOI = new ReportDefinition();
 		reportDefinitionOI.setName("Research-Extraction Data for HIV Research - OI Adult Female");
@@ -269,9 +266,9 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All HIV Patients
 		reportDefinitionOI.setBaseCohortDefinition(allHiv, mappings);
-		h.saveReportDefinition(reportDefinitionOI);
+		Helper.saveReportDefinition(reportDefinitionOI);
 		
-		ReportDesign designOI = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOI, "HIVResearchExtractionOIAdult.xls",
+		ReportDesign designOI = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOI, "HIVResearchExtractionOIAdult.xls",
 		    "ResearchOIAdultFemaleExcel", null);
 		
 		Properties propsOI = new Properties();
@@ -279,7 +276,7 @@ public class SetupHIVResearchExtractionSheet {
 		propsOI.put("sortWeight","5000");
 		designOI.setProperties(propsOI);
 		
-		h.saveReportDesign(designOI);
+		Helper.saveReportDesign(designOI);
 		
 		ReportDefinition reportDefinitionSE = new ReportDefinition();
 		reportDefinitionSE.setName("Research-Extraction Data for HIV Research - SE Adult Female");
@@ -289,14 +286,14 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All HIV Patients
 		reportDefinitionSE.setBaseCohortDefinition(allHiv, mappings);
-		h.saveReportDefinition(reportDefinitionSE);
+		Helper.saveReportDefinition(reportDefinitionSE);
 		
-		ReportDesign designSE = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionSE, "HIVResearchExtractionSEAdult.xls",
+		ReportDesign designSE = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionSE, "HIVResearchExtractionSEAdult.xls",
 		    "ResearchSEAdultFemaleExcel", null);
 		
 		designSE.setProperties(props);
 		
-		h.saveReportDesign(designSE);
+		Helper.saveReportDesign(designSE);
 		
 		ReportDefinition reportDefinitionOn = new ReportDefinition();
 		reportDefinitionOn.setName("Research-Extraction Data for HIV Research - Ongoing Adult Female");
@@ -306,14 +303,14 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All HIV Patients
 		reportDefinitionOn.setBaseCohortDefinition(allHiv, mappings);
-		h.saveReportDefinition(reportDefinitionOn);
+		Helper.saveReportDefinition(reportDefinitionOn);
 		
-		ReportDesign designOn = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingAdult.xls",
+		ReportDesign designOn = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingAdult.xls",
 		    "ResearchOngoingAdultFemaleExcel", null);
 		
 		designOn.setProperties(props);
 		
-		h.saveReportDesign(designOn);
+		Helper.saveReportDesign(designOn);
 		
 	}
 	
@@ -330,9 +327,9 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All Pediatic HIV Patients
 		reportDefinition.setBaseCohortDefinition(allHiv, mappings);
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(reportDefinition, "HIVResearchExtractionDemographicsAdult.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinition, "HIVResearchExtractionDemographicsAdult.xls",
 		    "ResearchDemographicsAdultMaleExcel", null);
 		
 		Properties props = new Properties();
@@ -340,7 +337,7 @@ public class SetupHIVResearchExtractionSheet {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 		ReportDefinition reportDefinitionOI = new ReportDefinition();
 		reportDefinitionOI.setName("Research-Extraction Data for HIV Research - OI Adult Male");
@@ -350,9 +347,9 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All Pediatic HIV Patients
 		reportDefinitionOI.setBaseCohortDefinition(allHiv, mappings);
-		h.saveReportDefinition(reportDefinitionOI);
+		Helper.saveReportDefinition(reportDefinitionOI);
 		
-		ReportDesign designOI = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOI, "HIVResearchExtractionOIAdult.xls",
+		ReportDesign designOI = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOI, "HIVResearchExtractionOIAdult.xls",
 		    "ResearchIOAdultMaleExcel", null);
 		
 		Properties propsOI = new Properties();
@@ -360,7 +357,7 @@ public class SetupHIVResearchExtractionSheet {
 		propsOI.put("sortWeight","5000");
 		designOI.setProperties(propsOI);
 		
-		h.saveReportDesign(designOI);
+		Helper.saveReportDesign(designOI);
 		
 		ReportDefinition reportDefinitionSE = new ReportDefinition();
 		reportDefinitionSE.setName("Research-Extraction Data for HIV Research - SE Adult Male");
@@ -370,14 +367,14 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All Pediatic HIV Patients
 		reportDefinitionSE.setBaseCohortDefinition(allHiv, mappings);
-		h.saveReportDefinition(reportDefinitionSE);
+		Helper.saveReportDefinition(reportDefinitionSE);
 		
-		ReportDesign designSE = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionSE, "HIVResearchExtractionSEAdult.xls",
+		ReportDesign designSE = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionSE, "HIVResearchExtractionSEAdult.xls",
 		    "ResearchSEAdultMaleExcel", null);
 		
 		designSE.setProperties(props);
 		
-		h.saveReportDesign(designSE);
+		Helper.saveReportDesign(designSE);
 		
 		ReportDefinition reportDefinitionOn = new ReportDefinition();
 		reportDefinitionOn.setName("Research-Extraction Data for HIV Research - Ongoing Adult Male");
@@ -387,14 +384,14 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//All Pediatic HIV Patients
 		reportDefinitionOn.setBaseCohortDefinition(allHiv, mappings);
-		h.saveReportDefinition(reportDefinitionOn);
+		Helper.saveReportDefinition(reportDefinitionOn);
 		
-		ReportDesign designOn = h.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingAdult.xls",
+		ReportDesign designOn = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingAdult.xls",
 		    "ResearchOngoingAdultMaleExcel", null);
 		
 		designOn.setProperties(props);
 		
-		h.saveReportDesign(designOn);
+		Helper.saveReportDesign(designOn);
 	}
 	
 	

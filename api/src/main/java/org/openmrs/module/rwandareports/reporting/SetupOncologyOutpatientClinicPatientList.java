@@ -27,8 +27,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupOncologyOutpatientClinicPatientList {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -56,7 +54,7 @@ public class SetupOncologyOutpatientClinicPatientList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "OncologyOutpatientClinicConsult.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "OncologyOutpatientClinicConsult.xls",
 		    "OncologyOutpatientClinicConsult.xls_", null);
 		
 		Properties props = new Properties();
@@ -64,7 +62,7 @@ public class SetupOncologyOutpatientClinicPatientList {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -74,7 +72,7 @@ public class SetupOncologyOutpatientClinicPatientList {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Oncology Outpatient Clinic Patient List");
+		Helper.purgeReportDefinition("ONC-Oncology Outpatient Clinic Patient List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -89,7 +87,7 @@ public class SetupOncologyOutpatientClinicPatientList {
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyPrograms,"onOrAfter"), ParameterizableUtil.createParameterMappings("onOrAfter=${startDate}"));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

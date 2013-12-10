@@ -25,8 +25,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupHivArtRegisterReport {
 	
-	private Helper h = new Helper();
-	
 	private boolean pedi = false;
 	
 	private GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
@@ -79,24 +77,24 @@ public class SetupHivArtRegisterReport {
 		ReportDefinition rd = createReportDefinition();
 		if (pedi) {
 			//h.createRowPerPatientXlsOverview(rd, "RegisterTemplate_small.xls", "PediHIVArtTemplate.xls_", null);
-			ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "RegisterTemplate_small.xls",
+			ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "RegisterTemplate_small.xls",
 			    "PediHIVArtTemplate.xls_", null);
 			
 			Properties props = new Properties();
 			props.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
 			props.put("sortWeight","5000");
 			design.setProperties(props);
-			h.saveReportDesign(design);
+			Helper.saveReportDesign(design);
 		} else {
 			//h.createRowPerPatientXlsOverview(rd, "RegisterTemplate_small.xls", "HIVArtTemplate.xls_", null);
-			ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "RegisterTemplate_small.xls",
+			ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "RegisterTemplate_small.xls",
 			    "HIVArtTemplate.xls_", null);
 			
 			Properties props = new Properties();
 			props.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
 			props.put("sortWeight","5000");
 			design.setProperties(props);
-			h.saveReportDesign(design);
+			Helper.saveReportDesign(design);
 		}
 	}
 	
@@ -114,9 +112,9 @@ public class SetupHivArtRegisterReport {
 			}
 		}
 		if (pedi) {
-			h.purgeReportDefinition("Pedi HIV ART Register");
+			Helper.purgeReportDefinition("Pedi HIV ART Register");
 		} else {
-			h.purgeReportDefinition("Adult HIV ART Register");
+			Helper.purgeReportDefinition("Adult HIV ART Register");
 		}
 		
 	}
@@ -140,7 +138,7 @@ public class SetupHivArtRegisterReport {
 		
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

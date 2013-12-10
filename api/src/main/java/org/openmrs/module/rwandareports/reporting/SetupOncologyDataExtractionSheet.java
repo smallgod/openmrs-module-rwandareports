@@ -30,12 +30,9 @@ import org.openmrs.module.rwandareports.filter.ObservationValueNumericAfterSixmo
 import org.openmrs.module.rwandareports.filter.OncologyExitReasonsInEncounterFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
-import org.openmrs.module.rwandareports.util.MetadataLookup;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupOncologyDataExtractionSheet {
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -153,7 +150,7 @@ public class SetupOncologyDataExtractionSheet {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "OncologyDataExtractionSheet.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "OncologyDataExtractionSheet.xls",
 		    "OncologyDataExtractionSheet.xls_", null);
 		
 		Properties props = new Properties();
@@ -161,7 +158,7 @@ public class SetupOncologyDataExtractionSheet {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -171,7 +168,7 @@ public class SetupOncologyDataExtractionSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-Oncology Data extraction");
+		Helper.purgeReportDefinition("ONC-Oncology Data extraction");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -186,7 +183,7 @@ public class SetupOncologyDataExtractionSheet {
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgram("Oncology", oncologyPrograms), null);
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

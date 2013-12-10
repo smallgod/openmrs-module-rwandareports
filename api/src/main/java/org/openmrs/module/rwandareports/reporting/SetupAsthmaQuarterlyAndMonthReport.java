@@ -50,13 +50,10 @@ import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
-import org.openmrs.module.rwandareports.util.RwandaReportsUtil;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupAsthmaQuarterlyAndMonthReport {
-	
-	public Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -158,24 +155,24 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		quarterlyRd.setBaseCohortDefinition(patientEnrolledInAsthmaProgram,
 		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
 		
-		h.saveReportDefinition(monthlyRd);
-		h.saveReportDefinition(quarterlyRd);
+		Helper.saveReportDefinition(monthlyRd);
+		Helper.saveReportDefinition(quarterlyRd);
 		
-		ReportDesign monthlyDesign = h.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
+		ReportDesign monthlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
 		    "Asthma_Indicator_Monthly_Report.xls", "Asthma Indicator Monthly Report (Excel)", null);
 		Properties monthlyProps = new Properties();
 		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set");
 		monthlyProps.put("sortWeight","5000");
 		monthlyDesign.setProperties(monthlyProps);
-		h.saveReportDesign(monthlyDesign);
+		Helper.saveReportDesign(monthlyDesign);
 		
-		ReportDesign quarterlyDesign = h.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
+		ReportDesign quarterlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
 		    "Asthma_Indicator_Quarterly_Report.xls", "Asthma Indicator Quarterly Report (Excel)", null);
 		Properties quarterlyProps = new Properties();
 		quarterlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
 		quarterlyProps.put("sortWeight","5000");
 		quarterlyDesign.setProperties(quarterlyProps);
-		h.saveReportDesign(quarterlyDesign);
+		Helper.saveReportDesign(quarterlyDesign);
 		
 	}
 	
@@ -187,8 +184,8 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Asthma Indicator Report-Quarterly");
-		h.purgeReportDefinition("NCD-Asthma Indicator Report-Monthly");
+		Helper.purgeReportDefinition("NCD-Asthma Indicator Report-Quarterly");
+		Helper.purgeReportDefinition("NCD-Asthma Indicator Report-Monthly");
 		
 	}
 	

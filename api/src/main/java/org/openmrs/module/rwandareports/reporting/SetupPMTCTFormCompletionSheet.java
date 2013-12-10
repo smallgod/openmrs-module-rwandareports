@@ -28,8 +28,6 @@ import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupPMTCTFormCompletionSheet {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
@@ -92,13 +90,13 @@ public class SetupPMTCTFormCompletionSheet {
 		setUpProperties();
 		
 		ReportDefinition rd = createCrossSiteReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd,
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd,
 		    "PMTCTFormCompletion.xls", "PMTCT Form Completion Excel", null);
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:DataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -108,7 +106,7 @@ public class SetupPMTCTFormCompletionSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("DQ-HIV PMTCT Form Completion");
+		Helper.purgeReportDefinition("DQ-HIV PMTCT Form Completion");
 	}
 	
 	private ReportDefinition createCrossSiteReportDefinition() {
@@ -128,7 +126,7 @@ public class SetupPMTCTFormCompletionSheet {
 		
 		rd.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("InPMTCT", programs, onOrAfterOnOrBefore), ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}"));
 		
-		h.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rd);
 		
 		return rd;
 	}

@@ -55,8 +55,6 @@ public class SetupHeartFailurereport {
 	
 	protected final static Log log = LogFactory.getLog(SetupHeartFailurereport.class);
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
@@ -130,13 +128,13 @@ public class SetupHeartFailurereport {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "heartfailurereporttemplate.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "heartfailurereporttemplate.xls",
 		    "Xlsheartfailurereporttemplate", null);
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:Heart Failure Report Location");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -146,7 +144,7 @@ public class SetupHeartFailurereport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("Heart Failure Report");
+		Helper.purgeReportDefinition("Heart Failure Report");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -170,7 +168,7 @@ public class SetupHeartFailurereport {
 		rd.addDataSetDefinition(ldsd,
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
-		h.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rd);
 		
 		return rd;
 		

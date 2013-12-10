@@ -1,9 +1,7 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -25,8 +23,6 @@ import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupOncologyExternalBiopsyContactList {
-	
-	Helper h = new Helper();
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -61,7 +57,7 @@ public class SetupOncologyExternalBiopsyContactList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "ExternalBiopsyResultsContactList.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "ExternalBiopsyResultsContactList.xls",
 		    "ExternalBiopsyResultsContactList.xls_", null);
 		
 		Properties props = new Properties();
@@ -69,7 +65,7 @@ public class SetupOncologyExternalBiopsyContactList {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -79,7 +75,7 @@ public class SetupOncologyExternalBiopsyContactList {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("ONC-External Biopsy Results/Tracking Contact List");
+		Helper.purgeReportDefinition("ONC-External Biopsy Results/Tracking Contact List");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -91,7 +87,7 @@ public class SetupOncologyExternalBiopsyContactList {
 		reportDefinition.setBaseCohortDefinition(new InverseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram)), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

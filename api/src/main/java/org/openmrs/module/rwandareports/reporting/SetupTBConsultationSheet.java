@@ -30,8 +30,6 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupTBConsultationSheet {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//Properties
@@ -44,14 +42,14 @@ public class SetupTBConsultationSheet {
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "TBConsultationSheetV2.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "TBConsultationSheetV2.xls",
 		    "TBConsultationSheet.xls_", null);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -61,7 +59,7 @@ public class SetupTBConsultationSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("TB-Consultation Sheet");
+		Helper.purgeReportDefinition("TB-Consultation Sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -83,7 +81,7 @@ public class SetupTBConsultationSheet {
 		
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

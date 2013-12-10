@@ -34,8 +34,6 @@ import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupQuarterlyCrossSiteIndicatorByDistrictReport {
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties
@@ -76,13 +74,13 @@ public class SetupQuarterlyCrossSiteIndicatorByDistrictReport {
 		setUpProperties();
 		
 		ReportDefinition rd = createCrossSiteReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd,
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd,
 		    "PIH_Quaterly_Cross_Region_Indicator_Form.xls", "PIH Quarterly Indicator Form (Excel)_", null);
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,dataset:PIH_Quarterly_Individual_District_Indicator Data Set");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 		//		ReportDefinition rd2 = createGraphReportDefinition();
 		//		ReportDesign design2 = h.createRowPerPatientXlsOverviewReportDesign(rd2, "PIH_Quaterly_Cross_Graph_Form.xls", "PIH Quarterly Indicator Graph (Excel)_", null);
@@ -100,7 +98,7 @@ public class SetupQuarterlyCrossSiteIndicatorByDistrictReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("PIH-Boston Indicators-Quarterly");
+		Helper.purgeReportDefinition("PIH-Boston Indicators-Quarterly");
 		//h.purgeReportDefinition("PIH_Quarterly_Individual_District_Indicator_Graph");
 	}
 	
@@ -119,7 +117,7 @@ public class SetupQuarterlyCrossSiteIndicatorByDistrictReport {
 		rd.addDataSetDefinition(createDataSet(),
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 		
-		h.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rd);
 		
 		return rd;
 	}

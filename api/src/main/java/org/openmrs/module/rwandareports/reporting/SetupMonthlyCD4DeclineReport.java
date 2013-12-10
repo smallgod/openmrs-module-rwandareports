@@ -54,8 +54,6 @@ public class SetupMonthlyCD4DeclineReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupMonthlyCD4DeclineReport.class);
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//Properties retrieved from global variables
@@ -87,22 +85,22 @@ public class SetupMonthlyCD4DeclineReport {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinitionDecline("HIV-Pedi ART CD4 Decline-Monthly");
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "PediCD4DeclineTemplate.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PediCD4DeclineTemplate.xls",
 		    "XlsPediLateVisitAndCD4DeclineTemplate", null);
 		
 		ReportDefinition rdp = createReportDefinitionDecline("HIV-PMTCT Combined Clinic Mother ART CD4 Decline-Monthly");
-		ReportDesign designp = h.createRowPerPatientXlsOverviewReportDesign(rdp, "CCMotherCD4DeclineTemplate.xls",
+		ReportDesign designp = Helper.createRowPerPatientXlsOverviewReportDesign(rdp, "CCMotherCD4DeclineTemplate.xls",
 		    "XlsCCMotherLateVisitAndCD4DeclineTemplate", null);
 		
 		ReportDefinition artDecline = createReportDefinitionDecline("HIV-Adult ART CD4 Decline-Monthly");
-		ReportDesign designa = h.createRowPerPatientXlsOverviewReportDesign(artDecline, "AdultLateVisitAndCD4DeclineTemplate.xls",
+		ReportDesign designa = Helper.createRowPerPatientXlsOverviewReportDesign(artDecline, "AdultLateVisitAndCD4DeclineTemplate.xls",
 		    "XlsAdultLateVisitAndCD4DeclineTemplate", null);
 		
 		createDataSetDefinition(rd, rdp, artDecline);
 		
-		h.saveReportDefinition(rd);
-		h.saveReportDefinition(rdp);
-		h.saveReportDefinition(artDecline);
+		Helper.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rdp);
+		Helper.saveReportDefinition(artDecline);
 		
 		Properties props = new Properties();
 		props.put(
@@ -110,7 +108,7 @@ public class SetupMonthlyCD4DeclineReport {
 		    "sheet:1,dataset:dataSet|sheet:1,row:9,dataset:decline50PercPedi");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 		Properties propsp = new Properties();
 		propsp.put(
@@ -118,7 +116,7 @@ public class SetupMonthlyCD4DeclineReport {
 		    "sheet:1,dataset:dataSet|sheet:1,row:9,dataset:decline50CC");
 		propsp.put("sortWeight","5000");
 		designp.setProperties(propsp);
-		h.saveReportDesign(designp);
+		Helper.saveReportDesign(designp);
 		
 		Properties propsa = new Properties();
 		propsa.put(
@@ -126,7 +124,7 @@ public class SetupMonthlyCD4DeclineReport {
 		    "sheet:1,dataset:dataSet|sheet:1,row:9,dataset:decline50Perc|sheet:2,dataset:dataSet|sheet:2,row:9,dataset:decline50");
 		propsa.put("sortWeight","5000");
 		designa.setProperties(propsa);
-		h.saveReportDesign(designa);
+		Helper.saveReportDesign(designa);
 		
 		
 	}
@@ -138,9 +136,9 @@ public class SetupMonthlyCD4DeclineReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-Pedi ART CD4 Decline-Monthly");
-		h.purgeReportDefinition("HIV-PMTCT Combined Clinic Mother ART CD4 Decline-Monthly");
-		h.purgeReportDefinition("HIV-Adult ART CD4 Decline-Monthly");
+		Helper.purgeReportDefinition("HIV-Pedi ART CD4 Decline-Monthly");
+		Helper.purgeReportDefinition("HIV-PMTCT Combined Clinic Mother ART CD4 Decline-Monthly");
+		Helper.purgeReportDefinition("HIV-Adult ART CD4 Decline-Monthly");
 	}
 	
 	private ReportDefinition createReportDefinitionDecline(String name) {

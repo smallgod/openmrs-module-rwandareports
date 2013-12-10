@@ -60,8 +60,6 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupPMTCTCombinedClinicMotherMonthlyReport.class);
 	
-	Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//Properties retrieved from global variables
@@ -89,7 +87,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTCCMotherTemplate.xls",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PMTCTCCMotherTemplate.xls",
 		    "PMTCTCCMotherTemplate", null);
 		
 		Properties props = new Properties();
@@ -98,7 +96,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		    "sheet:1,row:8,dataset:LateVisit|sheet:2,row:8,dataset:LateCD4Count|sheet:3,row:8,dataset:LostToFollowup|sheet:4,row:8,dataset:LowBMI|sheet:5,row:8,dataset:ViralLoadGreaterThan1000InTheLast6Months");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 	}
 	
 	public void delete() {
@@ -108,7 +106,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("HIV-PMTCT Combined Clinic Mother Report-Monthly");
+		Helper.purgeReportDefinition("HIV-PMTCT Combined Clinic Mother Report-Monthly");
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -122,7 +120,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		
 		createDataSetDefinition(reportDefinition);
 		
-		h.saveReportDefinition(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}

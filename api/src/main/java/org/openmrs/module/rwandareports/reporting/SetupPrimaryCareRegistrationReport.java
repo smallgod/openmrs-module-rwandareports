@@ -16,17 +16,15 @@ public class SetupPrimaryCareRegistrationReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupPrimaryCareRegistrationReport.class);
 	
-	Helper h = new Helper();
-	
 	public void setup() throws Exception {
 		
 		ReportDefinition rd = createReportDefinition();
-		ReportDesign design = h.createRowPerPatientXlsOverviewReportDesign(rd, "PrimaryCareRegistrationData.xls", "XlsPrimaryCareRegistrationData",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PrimaryCareRegistrationData.xls", "XlsPrimaryCareRegistrationData",
 		    null);
 		
 		createDataSetDefinition(rd);
 		
-		h.saveReportDefinition(rd);
+		Helper.saveReportDefinition(rd);
 		
 		Properties props = new Properties();
 		props.put(
@@ -34,7 +32,7 @@ public class SetupPrimaryCareRegistrationReport {
 		    "sheet:1,row:2,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		h.saveReportDesign(design);
+		Helper.saveReportDesign(design);
 		
 	}
 	
@@ -45,7 +43,7 @@ public class SetupPrimaryCareRegistrationReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("Research-Primary Care Registration Data");
+		Helper.purgeReportDefinition("Research-Primary Care Registration Data");
 	}
 	
 	private ReportDefinition createReportDefinition() {

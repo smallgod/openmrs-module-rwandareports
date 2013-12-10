@@ -44,8 +44,6 @@ import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
 public class SetupDiabetesQuarterlyAndMonthReport {
 	
-	public Helper h = new Helper();
-	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	// properties
@@ -159,24 +157,24 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 		quarterlyRd.setBaseCohortDefinition(patientEnrolledInDM,
 		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
 		
-		h.saveReportDefinition(monthlyRd);
-		h.saveReportDefinition(quarterlyRd);
+		Helper.saveReportDefinition(monthlyRd);
+		Helper.saveReportDefinition(quarterlyRd);
 		
-		ReportDesign monthlyDesign = h.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
+		ReportDesign monthlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
 		    "DM_Monthly_Indicator_Report.xls", "Diabetes Monthly Indicator Report (Excel)", null);
 		Properties monthlyProps = new Properties();
 		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set");
 		monthlyProps.put("sortWeight","5000");
 		monthlyDesign.setProperties(monthlyProps);
-		h.saveReportDesign(monthlyDesign);
+		Helper.saveReportDesign(monthlyDesign);
 		
-		ReportDesign quarterlyDesign = h.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
+		ReportDesign quarterlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
 		    "DM_Quarterly_Indicator_Report.xls", "Diabetes Quarterly Indicator Report (Excel)", null);
 		Properties quarterlyProps = new Properties();
 		quarterlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
 		quarterlyProps.put("sortWeight","5000");
 		quarterlyDesign.setProperties(quarterlyProps);
-		h.saveReportDesign(quarterlyDesign);
+		Helper.saveReportDesign(quarterlyDesign);
 		
 	}
 	
@@ -188,8 +186,8 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		h.purgeReportDefinition("NCD-Diabetes Indicator Report-Quarterly");
-		h.purgeReportDefinition("NCD-Diabetes Indicator Report-Monthly");
+		Helper.purgeReportDefinition("NCD-Diabetes Indicator Report-Quarterly");
+		Helper.purgeReportDefinition("NCD-Diabetes Indicator Report-Monthly");
 		
 	}
 	
