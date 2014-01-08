@@ -1045,6 +1045,37 @@ public class Cohorts {
 		return query;
 	}
 	
+	public static SqlCohortDefinition getPatientWithStructuredDistrict(String name, String districtname){
+		 SqlCohortDefinition query=new SqlCohortDefinition(
+			"select DISTINCT (p.patient_id) FROM patient p, person_address pa WHERE p.patient_id=pa.person_id AND p.voided=0 AND pa.state_province is not NULL " +
+			"AND pa.county_district='"+districtname+"' " +
+			"AND pa.preferred=1 AND pa.city_village is not NULL AND pa.address3 is not NULL and pa.address1 is not NULL");
+		return query;
+	}
+	 
+	 public static SqlCohortDefinition getPatientWithunStructuredDistrict(String name){
+		 SqlCohortDefinition query=new SqlCohortDefinition(
+			"select DISTINCT(p.patient_id) FROM patient p,person_address pa WHERE p.patient_id=pa.person_id AND pa.preferred=1 AND p.voided=0 " +
+			"AND (pa.state_province is NULL OR pa.county_district is NULL OR pa.city_village is NULL OR pa.address3 is NULL OR pa.address1 is NULL " +
+			"OR pa.state_province='' OR pa.county_district='' OR pa.address3 is NULL OR pa.address1='' )");
+		return query;
+	}
+	 
+	 public static SqlCohortDefinition getPatientsWithOutcomeprogramEndReasons(String name,
+	            Concept outcomequestion, Concept outcomevalues) {
+	       SqlCohortDefinition query = new SqlCohortDefinition(
+	               "select DISTINCT pp.patient_id FROM patient_program pp, program pro WHERE pro.program_id=pp.program_id AND pro.outcomes_concept_id=" +
+	               + outcomequestion.getId()+
+	               " AND pp.outcome_concept_id="
+	               + outcomevalues.getId()+
+	               " AND pp.date_completed IS not null AND pp.voided=0 AND pp.date_completed>= :startDate AND pp.date_completed<= :endDate ");
+	       query.setName(name);
+	       query.addParameter(new Parameter("startDate", "startDate", Date.class));
+	       query.addParameter(new Parameter("endDate", "endDate", Date.class));
+	       return query;
+	     }
+		
+	
 	public static SqlCohortDefinition getPatientsWithObservationInFormBetweenStartAndEndDate(String name, List<Form> forms,
 	                                                                                         Concept concept,
 	                                                                                         Concept obsAnswer) {
@@ -1362,7 +1393,6 @@ public class Cohorts {
 				query.append(",");
 			query.append(concept.getId());
 			i++;
-			
 		}
 		query.append(") and o.voided=0 and o.obs_datetime>= :start and o.obs_datetime<= :end and o.value_numeric is NOT NULL");
 		
@@ -1371,6 +1401,15 @@ public class Cohorts {
 		obsBetweenStartDateAndEndDate.addParameter(new Parameter("end", "end", Date.class));
 		
 		return obsBetweenStartDateAndEndDate;
+	}
+	
+	public static SqlCohortDefinition getPatientWithProgramAndConcept(String name, Program program, Concept concept, Concept valueCoded){
+		SqlCohortDefinition codedInProgram= new SqlCohortDefinition(
+		"select lastObsbypatient.person_id FROM (select * FROM obs o WHERE (select distinct p.patient_id from patient p, patient_program pp " +
+		"where pp.voided = 0  and p.voided=0 and pp.patient_id = p.patient_id and p.patient_id=o.person_id and pp.program_id="+program.getProgramId()+") " +
+		"and o.concept_id="+concept.getId()+" AND o.value_coded="+valueCoded.getId()+" and o.voided=0 ORDER BY o.obs_datetime DESC) " +
+		"AS lastObsbypatient GROUP BY lastObsbypatient.person_id");
+		return codedInProgram;
 	}
 	
 	
