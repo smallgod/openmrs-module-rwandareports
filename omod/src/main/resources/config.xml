@@ -3166,5 +3166,240 @@
 		<description>Id of Overall oncology Stage concept</description>
 	</globalProperty>
 	
+	<globalProperty>
+		<property>reports.suspectedstate</property>
+		<defaultValue>Suspected</defaultValue>
+		<description>The state suspected in Diagnosis status workflow</description>
+	</globalProperty>
 	
+	<globalProperty>
+		<property>reports.notcancerstate</property>
+		<defaultValue>Not cancer</defaultValue>
+		<description>The state Not Cancer in Diagnosis workflow</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.acutelymphoblastic</property>
+		<defaultValue>Acute lymphoblastic leukemia</defaultValue>
+		<description>The state for Acute lymphoblastic leukemia</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.breastcancer</property>
+		<defaultValue>Breast Cancer</defaultValue>
+		<description>The current state that shows a patient's Breast Cancer</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.burkittlymphoma</property>
+		<defaultValue>Burkitt's lymphoma</defaultValue>
+		<description>The current state for Burkitt's lymphoma cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.cancerunknowntype</property>
+		<defaultValue>Cancer unknown type</defaultValue>
+		<description>The current state for Cancer unknown type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.cervicalcancer</property>
+		<defaultValue>Cervical cancer</defaultValue>
+		<description>The current state for Cervical cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.chronicmyelogenousleukemia</property>
+		<defaultValue>Chronic Myelogenous leukemia</defaultValue>
+		<description>The current state for Chronic Myelogenous leukemia cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.colorectalcancer</property>
+		<defaultValue>Colo-rectal cancer</defaultValue>
+		<description>The current state for Colo-rectal cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.headandneckcancer</property>
+		<defaultValue>Head and neck cancer</defaultValue>
+		<description>The current state for Head and neck cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.hodkinlymphoma</property>
+		<defaultValue>Hodgkin's lymphoma</defaultValue>
+		<description>The current state for Hodgkin's lymphoma cancer typr</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.karposisarkomastate</property>
+		<defaultValue>Karposi's sarcoma</defaultValue>
+		<description>The current state for Karposi's sarcoma cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.largebcelllymphoma</property>
+		<defaultValue>Large B-cell lymphoma</defaultValue>
+		<description>The current state for Large B-cell cancer</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.lungcancerdiagnosis</property>
+		<defaultValue>Lung cancer diagnosis</defaultValue>
+		<description>The current state for Lung cancer diagnosis cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.metastaticcancer</property>
+		<defaultValue>Metastatic cancer</defaultValue>
+		<description>The current state for Metastatic cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.multiplemyeloma</property>
+		<defaultValue>Multiple myeloma</defaultValue>
+		<description>The current state for Multiple myeloma cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+	<property>reports.neuroblastoma</property>
+		<defaultValue>Nephroblastoma</defaultValue>
+		<description>The current state for Nephroblastoma cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.otherliquidcancer</property>
+		<defaultValue>Other liquid cancer</defaultValue>
+		<description>The current state for Other liquid cancer</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.othernonhodkinlymphoma</property>
+		<defaultValue>Other non Hodgkin's lymphoma</defaultValue>
+		<description>The current state for Other non Hodgkin's lymphoma cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.othersolidcancer</property>
+		<defaultValue>Other liquid cancer</defaultValue>
+		<description>The current state for Other liquid cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.prostatecancer</property>
+		<defaultValue>Prostate cancer</defaultValue>
+		<description>The current state for Prostate cancer</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.stomachcancer</property>
+		<defaultValue>Stomach cancer</defaultValue>
+		<description>The current state for Stomach cancer type</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.schoolassistance</property>
+		<defaultValue>3cda05de-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>uuid for school assistance recommended concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.transportasistance</property>
+		<defaultValue>3cd67432-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>uuid for transport assistance recommended concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.homeasistance</property>
+		<defaultValue>3cda08d6-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>uuid for home assistance recommended concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.locationreferraltype</property>
+		<defaultValue>b1ead3f5-b7d1-4170-882b-5d4ab655cb90</defaultValue>
+		<description>uuid for location of referring clinic or hospital</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.referraloutsiderwanda</property>
+		<defaultValue>e189f0b5-a733-40e1-b138-7bb464be3032</defaultValue>
+		<description>Id for referral outside of rwanda</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.notreferralatintakedistrict</property>
+		<defaultValue>89a601af-7e2b-4842-9d13-20034ad4c909</defaultValue>
+		<description>uuid forreferral of intake district</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.notreferraloutsideintakedistrict</property>
+		<defaultValue>6c5c17ac-04e0-45fe-9b11-20850c5eaff7</defaultValue>
+		<description>uuid for referral of outside intake district </description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.locationreferraltype</property>
+		<defaultValue>b1ead3f5-b7d1-4170-882b-5d4ab655cb90</defaultValue>
+		<description>uuid for location of referring clinic or hospital</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.referraloutsiderwanda</property>
+		<defaultValue>e189f0b5-a733-40e1-b138-7bb464be3032</defaultValue>
+		<description>Id for referral outside of rwanda</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.notreferralatintakedistrict</property>
+		<defaultValue>89a601af-7e2b-4842-9d13-20034ad4c909</defaultValue>
+		<description>uuid forreferral of intake district</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.notreferraloutsideintakedistrict</property>
+		<defaultValue>6c5c17ac-04e0-45fe-9b11-20850c5eaff7</defaultValue>
+		<description>uuid for referral of outside intake district </description>
+	</globalProperty>	
+	<globalProperty>
+		<property>reports.visitTypeconcept</property>
+		<defaultValue>86a2cf11-1ea5-4b8a-9e4b-08f4cdbe1346</defaultValue>
+		<description>uuid for visit type concept</description>
+	</globalProperty>	
+	<globalProperty>
+		<property>reports.unscheduledvisitType</property>
+		<defaultValue>38a2913c-c261-4ed4-961c-9f02422ba436</defaultValue>
+		<description>uuid for unscheduled visit type</description>
+	</globalProperty>	
+	
+	<globalProperty>
+		<property>reports.oncologyprogramendreason</property>
+		<defaultValue>c9ce6c9c-c189-4ac5-a1a8-d5cca9296d2c</defaultValue>
+		<description>uuid for oncology program end reasons concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.palliationonlycare</property>
+		<defaultValue>41b62034-9e2e-4967-b10a-4e47da65db6e</defaultValue>
+		<description>uuid for referred out for palliation only care concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.cancerrelateddeath</property>
+		<defaultValue>e6073e29-e1ec-4684-aef2-be3e9df76ab7</defaultValue>
+		<description>uuid for cancer related death concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.noncancerrelateddeath</property>
+		<defaultValue>73a9002f-91c4-4851-8f8e-ef55c15a13d2</defaultValue>
+		<description>uuid for cancer non related concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.deathunknownreason</property>
+		<defaultValue>95dc9fa2-3684-4c93-ad5b-c653b6a28fb1</defaultValue>
+		<description>uuid for death unknown reason concept</description>
+	</globalProperty>
+		
 </module>

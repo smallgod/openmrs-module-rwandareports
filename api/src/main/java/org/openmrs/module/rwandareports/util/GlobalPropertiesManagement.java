@@ -264,6 +264,50 @@ public class GlobalPropertiesManagement {
 	
 	public final static String PREGNANCY_GROUP4="reports.pregnancygroup4";
 	
+	public final static String SUSPECTED_STATE="reports.suspectedstate";
+	
+    public final static String NOT_CANCER_STATE="reports.notcancerstate";
+	
+	public final static String ACUTE_LYMPHOBLASTIC_STATE="reports.acutelymphoblastic";
+	
+	public final static String BREAST_CANCER_STATE="reports.breastcancer";
+	
+	public final static String BURKITTLYMPHOMA_STATE="reports.burkittlymphoma";
+	
+	public final static String CANCERUNKNOWNTYPE_STATE="reports.cancerunknowntype";
+	
+	public final static String CERVICAL_CANCER_STATE="reports.cervicalcancer";
+	
+	public final static String CHRONICMYELOGENOUSLEUKEMIA_STATE="reports.chronicmyelogenousleukemia";
+	
+	public final static String COLORECTAL_CANCER_STATE="reports.colorectalcancer";
+	
+	public final static String HEADANDNECK_CANCER_STATE="reports.headandneckcancer";
+	
+	public final static String HODKINLYPHOMA_STATE="reports.hodkinlymphoma";
+	
+	public final static String KARPOSISARCOMA_STATE="reports.karposisarkomastate";
+	
+	public final static String LARGEBCELLLYMPHOMA_STATE="reports.largebcelllymphoma";
+	
+	public final static String LUNGCANCERDIAGNOSIS_STATE="reports.lungcancerdiagnosis";
+	
+	public final static String METASTATIC_CANCER_STATE="reports.metastaticcancer";
+	
+	public final static String MULTIPLEMYELOMA_STATE="reports.multiplemyeloma";
+	
+	public final static String NEUPHROBLASTOMA_STATE="reports.neuroblastoma";
+	
+	public final static String OTHERLIQUID_CANCER_STATE="reports.otherliquidcancer";
+	
+	public final static String OTHERNONHODKINLYMPHOMA_STATE="reports.othernonhodkinlymphoma";
+	
+	public final static String OTHERSOLID_CANCER_STATE="reports.othersolidcancer";
+	
+	public final static String PROSTATE_CANCER_STATE="reports.prostatecancer";
+	
+	public final static String STOMACH_CANCER_STATE="reports.stomachcancer";
+	
 	//Identifiers
 	public final static String IMB_IDENTIFIER = "reports.imbIdIdentifier"; 
 	
@@ -574,7 +618,41 @@ public class GlobalPropertiesManagement {
 	
 	public final static String OVERALL_ONCOLOGY_STAGE = "reports.diseaseStage";
 	
+    public final static String SCHOOL_ASSISTANCE="reports.schoolassistance";
 	
+	public final static String TRANSPORT_ASSISTANCE="reports.transportasistance";
+	
+	public final static String HOME_ASSISTANCE="reports.homeasistance";
+	
+	public final static String HEALTH_CLINIC="reports.healthclinic";
+	
+	public final static String DISTRICT_HOSPITAL="reports.districthospital";
+	
+	public final static String REFERRAL_HOSPITAL="reports.referralhospital";
+	
+	public final static String NOT_REFERRED="reports.notreferred";
+	
+    public final static String LOCATION_REFFERAL_TYPE="reports.locationreferraltype";
+	
+	public final static String REFERRED_OUTSIDE_OF_RWANDA="reports.referraloutsiderwanda";
+	
+	public final static String REFERRED_AT_INTAKE_DISTRICT="reports.notreferralatintakedistrict";
+	
+	public final static String REFERRED_OUTSIDE_INTAKE_DISTRICT="reports.notreferraloutsideintakedistrict";
+	
+	public final static String VISIT_TYPE="reports.visitTypeconcept";
+	
+	public final static String UNSCHEDULED_VISIT_TYPE="reports.unscheduledvisitType";
+	
+	public final static String ONCOLOGY_PROGRAM_END_REASON="reports.oncologyprogramendreason";
+	
+	public final static String REFERRED_FOR_PALLIATIONONLY_CARE="reports.palliationonlycare";
+	
+	public final static String CANCER_RELATED_DEATH="reports.cancerrelateddeath";
+	
+	public final static String NON_CANCER_RELATED_DEATH="reports.noncancerrelateddeath";
+	
+	public final static String DEATH_UNKNOWN_REASON="reports.deathunknownreason";
 	
 	
 	//Primary Care Service concepts
