@@ -119,6 +119,12 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 			DataSetColumn start = new DataSetColumn("startDate", "startDate", Date.class);
 			dataSet.getMetaData().addColumn(start);
 			
+			/*DataSetColumn discoDate = new DataSetColumn("discoDate", "discoDate", Date.class);
+			dataSet.getMetaData().addColumn(discoDate);	
+			*/
+			/*DataSetColumn discoReasonAndDate = new DataSetColumn("discoReasonAndDate", "discoReasonAndDate", String.class);
+			dataSet.getMetaData().addColumn(discoReasonAndDate);	
+			*/
 			DataSetColumn drug = new DataSetColumn("drug", "drug", String.class);
 			dataSet.getMetaData().addColumn(drug);
 			
@@ -146,6 +152,10 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 			DataSetColumn indication = new DataSetColumn("indication", "indication", String.class);
 			dataSet.getMetaData().addColumn(indication);
 			
+			DataSetColumn discontuedReason = new DataSetColumn("discontuedReason", "discontuedReason", String.class);
+			dataSet.getMetaData().addColumn(discontuedReason);
+			
+			
 			Collections.sort(orders, new Comparator<ExtendedDrugOrder>() {
 				
 				public int compare(ExtendedDrugOrder left, ExtendedDrugOrder right) {
@@ -153,10 +163,15 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 				}
 			});
 			for (ExtendedDrugOrder edo : orders) {
-				
+				//if(edo.getDiscontinued() == false){
 				SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
 				dataSet.addColumnValue(edo.getId(), start, dateFormat.format(edo.getStartDate()));
-				
+				/*if(edo.getDiscontinuedDate() != null){
+				dataSet.addColumnValue(edo.getId(), discoDate, dateFormat.format(edo.getDiscontinuedDate()));
+				}*/
+				/*if(edo.getDiscontinuedDate() != null && edo.getDiscontinuedReason() != null){
+					dataSet.addColumnValue(edo.getId(), discoReasonAndDate, edo.getDiscontinuedReason().getName().toString()+" "+dateFormat.format(edo.getDiscontinuedDate()).toString());
+					}*/
 				String drugDisplay = "";
 				if (edo.getDrug() != null) {
 					drugDisplay = edo.getDrug().getName();
@@ -286,9 +301,17 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 					instructionsDisplay = edo.getInstructions();
 				}
 				dataSet.addColumnValue(edo.getId(), instructions, instructionsDisplay);
+				
+				String discontiedReasonDisplay = "";
+				if (edo.getDiscontinuedReason() != null) {
+					discontiedReasonDisplay = edo.getDiscontinuedReason().getName().toString();
+				}
+				dataSet.addColumnValue(edo.getId(), discontuedReason, discontiedReasonDisplay);
+			//}
 			}
 			if (orders.size() == 0) {
 				dataSet.addColumnValue(-1, start, "");
+				//dataSet.addColumnValue(-1, discoDate, "");
 				dataSet.addColumnValue(-1, drug, "");
 				dataSet.addColumnValue(-1, doseReduction, "");
 				dataSet.addColumnValue(-1, dose, "");
@@ -297,6 +320,8 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 				dataSet.addColumnValue(-1, infInst, "");
 				dataSet.addColumnValue(-1, freq, "");
 				dataSet.addColumnValue(-1, instructions, "");
+				dataSet.addColumnValue(-1, discontuedReason, "");
+				//dataSet.addColumnValue(-1, discoReasonAndDate, "");
 			}
 		}
 		return dataSet;
