@@ -3161,7 +3161,6 @@
 	</globalProperty>
 	
 	<globalProperty>
-<<<<<<< HEAD
 		<property>reports.diseaseStage</property>
 		<defaultValue>e9cf4aed-34be-4c0a-9004-4294d9bb2d74</defaultValue>
 		<description>Id of Overall oncology Stage concept</description>
