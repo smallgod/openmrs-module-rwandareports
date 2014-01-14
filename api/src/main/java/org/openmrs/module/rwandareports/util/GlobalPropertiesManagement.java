@@ -616,7 +616,6 @@ public class GlobalPropertiesManagement {
 	
 	public final static String MUTUELLE_LEVEL="reports.mutuelleLevel";
 	
-<<<<<<< HEAD
 	public final static String OVERALL_ONCOLOGY_STAGE = "reports.diseaseStage";
 	
     public final static String SCHOOL_ASSISTANCE="reports.schoolassistance";
