@@ -616,6 +616,7 @@ public class GlobalPropertiesManagement {
 	
 	public final static String MUTUELLE_LEVEL="reports.mutuelleLevel";
 	
+<<<<<<< HEAD
 	public final static String OVERALL_ONCOLOGY_STAGE = "reports.diseaseStage";
 	
     public final static String SCHOOL_ASSISTANCE="reports.schoolassistance";
@@ -651,6 +652,7 @@ public class GlobalPropertiesManagement {
 	public final static String CANCER_RELATED_DEATH="reports.cancerrelateddeath";
 	
 	public final static String NON_CANCER_RELATED_DEATH="reports.noncancerrelateddeath";
+	public final static String PATIENT_PRESENTS_FOR_CHEMO = "reports.patientPresentsChemo";
 	
 	public final static String DEATH_UNKNOWN_REASON="reports.deathunknownreason";
 	

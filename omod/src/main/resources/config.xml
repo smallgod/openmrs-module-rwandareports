@@ -3161,6 +3161,7 @@
 	</globalProperty>
 	
 	<globalProperty>
+<<<<<<< HEAD
 		<property>reports.diseaseStage</property>
 		<defaultValue>e9cf4aed-34be-4c0a-9004-4294d9bb2d74</defaultValue>
 		<description>Id of Overall oncology Stage concept</description>
@@ -3382,6 +3383,9 @@
 		<property>reports.palliationonlycare</property>
 		<defaultValue>41b62034-9e2e-4967-b10a-4e47da65db6e</defaultValue>
 		<description>uuid for referred out for palliation only care concept</description>
+		<property>reports.patientPresentsChemo</property>
+		<defaultValue>1c4ae4e2-9551-49c4-8200-0b7d0abc26a1</defaultValue>
+		<description>Concept that denotes a patient has presented for Chemotherapy</description>
 	</globalProperty>
 	
 	<globalProperty>
