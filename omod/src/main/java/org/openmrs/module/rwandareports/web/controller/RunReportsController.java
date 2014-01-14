@@ -92,7 +92,7 @@ public class RunReportsController {
 		
 		ReportRequest rr = new ReportRequest();
 		
-		ReportDefinition reportDef = h.findReportDefinition(report);
+		ReportDefinition reportDef = Helper.findReportDefinition(report);
 		
 		String[] paramNames = parameters.split(",");
 		
