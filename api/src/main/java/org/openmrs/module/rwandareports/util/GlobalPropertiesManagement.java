@@ -636,9 +636,9 @@ public class GlobalPropertiesManagement {
 	
 	public final static String REFERRED_OUTSIDE_OF_RWANDA="reports.referraloutsiderwanda";
 	
-	public final static String REFERRED_AT_INTAKE_DISTRICT="reports.notreferralatintakedistrict";
+	public final static String REFERRED_AT_INTAKE_DISTRICT="reports.referralatintakedistrict";
 	
-	public final static String REFERRED_OUTSIDE_INTAKE_DISTRICT="reports.notreferraloutsideintakedistrict";
+	public final static String REFERRED_OUTSIDE_INTAKE_DISTRICT="reports.referraloutsideintakedistrict";
 	
 	public final static String VISIT_TYPE="reports.visitTypeconcept";
 	

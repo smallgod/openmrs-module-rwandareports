@@ -3327,13 +3327,13 @@
 	</globalProperty>
 	
 	<globalProperty>
-		<property>reports.notreferralatintakedistrict</property>
+		<property>reports.referralatintakedistrict</property>
 		<defaultValue>89a601af-7e2b-4842-9d13-20034ad4c909</defaultValue>
 		<description>uuid forreferral of intake district</description>
 	</globalProperty>
 	
 	<globalProperty>
-		<property>reports.notreferraloutsideintakedistrict</property>
+		<property>reports.referraloutsideintakedistrict</property>
 		<defaultValue>6c5c17ac-04e0-45fe-9b11-20850c5eaff7</defaultValue>
 		<description>uuid for referral of outside intake district </description>
 	</globalProperty>
@@ -3343,24 +3343,6 @@
 		<defaultValue>b1ead3f5-b7d1-4170-882b-5d4ab655cb90</defaultValue>
 		<description>uuid for location of referring clinic or hospital</description>
 	</globalProperty>
-	
-	<globalProperty>
-		<property>reports.referraloutsiderwanda</property>
-		<defaultValue>e189f0b5-a733-40e1-b138-7bb464be3032</defaultValue>
-		<description>Id for referral outside of rwanda</description>
-	</globalProperty>
-	
-	<globalProperty>
-		<property>reports.notreferralatintakedistrict</property>
-		<defaultValue>89a601af-7e2b-4842-9d13-20034ad4c909</defaultValue>
-		<description>uuid forreferral of intake district</description>
-	</globalProperty>
-	
-	<globalProperty>
-		<property>reports.notreferraloutsideintakedistrict</property>
-		<defaultValue>6c5c17ac-04e0-45fe-9b11-20850c5eaff7</defaultValue>
-		<description>uuid for referral of outside intake district </description>
-	</globalProperty>	
 	<globalProperty>
 		<property>reports.visitTypeconcept</property>
 		<defaultValue>86a2cf11-1ea5-4b8a-9e4b-08f4cdbe1346</defaultValue>
