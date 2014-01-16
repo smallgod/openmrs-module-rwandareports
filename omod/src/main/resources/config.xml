@@ -3331,6 +3331,29 @@
 		<defaultValue>89a601af-7e2b-4842-9d13-20034ad4c909</defaultValue>
 		<description>uuid forreferral of intake district</description>
 	</globalProperty>
+	<globalProperty>
+		<property>reports.healthclinic</property>
+		<defaultValue>3ce0d300-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>uuid of health clinic concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.districthospital</property>
+		<defaultValue>e3f356b2-a340-47df-8b87-b70224437833</defaultValue>
+		<description>uuid for district hospital concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.referralhospital</property>
+		<defaultValue>da32efc3-f18c-404c-bab2-acf68f42f85c</defaultValue>
+		<description>uuid for referral hospital concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.notreferred</property>
+		<defaultValue>f9875828-50ed-45ee-9c72-b4f81e270a8f</defaultValue>
+		<description>uuid for not referred concept</description>
+	</globalProperty>
 	
 	<globalProperty>
 		<property>reports.referraloutsideintakedistrict</property>
@@ -3382,6 +3405,12 @@
 		<property>reports.deathunknownreason</property>
 		<defaultValue>95dc9fa2-3684-4c93-ad5b-c653b6a28fb1</defaultValue>
 		<description>uuid for death unknown reason concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncochangeInDemo</property>
+		<defaultValue>67bae82e-38a6-4bec-b55a-1a4204c9ade8</defaultValue>
+		<description>concept uuid for change in demographics form</description>
 	</globalProperty>
 		
 </module>
