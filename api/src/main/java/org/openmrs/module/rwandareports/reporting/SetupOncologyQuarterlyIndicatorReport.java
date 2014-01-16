@@ -78,11 +78,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 	private ProgramWorkflowState prostatecancer;
 	private ProgramWorkflowState stomachcancer;
 	private Form demographicform;
+	private Form changeinDemographicForm;
 	private Form inpatientOncForm;
 	private Form outpatientOncForm;
 	private Form outpatientclinicvisitform;
 	private Form exitform;
 	private List<Form> demographicsAndClinicalforms = new ArrayList<Form>();
+	private List<Form> demographicsForms = new ArrayList<Form>();
+	private List<Form> onlydemographicsForm = new ArrayList<Form>();
 	private List<Form> clinicalIntakeForms = new ArrayList<Form>();
 	private List<Form> intakeoutpatientclinicvisitflowform = new ArrayList<Form>();
 	private List<Form> exitandDemoforms = new ArrayList<Form>();
@@ -227,37 +230,61 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				.createMaleCohortDefinition("malesDefinition");
 
 		InProgramCohortDefinition inOncologyProgram = Cohorts
-				.createInProgramParameterizableByDate("inOncologyProgram",
-						oncologyProgram, "onDate");
+				.createInProgramParameterizableByStartEndDate("inOncologyProgram",
+						oncologyProgram);
 
-		EncounterCohortDefinition patientWithDemoandIntakeForms = Cohorts
-				.createEncounterBasedOnForms("patientWithDemoandIntakeForms",
-						onOrAfterOnOrBefore, demographicsAndClinicalforms);
+		EncounterCohortDefinition patientWithDemoandIntakeForms = Cohorts.createEncounterBasedOnForms("patientWithDemoandIntakeForms",
+				onOrAfterOnOrBefore, demographicsAndClinicalforms);
+		
+		EncounterCohortDefinition patientWithDemoandFormsOnly = Cohorts.createEncounterBasedOnForms("patientWithDemoForms",
+				onOrAfterOnOrBefore, demographicsForms);
+		
+		EncounterCohortDefinition patientWithDemoOnly=Cohorts.createEncounterBasedOnForms("patientWitDemoFormOnly",
+				onOrAfterOnOrBefore, onlydemographicsForm   );
 
 		CompositionCohortDefinition newCasesunder15withintakeDemoform = new CompositionCohortDefinition();
-		newCasesunder15withintakeDemoform
-				.setName("newCasesunder15withintakeDemoform");
-		newCasesunder15withintakeDemoform.addParameter(new Parameter(
-				"onOrAfter", "onOrAfter", Date.class));
-		newCasesunder15withintakeDemoform.addParameter(new Parameter(
-				"onOrBefore", "onOrBefore", Date.class));
-		newCasesunder15withintakeDemoform.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
-		newCasesunder15withintakeDemoform
-				.getSearches()
-				.put("1",
-						new Mapped<CohortDefinition>(
-								patientWithDemoandIntakeForms,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		newCasesunder15withintakeDemoform.getSearches().put(
-				"2",
-				new Mapped<CohortDefinition>(inOncologyProgram,
-						ParameterizableUtil
-								.createParameterMappings("onDate=${onDate}")));
-		newCasesunder15withintakeDemoform.getSearches().put("3",
-				new Mapped<CohortDefinition>(under15Cohort, null));
+		newCasesunder15withintakeDemoform.setName("newCasesunder15withintakeDemoform");
+		newCasesunder15withintakeDemoform.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		newCasesunder15withintakeDemoform.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		newCasesunder15withintakeDemoform.getSearches().put("1",new Mapped<CohortDefinition>(patientWithDemoandIntakeForms,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesunder15withintakeDemoform.getSearches().put("2",new Mapped<CohortDefinition>(inOncologyProgram,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesunder15withintakeDemoform.getSearches().put("3",new Mapped<CohortDefinition>(under15Cohort, null));
 		newCasesunder15withintakeDemoform.setCompositionString("1 AND 2 AND 3");
+		
+		CompositionCohortDefinition newCasesunder15withDemoformsonly = new CompositionCohortDefinition();
+		newCasesunder15withDemoformsonly.setName("newCasesunder15withDemoformsonly");
+		newCasesunder15withDemoformsonly.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		newCasesunder15withDemoformsonly.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		newCasesunder15withDemoformsonly.getSearches().put("1",new Mapped<CohortDefinition>(patientWithDemoandFormsOnly,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesunder15withDemoformsonly.getSearches().put("2",new Mapped<CohortDefinition>(inOncologyProgram,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesunder15withDemoformsonly.getSearches().put("3",new Mapped<CohortDefinition>(under15Cohort, null));
+		newCasesunder15withDemoformsonly.setCompositionString("1 AND 2 AND 3");
+		
+		CompositionCohortDefinition newCasesunder15withOneDemoformonly = new CompositionCohortDefinition();
+		newCasesunder15withOneDemoformonly.setName("newCasesunder15withOneDemoformonly");
+		newCasesunder15withOneDemoformonly.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		newCasesunder15withOneDemoformonly.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		newCasesunder15withOneDemoformonly.getSearches().put("1",new Mapped<CohortDefinition>(patientWithDemoOnly,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesunder15withOneDemoformonly.getSearches().put("2",new Mapped<CohortDefinition>(inOncologyProgram,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesunder15withOneDemoformonly.getSearches().put("3",new Mapped<CohortDefinition>(under15Cohort, null));
+		newCasesunder15withOneDemoformonly.setCompositionString("1 AND 2 AND 3");
+		
+		CompositionCohortDefinition newCasesOver15withOneDemoformonly = new CompositionCohortDefinition();
+		newCasesOver15withOneDemoformonly.setName("newCasesOver15withOneDemoformonly");
+		newCasesOver15withOneDemoformonly.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		newCasesOver15withOneDemoformonly.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		newCasesOver15withOneDemoformonly.getSearches().put("1",new Mapped<CohortDefinition>(patientWithDemoOnly,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesOver15withOneDemoformonly.getSearches().put("2",new Mapped<CohortDefinition>(inOncologyProgram,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesOver15withOneDemoformonly.getSearches().put("3",new Mapped<CohortDefinition>(over15Cohort, null));
+		newCasesOver15withOneDemoformonly.setCompositionString("1 AND 2 AND 3");
 
 		CompositionCohortDefinition newCasesOver15withintakeDemoform = new CompositionCohortDefinition();
 		newCasesOver15withintakeDemoform
@@ -266,8 +293,6 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newCasesOver15withintakeDemoform.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newCasesOver15withintakeDemoform.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newCasesOver15withintakeDemoform
 				.getSearches()
 				.put("1",
@@ -279,23 +304,34 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"2",
 				new Mapped<CohortDefinition>(inOncologyProgram,
 						ParameterizableUtil
-								.createParameterMappings("onDate=${onDate}")));
+								.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newCasesOver15withintakeDemoform.getSearches().put("3",
 				new Mapped<CohortDefinition>(over15Cohort, null));
 		newCasesOver15withintakeDemoform.setCompositionString("1 AND 2 AND 3");
+		
+		CompositionCohortDefinition newCasesOver15withDemoformsonly = new CompositionCohortDefinition();
+		newCasesOver15withDemoformsonly.setName("newCasesunder15withDemoformsonly");
+		newCasesOver15withDemoformsonly.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		newCasesOver15withDemoformsonly.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		newCasesOver15withDemoformsonly.getSearches().put("1",new Mapped<CohortDefinition>(patientWithDemoandFormsOnly,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesOver15withDemoformsonly.getSearches().put("2",new Mapped<CohortDefinition>(inOncologyProgram,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newCasesOver15withDemoformsonly.getSearches().put("3",new Mapped<CohortDefinition>(over15Cohort, null));
+		newCasesOver15withDemoformsonly.setCompositionString("1 AND 2 AND 3");
 
 		CohortIndicator under15DemoIntakeFormsIndicator = Indicators
 				.newCountIndicator(
 						"under15DemoIntakeFormsIndicator",
 						newCasesunder15withintakeDemoform,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		CohortIndicator over15DemoIntakeFormsIndicator = Indicators
 				.newCountIndicator(
 						"patientWithDemoandIntakeFormsIndicator",
 						newCasesOver15withintakeDemoform,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// ==========================================================================
 		// //
@@ -312,15 +348,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		femalesnewCasesunder15.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		femalesnewCasesunder15.addParameter(new Parameter("onDate", "onDate",
-				Date.class));
 		femalesnewCasesunder15
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newCasesunder15withintakeDemoform,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		femalesnewCasesunder15.getSearches().put("2",
 				new Mapped<CohortDefinition>(femaleCohort, null));
 		femalesnewCasesunder15.setCompositionString("1 AND 2");
@@ -331,15 +365,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		femalesnewCasesOver15.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		femalesnewCasesOver15.addParameter(new Parameter("onDate", "onDate",
-				Date.class));
 		femalesnewCasesOver15
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newCasesOver15withintakeDemoform,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		femalesnewCasesOver15.getSearches().put("2",
 				new Mapped<CohortDefinition>(femaleCohort, null));
 		femalesnewCasesOver15.setCompositionString("1 AND 2");
@@ -349,40 +381,25 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newCasesFemalesUnder15Indicator",
 						femalesnewCasesunder15,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		CohortIndicator newCasesFemalesOver15Indicator = Indicators
 				.newCountIndicator(
 						"newCasesFemalesOver15Indicator",
 						femalesnewCasesOver15,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
-		// =========================================================================
-		// //
-		/*
-		 * D2 Demographics of males NEW cases in the last quarter, pedi and
-		 * adults
-		 */
-		// =========================================================================
-		// //
-
-		CompositionCohortDefinition malesnewCasesunder15 = new CompositionCohortDefinition();
+		 // =========================================================================
+		//  D2 Demographics of males NEW cases in the last quarter, pedi and adults
+	    // =========================================================================
+		
+        CompositionCohortDefinition malesnewCasesunder15 = new CompositionCohortDefinition();
 		malesnewCasesunder15.setName("malesnewCasesunder15");
-		malesnewCasesunder15.addParameter(new Parameter("onOrAfter",
-				"onOrAfter", Date.class));
-		malesnewCasesunder15.addParameter(new Parameter("onOrBefore",
-				"onOrBefore", Date.class));
-		malesnewCasesunder15.addParameter(new Parameter("onDate", "onDate",
-				Date.class));
-		malesnewCasesunder15
-				.getSearches()
-				.put("1",
-						new Mapped<CohortDefinition>(
-								newCasesunder15withintakeDemoform,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		malesnewCasesunder15.getSearches().put("2",
-				new Mapped<CohortDefinition>(maleCohort, null));
+		malesnewCasesunder15.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		malesnewCasesunder15.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		malesnewCasesunder15.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		malesnewCasesunder15.getSearches().put("2",new Mapped<CohortDefinition>(maleCohort, null));
 		malesnewCasesunder15.setCompositionString("1 AND 2");
 
 		CompositionCohortDefinition malesnewCasesOver15 = new CompositionCohortDefinition();
@@ -391,15 +408,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		malesnewCasesOver15.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		malesnewCasesOver15.addParameter(new Parameter("onDate", "onDate",
-				Date.class));
 		malesnewCasesOver15
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newCasesOver15withintakeDemoform,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		malesnewCasesOver15.getSearches().put("2",
 				new Mapped<CohortDefinition>(maleCohort, null));
 		malesnewCasesOver15.setCompositionString("1 AND 2");
@@ -409,20 +424,18 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newCasesmalesUnder15Indicator",
 						malesnewCasesunder15,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		CohortIndicator newCasesmalesOver15Indicator = Indicators
 				.newCountIndicator(
 						"newCasesmalesOver15Indicator",
 						malesnewCasesOver15,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// =======================================================================
-		// //
 		// D5 % of new cases recommended for socioeconomic assistance at intake
-		// */
 		// ======================================================================
-		// //
+		
 
 		SqlCohortDefinition foodAssistancerec = Cohorts
 				.getPatientWithProgramAndConcept(
@@ -446,77 +459,61 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						oncologyProgram, socioassistance, othernonCoded);
 
 		CompositionCohortDefinition patientsWithsocioeconomicassistancerecmended = new CompositionCohortDefinition();
-		patientsWithsocioeconomicassistancerecmended
-				.setName("patientsWithsocioeconomicassistancerecmended");
-		patientsWithsocioeconomicassistancerecmended.getSearches().put("1",
-				new Mapped<CohortDefinition>(foodAssistancerec, null));
-		patientsWithsocioeconomicassistancerecmended.getSearches().put("2",
-				new Mapped<CohortDefinition>(schoolAssistancerec, null));
-		patientsWithsocioeconomicassistancerecmended.getSearches().put("3",
-				new Mapped<CohortDefinition>(homeAssistancerec, null));
-		patientsWithsocioeconomicassistancerecmended.getSearches().put("4",
-				new Mapped<CohortDefinition>(otherAssistancerec, null));
-		patientsWithsocioeconomicassistancerecmended.getSearches().put("5",
-				new Mapped<CohortDefinition>(transportAssistancerec, null));
-		patientsWithsocioeconomicassistancerecmended
-				.setCompositionString("1 OR 2 OR 3 OR 4 OR 5");
+		patientsWithsocioeconomicassistancerecmended.setName("patientsWithsocioeconomicassistancerecmended");
+		patientsWithsocioeconomicassistancerecmended.getSearches().put("1",new Mapped<CohortDefinition>(foodAssistancerec, null));
+		patientsWithsocioeconomicassistancerecmended.getSearches().put("2",new Mapped<CohortDefinition>(schoolAssistancerec, null));
+		patientsWithsocioeconomicassistancerecmended.getSearches().put("3",new Mapped<CohortDefinition>(homeAssistancerec, null));
+		patientsWithsocioeconomicassistancerecmended.getSearches().put("4",new Mapped<CohortDefinition>(otherAssistancerec, null));
+		patientsWithsocioeconomicassistancerecmended.getSearches().put("5",new Mapped<CohortDefinition>(transportAssistancerec, null));
+		patientsWithsocioeconomicassistancerecmended.setCompositionString("1 OR 2 OR 3 OR 4 OR 5");
 
-		CompositionCohortDefinition patsWithSocioassistanceRecUnder15 = new CompositionCohortDefinition();
-		patsWithSocioassistanceRecUnder15
-				.setName("patsWithSocioassistanceRecUnder15");
-		patsWithSocioassistanceRecUnder15.addParameter(new Parameter(
-				"onOrAfter", "onOrAfter", Date.class));
-		patsWithSocioassistanceRecUnder15.addParameter(new Parameter(
-				"onOrBefore", "onOrBefore", Date.class));
-		patsWithSocioassistanceRecUnder15.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
-		patsWithSocioassistanceRecUnder15
-				.getSearches()
-				.put("1",
-						new Mapped<CohortDefinition>(
-								newCasesunder15withintakeDemoform,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		patsWithSocioassistanceRecUnder15.getSearches().put(
-				"2",
-				new Mapped<CohortDefinition>(
-						patientsWithsocioeconomicassistancerecmended, null));
-		patsWithSocioassistanceRecUnder15.setCompositionString("1 AND 2");
+		CompositionCohortDefinition pediWithSocioassistanceRecommended= new CompositionCohortDefinition();
+		pediWithSocioassistanceRecommended.setName("pediWithSocioassistanceRecommended15");
+		pediWithSocioassistanceRecommended.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		pediWithSocioassistanceRecommended.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		pediWithSocioassistanceRecommended.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withDemoformsonly,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pediWithSocioassistanceRecommended.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithsocioeconomicassistancerecmended, null));
+		pediWithSocioassistanceRecommended.setCompositionString("1 AND 2");
+		
+		CompositionCohortDefinition adultsWithSocioassistanceRec = new CompositionCohortDefinition();
+		adultsWithSocioassistanceRec.setName("adultsWithSocioassistanceRec");
+		adultsWithSocioassistanceRec.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultsWithSocioassistanceRec.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		adultsWithSocioassistanceRec.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withDemoformsonly,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsWithSocioassistanceRec.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithsocioeconomicassistancerecmended, null));
+		adultsWithSocioassistanceRec.setCompositionString("1 AND 2");
+		
+		CompositionCohortDefinition pedWithMissingSocioassistanceRec= new CompositionCohortDefinition();
+		pedWithMissingSocioassistanceRec.setName("pedWithMissingSocioassistanceRec");
+		pedWithMissingSocioassistanceRec.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		pedWithMissingSocioassistanceRec.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		pedWithMissingSocioassistanceRec.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withDemoformsonly,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pedWithMissingSocioassistanceRec.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithsocioeconomicassistancerecmended, null));
+		pedWithMissingSocioassistanceRec.setCompositionString("1 AND (NOT 2)");
 
-		CompositionCohortDefinition patsWithSocioassistanceRecOver15 = new CompositionCohortDefinition();
-		patsWithSocioassistanceRecOver15
-				.setName("patsWithSocioassistanceRecOver15");
-		patsWithSocioassistanceRecOver15.addParameter(new Parameter(
-				"onOrAfter", "onOrAfter", Date.class));
-		patsWithSocioassistanceRecOver15.addParameter(new Parameter(
-				"onOrBefore", "onOrBefore", Date.class));
-		patsWithSocioassistanceRecOver15.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
-		patsWithSocioassistanceRecOver15
-				.getSearches()
-				.put("1",
-						new Mapped<CohortDefinition>(
-								newCasesOver15withintakeDemoform,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		patsWithSocioassistanceRecOver15.getSearches().put(
-				"2",
-				new Mapped<CohortDefinition>(
-						patientsWithsocioeconomicassistancerecmended, null));
-		patsWithSocioassistanceRecOver15.setCompositionString("1 AND 2");
+		CompositionCohortDefinition adultsWithMissingSocioassistanceRec= new CompositionCohortDefinition();
+		adultsWithMissingSocioassistanceRec.setName("adultsWithMissingSocioassistanceRecover");
+		adultsWithMissingSocioassistanceRec.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultsWithMissingSocioassistanceRec.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		adultsWithMissingSocioassistanceRec.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withDemoformsonly,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsWithMissingSocioassistanceRec.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithsocioeconomicassistancerecmended, null));
+		adultsWithMissingSocioassistanceRec.setCompositionString("1 AND (NOT 2)");
 
-		CohortIndicator newCasesocioeconomicrecUnder15Indicator = Indicators
-				.newCountIndicator(
-						"newCasesocioeconomicrecUnder15Indicator",
-						patsWithSocioassistanceRecUnder15,
-						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
-		CohortIndicator newCasessocioeconomicrecOver15Indicator = Indicators
-				.newCountIndicator(
-						"newCasessocioeconomicrecOver15Indicator",
-						patsWithSocioassistanceRecOver15,
-						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+		CohortIndicator pediWithsocioeconomicrecomendationIndicator = Indicators.newCountIndicator("pediWithsocioeconomicrecomendationIndicator",
+				pediWithSocioassistanceRecommended,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsWithSocioassistanceRecIndicator = Indicators.newCountIndicator("adultsWithSocioassistanceRecIndicator",
+				adultsWithSocioassistanceRec,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator pediWithMissingsocioeconomicrecIndicator = Indicators.newCountIndicator("pediWithMissingsocioeconomicrecIndicator",
+				pedWithMissingSocioassistanceRec,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsWithMissingSocioassistanceRecIndicator = Indicators.newCountIndicator("adultsWithMissingSocioassistanceRecIndicator",
+				adultsWithMissingSocioassistanceRec,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// ================================================================== //
 		// D6 % breakdown of new cases' referral facility type at intake */
@@ -527,9 +524,8 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		pedPatientsreferredForHC.setName("pedPatientsreferredForHC");
 		pedPatientsreferredForHC.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		pedPatientsreferredForHC.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		pedPatientsreferredForHC.addParameter(new Parameter("onDate","onDate", Date.class));
-		pedPatientsreferredForHC.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		pedPatientsreferredForHC.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		pedPatientsreferredForHC.getSearches().put("2",new Mapped<CohortDefinition>(patientsreferredforHealthClinic, null));
 		pedPatientsreferredForHC.setCompositionString("1 AND 2");
         
@@ -537,17 +533,16 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		adultsreferredforHC.setName("adultsreferredforHC");
 		adultsreferredforHC.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		adultsreferredforHC.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		adultsreferredforHC.addParameter(new Parameter("onDate","onDate", Date.class));
-		adultsreferredforHC.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		adultsreferredforHC.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		adultsreferredforHC.getSearches().put("2",new Mapped<CohortDefinition>(patientsreferredforHealthClinic, null));
 		adultsreferredforHC.setCompositionString("1 AND 2");
 
 		CohortIndicator pedPatientsreferredForHCIndicator= Indicators.newCountIndicator("pedPatientsreferredForHCIndicator",
-				pedPatientsreferredForHC,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				pedPatientsreferredForHC,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator adultsPatientsreferredForHCIndicator = Indicators.newCountIndicator("adultsPatientsreferredForHCIndicator",
-				adultsreferredforHC,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				adultsreferredforHC,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
         // district hospital
 		CodedObsCohortDefinition referredforDistrictHospital = Cohorts.createCodedObsCohortDefinition("referredforDistrictHospital",onOrAfterOnOrBefore, referralType, districhospital,SetComparator.IN, TimeModifier.LAST);
@@ -555,9 +550,8 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		pedsreferredForDistrictHospital.setName("pedsreferredForDistrictHospital");
 		pedsreferredForDistrictHospital.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		pedsreferredForDistrictHospital.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		pedsreferredForDistrictHospital.addParameter(new Parameter("onDate","onDate", Date.class));
-		pedsreferredForDistrictHospital.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		pedsreferredForDistrictHospital.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		pedsreferredForDistrictHospital.getSearches().put("2",new Mapped<CohortDefinition>(referredforDistrictHospital, null));
 		pedsreferredForDistrictHospital.setCompositionString("1 AND 2");
         
@@ -565,17 +559,16 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		adultsreferredForDistrictHospital.setName("adultsreferredForDistrictHospital");
 		adultsreferredForDistrictHospital.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		adultsreferredForDistrictHospital.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		adultsreferredForDistrictHospital.addParameter(new Parameter("onDate","onDate", Date.class));
-		adultsreferredForDistrictHospital.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		adultsreferredForDistrictHospital.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		adultsreferredForDistrictHospital.getSearches().put("2",new Mapped<CohortDefinition>(referredforDistrictHospital, null));
 		adultsreferredForDistrictHospital.setCompositionString("1 AND 2");
 		
 		CohortIndicator pedsreferredForDistrictHospitalIndicator= Indicators.newCountIndicator("pedsreferredForDistrictHospitalIndicator",
-				pedsreferredForDistrictHospital,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				pedsreferredForDistrictHospital,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator adultsreferredForDistrictHospitalIndicator = Indicators.newCountIndicator("adultsreferredForDistrictHospitalIndicator",
-				adultsreferredForDistrictHospital,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				adultsreferredForDistrictHospital,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		//referral hospital
 		CodedObsCohortDefinition referredforReferralHospital = Cohorts.createCodedObsCohortDefinition("referredforReferralHospital",onOrAfterOnOrBefore, referralType, referralhospital,SetComparator.IN, TimeModifier.LAST);
@@ -583,9 +576,8 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		pedsreferredforReferralHospital.setName("pedsreferredforReferralHospital");
 		pedsreferredforReferralHospital.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		pedsreferredforReferralHospital.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		pedsreferredforReferralHospital.addParameter(new Parameter("onDate","onDate", Date.class));
-		pedsreferredforReferralHospital.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		pedsreferredforReferralHospital.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		pedsreferredforReferralHospital.getSearches().put("2",new Mapped<CohortDefinition>(referredforReferralHospital, null));
 		pedsreferredforReferralHospital.setCompositionString("1 AND 2");
         
@@ -593,17 +585,16 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		adultsreferredforReferralHospital.setName("adultsreferredforReferralHospital");
 		adultsreferredforReferralHospital.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		adultsreferredforReferralHospital.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		adultsreferredforReferralHospital.addParameter(new Parameter("onDate","onDate", Date.class));
-		adultsreferredforReferralHospital.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		adultsreferredforReferralHospital.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		adultsreferredforReferralHospital.getSearches().put("2",new Mapped<CohortDefinition>(referredforReferralHospital, null));
 		adultsreferredforReferralHospital.setCompositionString("1 AND 2");
 		
 		CohortIndicator pedsreferredforReferralHospitalIndicator= Indicators.newCountIndicator("pedsreferredforReferralHospitalIndicator",
-				pedsreferredforReferralHospital,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				pedsreferredforReferralHospital,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator adultsreferredforReferralHospitalIndicator = Indicators.newCountIndicator("adultsreferredforReferralHospitalIndicator",
-				adultsreferredforReferralHospital,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				adultsreferredforReferralHospital,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// others
 		CodedObsCohortDefinition withOtheReferral = Cohorts.createCodedObsCohortDefinition("withOtheReferral",onOrAfterOnOrBefore, referralType, othernonCoded,SetComparator.IN, TimeModifier.LAST);
@@ -611,9 +602,8 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		pedsWithOtherReferral.setName("pedsWithOtherReferral");
 		pedsWithOtherReferral.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		pedsWithOtherReferral.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		pedsWithOtherReferral.addParameter(new Parameter("onDate","onDate", Date.class));
-		pedsWithOtherReferral.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		pedsWithOtherReferral.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		pedsWithOtherReferral.getSearches().put("2",new Mapped<CohortDefinition>(withOtheReferral, null));
 		pedsWithOtherReferral.setCompositionString("1 AND 2");
         
@@ -621,17 +611,16 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		adultsWithOtherReferral.setName("adultsWithOtherReferral");
 		adultsWithOtherReferral.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		adultsWithOtherReferral.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		adultsWithOtherReferral.addParameter(new Parameter("onDate","onDate", Date.class));
-		adultsWithOtherReferral.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		adultsWithOtherReferral.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		adultsWithOtherReferral.getSearches().put("2",new Mapped<CohortDefinition>(withOtheReferral, null));
 		adultsWithOtherReferral.setCompositionString("1 AND 2");
 		
 		CohortIndicator pedsWithOtherReferralIndicator= Indicators.newCountIndicator("pedsWithOtherReferralIndicator",
-				pedsWithOtherReferral,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				pedsWithOtherReferral,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator adultsWithOtherReferralIndicator = Indicators.newCountIndicator("adultsWithOtherReferralIndicator",
-				adultsWithOtherReferral,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				adultsWithOtherReferral,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		//not referred
 		CodedObsCohortDefinition patsnotReferred = Cohorts.createCodedObsCohortDefinition("patsnotReferred",onOrAfterOnOrBefore, referralType, notReferred,SetComparator.IN, TimeModifier.LAST);
@@ -639,9 +628,8 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		pedwithNoreferralType.setName("pedwithNoreferralType");
 		pedwithNoreferralType.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		pedwithNoreferralType.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		pedwithNoreferralType.addParameter(new Parameter("onDate","onDate", Date.class));
-		pedwithNoreferralType.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		pedwithNoreferralType.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		pedwithNoreferralType.getSearches().put("2",new Mapped<CohortDefinition>(patsnotReferred, null));
 		pedwithNoreferralType.setCompositionString("1 AND 2");
 
@@ -649,17 +637,16 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		adultsPatientswithreferralType.setName("adultsPatientswithreferralType");
 		adultsPatientswithreferralType.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		adultsPatientswithreferralType.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		adultsPatientswithreferralType.addParameter(new Parameter("onDate","onDate", Date.class));
-		adultsPatientswithreferralType.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		adultsPatientswithreferralType.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		adultsPatientswithreferralType.getSearches().put("2",new Mapped<CohortDefinition>(patsnotReferred, null));
 		adultsPatientswithreferralType.setCompositionString("1 AND 2");
 		
         CohortIndicator pedwithNoreferralTypeIndicator= Indicators.newCountIndicator("pedwithNoreferralTypeIndicator",
-				pedwithNoreferralType,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				pedwithNoreferralType,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator adultswithreferralTypeIndicator = Indicators.newCountIndicator("adultswithreferralTypeIndicator",
-				adultsPatientswithreferralType,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				adultsPatientswithreferralType,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		
 		//missing references
 		CompositionCohortDefinition missingReferences = new CompositionCohortDefinition();
@@ -675,9 +662,8 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		pediWithMissingReferences.setName("pediWithMissingReferences");
 		pediWithMissingReferences.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		pediWithMissingReferences.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		pediWithMissingReferences.addParameter(new Parameter("onDate","onDate", Date.class));
-		pediWithMissingReferences.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		pediWithMissingReferences.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		pediWithMissingReferences.getSearches().put("2",new Mapped<CohortDefinition>(missingReferences, null));
 		pediWithMissingReferences.setCompositionString("1 AND (NOT 2)");
 		
@@ -685,95 +671,131 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		adultsWithMissingReferences.setName("adultsWithMissingReferences");
 		adultsWithMissingReferences.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		adultsWithMissingReferences.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		adultsWithMissingReferences.addParameter(new Parameter("onDate","onDate", Date.class));
-		adultsWithMissingReferences.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+		adultsWithMissingReferences.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		adultsWithMissingReferences.getSearches().put("2",new Mapped<CohortDefinition>(missingReferences, null));
 		adultsWithMissingReferences.setCompositionString("1 AND (NOT 2)");
 		
 		CohortIndicator pediWithMissingReferencesIndi= Indicators.newCountIndicator("pediWithMissingReferencesIndi",
-				pediWithMissingReferences,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				pediWithMissingReferences,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator adultsWithMissingReferencesIndi = Indicators.newCountIndicator("adultsWithMissingReferencesInd",
-				adultsWithMissingReferences,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				adultsWithMissingReferences,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 				
-				
-
-		 
 		// ==============================================================================
-		// //
-		// D7 % of new referral cases referred from outside district of care at
-		// intake */
+		// D7 % of new referral cases referred from outside district of care at intake */
 		// ==============================================================================//
 		CodedObsCohortDefinition insideIntakeDistrictinRwanda = Cohorts.createCodedObsCohortDefinition("insideIntakeDistrictinRwanda",onOrAfterOnOrBefore, locreferralType,insideintakedistrict, SetComparator.IN,TimeModifier.LAST);
 		CodedObsCohortDefinition outsideIntakeDistrict = Cohorts.createCodedObsCohortDefinition("patWithLocreferredOutsideRwanda", onOrAfterOnOrBefore,locreferralType, outsideintakedistrict,SetComparator.IN, TimeModifier.LAST);
 		CodedObsCohortDefinition outsideRwanda = Cohorts.createCodedObsCohortDefinition("patWithLocreferredOutsideRwanda", onOrAfterOnOrBefore,locreferralType, outsideofRwanda, SetComparator.IN,TimeModifier.LAST);
 		
-		// Denominator:Total cases referred:
-		
+		// Numerators:  total new cases
 		CompositionCohortDefinition patientsReferredInRwandaAndInsideOusideIntake = new CompositionCohortDefinition();
 		patientsReferredInRwandaAndInsideOusideIntake.setName("patientsReferredInRwandaAndInsideOusideIntake");
 		patientsReferredInRwandaAndInsideOusideIntake.getSearches().put("1",new Mapped<CohortDefinition>(insideIntakeDistrictinRwanda, null));
 		patientsReferredInRwandaAndInsideOusideIntake.getSearches().put("2",new Mapped<CohortDefinition>(outsideIntakeDistrict, null));
 		patientsReferredInRwandaAndInsideOusideIntake.getSearches().put("3",new Mapped<CohortDefinition>(outsideRwanda,null));
 		patientsReferredInRwandaAndInsideOusideIntake.setCompositionString("1 OR 2 OR 3");
-
-		CompositionCohortDefinition totalnewCasesThatareReferred = new CompositionCohortDefinition();
-		totalnewCasesThatareReferred.setName("totalnewCasesThatareReferred");
-		totalnewCasesThatareReferred.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
-		totalnewCasesThatareReferred.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		totalnewCasesThatareReferred.addParameter(new Parameter("onDate","onDate", Date.class));
-		totalnewCasesThatareReferred.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		totalnewCasesThatareReferred.getSearches().put("2",new Mapped<CohortDefinition>(patientsReferredInRwandaAndInsideOusideIntake, null));
-		totalnewCasesThatareReferred.setCompositionString("1 AND 2");
 		
+		CompositionCohortDefinition totalpedinewCasesThatareReferred = new CompositionCohortDefinition();
+		totalpedinewCasesThatareReferred.setName("totalpedinewCasesThatareReferred");
+		totalpedinewCasesThatareReferred.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		totalpedinewCasesThatareReferred.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		totalpedinewCasesThatareReferred.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
+                        ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		totalpedinewCasesThatareReferred.getSearches().put("2",new Mapped<CohortDefinition>(patientsReferredInRwandaAndInsideOusideIntake, null));
+		totalpedinewCasesThatareReferred.setCompositionString("1 AND 2");
+        
+        CompositionCohortDefinition totaladultsnewCasesThatareReferred = new CompositionCohortDefinition();
+        totaladultsnewCasesThatareReferred.setName("totalnewCasesThatareReferred");
+        totaladultsnewCasesThatareReferred.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+        totaladultsnewCasesThatareReferred.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+        totaladultsnewCasesThatareReferred.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
+                        ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+        totaladultsnewCasesThatareReferred.getSearches().put("2",new Mapped<CohortDefinition>(patientsReferredInRwandaAndInsideOusideIntake, null));
+        totaladultsnewCasesThatareReferred.setCompositionString("1 AND 2");
+        
 		//refered inside Rwanda District
-		CompositionCohortDefinition referredinsideRwandanDistrict=new CompositionCohortDefinition();
-		referredinsideRwandanDistrict.setName("referredinsideRwandanDistrict");
-		referredinsideRwandanDistrict.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
-		referredinsideRwandanDistrict.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		referredinsideRwandanDistrict.addParameter(new Parameter("onDate","onDate", Date.class));
-		referredinsideRwandanDistrict.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		referredinsideRwandanDistrict.getSearches().put("2",new Mapped<CohortDefinition>(insideIntakeDistrictinRwanda, null));
-		referredinsideRwandanDistrict.setCompositionString("1 AND 2");
+		CompositionCohortDefinition pedireferredinsideRwandanDistrict=new CompositionCohortDefinition();
+		pedireferredinsideRwandanDistrict.setName("pedireferredinsideRwandanDistrict");
+		pedireferredinsideRwandanDistrict.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		pedireferredinsideRwandanDistrict.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		pedireferredinsideRwandanDistrict.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pedireferredinsideRwandanDistrict.getSearches().put("2",new Mapped<CohortDefinition>(insideIntakeDistrictinRwanda, null));
+		pedireferredinsideRwandanDistrict.setCompositionString("1 AND 2");
+		
+		CompositionCohortDefinition adultreferredinsideRwandanDistrict=new CompositionCohortDefinition();
+		adultreferredinsideRwandanDistrict.setName("adultreferredinsideRwandanDistrict");
+		adultreferredinsideRwandanDistrict.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		adultreferredinsideRwandanDistrict.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		adultreferredinsideRwandanDistrict.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultreferredinsideRwandanDistrict.getSearches().put("2",new Mapped<CohortDefinition>(insideIntakeDistrictinRwanda, null));
+		adultreferredinsideRwandanDistrict.setCompositionString("1 AND 2");
 		
 		//outside intake district within Rwanda.
-		CompositionCohortDefinition referredoutsideIntakedistrictInRwanda=new CompositionCohortDefinition();
-		referredoutsideIntakedistrictInRwanda.setName("referredoutsideIntakedistrictInRwanda");
-		referredoutsideIntakedistrictInRwanda.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
-		referredoutsideIntakedistrictInRwanda.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		referredoutsideIntakedistrictInRwanda.addParameter(new Parameter("onDate","onDate", Date.class));
-		referredoutsideIntakedistrictInRwanda.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		referredoutsideIntakedistrictInRwanda.getSearches().put("2",new Mapped<CohortDefinition>(outsideIntakeDistrict, null));
-		referredoutsideIntakedistrictInRwanda.setCompositionString("1 AND 2");
+		CompositionCohortDefinition pedireferredoutsideIntakedistrictInRwanda=new CompositionCohortDefinition();
+		pedireferredoutsideIntakedistrictInRwanda.setName("pedireferredoutsideIntakedistrictInRwanda");
+		pedireferredoutsideIntakedistrictInRwanda.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		pedireferredoutsideIntakedistrictInRwanda.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		pedireferredoutsideIntakedistrictInRwanda.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pedireferredoutsideIntakedistrictInRwanda.getSearches().put("2",new Mapped<CohortDefinition>(outsideIntakeDistrict, null));
+		pedireferredoutsideIntakedistrictInRwanda.setCompositionString("1 AND 2");
+		
+		CompositionCohortDefinition adultsreferredoutsideIntakedistrictInRwanda=new CompositionCohortDefinition();
+		adultsreferredoutsideIntakedistrictInRwanda.setName("adultsreferredoutsideIntakedistrictInRwanda");
+		adultsreferredoutsideIntakedistrictInRwanda.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		adultsreferredoutsideIntakedistrictInRwanda.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		adultsreferredoutsideIntakedistrictInRwanda.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsreferredoutsideIntakedistrictInRwanda.getSearches().put("2",new Mapped<CohortDefinition>(outsideIntakeDistrict, null));
+		adultsreferredoutsideIntakedistrictInRwanda.setCompositionString("1 AND 2");
 		
 		//outside Rwanda.
-		CompositionCohortDefinition referredOutsideOfRwanda=new CompositionCohortDefinition();
-		referredOutsideOfRwanda.setName("referredOutsideOfRwanda");
-		referredOutsideOfRwanda.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
-		referredOutsideOfRwanda.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		referredOutsideOfRwanda.addParameter(new Parameter("onDate","onDate", Date.class));
-		referredOutsideOfRwanda.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		referredOutsideOfRwanda.getSearches().put("2",new Mapped<CohortDefinition>(outsideRwanda, null));
-		referredOutsideOfRwanda.setCompositionString("1 AND 2");
+		CompositionCohortDefinition pedireferredOutsideOfRwanda=new CompositionCohortDefinition();
+		pedireferredOutsideOfRwanda.setName("pedireferredOutsideOfRwanda");
+		pedireferredOutsideOfRwanda.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		pedireferredOutsideOfRwanda.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		pedireferredOutsideOfRwanda.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pedireferredOutsideOfRwanda.getSearches().put("2",new Mapped<CohortDefinition>(outsideRwanda, null));
+		pedireferredOutsideOfRwanda.setCompositionString("1 AND 2");
 		
+		CompositionCohortDefinition adultsreferredOutsideOfRwanda=new CompositionCohortDefinition();
+		adultsreferredOutsideOfRwanda.setName("adultsreferredOutsideOfRwanda");
+		adultsreferredOutsideOfRwanda.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		adultsreferredOutsideOfRwanda.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		adultsreferredOutsideOfRwanda.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withOneDemoformonly,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsreferredOutsideOfRwanda.getSearches().put("2",new Mapped<CohortDefinition>(outsideRwanda, null));
+		adultsreferredOutsideOfRwanda.setCompositionString("1 AND 2");
+		
+		// Denominator
+		CohortIndicator totalpedinewCasesThatareReferredIndicators=Indicators.newCountIndicator("totalnewCasesThatareReferredIndicator",
+				totalpedinewCasesThatareReferred,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator totaladultsnewCasesThatareReferredIndicators=Indicators.newCountIndicator("totalnewCasesThatareReferredIndicator",
+				totaladultsnewCasesThatareReferred,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Numerator
-		
-		CohortIndicator pedinewCasesThatareReferredIndicator = Indicators.newCountIndicator("pedinewCasesThatareReferredIndicator",
-				totalnewCasesThatareReferred,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
-
-		CohortIndicator referredinsideRwandanDistrictIndi = Indicators.newCountIndicator("referredinsideRwandanDistrictIndi",
-				referredinsideRwandanDistrict,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+		CohortIndicator pedireferredinsideRwandanDistrictIndi = Indicators.newCountIndicator("referredinsideRwandanDistrictIndi",
+				pedireferredinsideRwandanDistrict,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
         
-		CohortIndicator referredoutsideIntakedistrictInRwandaIndi = Indicators.newCountIndicator("referredoutsideIntakedistrictInRwandaInd",
-				referredoutsideIntakedistrictInRwanda,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+		CohortIndicator adultsrefferedinsideRwandaDistrictInd=Indicators.newCohortIndicator("adultreferredinsideRwandanDistrict", 
+				adultreferredinsideRwandanDistrict, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+				
+		CohortIndicator pedireferredoutsideIntakedistrictInRwandaIndi = Indicators.newCountIndicator("pedireferredoutsideIntakedistrictInRwandaIndi",
+				pedireferredoutsideIntakedistrictInRwanda,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsreferredoutsideIntakedistrictInRwandaIndi = Indicators.newCountIndicator("adultsreferredoutsideIntakedistrictInRwandaIndi",
+				adultsreferredoutsideIntakedistrictInRwanda,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
-		CohortIndicator referredOutsideOfRwandaIndicator = Indicators.newCountIndicator("referredOutsideOfRwandaIndicator",
-				referredOutsideOfRwanda,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+		CohortIndicator pedireferredOutsideOfRwandaIndicator = Indicators.newCountIndicator("pedireferredOutsideOfRwandaIndicator",
+			pedireferredOutsideOfRwanda,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsreferredOutsideOfRwandaIndicator = Indicators.newCountIndicator("adultsreferredOutsideOfRwandaIndicator",
+				adultsreferredOutsideOfRwanda,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// ======================================================= //
 		// D8 % breakdown of new cases' home district at intake */
@@ -790,68 +812,88 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		SqlCohortDefinition patientsLocatedInGasaboDistrict = Cohorts.getPatientWithStructuredDistrict("patientsLocatedInKigaliDistrict", "Gasabo");
 		SqlCohortDefinition patientwithUnstructuredDistrict = Cohorts.getPatientWithunStructuredDistrict("patientwithUnstructuredDistrict");
 
-		CompositionCohortDefinition patientsLocatedInKayonzaDistrictComposition = new CompositionCohortDefinition();
-		patientsLocatedInKayonzaDistrictComposition.setName("patientsLocatedInKayonzaDistrictComposition");
-		patientsLocatedInKayonzaDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientsLocatedInKayonzaDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		patientsLocatedInKayonzaDistrictComposition.addParameter(new Parameter("onDate", "onDate", Date.class));
-		patientsLocatedInKayonzaDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		patientsLocatedInKayonzaDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInKayonzaDistrict,null));
-		patientsLocatedInKayonzaDistrictComposition.setCompositionString("1 AND 2");
+		CompositionCohortDefinition pediLocatedInKayonzaDistrictComposition = new CompositionCohortDefinition();
+		pediLocatedInKayonzaDistrictComposition.setName("pediLocatedInKayonzaDistrictComposition");
+		pediLocatedInKayonzaDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		pediLocatedInKayonzaDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		pediLocatedInKayonzaDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pediLocatedInKayonzaDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInKayonzaDistrict,null));
+		pediLocatedInKayonzaDistrictComposition.setCompositionString("1 AND 2");
+
+		CompositionCohortDefinition adultsLocatedInKayonzaDistrictComposition = new CompositionCohortDefinition();
+		adultsLocatedInKayonzaDistrictComposition.setName("adultsLocatedInKayonzaDistrictComposition");
+		adultsLocatedInKayonzaDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultsLocatedInKayonzaDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		adultsLocatedInKayonzaDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsLocatedInKayonzaDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInKayonzaDistrict,null));
+		adultsLocatedInKayonzaDistrictComposition.setCompositionString("1 AND 2");
 
 		// 2) Burera,
-		CompositionCohortDefinition patientsLocatedInBureraDistrictComposition = new CompositionCohortDefinition();
-		patientsLocatedInBureraDistrictComposition
-				.setName("patientsLocatedInBureraDistrictComposition");
-		patientsLocatedInBureraDistrictComposition.addParameter(new Parameter(
-				"onOrAfter", "onOrAfter", Date.class));
-		patientsLocatedInBureraDistrictComposition.addParameter(new Parameter(
-				"onOrBefore", "onOrBefore", Date.class));
-		patientsLocatedInBureraDistrictComposition.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
-		patientsLocatedInBureraDistrictComposition
-				.getSearches()
-				.put("1",
-						new Mapped<CohortDefinition>(
-								newCasesunder15withintakeDemoform,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		patientsLocatedInBureraDistrictComposition.getSearches().put(
-				"2",
-				new Mapped<CohortDefinition>(patientsLocatedInBureraDistrict,
-						null));
-		patientsLocatedInBureraDistrictComposition
-				.setCompositionString("1 AND 2");
+		CompositionCohortDefinition pediLocatedInBureraDistrictComposition = new CompositionCohortDefinition();
+		pediLocatedInBureraDistrictComposition.setName("pediLocatedInBureraDistrictComposition");
+		pediLocatedInBureraDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		pediLocatedInBureraDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		pediLocatedInBureraDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pediLocatedInBureraDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInBureraDistrict,null));
+		pediLocatedInBureraDistrictComposition.setCompositionString("1 AND 2");
+		
+		CompositionCohortDefinition adultsLocatedInBureraDistrictComposition = new CompositionCohortDefinition();
+		adultsLocatedInBureraDistrictComposition.setName("adultsLocatedInBureraDistrictComposition");
+		adultsLocatedInBureraDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultsLocatedInBureraDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		adultsLocatedInBureraDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsLocatedInBureraDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInBureraDistrict,null));
+		adultsLocatedInBureraDistrictComposition.setCompositionString("1 AND 2");
 
 		// 3) Kirehe,
-		CompositionCohortDefinition patientsLocatedInKireheDistrictComposition = new CompositionCohortDefinition();
-		patientsLocatedInKireheDistrictComposition.setName("patientsLocatedInKireheDistrictComposition");
-		patientsLocatedInKireheDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientsLocatedInKireheDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		patientsLocatedInKireheDistrictComposition.addParameter(new Parameter("onDate", "onDate", Date.class));
-		patientsLocatedInKireheDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		patientsLocatedInKireheDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInKireheDistrict,null));
-		patientsLocatedInKireheDistrictComposition.setCompositionString("1 AND 2");
+		CompositionCohortDefinition pediLocatedInKireheDistrictComposition = new CompositionCohortDefinition();
+		pediLocatedInKireheDistrictComposition.setName("pediLocatedInKireheDistrictComposition");
+		pediLocatedInKireheDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		pediLocatedInKireheDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		pediLocatedInKireheDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pediLocatedInKireheDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInKireheDistrict,null));
+		pediLocatedInKireheDistrictComposition.setCompositionString("1 AND 2");
+		
+		CompositionCohortDefinition adultsLocatedInKireheDistrictComposition = new CompositionCohortDefinition();
+		adultsLocatedInKireheDistrictComposition.setName("adultsLocatedInKireheDistrictComposition");
+		adultsLocatedInKireheDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultsLocatedInKireheDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		adultsLocatedInKireheDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsLocatedInKireheDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInKireheDistrict,null));
+		adultsLocatedInKireheDistrictComposition.setCompositionString("1 AND 2");
 
 		// 4) Kigali,
-		CompositionCohortDefinition patientsLocatedInKigaliDistrictComposition = new CompositionCohortDefinition();
-		patientsLocatedInKigaliDistrictComposition.setName("patientsLocatedInKigaliDistrictComposition");
-		patientsLocatedInKigaliDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientsLocatedInKigaliDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		patientsLocatedInKigaliDistrictComposition.addParameter(new Parameter("onDate", "onDate", Date.class));
-		patientsLocatedInKigaliDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		patientsLocatedInKigaliDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInNyarugengeDistrict, null));
-		patientsLocatedInKigaliDistrictComposition.getSearches().put("3",new Mapped<CohortDefinition>(patientsLocatedInKicukiroDistrict,null));
-		patientsLocatedInKigaliDistrictComposition.getSearches().put("4",new Mapped<CohortDefinition>(patientsLocatedInGasaboDistrict,null));
-		patientsLocatedInKigaliDistrictComposition.setCompositionString("1 AND (2 OR 3 OR 4)");
+		CompositionCohortDefinition pediLocatedInKigaliDistrictComposition = new CompositionCohortDefinition();
+		pediLocatedInKigaliDistrictComposition.setName("pediLocatedInKigaliDistrictComposition");
+		pediLocatedInKigaliDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		pediLocatedInKigaliDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		pediLocatedInKigaliDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pediLocatedInKigaliDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInNyarugengeDistrict, null));
+		pediLocatedInKigaliDistrictComposition.getSearches().put("3",new Mapped<CohortDefinition>(patientsLocatedInKicukiroDistrict,null));
+		pediLocatedInKigaliDistrictComposition.getSearches().put("4",new Mapped<CohortDefinition>(patientsLocatedInGasaboDistrict,null));
+		pediLocatedInKigaliDistrictComposition.setCompositionString("1 AND (2 OR 3 OR 4)");
+		
+		CompositionCohortDefinition adultsLocatedInKigaliDistrictComposition = new CompositionCohortDefinition();
+		adultsLocatedInKigaliDistrictComposition.setName("adultsLocatedInKigaliDistrictComposition");
+		adultsLocatedInKigaliDistrictComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultsLocatedInKigaliDistrictComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		adultsLocatedInKigaliDistrictComposition.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsLocatedInKigaliDistrictComposition.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInNyarugengeDistrict, null));
+		adultsLocatedInKigaliDistrictComposition.getSearches().put("3",new Mapped<CohortDefinition>(patientsLocatedInKicukiroDistrict,null));
+		adultsLocatedInKigaliDistrictComposition.getSearches().put("4",new Mapped<CohortDefinition>(patientsLocatedInGasaboDistrict,null));
+		adultsLocatedInKigaliDistrictComposition.setCompositionString("1 AND (2 OR 3 OR 4)");
 
 		// 5) Other Rwanda district,
 		CompositionCohortDefinition patientsWithOtherRwandanDistrict = new CompositionCohortDefinition();
 		patientsWithOtherRwandanDistrict.setName("patientsWithOtherRwandanDistrict");
 		patientsWithOtherRwandanDistrict.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		patientsWithOtherRwandanDistrict.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		patientsWithOtherRwandanDistrict.addParameter(new Parameter("onDate","onDate", Date.class));
 		patientsWithOtherRwandanDistrict.getSearches().put("1",new Mapped<CohortDefinition>(patientsLocatedInKayonzaDistrict,null));
 		patientsWithOtherRwandanDistrict.getSearches().put("2",new Mapped<CohortDefinition>(patientsLocatedInBureraDistrict,null));
 		patientsWithOtherRwandanDistrict.getSearches().put("3",new Mapped<CohortDefinition>(patientsLocatedInKireheDistrict,null));
@@ -864,80 +906,112 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		SqlCohortDefinition notNullCountryDistrictAddress = new SqlCohortDefinition("select DISTINCT(p.patient_id) FROM patient p,person_address pa WHERE p.patient_id=pa.person_id AND pa.preferred=1 AND p.voided=0 AND country is not NULL AND county_district is not NULL");
 		   
         //Other Rwandan districts
-        CompositionCohortDefinition patientsLocatedInOtherRwandanDistricts = new CompositionCohortDefinition();
-		patientsLocatedInOtherRwandanDistricts.setName("patientsLocatedInOtherRwandanDistricts");
-		patientsLocatedInOtherRwandanDistricts.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientsLocatedInOtherRwandanDistricts.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		patientsLocatedInOtherRwandanDistricts.addParameter(new Parameter("onDate", "onDate", Date.class));
-		patientsLocatedInOtherRwandanDistricts.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		patientsLocatedInOtherRwandanDistricts.getSearches().put("2",new Mapped<CohortDefinition>(notNullCountryDistrictAddress,null));
-		patientsLocatedInOtherRwandanDistricts.getSearches().put("3",new Mapped<CohortDefinition>(patientsWithOtherRwandanDistrict,null));
-		patientsLocatedInOtherRwandanDistricts.setCompositionString("1 AND 2 AND (NOT 3)");
+		CompositionCohortDefinition pediLocatedInOtherRwandanDistricts = new CompositionCohortDefinition();
+		pediLocatedInOtherRwandanDistricts.setName("pediLocatedInOtherRwandanDistricts");
+		pediLocatedInOtherRwandanDistricts.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		pediLocatedInOtherRwandanDistricts.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		pediLocatedInOtherRwandanDistricts.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pediLocatedInOtherRwandanDistricts.getSearches().put("2",new Mapped<CohortDefinition>(notNullCountryDistrictAddress,null));
+		pediLocatedInOtherRwandanDistricts.getSearches().put("3",new Mapped<CohortDefinition>(patientsWithOtherRwandanDistrict,null));
+		pediLocatedInOtherRwandanDistricts.setCompositionString("1 AND 2 AND (NOT 3)");
+		
+		CompositionCohortDefinition adultsLocatedInOtherRwandanDistricts = new CompositionCohortDefinition();
+		adultsLocatedInOtherRwandanDistricts.setName("adultsLocatedInOtherRwandanDistricts");
+		adultsLocatedInOtherRwandanDistricts.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultsLocatedInOtherRwandanDistricts.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		adultsLocatedInOtherRwandanDistricts.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsLocatedInOtherRwandanDistricts.getSearches().put("2",new Mapped<CohortDefinition>(notNullCountryDistrictAddress,null));
+		adultsLocatedInOtherRwandanDistricts.getSearches().put("3",new Mapped<CohortDefinition>(patientsWithOtherRwandanDistrict,null));
+		adultsLocatedInOtherRwandanDistricts.setCompositionString("1 AND 2 AND (NOT 3)");
 
 		//Patient with missing address
-		CompositionCohortDefinition patientswithMissingAddress = new CompositionCohortDefinition();
-		patientswithMissingAddress.setName("patientswithMissingAddress");
-		patientswithMissingAddress.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientswithMissingAddress.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		patientswithMissingAddress.addParameter(new Parameter("onDate", "onDate", Date.class));
-		patientswithMissingAddress.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		patientswithMissingAddress.getSearches().put("2",new Mapped<CohortDefinition>(patientwithUnstructuredDistrict,null));
-		patientswithMissingAddress.getSearches().put("3",new Mapped<CohortDefinition>(patientsWithOtherRwandanDistrict,null));
-		patientswithMissingAddress.setCompositionString("1 AND 2 AND (NOT 3)");
+		CompositionCohortDefinition pediwithMissingAddress = new CompositionCohortDefinition();
+		pediwithMissingAddress.setName("pediwithMissingAddress");
+		pediwithMissingAddress.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		pediwithMissingAddress.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		pediwithMissingAddress.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pediwithMissingAddress.getSearches().put("2",new Mapped<CohortDefinition>(patientwithUnstructuredDistrict,null));
+		pediwithMissingAddress.getSearches().put("3",new Mapped<CohortDefinition>(patientsWithOtherRwandanDistrict,null));
+		pediwithMissingAddress.setCompositionString("1 AND 2 AND (NOT 3)");
+		
+		CompositionCohortDefinition adultswithMissingAddress = new CompositionCohortDefinition();
+		adultswithMissingAddress.setName("adultswithMissingAddress");
+		adultswithMissingAddress.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		adultswithMissingAddress.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		adultswithMissingAddress.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultswithMissingAddress.getSearches().put("2",new Mapped<CohortDefinition>(patientwithUnstructuredDistrict,null));
+		adultswithMissingAddress.getSearches().put("3",new Mapped<CohortDefinition>(patientsWithOtherRwandanDistrict,null));
+		adultswithMissingAddress.setCompositionString("1 AND 2 AND (NOT 3)");
 
 		// 6) Outside Rwanda
 		SqlCohortDefinition inRwanda = new SqlCohortDefinition("select DISTINCT(p.patient_id) FROM patient p,person_address pa WHERE p.patient_id=pa.person_id AND pa.preferred=1 AND p.voided=0 AND country='Rwanda' AND country is not NULL");
 		InverseCohortDefinition patientsnotInRwanda = new InverseCohortDefinition(inRwanda);
 
-		CompositionCohortDefinition patientsfromOutsideOfRwanda = new CompositionCohortDefinition();
-		patientsfromOutsideOfRwanda.setName("patientsfromOutsideOfRwanda");
-		patientsfromOutsideOfRwanda.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
-		patientsfromOutsideOfRwanda.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		patientsfromOutsideOfRwanda.addParameter(new Parameter("onDate","onDate", Date.class));
-		patientsfromOutsideOfRwanda.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
-			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		patientsfromOutsideOfRwanda.getSearches().put("2",new Mapped<CohortDefinition>(notNullCountryAddress, null));
-		patientsfromOutsideOfRwanda.getSearches().put("3",new Mapped<CohortDefinition>(patientsnotInRwanda, null));
-		patientsfromOutsideOfRwanda.setCompositionString("1 AND 2 AND 3");
-
-		CohortIndicator patientsLocatedInKayonzaDistrictIndi = Indicators
-				.newCountIndicator(
-						"patientsLocatedInKayonzaDistrictIndi",
-						patientsLocatedInKayonzaDistrictComposition,
-						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
-
-		CohortIndicator patientsLocatedInBureraDistrictInd = Indicators
-				.newCountIndicator(
-						"patientsLocatedInBureraDistrictInd",
-						patientsLocatedInBureraDistrictComposition,
-						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
-
-		CohortIndicator patientsLocatedInKireheDistrictIndicator = Indicators
-				.newCountIndicator(
-						"patientsLocatedInKireheDistrictIndicator",
-						patientsLocatedInKireheDistrictComposition,
-						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
-
-		CohortIndicator patientsLocatedInKigaliDistrictIndicator = Indicators
-				.newCountIndicator(
-						"patientsLocatedInKigaliDistrictIndicator",
-						patientsLocatedInKigaliDistrictComposition,
-						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
-
-		CohortIndicator patientsLocatedInOtherRwandanDistrictsIndicator = Indicators.newCountIndicator("patientsLocatedInOtherRwandanDistrictsIndicator",
-						patientsLocatedInOtherRwandanDistricts,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+		CompositionCohortDefinition pedifromOutsideOfRwanda = new CompositionCohortDefinition();
+		pedifromOutsideOfRwanda.setName("pedifromOutsideOfRwanda");
+		pedifromOutsideOfRwanda.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		pedifromOutsideOfRwanda.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		pedifromOutsideOfRwanda.getSearches().put("1",new Mapped<CohortDefinition>(newCasesunder15withintakeDemoform,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pedifromOutsideOfRwanda.getSearches().put("2",new Mapped<CohortDefinition>(notNullCountryAddress, null));
+		pedifromOutsideOfRwanda.getSearches().put("3",new Mapped<CohortDefinition>(patientsnotInRwanda, null));
+		pedifromOutsideOfRwanda.setCompositionString("1 AND 2 AND 3");
 		
-		CohortIndicator patientsLocatedWithMissingIndicator = Indicators.newCountIndicator("patientsLocatedWithMissingIndicator",
-				patientswithMissingAddress,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+		CompositionCohortDefinition adultsfromOutsideOfRwanda = new CompositionCohortDefinition();
+		adultsfromOutsideOfRwanda.setName("adultsfromOutsideOfRwanda");
+		adultsfromOutsideOfRwanda.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		adultsfromOutsideOfRwanda.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		adultsfromOutsideOfRwanda.getSearches().put("1",new Mapped<CohortDefinition>(newCasesOver15withintakeDemoform,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsfromOutsideOfRwanda.getSearches().put("2",new Mapped<CohortDefinition>(notNullCountryAddress, null));
+		adultsfromOutsideOfRwanda.getSearches().put("3",new Mapped<CohortDefinition>(patientsnotInRwanda, null));
+		adultsfromOutsideOfRwanda.setCompositionString("1 AND 2 AND 3");
 
-		CohortIndicator patientsfromOutsideOfRwandaIndicator = Indicators.newCountIndicator("patientsfromOutsideOfRwandaIndicator",
-						patientsfromOutsideOfRwanda,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+		CohortIndicator pediLocatedInKayonzaDistrictIndi = Indicators.newCountIndicator("pediLocatedInKayonzaDistrictIndi",pediLocatedInKayonzaDistrictComposition,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsLocatedInKayonzaDistrictIndi = Indicators.newCountIndicator("adultsLocatedInKayonzaDistrictIndi",adultsLocatedInKayonzaDistrictComposition,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		CohortIndicator pediLocatedInBureraDistrictIndi = Indicators.newCountIndicator("pediLocatedInBureraDistrictIndi",pediLocatedInBureraDistrictComposition,
+			    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsLocatedInBureraDistrictIndi = Indicators.newCountIndicator("adultsLocatedInBureraDistrictIndi",adultsLocatedInBureraDistrictComposition,
+			    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		CohortIndicator pediLocatedInKireheDistrictIndicator = Indicators.newCountIndicator("pediLocatedInKireheDistrictIndicator",pediLocatedInKireheDistrictComposition,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsLocatedInKireheDistrictIndicator = Indicators.newCountIndicator("adultsLocatedInKireheDistrictIndicator",adultsLocatedInKireheDistrictComposition,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		CohortIndicator pediLocatedInKigaliDistrictIndicator = Indicators.newCountIndicator("patientsLocatedInKigaliDistrictIndicator",pediLocatedInKigaliDistrictComposition,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsLocatedInKigaliDistrictIndicator = Indicators.newCountIndicator("patientsLocatedInKigaliDistrictIndicator",adultsLocatedInKigaliDistrictComposition,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		CohortIndicator pediLocatedInOtherRwandanDistrictsIndicator = Indicators.newCountIndicator("pediLocatedInOtherRwandanDistrictsIndicator",pediLocatedInOtherRwandanDistricts,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsLocatedInOtherRwandanDistrictsIndicator = Indicators.newCountIndicator("adultsLocatedInOtherRwandanDistrictsIndicator",adultsLocatedInOtherRwandanDistricts,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator pediLocatedWithMissingIndicator = Indicators.newCountIndicator("pediLocatedWithMissingIndicator",pediwithMissingAddress,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsLocatedWithMissingIndicator = Indicators.newCountIndicator("adultsLocatedWithMissingIndicator",adultswithMissingAddress,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		CohortIndicator pedifromOutsideOfRwandaIndicator = Indicators.newCountIndicator("patientsfromOutsideOfRwandaIndicator",pedifromOutsideOfRwanda,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsfromOutsideOfRwandaIndicator = Indicators.newCountIndicator("patientsfromOutsideOfRwandaIndicator",adultsfromOutsideOfRwanda,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// ===========================================================================================
 		// //
@@ -961,15 +1035,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newCasespediWithHiVstatus.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newCasespediWithHiVstatus.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newCasespediWithHiVstatus
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newCasesunder15withintakeDemoform,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newCasespediWithHiVstatus.getSearches().put("2",
 				new Mapped<CohortDefinition>(patientswithHivStatus, null));
 		newCasespediWithHiVstatus.setCompositionString("1 AND 2");
@@ -980,15 +1052,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newCasesadultsWithHiVstatus.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newCasesadultsWithHiVstatus.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newCasesadultsWithHiVstatus
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newCasesOver15withintakeDemoform,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newCasesadultsWithHiVstatus.getSearches().put("2",
 				new Mapped<CohortDefinition>(patientswithHivStatus, null));
 		newCasesadultsWithHiVstatus.setCompositionString("1 AND 2");
@@ -1001,15 +1071,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newCasespediWithHiVPositivestatus.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newCasespediWithHiVPositivestatus.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newCasespediWithHiVPositivestatus
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newCasesunder15withintakeDemoform,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newCasespediWithHiVPositivestatus.getSearches().put("2",
 				new Mapped<CohortDefinition>(patientWithPosHivStatus, null));
 		newCasespediWithHiVPositivestatus.setCompositionString("1 AND 2");
@@ -1021,15 +1089,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newCasesadultsWithHiVPositivestatus.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newCasesadultsWithHiVPositivestatus.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newCasesadultsWithHiVPositivestatus
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newCasesOver15withintakeDemoform,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newCasesadultsWithHiVPositivestatus.getSearches().put("2",
 				new Mapped<CohortDefinition>(patientWithPosHivStatus, null));
 		newCasesadultsWithHiVPositivestatus.setCompositionString("1 AND 2");
@@ -1039,28 +1105,28 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newCasespediWithHiVstatusIndicator",
 						newCasespediWithHiVstatus,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newCasesadultsWithHiVstatusIndicator = Indicators
 				.newCountIndicator(
 						"newCasesadultsWithHiVstatusIndicator",
 						newCasesadultsWithHiVstatus,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newCasespediWithHiVPositivestatusIndicator = Indicators
 				.newCountIndicator(
 						"newCasespediWithHiVPositivestatusIndicator",
 						newCasespediWithHiVPositivestatus,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newCasesadultsWithHiVPositivestatusIndicator = Indicators
 				.newCountIndicator(
 						"newCasesadultsWithHiVPositivestatusIndicator",
 						newCasesadultsWithHiVPositivestatus,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// ===========================================================================================
 		// //
@@ -1073,9 +1139,9 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				.createEncounterBasedOnForms("patientWithClinicalIntakeForms",
 						onOrAfterOnOrBefore, clinicalIntakeForms);
 		InProgramCohortDefinition everEnrolleInOncologyProgram = Cohorts
-				.createInProgramParameterizableByDate(
-						"everEnrolleInOncologyProgram", oncologyProgram,
-						"onDate");
+				.createInProgramParameterizableByStartEndDate(
+						"everEnrolleInOncologyProgram", oncologyProgram);
+		
 		SqlCohortDefinition under15YrsAtEnrol = Cohorts
 				.createUnder15AtEnrollmentCohort("under15YrsAtEnrol",
 						oncologyProgram);
@@ -1153,13 +1219,11 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		pediAtIntakeInTheProgram.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		pediAtIntakeInTheProgram.addParameter(new Parameter("onDate", "onDate",
-				Date.class));
 		pediAtIntakeInTheProgram.getSearches().put(
 				"1",
 				new Mapped<CohortDefinition>(inOncologyProgram,
 						ParameterizableUtil
-								.createParameterMappings("onDate=${onDate}")));
+								.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		pediAtIntakeInTheProgram
 				.getSearches()
 				.put("2",
@@ -1173,77 +1237,34 @@ public class SetupOncologyQuarterlyIndicatorReport {
 
 		CompositionCohortDefinition adultsAtIntakeInTheProgram = new CompositionCohortDefinition();
 		adultsAtIntakeInTheProgram.setName("adultsAtIntakeInTheProgram");
-		adultsAtIntakeInTheProgram.addParameter(new Parameter("onOrAfter",
-				"onOrAfter", Date.class));
-		adultsAtIntakeInTheProgram.addParameter(new Parameter("onOrBefore",
-				"onOrBefore", Date.class));
-		adultsAtIntakeInTheProgram.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
-		adultsAtIntakeInTheProgram.getSearches().put(
-				"1",
-				new Mapped<CohortDefinition>(inOncologyProgram,
-						ParameterizableUtil
-								.createParameterMappings("onDate=${onDate}")));
-		adultsAtIntakeInTheProgram
-				.getSearches()
-				.put("2",
-						new Mapped<CohortDefinition>(
-								patientWithClinicalIntakeForm,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		adultsAtIntakeInTheProgram.getSearches().put("3",
-				new Mapped<CohortDefinition>(over15Cohort, null));
+		adultsAtIntakeInTheProgram.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		adultsAtIntakeInTheProgram.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		adultsAtIntakeInTheProgram.getSearches().put("1",new Mapped<CohortDefinition>(inOncologyProgram,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsAtIntakeInTheProgram.getSearches().put("2",new Mapped<CohortDefinition>(patientWithClinicalIntakeForm,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsAtIntakeInTheProgram.getSearches().put("3",new Mapped<CohortDefinition>(over15Cohort, null));
 		adultsAtIntakeInTheProgram.setCompositionString("1 AND 2 AND 3");
 
 		CompositionCohortDefinition newPediNotSuspectedCancerAtIntake = new CompositionCohortDefinition();
-		newPediNotSuspectedCancerAtIntake
-				.setName("newPediNotSuspectedCancerAtIntake");
-		newPediNotSuspectedCancerAtIntake.addParameter(new Parameter(
-				"onOrAfter", "onOrAfter", Date.class));
-		newPediNotSuspectedCancerAtIntake.addParameter(new Parameter(
-				"onOrBefore", "onOrBefore", Date.class));
-		newPediNotSuspectedCancerAtIntake.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
-		newPediNotSuspectedCancerAtIntake
-				.getSearches()
-				.put("1",
-						new Mapped<CohortDefinition>(
-								pediAtIntakeInTheProgram,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		newPediNotSuspectedCancerAtIntake
-				.getSearches()
-				.put("2",
-						new Mapped<CohortDefinition>(
-								notSuspectedstateOnOrBefore,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newPediNotSuspectedCancerAtIntake.setName("newPediNotSuspectedCancerAtIntake");
+		newPediNotSuspectedCancerAtIntake.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		newPediNotSuspectedCancerAtIntake.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		newPediNotSuspectedCancerAtIntake.getSearches().put("1",new Mapped<CohortDefinition>(pediAtIntakeInTheProgram,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newPediNotSuspectedCancerAtIntake.getSearches().put("2",new Mapped<CohortDefinition>(notSuspectedstateOnOrBefore,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediNotSuspectedCancerAtIntake.setCompositionString("1 AND 2 ");
 
 		// Adults
 		CompositionCohortDefinition newAdultsNotSuspectedCancerAtIntake = new CompositionCohortDefinition();
-		newAdultsNotSuspectedCancerAtIntake
-				.setName("newAdultsNotSuspectedCancerAtIntake");
-		newAdultsNotSuspectedCancerAtIntake.addParameter(new Parameter(
-				"onOrAfter", "onOrAfter", Date.class));
-		newAdultsNotSuspectedCancerAtIntake.addParameter(new Parameter(
-				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsNotSuspectedCancerAtIntake.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
-		newAdultsNotSuspectedCancerAtIntake
-				.getSearches()
-				.put("1",
-						new Mapped<CohortDefinition>(
-								adultsAtIntakeInTheProgram,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		newAdultsNotSuspectedCancerAtIntake
-				.getSearches()
-				.put("2",
-						new Mapped<CohortDefinition>(
-								notSuspectedstateOnOrBefore,
-								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newAdultsNotSuspectedCancerAtIntake.setName("newAdultsNotSuspectedCancerAtIntake");
+		newAdultsNotSuspectedCancerAtIntake.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		newAdultsNotSuspectedCancerAtIntake.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		newAdultsNotSuspectedCancerAtIntake.getSearches().put("1", new Mapped<CohortDefinition>(adultsAtIntakeInTheProgram,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		newAdultsNotSuspectedCancerAtIntake.getSearches().put("2",new Mapped<CohortDefinition>(notSuspectedstateOnOrBefore,
+				ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsNotSuspectedCancerAtIntake.setCompositionString("1 AND 2");
 
 		CohortIndicator newPediNotSuspectedCancerAtIntakeIndicator = Indicators
@@ -1251,14 +1272,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediNotSuspectedCancerAtIntakeIndicator",
 						newPediNotSuspectedCancerAtIntake,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsNotSuspectedCancerAtIntakeIndicator = Indicators
 				.newCountIndicator(
 						"newPediNotSuspectedCancerAtIntakeIndicator",
 						newAdultsNotSuspectedCancerAtIntake,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// =========================================================================//
 		// A3 Total # of new suspected cancer cases at intake in the last
@@ -1306,15 +1327,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newPediSuspectedCanceratIntakeCases.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediSuspectedCanceratIntakeCases.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newPediSuspectedCanceratIntakeCases
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								pediAtIntakeInTheProgram,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediSuspectedCanceratIntakeCases
 				.getSearches()
 				.put("2",
@@ -1331,15 +1350,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediSuspectedCancerAtIntake.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediSuspectedCancerAtIntake.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediSuspectedCancerAtIntake
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediSuspectedCancerAtIntake
 				.getSearches()
 				.put("2",
@@ -1356,15 +1373,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultSuspectedCancerAtIntakeCases.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultSuspectedCancerAtIntakeCases.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newAdultSuspectedCancerAtIntakeCases
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								adultsAtIntakeInTheProgram,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultSuspectedCancerAtIntakeCases
 				.getSearches()
 				.put("2",
@@ -1381,15 +1396,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newAdultSuspectedCancerAtIntake.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultSuspectedCancerAtIntake.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultSuspectedCancerAtIntake
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultSuspectedCancerAtIntake
 				.getSearches()
 				.put("2",
@@ -1404,13 +1417,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediSuspectedCancerAtIntakeIndicator",
 						newPediSuspectedCancerAtIntake,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		CohortIndicator newAdultSuspectedCancerAtIntakeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultSuspectedCancerAtIntakeIndicator",
 						newAdultSuspectedCancerAtIntake,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// Acute lymphoblastic leukemia
 		List<ProgramWorkflowState> acutelymphoblasticleukemiacancer = new ArrayList<ProgramWorkflowState>();
@@ -1426,15 +1439,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newPediWithAcutelymphoblasticleukemia.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithAcutelymphoblasticleukemia.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newPediWithAcutelymphoblasticleukemia
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithAcutelymphoblasticleukemia
 				.getSearches()
 				.put("2",
@@ -1452,15 +1463,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithAcutelymphoblasticleukemia.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithAcutelymphoblasticleukemia.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newAdultsWithAcutelymphoblasticleukemia
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithAcutelymphoblasticleukemia
 				.getSearches()
 				.put("2",
@@ -1476,14 +1485,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithAcutelymphoblasticleukemiaIndicator",
 						newPediWithAcutelymphoblasticleukemia,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithAcutelymphoblasticleukemiaIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithAcutelymphoblasticleukemiaIndicator",
 						newAdultsWithAcutelymphoblasticleukemia,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Breast Cancer
 		List<ProgramWorkflowState> breastcancertype = new ArrayList<ProgramWorkflowState>();
 		breastcancertype.add(breastCancer);
@@ -1497,15 +1506,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithbreastcancertype.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediWithbreastcancertype.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithbreastcancertype
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithbreastcancertype
 				.getSearches()
 				.put("2",
@@ -1521,15 +1528,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newAdultsWithbreastcancertype.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newAdultsWithbreastcancertype.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithbreastcancertype
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithbreastcancertype
 				.getSearches()
 				.put("2",
@@ -1544,14 +1549,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithbreastcancertypeIndicator",
 						newPediWithbreastcancertype,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithbreastcancertypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithbreastcancertypeIndicator",
 						newAdultsWithbreastcancertype,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Burkitt's lymphoma
 		List<ProgramWorkflowState> burkitlymphomacancer = new ArrayList<ProgramWorkflowState>();
 		burkitlymphomacancer.add(burkittLymphoma);
@@ -1566,15 +1571,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithburkitlymphomacancer.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithburkitlymphomacancer.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithburkitlymphomacancer
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithburkitlymphomacancer
 				.getSearches()
 				.put("2",
@@ -1591,15 +1594,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithburkitlymphomacancer.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithburkitlymphomacancer.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithburkitlymphomacancer
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithburkitlymphomacancer
 				.getSearches()
 				.put("2",
@@ -1614,14 +1615,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithburkitlymphomacancerIndicator",
 						newPediWithburkitlymphomacancer,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithburkitlymphomacancerIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithburkitlymphomacancerIndicator",
 						newAdultsWithburkitlymphomacancer,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Cancer unknown type
 		List<ProgramWorkflowState> cancerunknowntypeC = new ArrayList<ProgramWorkflowState>();
 		cancerunknowntypeC.add(cancerunkowntype);
@@ -1635,15 +1636,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithcancerunknowntypeC.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediWithcancerunknowntypeC.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithcancerunknowntypeC
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithcancerunknowntypeC
 				.getSearches()
 				.put("2",
@@ -1660,15 +1659,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newAdultsWithcancerunknowntypeC.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithcancerunknowntypeC.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithcancerunknowntypeC
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithcancerunknowntypeC
 				.getSearches()
 				.put("2",
@@ -1683,14 +1680,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithcancerunknowntypeCIndicator",
 						newPediWithcancerunknowntypeC,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithcancerunknowntypeCIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithcancerunknowntypeCIndicator",
 						newAdultsWithcancerunknowntypeC,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Cervical cancer
 		List<ProgramWorkflowState> cervicalCancerType = new ArrayList<ProgramWorkflowState>();
 		cervicalCancerType.add(cervicalcancer);
@@ -1704,15 +1701,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithcervicalCancerType.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediWithcervicalCancerType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithcervicalCancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithcervicalCancerType
 				.getSearches()
 				.put("2",
@@ -1729,15 +1724,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newAdultsWithcervicalCancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithcervicalCancerType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithcervicalCancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithcervicalCancerType
 				.getSearches()
 				.put("2",
@@ -1752,14 +1745,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithcervicalCancerTypeIndicator",
 						newPediWithcervicalCancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithcervicalCancerTypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithcervicalCancerTypeIndicator",
 						newAdultsWithcervicalCancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Chronic Myelogenous leukemia
 		List<ProgramWorkflowState> chronicmyelogousleukemiac = new ArrayList<ProgramWorkflowState>();
 		chronicmyelogousleukemiac.add(chronicmyelogenousleukemia);
@@ -1775,15 +1768,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newPediWithchronicmyelogousleukemiac.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithchronicmyelogousleukemiac.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newPediWithchronicmyelogousleukemiac
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithchronicmyelogousleukemiac
 				.getSearches()
 				.put("2",
@@ -1800,15 +1791,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithchronicmyelogousleukemiac.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithchronicmyelogousleukemiac.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newAdultsWithchronicmyelogousleukemiac
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithchronicmyelogousleukemiac
 				.getSearches()
 				.put("2",
@@ -1823,14 +1812,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithchronicmyelogousleukemiacIndicator",
 						newPediWithchronicmyelogousleukemiac,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithchronicmyelogousleukemiacIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithchronicmyelogousleukemiacIndicator",
 						newAdultsWithchronicmyelogousleukemiac,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Colo-rectal cancer
 		List<ProgramWorkflowState> colorectalcancerType = new ArrayList<ProgramWorkflowState>();
 		colorectalcancerType.add(colorectalcancer);
@@ -1845,15 +1834,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithcolorectalcancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithcolorectalcancerType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithcolorectalcancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithcolorectalcancerType
 				.getSearches()
 				.put("2",
@@ -1870,15 +1857,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithcolorectalcancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithcolorectalcancerType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithcolorectalcancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithcolorectalcancerType
 				.getSearches()
 				.put("2",
@@ -1893,14 +1878,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithcolorectalcancerTypeIndicator",
 						newPediWithcolorectalcancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithcolorectalcancerTypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithcolorectalcancerTypeIndicator",
 						newAdultsWithcolorectalcancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Head and neck cancer
 		List<ProgramWorkflowState> headandneckcancertype = new ArrayList<ProgramWorkflowState>();
 		headandneckcancertype.add(headandneckcancer);
@@ -1915,15 +1900,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newPediWithheadandneckcancertype.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithheadandneckcancertype.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithheadandneckcancertype
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithheadandneckcancertype
 				.getSearches()
 				.put("2",
@@ -1940,15 +1923,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithheadandneckcancertype.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithheadandneckcancertype.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithheadandneckcancertype
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithheadandneckcancertype
 				.getSearches()
 				.put("2",
@@ -1963,14 +1944,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithheadandneckcancertypeIndicator",
 						newPediWithheadandneckcancertype,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithheadandneckcancertypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithheadandneckcancertypeIndicator",
 						newAdultsWithheadandneckcancertype,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Hodgkin's lymphoma
 		List<ProgramWorkflowState> hodkinlymphomacancer = new ArrayList<ProgramWorkflowState>();
 		hodkinlymphomacancer.add(hodgkinslymphoma);
@@ -1985,15 +1966,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithhodkinlymphomacancer.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithhodkinlymphomacancer.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithhodkinlymphomacancer
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithhodkinlymphomacancer
 				.getSearches()
 				.put("2",
@@ -2010,15 +1989,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithhodkinlymphomacancer.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithhodkinlymphomacancer.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithhodkinlymphomacancer
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithhodkinlymphomacancer
 				.getSearches()
 				.put("2",
@@ -2033,14 +2010,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithhodkinlymphomacancerIndicator",
 						newPediWithhodkinlymphomacancer,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithhodkinlymphomacancerIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithhodkinlymphomacancerIndicator",
 						newAdultsWithhodkinlymphomacancer,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Karposi's sarcoma
 		List<ProgramWorkflowState> karposysarcomaType = new ArrayList<ProgramWorkflowState>();
 		karposysarcomaType.add(karposisarcoma);
@@ -2054,15 +2031,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithkarposysarcomaType.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediWithkarposysarcomaType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithkarposysarcomaType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithkarposysarcomaType
 				.getSearches()
 				.put("2",
@@ -2079,15 +2054,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newAdultsWithkarposysarcomaType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithkarposysarcomaType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithkarposysarcomaType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithkarposysarcomaType
 				.getSearches()
 				.put("2",
@@ -2102,14 +2075,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithkarposysarcomaTypeIndicator",
 						newPediWithkarposysarcomaType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithkarposysarcomaTypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithkarposysarcomaTypeIndicator",
 						newAdultsWithkarposysarcomaType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Large B-cell lymphoma
 		List<ProgramWorkflowState> largebcellLymphomaCancerType = new ArrayList<ProgramWorkflowState>();
 		largebcellLymphomaCancerType.add(largebcelllymphoma);
@@ -2125,15 +2098,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newPediWithlargebcellLymphomaCancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithlargebcellLymphomaCancerType.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newPediWithlargebcellLymphomaCancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithlargebcellLymphomaCancerType
 				.getSearches()
 				.put("2",
@@ -2151,15 +2122,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithlargebcellLymphomaCancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithlargebcellLymphomaCancerType.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newAdultsWithlargebcellLymphomaCancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithlargebcellLymphomaCancerType
 				.getSearches()
 				.put("2",
@@ -2175,14 +2144,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithlargebcellLymphomaCancerTypeIndicator",
 						newPediWithlargebcellLymphomaCancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithlargebcellLymphomaCancerTypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithlargebcellLymphomaCancerTypeIndicator",
 						newAdultsWithlargebcellLymphomaCancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Lung cancer diagnosis
 		List<ProgramWorkflowState> lungdiagnosistype = new ArrayList<ProgramWorkflowState>();
 		lungdiagnosistype.add(lungcancerdiagnosis);
@@ -2196,15 +2165,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithlungdiagnosistype.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediWithlungdiagnosistype.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithlungdiagnosistype
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithlungdiagnosistype
 				.getSearches()
 				.put("2",
@@ -2221,15 +2188,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newAdultsWithlungdiagnosistype.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newAdultsWithlungdiagnosistype.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithlungdiagnosistype
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithlungdiagnosistype
 				.getSearches()
 				.put("2",
@@ -2244,14 +2209,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithlungdiagnosistypeIndicator",
 						newPediWithlungdiagnosistype,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithlungdiagnosistypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithlungdiagnosistypeIndicator",
 						newAdultsWithlungdiagnosistype,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Metastatic cancer
 		List<ProgramWorkflowState> metastaticcancerType = new ArrayList<ProgramWorkflowState>();
 		metastaticcancerType.add(metastaticcancer);
@@ -2266,15 +2231,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newPediWithWithmetastaticcancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithWithmetastaticcancerType.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newPediWithWithmetastaticcancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithWithmetastaticcancerType
 				.getSearches()
 				.put("2",
@@ -2291,15 +2254,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithWithmetastaticcancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithWithmetastaticcancerType.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newAdultsWithWithmetastaticcancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithWithmetastaticcancerType
 				.getSearches()
 				.put("2",
@@ -2314,14 +2275,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithWithmetastaticcancerTypeIndicator",
 						newPediWithWithmetastaticcancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithWithmetastaticcancerTypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithWithmetastaticcancerTypeIndicator",
 						newAdultsWithWithmetastaticcancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Multiple myeloma
 		List<ProgramWorkflowState> multiplemyelomaType = new ArrayList<ProgramWorkflowState>();
 		multiplemyelomaType.add(multiplemyeloma);
@@ -2336,15 +2297,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithmultiplemyelomaType.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediWithmultiplemyelomaType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithmultiplemyelomaType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithmultiplemyelomaType
 				.getSearches()
 				.put("2",
@@ -2361,15 +2320,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithmultiplemyelomaType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithmultiplemyelomaType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithmultiplemyelomaType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithmultiplemyelomaType
 				.getSearches()
 				.put("2",
@@ -2384,14 +2341,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithmultiplemyelomaTypeIndicator",
 						newPediWithmultiplemyelomaType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithmultiplemyelomaTypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithmultiplemyelomaTypeIndicator",
 						newAdultsWithmultiplemyelomaType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Nephroblastoma
 		List<ProgramWorkflowState> neurobblastomaType = new ArrayList<ProgramWorkflowState>();
 		neurobblastomaType.add(neuphroblastoma);
@@ -2405,15 +2362,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithneurobblastomaType.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediWithneurobblastomaType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithneurobblastomaType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithneurobblastomaType
 				.getSearches()
 				.put("2",
@@ -2430,15 +2385,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newAdultsWithneurobblastomaType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithneurobblastomaType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithneurobblastomaType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithneurobblastomaType
 				.getSearches()
 				.put("2",
@@ -2453,14 +2406,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithneurobblastomaTypeIndicator",
 						newPediWithneurobblastomaType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithneurobblastomaTypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithneurobblastomaTypeIndicator",
 						newAdultsWithneurobblastomaType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Other liquid cancer
 		List<ProgramWorkflowState> otherLiquidcancer = new ArrayList<ProgramWorkflowState>();
 		otherLiquidcancer.add(otherliquidcancer);
@@ -2474,15 +2427,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithotherLiquidcancer.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediWithotherLiquidcancer.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithotherLiquidcancer
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithotherLiquidcancer
 				.getSearches()
 				.put("2",
@@ -2499,15 +2450,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newAdultsWithotherLiquidcancer.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newAdultsWithotherLiquidcancer.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithotherLiquidcancer
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithotherLiquidcancer
 				.getSearches()
 				.put("2",
@@ -2522,14 +2471,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithotherLiquidcancerIndicator",
 						newPediWithotherLiquidcancer,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithotherLiquidcancerIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithotherLiquidcancerIndicator",
 						newAdultsWithotherLiquidcancer,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Other non Hodgkin's lymphoma
 		List<ProgramWorkflowState> othernonHodkindLymphomaType = new ArrayList<ProgramWorkflowState>();
 		othernonHodkindLymphomaType.add(othernonhodkinslymphoma);
@@ -2544,15 +2493,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newPediWithothernonHodkindLymphomaType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithothernonHodkindLymphomaType.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newPediWithothernonHodkindLymphomaType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithothernonHodkindLymphomaType
 				.getSearches()
 				.put("2",
@@ -2569,15 +2516,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithothernonHodkindLymphomaType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithothernonHodkindLymphomaType.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newAdultsWithothernonHodkindLymphomaType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithothernonHodkindLymphomaType
 				.getSearches()
 				.put("2",
@@ -2593,14 +2538,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithothernonHodkindLymphomaTypeIndicator",
 						newPediWithothernonHodkindLymphomaType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithothernonHodkindLymphomaTypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithothernonHodkindLymphomaTypeIndicator",
 						newAdultsWithothernonHodkindLymphomaType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Other solid cancer
 		List<ProgramWorkflowState> othersolidcancerType = new ArrayList<ProgramWorkflowState>();
 		othersolidcancerType.add(othersolidcancer);
@@ -2615,15 +2560,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newPediWithotherLiquidcancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithotherLiquidcancerType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithotherLiquidcancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithotherLiquidcancerType
 				.getSearches()
 				.put("2",
@@ -2640,15 +2583,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithotherLiquidcancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithotherLiquidcancerType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithotherLiquidcancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithotherLiquidcancerType
 				.getSearches()
 				.put("2",
@@ -2663,14 +2604,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithotherLiquidcancerTypeeIndicator",
 						newPediWithotherLiquidcancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithotherLiquidcancerTypeeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithotherLiquidcancerTypeeIndicator",
 						newAdultsWithotherLiquidcancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 		// Prostate cancer
 		List<ProgramWorkflowState> prostatecancerType = new ArrayList<ProgramWorkflowState>();
 		prostatecancerType.add(prostatecancer);
@@ -2684,15 +2625,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newPediWithprostatecancerType.addParameter(new Parameter("onOrBefore",
 				"onOrBefore", Date.class));
-		newPediWithprostatecancerType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newPediWithprostatecancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithprostatecancerType
 				.getSearches()
 				.put("2",
@@ -2709,15 +2648,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", Date.class));
 		newAdultsWithprostatecancerType.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithprostatecancerType.addParameter(new Parameter("onDate",
-				"onDate", Date.class));
 		newAdultsWithprostatecancerType
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithprostatecancerType
 				.getSearches()
 				.put("2",
@@ -2732,14 +2669,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithprostatecancerTypeIndicator",
 						newPediWithprostatecancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithprostatecancerTypeIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithprostatecancerTypeIndicator",
 						newAdultsWithprostatecancerType,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// stomach cancer
 		List<ProgramWorkflowState> stomachcancerType = new ArrayList<ProgramWorkflowState>();
@@ -2755,15 +2692,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newPediWithpatientsWithstomachcancer.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newPediWithpatientsWithstomachcancer.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newPediWithpatientsWithstomachcancer
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newPediSuspectedCanceratIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newPediWithpatientsWithstomachcancer
 				.getSearches()
 				.put("2",
@@ -2780,15 +2715,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				"onOrAfter", "onOrAfter", Date.class));
 		newAdultsWithpatientsWithstomachcancer.addParameter(new Parameter(
 				"onOrBefore", "onOrBefore", Date.class));
-		newAdultsWithpatientsWithstomachcancer.addParameter(new Parameter(
-				"onDate", "onDate", Date.class));
 		newAdultsWithpatientsWithstomachcancer
 				.getSearches()
 				.put("1",
 						new Mapped<CohortDefinition>(
 								newAdultSuspectedCancerAtIntakeCases,
 								ParameterizableUtil
-										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
+										.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		newAdultsWithpatientsWithstomachcancer
 				.getSearches()
 				.put("2",
@@ -2803,52 +2736,79 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						"newPediWithpatientsWithstomachcancerIndicator",
 						newPediWithpatientsWithstomachcancer,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator newAdultsWithpatientsWithstomachcancerIndicator = Indicators
 				.newCountIndicator(
 						"newAdultsWithpatientsWithstomachcancerIndicator",
 						newAdultsWithpatientsWithstomachcancer,
 						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// ====================================================//
 		// A6 Total # of clinic visits in the last quarter */
 		// ===================================================//
 		EncounterCohortDefinition patientWithOncologyOutpatientEnc = Cohorts.createEncounterBasedOnForms("patientWithOncologyOutpatientEnc",onOrAfterOnOrBefore,intakeoutpatientclinicvisitflowform);
-		CodedObsCohortDefinition patientswithunscheduledvisit =Cohorts.createCodedObsCohortDefinition("patientswithunscheduledvisite",onOrAfterOnOrBefore, visitType, null, SetComparator.IN,TimeModifier.LAST);
-		CodedObsCohortDefinition patientswithunscheduledvisittype =Cohorts.createCodedObsCohortDefinition("patientswithunscheduledvisittype",onOrAfterOnOrBefore, visitType, unscheduledVisitType, SetComparator.IN,TimeModifier.LAST);
+		CodedObsCohortDefinition patientswithClinicvisit =Cohorts.createCodedObsCohortDefinition("patientswithClinicvisit",onOrAfterOnOrBefore, visitType, null, SetComparator.IN,TimeModifier.LAST);
+		CodedObsCohortDefinition patientswithUnscheduledvisit =Cohorts.createCodedObsCohortDefinition("patientswithUnscheduledvisit",onOrAfterOnOrBefore, visitType, unscheduledVisitType, SetComparator.IN,TimeModifier.LAST);
   
-		CompositionCohortDefinition patientsWithclinicVisits = new CompositionCohortDefinition();
-		patientsWithclinicVisits.setName("patientsWithclinicVisits");
-		patientsWithclinicVisits.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
-		patientsWithclinicVisits.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		patientsWithclinicVisits.addParameter(new Parameter("onDate","onDate", Date.class));
-		patientsWithclinicVisits.getSearches().put("1",new Mapped<CohortDefinition>(inOncologyProgram,
-			ParameterizableUtil.createParameterMappings("onDate=${onDate}")));
-		patientsWithclinicVisits.getSearches().put("2",new Mapped<CohortDefinition>(patientWithOncologyOutpatientEnc,
+		CompositionCohortDefinition pediWithclinicVisits = new CompositionCohortDefinition();
+		pediWithclinicVisits.setName("pediWithclinicVisits");
+		pediWithclinicVisits.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		pediWithclinicVisits.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		pediWithclinicVisits.getSearches().put("1",new Mapped<CohortDefinition>(inOncologyProgram,
 			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		patientsWithclinicVisits.getSearches().put("3",new Mapped<CohortDefinition>(patientswithunscheduledvisit,
+		pediWithclinicVisits.getSearches().put("2",new Mapped<CohortDefinition>(patientWithOncologyOutpatientEnc,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pediWithclinicVisits.getSearches().put("3",new Mapped<CohortDefinition>(patientswithClinicvisit,
 		    ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		patientsWithclinicVisits.getSearches().put("3",new Mapped<CohortDefinition>(under15Cohort, null));
-		patientsWithclinicVisits.setCompositionString("1 AND 2 AND 3");
+		pediWithclinicVisits.getSearches().put("3",new Mapped<CohortDefinition>(under15Cohort, null));
+		pediWithclinicVisits.setCompositionString("1 AND 2 AND 3");
+		
+		CompositionCohortDefinition adultsWithclinicVisits = new CompositionCohortDefinition();
+		adultsWithclinicVisits.setName("adultsWithclinicVisits");
+		adultsWithclinicVisits.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		adultsWithclinicVisits.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		adultsWithclinicVisits.getSearches().put("1",new Mapped<CohortDefinition>(inOncologyProgram,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsWithclinicVisits.getSearches().put("2",new Mapped<CohortDefinition>(patientWithOncologyOutpatientEnc,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsWithclinicVisits.getSearches().put("3",new Mapped<CohortDefinition>(patientswithClinicvisit,
+		    ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultsWithclinicVisits.getSearches().put("3",new Mapped<CohortDefinition>(over15Cohort, null));
+		adultsWithclinicVisits.setCompositionString("1 AND 2 AND 3");
 
 		CompositionCohortDefinition pedipatientwithUnscheduledVisit= new CompositionCohortDefinition();
 		pedipatientwithUnscheduledVisit.setName("pedipatientwithUnscheduledVisit");
 		pedipatientwithUnscheduledVisit.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
 		pedipatientwithUnscheduledVisit.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
-		pedipatientwithUnscheduledVisit.addParameter(new Parameter("onDate","onDate", Date.class));
-		pedipatientwithUnscheduledVisit.getSearches().put("1",new Mapped<CohortDefinition>(patientsWithclinicVisits,
-			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},onDate=${onDate}")));
-		pedipatientwithUnscheduledVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientswithunscheduledvisittype,
+		pedipatientwithUnscheduledVisit.getSearches().put("1",new Mapped<CohortDefinition>(pediWithclinicVisits,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		pedipatientwithUnscheduledVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientswithUnscheduledvisit,
 		   ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		pedipatientwithUnscheduledVisit.setCompositionString("1 AND 2");
+		
+		CompositionCohortDefinition adultspatientwithUnscheduledVisit= new CompositionCohortDefinition();
+		adultspatientwithUnscheduledVisit.setName("adultspatientwithUnscheduledVisit");
+		adultspatientwithUnscheduledVisit.addParameter(new Parameter("onOrAfter","onOrAfter", Date.class));
+		adultspatientwithUnscheduledVisit.addParameter(new Parameter("onOrBefore","onOrBefore", Date.class));
+		adultspatientwithUnscheduledVisit.getSearches().put("1",new Mapped<CohortDefinition>(adultsWithclinicVisits,
+			ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultspatientwithUnscheduledVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientswithUnscheduledvisit,
+		   ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+		adultspatientwithUnscheduledVisit.setCompositionString("1 AND 2");
 
-		//CohortIndicator patientsWithclinicVisitsIndicator = Indicators.newCountIndicator("patientsWithclinicVisitsIndicator",
-				//patientsWithclinicVisits,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+		CohortIndicator pediWithclinicVisitsIndicator = Indicators.newCountIndicator("pediWithclinicVisitsIndicator",
+				pediWithclinicVisits,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultsWithclinicVisitsIndicator = Indicators.newCountIndicator("adultsWithclinicVisitsIndicator",
+				adultsWithclinicVisits,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		CohortIndicator pedipatientwithUnscheduledVisitIndicator = Indicators.newCountIndicator("pedipatientwithUnscheduledVisitIndicator",
-				pedipatientwithUnscheduledVisit,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${startDate},onDate=${endDate}"));
+				pedipatientwithUnscheduledVisit,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+		
+		CohortIndicator adultspatientwithUnscheduledVisitIndicator = Indicators.newCountIndicator("adultspatientwithUnscheduledVisitIndicator",
+				adultspatientwithUnscheduledVisit,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		// =======================================================================================//
 		// A14 Total # of patients exited for palliation-only care within the
@@ -3095,22 +3055,16 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						ParameterizableUtil
 								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
 				"");
-		dsd.addColumn(
-				"D5Q1A",
-				"% of new cases peds recommended for socioeconomic assistance at intake",
-				new Mapped(
-						newCasesocioeconomicrecUnder15Indicator,
-						ParameterizableUtil
-								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
-				"");
-		dsd.addColumn(
-				"D5Q1C",
-				"% of new cases adults recommended for socioeconomic assistance at intake",
-				new Mapped(
-						newCasessocioeconomicrecOver15Indicator,
-						ParameterizableUtil
-								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
-				"");
+		dsd.addColumn("D5Q1A","% of new cases peds recommended for socioeconomic assistance at intake",new Mapped(pediWithsocioeconomicrecomendationIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D5Q1C","% of new cases adults recommended for socioeconomic assistance at intake",new Mapped(adultsWithSocioassistanceRecIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		
+		dsd.addColumn("D5Q2A","% of ped new cases with missing socioeconomic assistance recommendation ",new Mapped(pediWithMissingsocioeconomicrecIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D5Q2C","% of adults new cases with missing socioeconomic assistance recommendation",new Mapped(adultsWithMissingSocioassistanceRecIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		
 		dsd.addColumn("D6Q1A","% pedi breakdown of new cases with Health Center at intake",new Mapped(pedPatientsreferredForHCIndicator,
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
 		dsd.addColumn("D6Q1C","% adults breakdown of new cases with Health Center as referral facility type  at intake",new Mapped (adultsPatientsreferredForHCIndicator,
@@ -3136,63 +3090,60 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		dsd.addColumn("D6Q6C","% adults breakdown of new cases with missig references at intake",new Mapped(adultsWithMissingReferencesIndi,
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
 		
-		dsd.addColumn("D7Q1A","% of new referral cases inside Intake district",new Mapped(referredinsideRwandanDistrictIndi,
+		dsd.addColumn("D7Q1A","% of pedi new referral cases inside Intake district",new Mapped(pedireferredinsideRwandanDistrictIndi,
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
-		dsd.addColumn("D7Q2A","% of new referral cases outside Intake district",new Mapped(referredoutsideIntakedistrictInRwandaIndi,
+		dsd.addColumn("D7Q1C","% of adults new referral cases inside Intake district",new Mapped(adultsrefferedinsideRwandaDistrictInd,
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
-		dsd.addColumn("D7Q3A","% of new referral cases referred from outside of Rwanda ",new Mapped(referredOutsideOfRwandaIndicator,
+		dsd.addColumn("D7Q2A","% of pedi new referral cases outside Intake district",new Mapped(pedireferredoutsideIntakedistrictInRwandaIndi,
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
-		
-		dsd.addColumn("D7Q1C","% of total new referral cases referred",new Mapped(pedinewCasesThatareReferredIndicator,
+		dsd.addColumn("D7Q2C","% of adults new referral cases outside Intake district",new Mapped(adultsreferredoutsideIntakedistrictInRwandaIndi,
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
-		
-		
-		dsd.addColumn(
-				"D8Q1A",
-				"% breakdown of Kayonza new cases home district at intake",
-				new Mapped(
-						patientsLocatedInKayonzaDistrictIndi,
-						ParameterizableUtil
-								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
-				"");
-		dsd.addColumn(
-				"D8Q2A",
-				"% breakdown of Burera new cases home district at intake",
-				new Mapped(
-						patientsLocatedInBureraDistrictInd,
-						ParameterizableUtil
-								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
-				"");
-		dsd.addColumn(
-				"D8Q3A",
-				"% breakdown of Kirehe new cases home district at intake",
-				new Mapped(
-						patientsLocatedInKireheDistrictIndicator,
-						ParameterizableUtil
-								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
-				"");
-		dsd.addColumn(
-				"D8Q4A",
-				"% breakdown of Kigali new cases home district at intake",
-				new Mapped(
-						patientsLocatedInKigaliDistrictIndicator,
-						ParameterizableUtil
-								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
-				"");
-		dsd.addColumn(
-				"D8Q5A",
-				"% breakdown of other rwandan districts new cases home district at intake",
-				new Mapped(
-						patientsLocatedInOtherRwandanDistrictsIndicator,
-						ParameterizableUtil
-								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
-				"");
-		
-		dsd.addColumn("D8Q6A","% breakdown of new cases' owith missing address at intake",new Mapped(patientsLocatedWithMissingIndicator,
+		dsd.addColumn("D7Q3A","% of pedi new referral cases referred from outside of Rwanda ",new Mapped(pedireferredOutsideOfRwandaIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D7Q3C","% of adults new referral cases referred from outside of Rwanda ",new Mapped(adultsreferredOutsideOfRwandaIndicator,
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
 		
-		dsd.addColumn("D8Q7A","% breakdown of new cases' outside of Rwandan home district at intake",new Mapped(patientsfromOutsideOfRwandaIndicator,
+		dsd.addColumn("D7QA","% of total pedi new referral cases referred",new Mapped(totalpedinewCasesThatareReferredIndicators,
+                ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D7QC","% of total adults new referral cases referred",new Mapped(totaladultsnewCasesThatareReferredIndicators,
+                ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		
+		dsd.addColumn("D8Q1A","% breakdown of Kayonza new pedi cases home district at intake",new Mapped(pediLocatedInKayonzaDistrictIndi,
 						ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D8Q1C","% breakdown of Kayonza new adults cases home district at intake",new Mapped(adultsLocatedInKayonzaDistrictIndi,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		
+		dsd.addColumn("D8Q2A","% breakdown of Burera new cases home district at intake",new Mapped(pediLocatedInBureraDistrictIndi,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D8Q2C","% breakdown of Burera new cases home district at intake",new Mapped(adultsLocatedInBureraDistrictIndi,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		
+		dsd.addColumn("D8Q3A","% breakdown of Kirehe new pedi cases home district at intake",new Mapped(pediLocatedInKireheDistrictIndicator,
+						ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D8Q3C","% breakdown of Kirehe new adults cases home district at intake",new Mapped(adultsLocatedInKireheDistrictIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D8Q4A","% breakdown of Kigali new pedi cases home district at intake",new Mapped(pediLocatedInKigaliDistrictIndicator,
+						ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D8Q4C","% breakdown of Kigali new adults cases home district at intake",new Mapped(adultsLocatedInKigaliDistrictIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		
+		dsd.addColumn("D8Q5A","% breakdown of other rwandan districts new pedi cases home district at intake",new Mapped(pediLocatedInOtherRwandanDistrictsIndicator,
+						ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		
+		dsd.addColumn("D8Q5C","% breakdown of other rwandan districts new adults cases home district at intake",new Mapped(adultsLocatedInOtherRwandanDistrictsIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+
+		
+		dsd.addColumn("D8Q6A","% breakdown of new pedi cases with missing address at intake",new Mapped(pediLocatedWithMissingIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D8Q6C","% breakdown of new adults cases with missing address at intake",new Mapped(adultsLocatedWithMissingIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		
+		dsd.addColumn("D8Q7A","% breakdown of new pedi cases outside of Rwandan home district at intake",new Mapped(pedifromOutsideOfRwandaIndicator,
+						ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("D8Q7C","% breakdown of new adults cases outside of Rwandan home district at intake",new Mapped(adultsfromOutsideOfRwandaIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+
 		
 		
 		dsd.addColumn(
@@ -3594,16 +3545,14 @@ public class SetupOncologyQuarterlyIndicatorReport {
 						ParameterizableUtil
 								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
 				"");
-		dsd.addColumn("A6Q1A","Total # of pedi clinic visits in the last quarter",new Mapped(pedipatientwithUnscheduledVisitIndicator,
+		dsd.addColumn("A6Q1A","Total # of pedi clinic visits in the last quarter",new Mapped(pediWithclinicVisitsIndicator,
 						ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
-		/*dsd.addColumn(
-				"A6Q1C",
-				"Total # of adults clinic visits in the last quarter",
-				new Mapped(
-						adultspatientwithclinicalVisitIndicator,
-						ParameterizableUtil
-								.createParameterMappings("startDate=${startDate},endDate=${endDate}")),
-				"");*/
+		dsd.addColumn("A6Q1C","Total # of adults clinic visits in the last quarter",new Mapped(adultsWithclinicVisitsIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("A6Q2A","Total # of pedi unscheduled clinic visits in the last quarter",new Mapped(pedipatientwithUnscheduledVisitIndicator,
+						ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
+		dsd.addColumn("A6Q2C","Total # of adults unscheduled clinic visits in the last quarter",new Mapped(adultspatientwithUnscheduledVisitIndicator,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")),"");
 		dsd.addColumn(
 				"A14Q1A",
 				"Total # of pedi patients exited for palliation-only care within the reporting period",
@@ -3733,18 +3682,23 @@ public class SetupOncologyQuarterlyIndicatorReport {
 				GlobalPropertiesManagement.DIAGNOSIS_WORKFLOW,
 				GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 
-		demographicform = gp
-				.getForm(GlobalPropertiesManagement.ONCOLOGY_DEMO_FORM);
-		inpatientOncForm = gp
-				.getForm(GlobalPropertiesManagement.ONCOLOGY_INTAKE_INPATIENT_FORM);
-		outpatientOncForm = gp
-				.getForm(GlobalPropertiesManagement.ONCOLOGY_INTAKE_OUTPATIENT_FORM);
-		outpatientclinicvisitform = gp
-				.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_FORM);
+		demographicform = gp.getForm(GlobalPropertiesManagement.ONCOLOGY_DEMO_FORM);
+		changeinDemographicForm=gp.getForm(GlobalPropertiesManagement.ONCOLOGY_CHANGE_IN_DEMO);
+		
+		inpatientOncForm = gp.getForm(GlobalPropertiesManagement.ONCOLOGY_INTAKE_INPATIENT_FORM);
+		outpatientOncForm = gp.getForm(GlobalPropertiesManagement.ONCOLOGY_INTAKE_OUTPATIENT_FORM);
+		outpatientclinicvisitform = gp.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_FORM);
 		exitform = gp.getForm(GlobalPropertiesManagement.ONCOLOGY_EXIT_FORM);
+		
 		demographicsAndClinicalforms.add(demographicform);
 		demographicsAndClinicalforms.add(inpatientOncForm);
 		demographicsAndClinicalforms.add(outpatientOncForm);
+		
+		demographicsForms.add(demographicform);
+		demographicsForms.add(changeinDemographicForm);
+		
+		onlydemographicsForm.add(demographicform);
+		
 		intakeoutpatientclinicvisitflowform.add(outpatientclinicvisitform);
 		clinicalIntakeForms.add(inpatientOncForm);
 		clinicalIntakeForms.add(outpatientOncForm);

@@ -800,6 +800,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String ONCOLOGY_DEMO_FORM = "reports.OncoDemoForm";
 	
+	public final static String ONCOLOGY_CHANGE_IN_DEMO="reports.oncochangeInDemo";
+	
 	public final static String ONCOLOGY_INTAKE_INPATIENT_FORM = "reports.OncoIntakeInPatientForm";
 	
 	public final static String ONCOLOGY_INTAKE_OUTPATIENT_FORM = "reports.OncoIntakeOutPatientForm";
