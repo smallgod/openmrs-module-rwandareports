@@ -1047,17 +1047,15 @@ public class Cohorts {
 	
 	public static SqlCohortDefinition getPatientWithStructuredDistrict(String name, String districtname){
 		 SqlCohortDefinition query=new SqlCohortDefinition(
-			"select DISTINCT (p.patient_id) FROM patient p, person_address pa WHERE p.patient_id=pa.person_id AND p.voided=0 AND pa.state_province is not NULL " +
-			"AND pa.county_district='"+districtname+"' " +
-			"AND pa.preferred=1 AND pa.city_village is not NULL AND pa.address3 is not NULL and pa.address1 is not NULL");
+			"select DISTINCT (p.patient_id) FROM patient p, person_address pa WHERE p.patient_id=pa.person_id AND p.voided=0 and pa.voided=0 " +
+			"AND pa.county_district='"+districtname+"' AND pa.preferred=1");
 		return query;
 	}
 	 
 	 public static SqlCohortDefinition getPatientWithunStructuredDistrict(String name){
 		 SqlCohortDefinition query=new SqlCohortDefinition(
 			"select DISTINCT(p.patient_id) FROM patient p,person_address pa WHERE p.patient_id=pa.person_id AND pa.preferred=1 AND p.voided=0 " +
-			"AND (pa.state_province is NULL OR pa.county_district is NULL OR pa.city_village is NULL OR pa.address3 is NULL OR pa.address1 is NULL " +
-			"OR pa.state_province='' OR pa.county_district='' OR pa.address3 is NULL OR pa.address1='' )");
+			"AND ( pa.voided=1 OR pa.county_district='' ) ");
 		return query;
 	}
 	 

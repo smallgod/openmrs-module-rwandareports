@@ -3307,11 +3307,21 @@
 		<defaultValue>3cd67432-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>uuid for transport assistance recommended concept</description>
 	</globalProperty>
-	
+    <globalProperty>
+		<property>reports.clinicianhomevisit</property>
+		<defaultValue>262dba46-b8b0-4dd4-9edc-9bac0a7932cc</defaultValue>
+		<description>uuid for clinician homevisit concept</description>
+	</globalProperty>
 	<globalProperty>
 		<property>reports.homeasistance</property>
 		<defaultValue>3cda08d6-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>uuid for home assistance recommended concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.oncologyClinicVisitsForm</property>
+		<defaultValue>196</defaultValue>
+		<description>The id of the form id for the outpatient clinic visit  form</description>
 	</globalProperty>
 	
 	<globalProperty>
