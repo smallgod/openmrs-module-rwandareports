@@ -622,6 +622,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String TRANSPORT_ASSISTANCE="reports.transportasistance";
 	
+	public final static String CLINICIAN_HOME_VISIT="reports.clinicianhomevisit";
+	
 	public final static String HOME_ASSISTANCE="reports.homeasistance";
 	
 	public final static String HEALTH_CLINIC="reports.healthclinic";
@@ -690,13 +692,11 @@ public class GlobalPropertiesManagement {
 	public final static String PRIMARY_CARE_REGISTRATION = "primarycarereport.registration.encountertypeid";
 	
 	public final static String VITALS = "primarycarereport.vitals.encountertypeid";
-	
 
 	public final static String DIABETES_VISIT="reports.DiabetesIncounterType";
 	
 	public final static String ADULT_INITIAL_VISIT="reports.AdultInitialVisitIncounterType";
 	
-
 	public final static String TRANSFER_ENCOUNTER = "reports.transferEncounter";
 	
 	public final static String TRANSFER_IN_ENCOUNTER_TYPE = "reports.transferInEncounterType";
@@ -710,6 +710,7 @@ public class GlobalPropertiesManagement {
 	public final static String ADULT_FLOWSHEET_VISIT = "adultflowsheet.Form_ddbId";
 	
 	public final static String LAB_ENCOUNTER_TYPE="reports.labEncounterType";
+	
 	public final static String OUTPATIENT_ONCOLOGY_ENCOUNTER = "reports.OutpatientOncologyEncounterType";
 	
 	public final static String NON_CLINICAL_ONCOLOGY_ENCOUNTER="reports.NonClinicalOncologyEncounterType";
