@@ -119,8 +119,9 @@ public class SetupOncologyQuarterlyIndicatorReport {
 	//private Concept deathreasonunknown;
 	private Concept reasonForExitingCare;
     private Concept patientDied;
-    private EncounterType oncHIVEncounterType;
-	
+    private EncounterType outpatientOncEncounterType;
+    private EncounterType inpatientOncologyEncounter;
+    
 	public void setup() throws Exception {
 
 		setUpProperties();
@@ -198,7 +199,7 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		 //clinic visits
 		SqlEncounterQuery pediOncClinicVisits=new SqlEncounterQuery();
 		pediOncClinicVisits.setName("pediOncClinicVisits");
-		pediOncClinicVisits.setQuery("select e.encounter_id from encounter e, person p where e.encounter_type in ("+oncHIVEncounterType.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) <= 5475 and form_id="+outpatientclinicvisitform.getFormId()+" and e.voided=0 and p.voided=0");
+		pediOncClinicVisits.setQuery("select e.encounter_id from encounter e, person p where e.encounter_type in ("+outpatientOncEncounterType.getEncounterTypeId()+","+inpatientOncologyEncounter.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) <= 5475 and form_id in ("+outpatientclinicvisitform.getFormId()+","+inpatientOncForm.getFormId()+","+outpatientOncForm.getFormId()+") and e.voided=0 and p.voided=0");
 		pediOncClinicVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
 		pediOncClinicVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
         
@@ -209,7 +210,7 @@ public class SetupOncologyQuarterlyIndicatorReport {
         
         SqlEncounterQuery adultOncVisits=new SqlEncounterQuery();
         adultOncVisits.setName("adultOncVisits");
-        adultOncVisits.setQuery("select e.encounter_id from encounter e, person p where e.encounter_type in ("+oncHIVEncounterType.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) > 5475 and form_id="+outpatientclinicvisitform.getFormId()+" and e.voided=0 and p.voided=0");
+        adultOncVisits.setQuery("select e.encounter_id from encounter e, person p where e.encounter_type in ("+outpatientOncEncounterType.getEncounterTypeId()+","+inpatientOncologyEncounter.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) > 5475 and form_id in ("+outpatientclinicvisitform.getFormId()+","+inpatientOncForm.getFormId()+","+outpatientOncForm.getFormId()+")  and e.voided=0 and p.voided=0");
         adultOncVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
         adultOncVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
         
@@ -222,7 +223,7 @@ public class SetupOncologyQuarterlyIndicatorReport {
         //unscheduled clinic visits
         SqlEncounterQuery pediOncVisitsUnsched=new SqlEncounterQuery();
         pediOncVisitsUnsched.setName("pediOncVisitsUnsched");
-        pediOncVisitsUnsched.setQuery("select e.encounter_id from encounter e,obs o, person p where e.encounter_id=o.encounter_id and o.concept_id="+visitType.getConceptId()+" and o.value_coded="+unscheduledVisitType.getConceptId()+" and e.encounter_type in ("+oncHIVEncounterType.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) <= 5475 and e.voided=0 and p.voided=0");
+        pediOncVisitsUnsched.setQuery("select e.encounter_id from encounter e,obs o, person p where e.encounter_id=o.encounter_id and o.concept_id="+visitType.getConceptId()+" and o.value_coded="+unscheduledVisitType.getConceptId()+" and e.encounter_type in ("+outpatientOncEncounterType.getEncounterTypeId()+","+inpatientOncologyEncounter.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) <= 5475 and e.voided=0 and p.voided=0");
         pediOncVisitsUnsched.addParameter(new Parameter("startDate", "startDate", Date.class));
         pediOncVisitsUnsched.addParameter(new Parameter("endDate", "endDate", Date.class));
         
@@ -233,7 +234,7 @@ public class SetupOncologyQuarterlyIndicatorReport {
         
         SqlEncounterQuery adultOncVisitsUnsched=new SqlEncounterQuery();
         adultOncVisitsUnsched.setName("adultOncVisitsUnsched");
-        adultOncVisitsUnsched.setQuery("select e.encounter_id from encounter e,obs o, person p where e.encounter_id=o.encounter_id and o.concept_id="+visitType.getConceptId()+" and o.value_coded="+unscheduledVisitType.getConceptId()+" and e.encounter_type in ("+oncHIVEncounterType.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) > 5475 and e.voided=0 and p.voided=0 and o.voided=0");
+        adultOncVisitsUnsched.setQuery("select e.encounter_id from encounter e,obs o, person p where e.encounter_id=o.encounter_id and o.concept_id="+visitType.getConceptId()+" and o.value_coded="+unscheduledVisitType.getConceptId()+" and e.encounter_type in ("+outpatientOncEncounterType.getEncounterTypeId()+","+inpatientOncologyEncounter.getEncounterTypeId()+")and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) > 5475 and e.voided=0 and p.voided=0 and o.voided=0");
         adultOncVisitsUnsched.addParameter(new Parameter("startDate", "startDate", Date.class));
         adultOncVisitsUnsched.addParameter(new Parameter("endDate", "endDate", Date.class));
         
@@ -2780,9 +2781,9 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		pediExitedforPalliationOnlyCare.getSearches().put("2",new Mapped<CohortDefinition>(patientWithOncologyOutcomepalliationOnly,
 			ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		pediExitedforPalliationOnlyCare.getSearches().put("3",new Mapped<CohortDefinition>(under15Cohort, null));
-		pediExitedforPalliationOnlyCare.getSearches().put("4",new Mapped<CohortDefinition>(patientWithExitform,
+		/*pediExitedforPalliationOnlyCare.getSearches().put("4",new Mapped<CohortDefinition>(patientWithExitform,
 			ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		pediExitedforPalliationOnlyCare.setCompositionString("(1 AND 2 AND 3) OR (1 AND 2 AND 3 AND 4)");
+		*/pediExitedforPalliationOnlyCare.setCompositionString("1 AND 2 AND 3");
 
 		CompositionCohortDefinition adultsExitedforPalliationOnlyCare = new CompositionCohortDefinition();
 		adultsExitedforPalliationOnlyCare.setName("adultsExitedforPalliationOnlyCare");
@@ -2792,9 +2793,9 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		adultsExitedforPalliationOnlyCare.getSearches().put("2",new Mapped<CohortDefinition>(patientWithOncologyOutcomepalliationOnly,
 			ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		adultsExitedforPalliationOnlyCare.getSearches().put("3",new Mapped<CohortDefinition>(over15Cohort, null));
-		adultsExitedforPalliationOnlyCare.getSearches().put("4",new Mapped<CohortDefinition>(patientWithExitform,
+		/*adultsExitedforPalliationOnlyCare.getSearches().put("4",new Mapped<CohortDefinition>(patientWithExitform,
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		adultsExitedforPalliationOnlyCare.setCompositionString("(1 AND 2 AND 3) OR (1 AND 2 AND 3 AND 4)");
+		*/adultsExitedforPalliationOnlyCare.setCompositionString("1 AND 2 AND 3");
 
 		CohortIndicator pediExitedforPalliationOnlyCareIndicator = Indicators.newCountIndicator("pediExitedforPalliationOnlyCareIndicator",
 				pediExitedforPalliationOnlyCare,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
@@ -2806,27 +2807,6 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		// A15 Total # of deaths within the reporting period * /
 		// =====================================================//
 
-		/*SqlCohortDefinition patientWithOncologyOutcomeCancerdeath = Cohorts.getPatientsWithOutcomeprogramEndReasons("patientWithOncologyOutcomeCancerdeath",
-				oncologyprogramendreason, cancerrelateddeath);
-		SqlCohortDefinition patientWithOncologyOutcomenoncancerdeath = Cohorts.getPatientsWithOutcomeprogramEndReasons("patientWithOncologyOutcomenoncancerdeath",
-				oncologyprogramendreason, noncancerrelateddeath);
-		SqlCohortDefinition patientWithOncologyOutcomedeathunknownreason = Cohorts.getPatientsWithOutcomeprogramEndReasons("patientWithOncologyOutcomedeathunknownreason",
-				oncologyprogramendreason, deathreasonunknown);
-
-		CompositionCohortDefinition oncologypatientwithdearreasons = new CompositionCohortDefinition();
-		oncologypatientwithdearreasons.setName("oncologypatientwithdearreasons");
-		oncologypatientwithdearreasons.addParameter(new Parameter("startDate","startDate", Date.class));
-		oncologypatientwithdearreasons.addParameter(new Parameter("endDate","endDate", Date.class));
-		oncologypatientwithdearreasons.getSearches().put("1",new Mapped<CohortDefinition>(patientWithOncologyOutcomeCancerdeath,
-			ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		oncologypatientwithdearreasons.getSearches().put("2",new Mapped<CohortDefinition>(patientWithOncologyOutcomenoncancerdeath,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		oncologypatientwithdearreasons.getSearches().put("3",new Mapped<CohortDefinition>(patientWithOncologyOutcomedeathunknownreason,
-			ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		oncologypatientwithdearreasons.getSearches().put("4",new Mapped<CohortDefinition>(patientWithExitform,
-			ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		oncologypatientwithdearreasons.setCompositionString("(1 OR 2 OR 3) AND 4");
-		*/
 		CodedObsCohortDefinition exitedpatientdied = Cohorts.createCodedObsCohortDefinition("exitedpatientdied", onOrAfterOnOrBefore,reasonForExitingCare, patientDied, SetComparator.IN,TimeModifier.LAST);
 		CompositionCohortDefinition pediexitedfromcarewithDeathreasons = new CompositionCohortDefinition();
 		pediexitedfromcarewithDeathreasons.setName("pediexitedfromcarewithDeathreasons");
@@ -3607,7 +3587,8 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		*/
 		reasonForExitingCare= gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
         patientDied = gp.getConcept(GlobalPropertiesManagement.PATIENT_DIED);
-        oncHIVEncounterType=gp.getEncounterType(GlobalPropertiesManagement.OUTPATIENT_ONCOLOGY_ENCOUNTER);
+        outpatientOncEncounterType=gp.getEncounterType(GlobalPropertiesManagement.OUTPATIENT_ONCOLOGY_ENCOUNTER);
+        inpatientOncologyEncounter=gp.getEncounterType(GlobalPropertiesManagement.INPATIENT_ONCOLOGY_ENCOUNTER);
 		
 
 	}
