@@ -175,18 +175,21 @@ public class SetupIDProgramQuarterlyIndicatorReport {
         
         private void createQuarterlyIndicators(EncounterIndicatorDataSetDefinition dsd) {
                 
-                //clinic visits
+                //adults
+                
                 SqlEncounterQuery adultHivVisits=new SqlEncounterQuery();
                 adultHivVisits.setName("adultHivVisits");
                 adultHivVisits.setQuery("select e.encounter_id from encounter e, person p where e.encounter_type in ("+pediHIVEncounterType.getEncounterTypeId()+","+adultHIVEncounterType.getEncounterTypeId()+") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and p.person_id = e.patient_id and DATEDIFF(:endDate , p.birthdate) >=5475 and e.voided=0 and p.voided=0");
                 adultHivVisits.addParameter(new Parameter("startDate", "startDate", Date.class));
                 adultHivVisits.addParameter(new Parameter("endDate", "endDate", Date.class));
                 
+                
                 EncounterIndicator adultHivVisitsIndicator = new EncounterIndicator();
                 adultHivVisitsIndicator.setName("adultHivVisitsIndicator");
                 adultHivVisitsIndicator.setEncounterQuery(new Mapped<EncounterQuery>(adultHivVisits,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
                 
                 dsd.addColumn(adultHivVisitsIndicator); 
+                
                 
                 SqlEncounterQuery adultHivVisitsWithWeight=new SqlEncounterQuery();
                 adultHivVisitsWithWeight.setName("adultHivVisitsWithWeight");
@@ -195,13 +198,15 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 adultHivVisitsWithWeight.addParameter(new Parameter("startDate", "startDate", Date.class));
                 adultHivVisitsWithWeight.addParameter(new Parameter("endDate", "endDate", Date.class));
                 
+                
                 EncounterIndicator adultHivVisitsWithWeightIndicator = new EncounterIndicator();
                 adultHivVisitsWithWeightIndicator.setName("adultHivVisitsWithWeightIndicator");
                 adultHivVisitsWithWeightIndicator.setEncounterQuery(new Mapped<EncounterQuery>(adultHivVisitsWithWeight,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
                 
                 dsd.addColumn(adultHivVisitsWithWeightIndicator);
                 
-                //unscheduled clinic visits
+                
+                //pedi
                 
                 SqlEncounterQuery pediHivVisits=new SqlEncounterQuery();
                 pediHivVisits.setName("pediHivVisits");
