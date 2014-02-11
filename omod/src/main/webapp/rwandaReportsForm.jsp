@@ -112,7 +112,7 @@ $(document).ready(function(){
 </tr>
 <tr>
 <td class="tabletd">Pedi HIV Program</td>
-<td>HIV-Pedi Consultation Sheet</td>
+<td>Pedi HIV Consultation Sheet</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pediHIVConsultationSheet.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pediHIVConsultationSheet.form" onclick=msgrem(this)>Remove</a></td>	 

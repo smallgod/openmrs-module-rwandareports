@@ -674,6 +674,14 @@ public class RowPerPatientColumns {
 				resultFilter, outputFilter);
 	}
 
+	public static AllObservationValues getAllViralLoadsValues(String name,
+			String dateFormat, ResultFilter resultFilter,
+			ResultFilter outputFilter) {
+		return getAllObservationValues(name,
+				gp.getConcept(GlobalPropertiesManagement.VIRAL_LOAD_TEST), dateFormat,
+				resultFilter, outputFilter);
+	}
+
 	public static AllObservationValues getAllAsthmaClassificationValues(
 			String name, String dateFormat, ResultFilter resultFilter,
 			ResultFilter outputFilter) {
