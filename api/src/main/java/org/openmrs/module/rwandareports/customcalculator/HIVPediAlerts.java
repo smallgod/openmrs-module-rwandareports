@@ -57,11 +57,12 @@ public class HIVPediAlerts implements CustomCalculation{
 					
 					if(diff > 12)
 					{
-						alerts.append(" very late CD4\n");
+						alerts.append("Very late CD4(" + diff + " months ago).\n");
 					}
-					else if(diff > 6)
+					//else if(diff > 6)
+					else if((diff > 6) && state.toString().contains("FOLLOWING"))
 					{
-						alerts.append(" late CD4\n");
+						alerts.append("late CD4(" + diff + " months ago).\n");
 					}
 				}	
 			}
@@ -117,6 +118,47 @@ public class HIVPediAlerts implements CustomCalculation{
 			{
 				age = (PatientPropertyResult)result;
 			}
+			//Neza
+			if(result.getName().equals("viralLoadTest"))
+			{
+				AllObservationValuesResult viraload = (AllObservationValuesResult)result;
+				
+				if(viraload.getValue() != null)
+				{
+					Obs lastviraload = null;
+					
+					if(viraload.getValue().size() > 0)
+					{
+						lastviraload = viraload.getValue().get(viraload.getValue().size()-1);
+					}
+					
+					if(state.toString().contains("GROUP") && (lastviraload == null))
+					{
+						alerts.append("VL needed.\n");
+					}
+					else
+					{
+						try{
+						Date dateVl = lastviraload.getObsDatetime();
+						Date date = Calendar.getInstance().getTime();
+						
+						int diff = calculateMonthsDifference(date, dateVl);
+						
+						if(state.toString().contains("GROUP")){
+							if(diff > 12){
+							alerts.append("Late VL(" + diff + " months ago).\n");
+						}
+						
+						if(lastviraload.getValueNumeric() != null && lastviraload.getValueNumeric() > 1000)
+						{
+							alerts.append("VL Failure "+lastviraload.getValueNumeric()+".\n");
+						 }
+					    }
+					   }
+						catch(Exception e){}
+					}
+				}	
+			}
 		}
 		
 		if(age != null)
@@ -163,23 +205,17 @@ public class HIVPediAlerts implements CustomCalculation{
 			
 			if(ageInt > 5)
 			{
-				if(cd4Obs != null && state.toString().contains("FOLLOWING") && cd4Obs.getObs().getValueNumeric() != null && cd4Obs.getObs().getValueNumeric() < 350)
+				if(cd4Obs != null && state.toString().contains("FOLLOWING") && cd4Obs.getObs().getValueNumeric() != null && cd4Obs.getObs().getValueNumeric() < 500)
 				{
-					alerts.append("CD4 < 350 \n");
+					alerts.append("CD4 < 500 \n");
 				}
 			}
-			else if(ageInt < 3)
+			
+			if(ageInt <= 5)
 			{
-				if(cd4Percent != null && state.toString().contains("FOLLOWING") && cd4Percent.getObs().getValueNumeric() != null && cd4Percent.getObs().getValueNumeric() < 20)
+				if(state.toString().contains("FOLLOWING"))
 				{
-					alerts.append("CD4% < 20% \n");
-				}
-			}
-			else 
-			{
-				if(cd4Percent != null && state.toString().contains("FOLLOWING") && cd4Percent.getObs().getValueNumeric() != null && cd4Percent.getObs().getValueNumeric() < 25)
-				{
-					alerts.append("CD4% < 25% \n");
+					alerts.append("Needs ART \n");
 				}
 			}
 		}

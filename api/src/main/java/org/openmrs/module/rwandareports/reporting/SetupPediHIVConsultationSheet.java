@@ -92,12 +92,12 @@ public class SetupPediHIVConsultationSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		Helper.purgeReportDefinition("HIV-Pedi Consultation Sheet");
+		Helper.purgeReportDefinition("Pedi HIV Consultation Sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-Pedi Consultation Sheet");
+		reportDefinition.setName("Pedi HIV Consultation Sheet");
 		
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 		
@@ -211,6 +211,7 @@ public class SetupPediHIVConsultationSheet {
 		
 		ObservationInMostRecentEncounterOfType sideEffect = RowPerPatientColumns.getSideEffectInMostRecentEncounterOfType(
 		    "SideEffects", pediFlowsheet);
+		AllObservationValues viralLoadTest = RowPerPatientColumns.getAllViralLoadsValues("viralLoadTest", "ddMMMyy", null,null);	
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
 		
@@ -224,6 +225,7 @@ public class SetupPediHIVConsultationSheet {
 		alert.addPatientDataToBeEvaluated(height, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(weight, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(cd4Percent, new HashMap<String, Object>());
+		alert.addPatientDataToBeEvaluated(viralLoadTest, new HashMap<String, Object>());
 		alert.setCalculator(new HIVPediAlerts());
 		alert.addParameter(new Parameter("state", "State",Date.class));
 		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("state=${state}"));

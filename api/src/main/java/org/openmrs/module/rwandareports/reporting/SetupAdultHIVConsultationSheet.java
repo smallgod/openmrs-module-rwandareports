@@ -148,10 +148,12 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		ObservationInMostRecentEncounterOfType sideEffect = RowPerPatientColumns.getSideEffectInMostRecentEncounterOfType(
 		    "SideEffects", flowsheetAdult);
 		
-		AllObservationValues allCD4 = RowPerPatientColumns.getAllCD4Values("allCD4Obs", "ddMMMyy",
-		    null, null);
+		//AllObservationValues allCD4 = RowPerPatientColumns.getAllCD4Values("allCD4Obs", "ddMMMyy",null, null);
+		AllObservationValues viralLoadTest = RowPerPatientColumns.getAllViralLoadsValues("viralLoadTest", "ddMMMyy", 
+				new LastThreeObsFilter(), new ObservationFilter());	
 		
-		FirstDrugOrderStartedRestrictedByConceptSet startArt = RowPerPatientColumns.getDrugOrderForStartOfART("StartART", "dd-MMM-yyyy");
+		//FirstDrugOrderStartedRestrictedByConceptSet startArt = RowPerPatientColumns.getDrugOrderForStartOfART("StartART", "dd-MMM-yyyy");
+		//FirstDrugOrderStartedRestrictedByConceptSet startPreArt = RowPerPatientColumns.getDrugOrderForStartOfART("StartART", "dd-MMM-yyyy");
 		
 		CustomCalculationBasedOnMultiplePatientDataDefinitions alert = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		alert.setName("alert");
@@ -160,6 +162,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		alert.addPatientDataToBeEvaluated(mostRecentHeight, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(io, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(sideEffect, new HashMap<String, Object>());
+		alert.addPatientDataToBeEvaluated(viralLoadTest, new HashMap<String, Object>());
 		alert.setCalculator(new HIVAdultAlerts());
 		alert.addParameter(new Parameter("state", "State",Date.class));
 		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("state=${state}"));
@@ -171,14 +174,14 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		bmi.setCalculator(new BMI());
 		dataSetDefinition.addColumn(bmi, new HashMap<String, Object>());
 		
-		CustomCalculationBasedOnMultiplePatientDataDefinitions cd4Decline = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
+		/*CustomCalculationBasedOnMultiplePatientDataDefinitions cd4Decline = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		cd4Decline.setName("cd4Decline");
 		cd4Decline.addPatientDataToBeEvaluated(allCD4, new HashMap<String, Object>());
 		cd4Decline.addPatientDataToBeEvaluated(startArt, new HashMap<String, Object>());
 		DeclineHighestCD4 declineCD4 = new DeclineHighestCD4();
 		declineCD4.setInitiationArt("StartART");
 		cd4Decline.setCalculator(declineCD4);
-		dataSetDefinition.addColumn(cd4Decline, new HashMap<String, Object>());
+		dataSetDefinition.addColumn(cd4Decline, new HashMap<String, Object>());*/
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("state", "${state}");
