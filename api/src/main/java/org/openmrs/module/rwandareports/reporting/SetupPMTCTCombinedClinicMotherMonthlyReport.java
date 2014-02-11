@@ -65,6 +65,8 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 	//Properties retrieved from global variables
 	private Program pmtctCombinedClinicMotherProgram;
 	
+	private ProgramWorkflow treatmentGroup;
+	
 	private Concept nextVisitConcept;
 	
 	private EncounterType adultFlowVisit;
@@ -164,8 +166,20 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		//                 1. Late visit
 		//==================================================================		
 		
-	
-		
+		// Patients without Any clinical Encounter(Test lab included) in the last 3 months.
+		EncounterCohortDefinition patientsWithClinicalEncountersWithLabTest = Cohorts.createEncounterParameterizedByDate(
+			    "patientsWithClinicalEncountersWithLabTest", "onOrAfter", clinicalEnountersIncLab);
+		CompositionCohortDefinition patientsWithoutClinicalEncounters = new CompositionCohortDefinition();
+		patientsWithoutClinicalEncounters.setName("patientsWithoutClinicalEncounters");
+		patientsWithoutClinicalEncounters.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientsWithoutClinicalEncounters.getSearches().put(  "patientsWithClinicalEncountersWithLabTest",
+				    new Mapped<CohortDefinition>(patientsWithClinicalEncountersWithLabTest, ParameterizableUtil
+				            .createParameterMappings("onOrAfter=${onOrAfter}")));
+				patientsWithoutClinicalEncounters.setCompositionString("NOT patientsWithClinicalEncountersWithLabTest");
+				
+		dataSetDefinition1.addFilter(patientsWithoutClinicalEncounters,
+				    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-6m}"));
+				
 		SqlCohortDefinition latevisit=new SqlCohortDefinition("select o.person_id from obs o, (select * from (select * from encounter where encounter_type="+adultFlowVisit.getEncounterTypeId()+" and voided=0 order by encounter_datetime desc) as e group by patient_id) as last_encounters where last_encounters.encounter_id=o.encounter_id and last_encounters.encounter_datetime<o.value_datetime and o.voided=0 and o.concept_id="+nextVisitConcept.getConceptId()+" and DATEDIFF(:endDate,o.value_datetime)>7 ;");
 		latevisit.addParameter(new Parameter("endDate","endDate",Date.class));
 		
@@ -189,7 +203,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		patientsWithouthCD4RecordComposition.setCompositionString("NOT cd4CohortDefinition");
 		
 		dataSetDefinition2.addFilter(patientsWithouthCD4RecordComposition,
-		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-6m}"));
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m}"));
 		
 		//==================================================================
 		//                 3. Lost to follow-up
@@ -227,12 +241,12 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		//==================================================================
 		//                6 . Patients with Viral Load >1000 in the last 6 months
 		//==================================================================
-		SqlCohortDefinition viralLoadGreaterThan1000InLast6Months = new SqlCohortDefinition("select vload.person_id from (select * from obs where concept_id="+viralLoad.getConceptId()+" and value_numeric>1000 and obs_datetime> :beforeDate and obs_datetime<= :onDate order by obs_datetime desc) as vload group by vload.person_id");
-		viralLoadGreaterThan1000InLast6Months.setName("viralLoadGreaterThan1000InLast6Months");
-		viralLoadGreaterThan1000InLast6Months.addParameter(new Parameter("beforeDate", "beforeDate", Date.class));
-		viralLoadGreaterThan1000InLast6Months.addParameter(new Parameter("onDate", "onDate", Date.class));
+		SqlCohortDefinition viralLoadGreaterThan1000InLast12Months = new SqlCohortDefinition("select vload.person_id from (select * from obs where concept_id="+viralLoad.getConceptId()+" and value_numeric>1000 and obs_datetime> :beforeDate and obs_datetime<= :onDate order by obs_datetime desc) as vload group by vload.person_id");
+		viralLoadGreaterThan1000InLast12Months.setName("viralLoadGreaterThan1000InLast12Months");
+		viralLoadGreaterThan1000InLast12Months.addParameter(new Parameter("beforeDate", "beforeDate", Date.class));
+		viralLoadGreaterThan1000InLast12Months.addParameter(new Parameter("onDate", "onDate", Date.class));
 		//viralLoadGreaterThan1000InLast6Months.addParameter(new Parameter("location", "location", Location.class));
-		dataSetDefinition6.addFilter(viralLoadGreaterThan1000InLast6Months,ParameterizableUtil.createParameterMappings("beforeDate=${endDate-6m},onDate=${endDate}"));
+		dataSetDefinition6.addFilter(viralLoadGreaterThan1000InLast12Months,ParameterizableUtil.createParameterMappings("beforeDate=${endDate-12m},onDate=${endDate}"));
 		
 		//==================================================================
 		//                 Columns of report settings
@@ -289,6 +303,13 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		dataSetDefinition4.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition6.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
+		StateOfPatient ccmotherGroup = RowPerPatientColumns.getStateOfPatient("ccmotherGroup", pmtctCombinedClinicMotherProgram, treatmentGroup,
+			    new GroupStateFilter());
+		dataSetDefinition1.addColumn(ccmotherGroup, new HashMap<String, Object>());
+		dataSetDefinition2.addColumn(ccmotherGroup, new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(ccmotherGroup, new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(ccmotherGroup, new HashMap<String, Object>());
+		
 		MostRecentObservation returnVisitDate = RowPerPatientColumns.getMostRecentReturnVisitDate(
 		    "Date of missed appointment", null);
 		dataSetDefinition1.addColumn(returnVisitDate, new HashMap<String, Object>());
@@ -296,7 +317,7 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		dataSetDefinition4.addColumn(returnVisitDate, new HashMap<String, Object>());
 		dataSetDefinition6.addColumn(returnVisitDate, new HashMap<String, Object>());
 		
-		MostRecentObservation cd4Count = RowPerPatientColumns.getMostRecentCD4("Most recent CD4", null);
+		MostRecentObservation cd4Count = RowPerPatientColumns.getMostRecentCD4("Most recent CD4", "@ddMMMyy");
 		dataSetDefinition1.addColumn(cd4Count, new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(cd4Count, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(cd4Count, new HashMap<String, Object>());
@@ -326,7 +347,11 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		dataSetDefinition4.addColumn(address1, new HashMap<String, Object>());
 		dataSetDefinition6.addColumn(address1, new HashMap<String, Object>());
 		
-		MostRecentObservation viralLoad = RowPerPatientColumns.getMostRecentViralLoad("Most recent viralLoad", null);
+		MostRecentObservation viralLoad = RowPerPatientColumns.getMostRecentViralLoad("Most recent viralLoad", "@ddMMMyy");
+		dataSetDefinition1.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition2.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(viralLoad, new HashMap<String, Object>());
 		dataSetDefinition6.addColumn(viralLoad, new HashMap<String, Object>());
 		
 		MostRecentObservation weight = RowPerPatientColumns.getMostRecentWeight("Weight", "dd-mmm-yyyy");
@@ -387,6 +412,9 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 	
 	private void setupProperties() {
 		pmtctCombinedClinicMotherProgram = gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM);
+		
+		treatmentGroup=gp.getProgramWorkflow(GlobalPropertiesManagement.TREATMENT_GROUP_WORKFLOW,
+			    GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM);
 		
 		nextVisitConcept = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
 		
