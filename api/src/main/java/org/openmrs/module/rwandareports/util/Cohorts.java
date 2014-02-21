@@ -1868,11 +1868,13 @@ public class Cohorts {
 	                                                                                         EncounterType encType, int times) {
 		SqlCohortDefinition nTimesEncounter = new SqlCohortDefinition();
 		nTimesEncounter.setName(name);
-		nTimesEncounter
+		/*nTimesEncounter
 		        .setQuery("select patient_id from (select patient_id,count(patient_id) as times from encounter where encounter_type="
 		                + encType.getEncounterTypeId()
 		                + " and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by patient_id) as moreenc where times>="
 		                + times + "");
+		*/
+		nTimesEncounter.setQuery("select patient_id from encounter where encounter_type="+encType.getEncounterTypeId()+" and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0  group by patient_id");
 		nTimesEncounter.addParameter(new Parameter("startDate", "startDate", Date.class));
 		nTimesEncounter.addParameter(new Parameter("endDate", "endDate", Date.class));
 		return nTimesEncounter;

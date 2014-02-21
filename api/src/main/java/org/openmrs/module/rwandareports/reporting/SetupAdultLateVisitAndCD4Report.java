@@ -311,8 +311,9 @@ public class SetupAdultLateVisitAndCD4Report {
 		            .createParameterMappings("onOrAfter=${onOrAfter}")));
 		patientsWithoutClinicalEncounters.setCompositionString("NOT patientsWithClinicalEncountersWithoutLabTest");
 		
+		// before was in 3m, now is in 6m
 		dataSetDefinition1.addFilter(patientsWithoutClinicalEncounters,
-		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-3m}"));
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-6m}"));
 		
 		//==================================================================
 		//                 2. Adult Pre-ART late visit
@@ -355,9 +356,9 @@ public class SetupAdultLateVisitAndCD4Report {
 		patientsWithouthCD4RecordComposition.setCompositionString("NOT cd4CohortDefinition");
 		
 		dataSetDefinition3.addFilter(patientsWithouthCD4RecordComposition,
-		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-6m}"));
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m}"));
 		dataSetDefinition3_1.addFilter(patientsWithouthCD4RecordComposition,
-		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-6m}"));
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-9m}"));
 		
 		
 		//==================================================================
@@ -376,13 +377,13 @@ public class SetupAdultLateVisitAndCD4Report {
 		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m}"));
 		
 		//==================================================================
-		//                 5. Pre-ART patients with CD4 below 350
+		//                 5. Pre-ART patients with CD4 below 500
 		//==================================================================
 		
-		//Patients with CD4 below 350
-		NumericObsCohortDefinition lastDC4below350 = Cohorts.createNumericObsCohortDefinition("lastDC4below350", "onOrBefore", cd4, 350.0,
+		//Patients with CD4 below 500
+		NumericObsCohortDefinition lastDC4below500 = Cohorts.createNumericObsCohortDefinition("lastDC4below500", "onOrBefore", cd4, 500.0,
 		    RangeComparator.LESS_THAN, TimeModifier.LAST);
-		dataSetDefinition5.addFilter(lastDC4below350, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}"));
+		dataSetDefinition5.addFilter(lastDC4below500, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}"));
 		
 		
 		//==================================================================
@@ -412,14 +413,14 @@ public class SetupAdultLateVisitAndCD4Report {
 		    ParameterizableUtil.createParameterMappings("beforeDate=${endDate}"));
 		
 		//==================================================================
-		//                8 . Patients with Viral Load >1000 in the last 6 months
+		//                8 . Patients with Viral Load >1000 in the last 12 months
 		//==================================================================
-		SqlCohortDefinition viralLoadGreaterThan1000InLast6Months = new SqlCohortDefinition("select vload.person_id from (select * from obs where concept_id="+viralLoad.getConceptId()+" and value_numeric>1000 and obs_datetime> :beforeDate and obs_datetime<= :onDate order by obs_datetime desc) as vload group by vload.person_id");
-		viralLoadGreaterThan1000InLast6Months.setName("viralLoadGreaterThan1000InLast6Months");
-		viralLoadGreaterThan1000InLast6Months.addParameter(new Parameter("beforeDate", "beforeDate", Date.class));
-		viralLoadGreaterThan1000InLast6Months.addParameter(new Parameter("onDate", "onDate", Date.class));
-		viralLoadGreaterThan1000InLast6Months.addParameter(new Parameter("location", "location", Location.class));
-		dataSetDefinition8.addFilter(viralLoadGreaterThan1000InLast6Months,ParameterizableUtil.createParameterMappings("beforeDate=${endDate-6m},onDate=${endDate}"));
+		SqlCohortDefinition viralLoadGreaterThan1000InLast12Months = new SqlCohortDefinition("select vload.person_id from (select * from obs where concept_id="+viralLoad.getConceptId()+" and value_numeric>1000 and obs_datetime> :beforeDate and obs_datetime<= :onDate order by obs_datetime desc) as vload group by vload.person_id");
+		viralLoadGreaterThan1000InLast12Months.setName("viralLoadGreaterThan1000InLast12Months");
+		viralLoadGreaterThan1000InLast12Months.addParameter(new Parameter("beforeDate", "beforeDate", Date.class));
+		viralLoadGreaterThan1000InLast12Months.addParameter(new Parameter("onDate", "onDate", Date.class));
+		viralLoadGreaterThan1000InLast12Months.addParameter(new Parameter("location", "location", Location.class));
+		dataSetDefinition8.addFilter(viralLoadGreaterThan1000InLast12Months,ParameterizableUtil.createParameterMappings("beforeDate=${endDate-12m},onDate=${endDate}"));
 		
 		//==================================================================
 		//                9 . Patients with 50% decline from highest CD4 count from baseline CD4 after ART initiation 
@@ -634,8 +635,14 @@ public class SetupAdultLateVisitAndCD4Report {
 		dataSetDefinition9.addColumn(address1, new HashMap<String, Object>());
 		
 		MostRecentObservation viralLoad = RowPerPatientColumns.getMostRecentViralLoad("Most recent viralLoad", null);
+		//dataSetDefinition8.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition1.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition6.addColumn(viralLoad, new HashMap<String, Object>());
 		dataSetDefinition8.addColumn(viralLoad, new HashMap<String, Object>());
 		
+				
 		MostRecentObservation weight = RowPerPatientColumns.getMostRecentWeight("Weight", "dd-mmm-yyyy");
 		dataSetDefinition6.addColumn(weight, new HashMap<String, Object>());
 		dataSetDefinition6_1.addColumn(weight, new HashMap<String, Object>());

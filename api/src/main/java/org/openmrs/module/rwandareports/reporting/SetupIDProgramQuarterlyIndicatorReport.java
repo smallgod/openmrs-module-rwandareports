@@ -708,11 +708,11 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 CohortIndicator twelveHIV = Indicators.newCountIndicator("HIVQ: currently taking ART before end date and under 15_",
                     currentArtUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
                 CohortIndicator thirteenHIV = Indicators.newCountIndicator(
-                    "HIVQ: on ART in Hiv program with a visit in period -3 months and over 15_", artWithAVisitOver15,
-                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                    "HIVQ: on ART in Hiv program with a visit in period last 6 months (last two quarters) and over 15_", artWithAVisitOver15,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${endDate-6m}"));
                 CohortIndicator fourteenHIV = Indicators.newCountIndicator(
-                    "HIVQ: on ART in Hiv program with a visit in period -3 months and under 15_", artWithAVisitUnder15,
-                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                    "HIVQ: on ART in Hiv program with a visit in period last 6 months (last two quarters) and under 15_", artWithAVisitUnder15,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${endDate-6m}"));
                 CohortIndicator fifteenHIV = Indicators.newCountIndicator("HIVQ: started taking ART in period over 15_",
                     startedArtOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
                 CohortIndicator sixteenHIV = Indicators.newCountIndicator("HIVQ: started taking ART in period under 15_",
@@ -723,12 +723,23 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 CohortIndicator eighteenHIV = Indicators.newCountIndicator(
                     "HIVQ: preArt in Hiv program with a CD4 count in period -3 months and under 15_", preArtWithACD4Under15,
                     ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                
+                
+                CohortIndicator seventeenHIVb = Indicators.newCountIndicator(
+                        "HIVQ: preArt in Hiv program with a CD4 count in period -6 months and over 15_", preArtWithACD4Over15,
+                        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-3m}"));
+                    CohortIndicator eighteenHIVb = Indicators.newCountIndicator(
+                        "HIVQ: preArt in Hiv program with a CD4 count in period -6 months and under 15_", preArtWithACD4Under15,
+                        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-3m}"));
+                    
+                
+                
                 CohortIndicator nineteenHIV = Indicators.newCountIndicator(
-                    "HIVQ: on Art in Hiv program with a CD4 count in period -3 months and over 15_", artWithACD4Over15,
-                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                    "HIVQ: on Art in Hiv program with a CD4 count in period -9 months and over 15_", artWithACD4Over15,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-6m}"));
                 CohortIndicator twentyHIV = Indicators.newCountIndicator(
-                    "HIVQ: on Art in Hiv program with a CD4 count in period -3 months and under 15_", artWithACD4Under15,
-                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                    "HIVQ: on Art in Hiv program with a CD4 count in period -9 months and under 15_", artWithACD4Under15,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-6m}"));
                 CohortIndicator twentyoneHIV = Indicators.newCountIndicator("HIVQ: weight recorded in period over 15_",
                     hivWithAWeightOver15, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
                 CohortIndicator twentytwoHIV = Indicators.newCountIndicator("HIVQ: weight recorded in period under 15_",
@@ -750,17 +761,24 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 CohortIndicator fourtyHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a visit in period -12 months under 15_",
                                 activeArtWithVisitUnder15,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
                 CohortIndicator fourtyoneHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a visit in period -3 months over 15_",
-                                activeArtWithVisitOrWeightOver15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                                activeArtWithVisitOrWeightOver15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-3m}"));
                 CohortIndicator fourtytwoHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a visit in period -3 months under 15_",
-                                activeArtWithVisitOrWeightUnder15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                                activeArtWithVisitOrWeightUnder15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-3m}"));
                 CohortIndicator fourtythreeHIV = Indicators.newCountIndicator("HIVQ: active PreArt in HIV with a CD4 in period -3 months over 15_",
                                 activePreArtWithVisitAndCD4Over15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
                 CohortIndicator fourtyfourHIV = Indicators.newCountIndicator("HIVQ: active PreArt in HIV with a CD4 in period -3 months under 15_",
                                 activePreArtWithVisitAndCD4Under15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                
+                CohortIndicator fourtythreeHIVb = Indicators.newCountIndicator("HIVQ: active PreArt in HIV with a CD4 in period -6 months over 15_",
+                        activePreArtWithVisitAndCD4Over15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-3m}"));
+                CohortIndicator fourtyfourHIVb = Indicators.newCountIndicator("HIVQ: active PreArt in HIV with a CD4 in period -6 months under 15_",
+                        activePreArtWithVisitAndCD4Under15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-3m}"));
+        
+                
                 CohortIndicator fourtyfiveHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a CD4 in period -3 months over 15_",
-                                activeArtWithVisitAndCD4Over15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                                activeArtWithVisitAndCD4Over15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-6m}"));
                 CohortIndicator fourtysixHIV = Indicators.newCountIndicator("HIVQ: active art in HIV with a CD4 in period -3 months over 15_",
-                                activeArtWithVisitAndCD4Underr15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+                                activeArtWithVisitAndCD4Underr15,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate-6m}"));
                 
                 
                 dsd.addColumn("HIVQ1A", "In All HIV Programs Over 15",
@@ -812,6 +830,15 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                         ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
                 dsd.addColumn("HIVQ9C", "Pre ART and had a cd4 recorded in last 2 quarters and Under 15", new Mapped(eighteenHIV,
                         ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+                
+                
+                dsd.addColumn("HIVQ9Ab", "Pre ART and had a cd4 recorded in last 3 quarters and Over 15", new Mapped(seventeenHIVb,
+                        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+                dsd.addColumn("HIVQ9Cb", "Pre ART and had a cd4 recorded in last 3 quarters and Under 15", new Mapped(eighteenHIVb,
+                        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+               
+                
+                
                 dsd.addColumn("HIVQ10A", "ART and had a cd4 recorded in last 2 quarters and Over 15", new Mapped(nineteenHIV,
                         ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
                 dsd.addColumn("HIVQ10C", "ART and had a cd4 recorded in last 2 quarters and Under 15", new Mapped(twentyHIV,
@@ -844,6 +871,13 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                                 ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
                 dsd.addColumn("HIVQ14C","HIV PreArt CD4 Under 15 in last 3 months",new Mapped(fourtyfourHIV,
                                 ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+                
+                dsd.addColumn("HIVQ14Ab","HIV PreArt CD4 Over 15 in last 3 months",new Mapped(fourtythreeHIVb,
+                        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+                dsd.addColumn("HIVQ14Cb","HIV PreArt CD4 Under 15 in last 3 months",new Mapped(fourtyfourHIVb,
+                        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        
+                
                 dsd.addColumn("HIVQ15A","HIV preArt CD4 Over 15 in last 3 months",new Mapped(fourtyfiveHIV,
                                 ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
                 dsd.addColumn("HIVQ15C","HIV preArt CD4 Under 15 in last 3 months",new Mapped(fourtysixHIV,
@@ -887,8 +921,11 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 patientsWithOneOrMoreAdultHIVEncountersInPMTCTPreg.addParameter(new Parameter("onDate", "onDate", Date.class));
                 patientsWithOneOrMoreAdultHIVEncountersInPMTCTPreg.getSearches().put("1",new Mapped(patientsWithOneOrMoreAdultHIVEncounters, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
                 patientsWithOneOrMoreAdultHIVEncountersInPMTCTPreg.getSearches().put("2",new Mapped(inPMTCTOnEndDate, ParameterizableUtil.createParameterMappings("onDate=${onDate}")));
-                patientsWithOneOrMoreAdultHIVEncountersInPMTCTPreg.getSearches().put("3",new Mapped(enrolledInPMTCTPregByStartEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
+                /*patientsWithOneOrMoreAdultHIVEncountersInPMTCTPreg.getSearches().put("3",new Mapped(enrolledInPMTCTPregByStartEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
                 patientsWithOneOrMoreAdultHIVEncountersInPMTCTPreg.setCompositionString(" 1 AND 2 AND (NOT 3)");
+                */
+                patientsWithOneOrMoreAdultHIVEncountersInPMTCTPreg.setCompositionString("1 AND 2");
+                
                 
                 CompositionCohortDefinition patientsInPMTCTPregNotEnrolledByStartAndEndDate = new CompositionCohortDefinition();
                 patientsInPMTCTPregNotEnrolledByStartAndEndDate.setName("patients In PMTCT Pregnancy but not enrolled between startdate and enddate");
@@ -920,7 +957,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                             "PMTCTPregQ: patients With One Or More Adult HIV flowsheet In PMTCT Pregnancy",
                             patientsWithOneOrMoreAdultHIVEncountersInPMTCTPreg,
                             ParameterizableUtil
-                                    .createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onDate=${endDate}"));
+                                    .createParameterMappings("endDate=${endDate},startDate=${startDate},enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onDate=${endDate}"));
                 
                 CohortIndicator fivePMTCTPregD = Indicators
                         .newCountIndicator(
@@ -995,8 +1032,10 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 patientsWithOneOrMoreExposedInfantEncountersInPMTCTInfant.addParameter(new Parameter("onDate", "onDate", Date.class));
                 patientsWithOneOrMoreExposedInfantEncountersInPMTCTInfant.getSearches().put("1", new Mapped(patientsWithOneOrMoreExposedInfantEncounters,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
                 patientsWithOneOrMoreExposedInfantEncountersInPMTCTInfant.getSearches().put("2", new Mapped(inPMTCTInfantOnEndDate, ParameterizableUtil.createParameterMappings("onDate=${onDate}")));
-                patientsWithOneOrMoreExposedInfantEncountersInPMTCTInfant.getSearches().put("3",new Mapped(enrolledInPMTCTInfantByStartEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
+                /*patientsWithOneOrMoreExposedInfantEncountersInPMTCTInfant.getSearches().put("3",new Mapped(enrolledInPMTCTInfantByStartEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
                 patientsWithOneOrMoreExposedInfantEncountersInPMTCTInfant.setCompositionString(" 1 AND 2 AND (NOT 3)");
+                */
+                patientsWithOneOrMoreExposedInfantEncountersInPMTCTInfant.setCompositionString("1 AND 2");
                 
                 CompositionCohortDefinition patientsInPMTCTInfantNotEnrolledByStartAndEndDate = new CompositionCohortDefinition();
                 patientsInPMTCTInfantNotEnrolledByStartAndEndDate
@@ -1113,7 +1152,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 patientsWithSerotestEnrolledInPMTCTInfantProg.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
                 patientsWithSerotestEnrolledInPMTCTInfantProg.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
                 patientsWithSerotestEnrolledInPMTCTInfantProg.getSearches().put("1", new Mapped(enrolledInPMTCTInfantOnOrBeforeEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
-                patientsWithSerotestEnrolledInPMTCTInfantProg.getSearches().put("2",new Mapped(patientsWithSerotestObs, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrBefore=${onOrBefore}")));
+                patientsWithSerotestEnrolledInPMTCTInfantProg.getSearches().put("2",new Mapped(patientsWithSerotestObs, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
                 patientsWithSerotestEnrolledInPMTCTInfantProg.setCompositionString("1 AND 2");      
                 
                 //EIQ9
@@ -1191,7 +1230,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                             "PMTCTInfantQ: patients With Two Or More Exposed Infant flowsheet In PMTCT Pregnancy",
                             patientsWithOneOrMoreExposedInfantEncountersInPMTCTInfant,
                             ParameterizableUtil
-                                    .createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onDate=${endDate}"));
+                                    .createParameterMappings("endDate=${endDate},startDate=${startDate},enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onDate=${endDate}"));
                 
                 CohortIndicator fivePMTCTInfantD = Indicators
                         .newCountIndicator(
@@ -1360,8 +1399,10 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 patientsWithOneOrMoreAdultHIVEncountersInPMTCTCCMother.addParameter(new Parameter("onDate", "onDate", Date.class));
                 patientsWithOneOrMoreAdultHIVEncountersInPMTCTCCMother.getSearches().put( "1",new Mapped(patientsWithOneOrMoreAdultHIVEncounters,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
                 patientsWithOneOrMoreAdultHIVEncountersInPMTCTCCMother.getSearches().put("2",new Mapped(inPMTCTCCMotherOnEndDate, ParameterizableUtil.createParameterMappings("onDate=${onDate}")));
-                patientsWithOneOrMoreAdultHIVEncountersInPMTCTCCMother.getSearches().put("3", new Mapped(enrolledInPMTCTCCMotherByStartEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
+                /*patientsWithOneOrMoreAdultHIVEncountersInPMTCTCCMother.getSearches().put("3", new Mapped(enrolledInPMTCTCCMotherByStartEndDate,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
                 patientsWithOneOrMoreAdultHIVEncountersInPMTCTCCMother.setCompositionString(" 1 AND 2 AND (NOT 3)");
+                */
+                patientsWithOneOrMoreAdultHIVEncountersInPMTCTCCMother.setCompositionString(" 1 AND 2");
                 
                 CompositionCohortDefinition patientsInPMTCTCCMotherNotEnrolledByStartAndEndDate = new CompositionCohortDefinition();
                 patientsInPMTCTCCMotherNotEnrolledByStartAndEndDate.setName("patients In PMTCT c c Mother but not enrolled between startdate and enddate");
@@ -1406,7 +1447,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 CohortIndicator fivePMTCTCCMother = Indicators.newCountIndicator(
                      "PMTCTCCMotherQ: patients With One Or More Adult HIV flowsheet In PMTCT C C Mother",patientsWithOneOrMoreAdultHIVEncountersInPMTCTCCMother,
                       ParameterizableUtil
-                      .createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onDate=${endDate}"));
+                      .createParameterMappings("endDate=${endDate},startDate=${startDate},enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onDate=${endDate}"));
                 
                 CohortIndicator fivePMTCTCCMotherD = Indicators
                         .newCountIndicator(

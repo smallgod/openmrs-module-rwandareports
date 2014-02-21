@@ -13,11 +13,15 @@ import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InverseCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -37,7 +41,9 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAdd
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
 import org.openmrs.module.rwandareports.customcalculator.BMICalculation;
+import org.openmrs.module.rwandareports.filter.GroupStateFilter;
 import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -60,7 +66,8 @@ public class SetupPMTCTPregnancyMonthlyReport {
 	private int adultflowsheetnewvisitForm;
 	 private Concept nextVisitConcept;
 	private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
-	
+	private ProgramWorkflow treatmentGroup;
+	private ProgramWorkflowState onART;
 	public void setup() throws Exception {
 		
 		setupProperties();
@@ -72,7 +79,7 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		Properties props = new Properties();
 		props.put(
 		    "repeatingSections",
-		    "sheet:1,row:9,dataset:PatientsMissedRdv|sheet:2,row:9,dataset:PatientsWithLastCd4|sheet:3,row:9,dataset:PmtctWithlowBMI|sheet:4,row:9,dataset:ViralLoadAbov1000");
+		    "sheet:1,row:9,dataset:PatientsMissedRdv|sheet:2,row:9,dataset:PatientsWithLastCd4|sheet:3,row:9,dataset:PmtctWithlowBMI|sheet:4,row:9,dataset:ViralLoadAbov1000|sheet:5,row:9,dataset:PatientsNotOnART");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		Helper.saveReportDesign(design);
@@ -114,6 +121,11 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition4.setName("Patients in PMTCT With Viral load > 1000 in the last 6 months dataSetDefinition");
 		
+		
+		RowPerPatientDataSetDefinition dataSetDefinition5 = new RowPerPatientDataSetDefinition();
+		dataSetDefinition4.setName("List all patients currently enrolled in PMTCT Pregnancy program NOT on ART");
+		
+		
 
 		InProgramCohortDefinition patientsInpmtctProgram = Cohorts.createInProgramParameterizableByDate(
 		    "patientsInpmtctProgram", pmtctProgram);
@@ -121,28 +133,31 @@ public class SetupPMTCTPregnancyMonthlyReport {
     	dataSetDefinition2.addFilter(patientsInpmtctProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		dataSetDefinition3.addFilter(patientsInpmtctProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		dataSetDefinition4.addFilter(patientsInpmtctProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+		dataSetDefinition5.addFilter(patientsInpmtctProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+		
 		
 		SqlCohortDefinition patientsNotVoided = Cohorts.createPatientsNotVoided();
 		dataSetDefinition1.addFilter(patientsNotVoided, new HashMap<String, Object>());
 		dataSetDefinition2.addFilter(patientsNotVoided, new HashMap<String, Object>());
 		dataSetDefinition3.addFilter(patientsNotVoided, new HashMap<String, Object>());
 		dataSetDefinition4.addFilter(patientsNotVoided, new HashMap<String, Object>());
+		dataSetDefinition5.addFilter(patientsNotVoided, new HashMap<String, Object>());
 		
 		//==================================================================
-		//  1. Patients who have missed their visit by more than a week in pmtct program
+		//  1. Patients who have missed their visit by more than one month in pmtct program
 		//==================================================================
 
-		SqlCohortDefinition missedRdvbymorethanaWeekd=new SqlCohortDefinition("select o.person_id from obs o, (select * from " +
+		SqlCohortDefinition missedRdvbymorethanOneMonth=new SqlCohortDefinition("select o.person_id from obs o, (select * from " +
 		  		"(select * from encounter where encounter_type="+adultHivFlowsheet.getEncounterTypeId()+" or form_id="+adultflowsheetnewvisitForm+" and voided=0 order by encounter_datetime desc) " +
 		  		"as e group by patient_id) as last_encounters where last_encounters.encounter_id=o.encounter_id and last_encounters.encounter_datetime<o.value_datetime and o.voided=0 " +
-		  		"and o.concept_id="+nextVisitConcept.getConceptId()+" and DATEDIFF(:endDate,o.value_datetime)>7 ");
-		missedRdvbymorethanaWeekd.setName("missedRdvbymorethanaWeek");
-		missedRdvbymorethanaWeekd.addParameter(new Parameter("endDate", "endDate", Date.class));
+		  		"and o.concept_id="+nextVisitConcept.getConceptId()+" and DATEDIFF(:endDate,o.value_datetime)>30 ");
+		missedRdvbymorethanOneMonth.setName("missedRdvbymorethanOneMonth");
+		missedRdvbymorethanOneMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
 		 
-		 dataSetDefinition1.addFilter(missedRdvbymorethanaWeekd,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		 dataSetDefinition1.addFilter(missedRdvbymorethanOneMonth,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		//==================================================================
-		//  2. Patients in PMTCT program with No CD4 in the last 6 months
+		//  2. Patients in PMTCT program with No CD4 in the last 12 months
 		//==================================================================
 
 		 NumericObsCohortDefinition cd4CohortDefinition = Cohorts.createNumericObsCohortDefinition("cd4CohortDefinition",
@@ -158,7 +173,7 @@ public class SetupPMTCTPregnancyMonthlyReport {
 			patientsWithouthCD4RecordComposition.setCompositionString("NOT cd4CohortDefinition");
 			
 			dataSetDefinition2.addFilter(patientsWithouthCD4RecordComposition,
-			    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-6m}"));
+			    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m}"));
 		//==================================================================
 		//   3. Patients with BMI less than 16.0
 		//==================================================================
@@ -182,8 +197,17 @@ public class SetupPMTCTPregnancyMonthlyReport {
 				viralLoadGreaterThan1000InLast6Months.addParameter(new Parameter("beforeDate", "beforeDate", Date.class));
 				viralLoadGreaterThan1000InLast6Months.addParameter(new Parameter("onDate", "onDate", Date.class));
 				viralLoadGreaterThan1000InLast6Months.addParameter(new Parameter("location", "location", Location.class));
-				dataSetDefinition4.addFilter(viralLoadGreaterThan1000InLast6Months,ParameterizableUtil.createParameterMappings("beforeDate=${endDate-6m},onDate=${endDate}"));
+				dataSetDefinition4.addFilter(viralLoadGreaterThan1000InLast6Months,ParameterizableUtil.createParameterMappings("beforeDate=${endDate-12m},onDate=${endDate}"));
+	
+		//==================================================================
+		//	5.  patients currently enrolled in PMTCT Pregnancy program NOT on ART
+		//==================================================================
 				
+			InStateCohortDefinition onARTStatusCohort = Cohorts.createInProgramStateParameterizableByDate("onARTStatusCohort",
+					    onART);
+			InverseCohortDefinition		notOnARTStatusCohort=new InverseCohortDefinition(onARTStatusCohort);
+			dataSetDefinition5.addFilter(notOnARTStatusCohort, ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+					
 	
 		//==================================================================
 		//                 Columns of report settings
@@ -193,30 +217,35 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		dataSetDefinition2.addColumn(imbType, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(imbType, new HashMap<String, Object>());
 		dataSetDefinition4.addColumn(imbType, new HashMap<String, Object>());
+		dataSetDefinition5.addColumn(imbType, new HashMap<String, Object>());
 		
 		PatientProperty givenName = RowPerPatientColumns.getFirstNameColumn("familyName");
 		dataSetDefinition1.addColumn(givenName, new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(givenName, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(givenName, new HashMap<String, Object>());
 		dataSetDefinition4.addColumn(givenName, new HashMap<String, Object>());
+		dataSetDefinition5.addColumn(givenName, new HashMap<String, Object>());
 		
 		PatientProperty familyName = RowPerPatientColumns.getFamilyNameColumn("givenName");
 		dataSetDefinition1.addColumn(familyName, new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(familyName, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(familyName, new HashMap<String, Object>());
 		dataSetDefinition4.addColumn(familyName, new HashMap<String, Object>());
+		dataSetDefinition5.addColumn(familyName, new HashMap<String, Object>());
 		
 		PatientProperty gender = RowPerPatientColumns.getGender("Sex");
 		dataSetDefinition1.addColumn(gender, new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(gender, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(gender, new HashMap<String, Object>());
 		dataSetDefinition4.addColumn(gender, new HashMap<String, Object>());
+		dataSetDefinition5.addColumn(gender, new HashMap<String, Object>());
 		
 		DateOfBirthShowingEstimation birthdate = RowPerPatientColumns.getDateOfBirth("Date of Birth", "dd-MMM-yyyy", "dd-MMM-yyyy");
 		dataSetDefinition1.addColumn(birthdate, new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(birthdate, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(birthdate, new HashMap<String, Object>());
 		dataSetDefinition4.addColumn(birthdate, new HashMap<String, Object>());
+		dataSetDefinition5.addColumn(birthdate, new HashMap<String, Object>());
 		
 		MostRecentObservation cd4Countdate = RowPerPatientColumns.getMostRecentCD4("Most recent CD4", "dd-MMM-yyyy");
 		dataSetDefinition2.addColumn(cd4Countdate, new HashMap<String, Object>());
@@ -247,15 +276,29 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		
 		MostRecentObservation viralLoad = RowPerPatientColumns.getMostRecentViralLoad("Last viralLoad", "dd-MMM-yyyy");
 		dataSetDefinition4.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition1.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition2.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(viralLoad, new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(viralLoad, new HashMap<String, Object>());
+		
+		StateOfPatient txGroup = RowPerPatientColumns.getStateOfPatient("Group", pmtctProgram, treatmentGroup,
+			    new GroupStateFilter());
+		dataSetDefinition1.addColumn(txGroup, new HashMap<String, Object>());
+		dataSetDefinition2.addColumn(txGroup, new HashMap<String, Object>());
+		dataSetDefinition3.addColumn(txGroup, new HashMap<String, Object>());
+		dataSetDefinition4.addColumn(txGroup, new HashMap<String, Object>());
+		dataSetDefinition5.addColumn(txGroup, new HashMap<String, Object>());
 		
 		RecentEncounterType lastEncounterType = RowPerPatientColumns.getRecentEncounterType("Last visit type",
 			adultHivFlowsheetEncounter,"dd-MMM-yyyy", new LastEncounterFilter());
 		dataSetDefinition1.addColumn(lastEncounterType, new HashMap<String, Object>());
+		dataSetDefinition5.addColumn(lastEncounterType, new HashMap<String, Object>());
 		
 		DateDiff lateVisitInMonth = RowPerPatientColumns.getDifferenceSinceLastEncounter(
 		    "Late visit in months", adultHivFlowsheetEncounter, DateDiffType.MONTHS);
 		lateVisitInMonth.addParameter(new Parameter("endDate", "endDate", Date.class));
 		dataSetDefinition1.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition5.addColumn(lateVisitInMonth, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		MostRecentObservation returnVisitDate = RowPerPatientColumns.getMostRecentReturnVisitDate(
 		    "Date of missed appointment", null);
@@ -266,22 +309,26 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		dataSetDefinition2.addColumn(address1, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(address1, new HashMap<String, Object>());
 		dataSetDefinition4.addColumn(address1, new HashMap<String, Object>());
+		dataSetDefinition5.addColumn(address1, new HashMap<String, Object>());
 		
 		PatientRelationship accompagnateur = RowPerPatientColumns.getAccompRelationship("AccompName");
 		dataSetDefinition1.addColumn(accompagnateur, new HashMap<String, Object>());
 		dataSetDefinition2.addColumn(accompagnateur, new HashMap<String, Object>());
 		dataSetDefinition3.addColumn(accompagnateur, new HashMap<String, Object>());
 		dataSetDefinition4.addColumn(accompagnateur, new HashMap<String, Object>());
+		dataSetDefinition5.addColumn(accompagnateur, new HashMap<String, Object>());
 		
 		dataSetDefinition1.addParameter(new Parameter("location", "Location", Location.class));
 		dataSetDefinition2.addParameter(new Parameter("location", "Location", Location.class));
-    	        dataSetDefinition3.addParameter(new Parameter("location", "Location", Location.class));
+    	dataSetDefinition3.addParameter(new Parameter("location", "Location", Location.class));
 		dataSetDefinition4.addParameter(new Parameter("location", "Location", Location.class));
+		dataSetDefinition5.addParameter(new Parameter("location", "Location", Location.class));
 		
 		dataSetDefinition1.addParameter(new Parameter("endDate", "End Date", Date.class));
 		dataSetDefinition2.addParameter(new Parameter("endDate", "End Date", Date.class));
 		dataSetDefinition3.addParameter(new Parameter("endDate", "End Date", Date.class));
 		dataSetDefinition4.addParameter(new Parameter("endDate", "End Date", Date.class));
+		dataSetDefinition5.addParameter(new Parameter("endDate", "End Date", Date.class));
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("location", "${location}");
@@ -291,6 +338,8 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		reportDefinition.addDataSetDefinition("PatientsWithLastCd4", dataSetDefinition2, mappings);
 		reportDefinition.addDataSetDefinition("PmtctWithlowBMI", dataSetDefinition3, mappings);
 		reportDefinition.addDataSetDefinition("ViralLoadAbov1000", dataSetDefinition4, mappings);
+		reportDefinition.addDataSetDefinition("PatientsNotOnART", dataSetDefinition5,mappings);
+		
 		
 	}
 	
@@ -306,6 +355,13 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		nextVisitConcept=gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
 		onOrAfterOnOrBefore.add("onOrAfter");
 		onOrAfterOnOrBefore.add("onOrBefore");	
+		treatmentGroup = gp.getProgramWorkflow(GlobalPropertiesManagement.TREATMENT_GROUP_WORKFLOW,
+			    GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
+		
+		onART = gp.getProgramWorkflowState(GlobalPropertiesManagement.ON_ANTIRETROVIRALS_STATE,
+			    GlobalPropertiesManagement.TREATMENT_STATUS_WORKFLOW, GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
+			
+		
 	}
 	
 }
