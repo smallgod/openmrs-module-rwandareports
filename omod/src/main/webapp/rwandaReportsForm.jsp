@@ -56,6 +56,37 @@ $(document).ready(function(){
 </script>
 <div id="msg"></div>
 <h2>Register Reports for IMB Rwanda</h2>
+
+<br />
+<br />
+<h3>Category Register/Remove Reports</h3>
+<br /><br />
+
+<table class="reports" style="width:100%;">
+<tr><th>ALL</th><th>HIV</th><th>NCD</th><th>ONCOLOGY</th><th>CENTRAL</th><th>SITE</th><th>PRIMARY CARE</th><th>CHW</th></tr>
+
+<tr>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allReports.form" onclick=msgreg(this)>(Re)Register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allHIVReports.form" onclick=msgreg(this)>(Re)Register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allNCDReports.form" onclick=msgreg(this)>(Re)Register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allOncologyReport.form" onclick=msgreg(this)>(Re)Register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allCentralReports.form" onclick=msgreg(this)>(Re)Register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allSiteReports.form" onclick=msgreg(this)>(Re)Register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allPCReport.form" onclick=msgreg(this)>(Re)Register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allCHWReport.form" onclick=msgreg(this)>(Re)Register</a></td>
+</tr>
+<tr>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_all.form" onclick=msgrem(this)>Remove All </a></td>
+<td colspan="7"><center><b>The category remove is not yet available</b></center></td>
+</tr>
+
+</table>
+
+<br /><br />
+
+
+<h3>Individual Register/Remove Report</h3>
+<br /><br />
 <table class="reports" style="width:100%;">
 <tr class="tableheaders">
 <td>Categories</td>
