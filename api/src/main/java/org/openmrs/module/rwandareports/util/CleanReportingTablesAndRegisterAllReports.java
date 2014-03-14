@@ -142,8 +142,9 @@ public class CleanReportingTablesAndRegisterAllReports {
 			////new SetupHivArtRegisterReport(true).setup();
 			
 			new SetupCombinedHFCSPConsultationReport().setup();
-			new SetupPMTCTFoodDistributionReport().setup();
+			/*new SetupPMTCTFoodDistributionReport().setup();
 			new SetupPMTCTFormulaDistributionReport().setup();
+			*/
 			new SetupPMTCTPregnancyConsultationReport().setup(); 
 			
 			new SetupPediHIVConsultationSheet().setup();
@@ -180,11 +181,11 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupHIVResearchDataQualitySheet().setup();
 			new SetupHIVResearchExtractionSheet().setup();
 			new SetupIDProgramQuarterlyIndicatorReport().setup(); 
-			new SetupMonthlyCD4DeclineReport().setup();
-			new SetupMissingCD4Report().setup();
+			//new SetupMonthlyCD4DeclineReport().setup();
+			//new SetupMissingCD4Report().setup();
 			new SetupQuarterlyCrossSiteIndicatorByDistrictReport().setup();	
 			new SetupQuarterlyViralLoadReport().setup();
-			new SetupPMTCTFormCompletionSheet().setup();
+			//new SetupPMTCTFormCompletionSheet().setup();
 			new SetupEligibleForViralLoadReport().setup();
     }
 	public static void registerSiteReports() throws Exception {

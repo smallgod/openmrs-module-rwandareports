@@ -112,7 +112,7 @@ public class RwandaSetupReportsFormController {
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
-	@RequestMapping("/module/rwandareports/register_pmtctFoodDistributionSheet")
+	/*@RequestMapping("/module/rwandareports/register_pmtctFoodDistributionSheet")
 	public ModelAndView registerPmtctFoodDistribution() throws Exception {
 		new SetupPMTCTFoodDistributionReport().setup();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
@@ -135,7 +135,7 @@ public class RwandaSetupReportsFormController {
 		new SetupPMTCTFormulaDistributionReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
-
+*/
 	@RequestMapping("/module/rwandareports/register_pmtctPregnancyConsultationSheet")
 	public ModelAndView registerPmtctPregnancyConsultation() throws Exception {
 		new SetupPMTCTPregnancyConsultationReport().setup();
@@ -148,7 +148,7 @@ public class RwandaSetupReportsFormController {
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
-	@RequestMapping("/module/rwandareports/register_pmtctFormCompletionSheet")
+	/*@RequestMapping("/module/rwandareports/register_pmtctFormCompletionSheet")
 	public ModelAndView registerPmtctFormCompletionSheet() throws Exception {
 		new SetupPMTCTFormCompletionSheet().setup();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
@@ -158,7 +158,7 @@ public class RwandaSetupReportsFormController {
 	public ModelAndView removePmtctFormCompletionSheet() throws Exception {
 		new SetupPMTCTFormCompletionSheet().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
-	}
+	}*/
 
 	// Consult sheets
 	@RequestMapping("/module/rwandareports/register_pediHIVConsultationSheet")
@@ -265,7 +265,7 @@ public class RwandaSetupReportsFormController {
 
 	// end of Heart failure report
 
-	@RequestMapping("/module/rwandareports/register_missingCD4Report")
+/*	@RequestMapping("/module/rwandareports/register_missingCD4Report")
 	public ModelAndView registerMissingCD4Report() throws Exception {
 		new SetupMissingCD4Report().setup();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
@@ -276,7 +276,7 @@ public class RwandaSetupReportsFormController {
 		new SetupMissingCD4Report().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
-
+*/
 	@RequestMapping("/module/rwandareports/register_dataQualityReport")
 	public ModelAndView registerDataQualityReport() throws Exception {
 		new SetupDataQualityIndicatorReport().setup();
@@ -341,7 +341,7 @@ public class RwandaSetupReportsFormController {
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
-	@RequestMapping("/module/rwandareports/register_monthlyCD4Decline")
+	/*@RequestMapping("/module/rwandareports/register_monthlyCD4Decline")
 	public ModelAndView registerMonthlyCD4Decline() throws Exception {
 		new SetupMonthlyCD4DeclineReport().setup();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
@@ -351,7 +351,7 @@ public class RwandaSetupReportsFormController {
 	public ModelAndView removeMonthlyCD4Decline() throws Exception {
 		new SetupMonthlyCD4DeclineReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
-	}
+	}*/
 
 	@RequestMapping("/module/rwandareports/register_hivResearchDataExtraction")
 	public ModelAndView registerHivResearchDataExtractionReport()
