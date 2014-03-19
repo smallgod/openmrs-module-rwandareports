@@ -12,6 +12,7 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculation;
 import org.openmrs.module.rowperpatientreports.patientdata.result.AllObservationValuesResult;
+import org.openmrs.module.rowperpatientreports.patientdata.result.DateValueResult;
 import org.openmrs.module.rowperpatientreports.patientdata.result.ObservationResult;
 import org.openmrs.module.rowperpatientreports.patientdata.result.PatientAttributeResult;
 import org.openmrs.module.rowperpatientreports.patientdata.result.PatientDataResult;
@@ -164,8 +165,23 @@ public class HIVAdultAlerts implements CustomCalculation{
 				else
 				{
 					height = Double.parseDouble(heightOb.getValue());
+					
 				}
 			}
+			
+			if(result.getName().equals("lastEncInMonth"))
+			  {
+				DateValueResult encinmonths = (DateValueResult)result;
+				if(encinmonths.getValue() != null)
+				{
+				Date dateVl =encinmonths.getDateOfObservation();
+				Date date = Calendar.getInstance().getTime();
+				int diff = calculateMonthsDifference(date, dateVl);
+				if(diff > 12){
+				alerts.append("LTFU determine status.\n");
+				     }
+				  } 	
+			  }
 			
 			if(result.getName().equals("IO") && result.getValue() != null)
 			{
