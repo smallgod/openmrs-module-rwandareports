@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
-
 import org.openmrs.Cohort;
 import org.openmrs.Location;
 import org.openmrs.annotation.Handler;
@@ -123,6 +122,9 @@ public class LocationHierachyIndicatorDataSetEvaluator implements DataSetEvaluat
 					    lhdsd.getBaseDefinition());
 				}
 			}
+		}
+		else if(location == null){
+			addIteration(ret, null, null, context, lhdsd.getBaseDefinition());
 		}
 		
 		return ret;

@@ -107,6 +107,11 @@ public class GlobalPropertiesManagement {
 
 	}
 	
+	public List<ProgramWorkflowState> getProgramWorkflowStateList(String globalPropertyName) {
+		String programGp = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
+		return MetadataLookup.getProgramWorkflowstateList(programGp);
+
+	}
 	public Map<Concept, Double> getVialSizes() {
 		Map<Concept, Double> vialSizes = new HashMap<Concept, Double>();
 		String vialGp =  Context.getAdministrationService().getGlobalProperty("reports.vialSizes");
@@ -307,6 +312,10 @@ public class GlobalPropertiesManagement {
 	public final static String PROSTATE_CANCER_STATE="reports.prostatecancer";
 	
 	public final static String STOMACH_CANCER_STATE="reports.stomachcancer";
+	
+    public final static String PMTCT_MOTHER_GROUP_STATES="reports.pmtctmotherstates";
+	
+	public final static String EXPOSED_INFANT_GROUP_STATES="reports.exposedInfantstates";
 	
 	//Identifiers
 	public final static String IMB_IDENTIFIER = "reports.imbIdIdentifier"; 

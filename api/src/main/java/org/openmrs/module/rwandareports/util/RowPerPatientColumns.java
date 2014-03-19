@@ -72,11 +72,13 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPat
 import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
 import org.openmrs.module.rowperpatientreports.patientdata.evaluator.DatesOfVisitsByStartDateAndEndDateEvaluator;
 import org.openmrs.module.rwandareports.customcalculator.BooleanCalculation;
+import org.openmrs.module.rwandareports.definition.AllMotherObservationValues;
 import org.openmrs.module.rwandareports.definition.ArtSwitch;
 import org.openmrs.module.rwandareports.definition.ArtSwitchDate;
 import org.openmrs.module.rwandareports.definition.CurrentPatientDrugOrder;
 import org.openmrs.module.rwandareports.definition.CurrentPatientProgram;
 import org.openmrs.module.rwandareports.definition.DrugRegimenInformation;
+import org.openmrs.module.rwandareports.definition.EvaluateMotherDefinition;
 import org.openmrs.module.rwandareports.definition.HIVOutcome;
 import org.openmrs.module.rwandareports.definition.LastWeekMostRecentObservation;
 import org.openmrs.module.rwandareports.definition.RegimenDateInformation;
@@ -555,6 +557,20 @@ public class RowPerPatientColumns {
 
 	}
 
+	public static MostRecentObservation getMostRecentIO(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.OPPORTUNISTIC_INFECTIONS),
+				dateFormat);
+	}
+	
+	public static MostRecentObservation getMostRecenSideEffect(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.ADVERSE_EFFECT_CONCEPT),
+				dateFormat);
+	}
+	
 	public static MostRecentObservation getMostRecentHeight(String name,
 			String dateFormat, ResultFilter resultFilter) {
 		return getMostRecent(name,
@@ -697,7 +713,20 @@ public class RowPerPatientColumns {
 				gp.getConcept(GlobalPropertiesManagement.IO_CONCEPT),
 				encounterType);
 	}
-
+	public static AllMotherObservationValues getAllMotherCD4Values(String name,
+			String dateFormat, ResultFilter resultFilter,
+			ResultFilter outputFilter) {
+		return getAllMotherObservationValues(name,
+				gp.getConcept(GlobalPropertiesManagement.CD4_TEST), dateFormat,
+				resultFilter, outputFilter);
+	}
+	public static AllMotherObservationValues getAllMotherWeightValues(String name,
+			String dateFormat, ResultFilter resultFilter,
+			ResultFilter outputFilter) {
+		return getAllMotherObservationValues(name,
+				gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT), dateFormat,
+				resultFilter, outputFilter);
+	}
 	public static ObservationInMostRecentEncounterOfType getSideEffectInMostRecentEncounterOfType(
 			String name, EncounterType encounterType) {
 		return getObservationInMostRecentEncounterOfType(name,
@@ -850,7 +879,6 @@ public class RowPerPatientColumns {
 		}
 		return mostRecent;
 	}
-
 	public static LastWeekMostRecentObservation getLastWeekMostRecent(
 			String name, Concept concept, String dateFormat,
 			ResultFilter resultFilter) {
@@ -861,7 +889,6 @@ public class RowPerPatientColumns {
 		}
 		return mostRecent;
 	}
-
 	public static AllObservationValues getAllObservationValues(String name,
 			Concept concept, String dateFormat, ResultFilter resultFilter,
 			ResultFilter outputFilter) {
@@ -879,7 +906,6 @@ public class RowPerPatientColumns {
 		}
 		return allObs;
 	}
-
 	public static AllObservationValues getAllObservationValuesBeforeEndDate(
 			String name, Concept concept, int minResults, String dateFormat,
 			ResultFilter resultFilter, ResultFilter outputFilter) {
@@ -889,7 +915,6 @@ public class RowPerPatientColumns {
 		allObs.setMinResultsOutput(minResults);
 		return allObs;
 	}
-
 	public static ObservationInMostRecentEncounterOfType getObservationInMostRecentEncounterOfType(
 			String name, Concept concept, EncounterType encounterType,
 			ResultFilter resultFilter) {
@@ -906,6 +931,23 @@ public class RowPerPatientColumns {
 			oe.setFilter(resultFilter);
 		}
 		return oe;
+	}
+	public static AllMotherObservationValues getAllMotherObservationValues(String name,
+			Concept concept, String dateFormat, ResultFilter resultFilter,
+			ResultFilter outputFilter) {
+		AllMotherObservationValues allObs = new AllMotherObservationValues();
+		allObs.setConcept(concept);
+		allObs.setName(name);
+		if (resultFilter != null) {
+			allObs.setFilter(resultFilter);
+		}
+		if (dateFormat != null) {
+			allObs.setDateFormat(dateFormat);
+		}
+		if (outputFilter != null) {
+			allObs.setOutputFilter(outputFilter);
+		}
+		return allObs;
 	}
 
 	public static ObservationInMostRecentEncounter getObservationInMostRecentEncounter(
@@ -1036,7 +1078,14 @@ public class RowPerPatientColumns {
 
 		return ovadood;
 	}
-
+	public static EvaluateMotherDefinition getDefinitionForOtherPersonObs(
+			String name, PersonData person, RowPerPatientData definition) {
+		EvaluateMotherDefinition otherDef = new EvaluateMotherDefinition();
+		otherDef.setPersonData(person, new HashMap<String, Object>());
+		otherDef.setDefinition(definition, new HashMap<String, Object>());
+		otherDef.setName(name);
+		return otherDef;
+	}
 	public static BaselineObservation getBaselineObservation(String name,
 			Concept concept, int before, int after,
 			DateOfPatientData patientData, String dateFormat) {

@@ -3297,6 +3297,18 @@
 	</globalProperty>
 	
 	<globalProperty>
+		<property>reports.exposedInfantstates</property>
+		<defaultValue>640,641,642,643,644,710,711,712</defaultValue>
+		<description>The current states for Exposed Infant program</description>
+	</globalProperty>
+	
+	<globalProperty>
+	<property>reports.pmtctmotherstates</property>
+		<defaultValue>645,646,647,648</defaultValue>
+		<description>The current states for PMTCT mother program</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>reports.schoolassistance</property>
 		<defaultValue>3cda05de-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>uuid for school assistance recommended concept</description>

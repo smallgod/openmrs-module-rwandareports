@@ -58,6 +58,7 @@ import org.openmrs.module.rwandareports.reporting.SetupOncologyExternalBiopsyCon
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientAppointmentList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicMissedVisit;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicPatientList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
@@ -142,9 +143,8 @@ public class CleanReportingTablesAndRegisterAllReports {
 			////new SetupHivArtRegisterReport(true).setup();
 			
 			new SetupCombinedHFCSPConsultationReport().setup();
-			/*new SetupPMTCTFoodDistributionReport().setup();
+			new SetupPMTCTFoodDistributionReport().setup();
 			new SetupPMTCTFormulaDistributionReport().setup();
-			*/
 			new SetupPMTCTPregnancyConsultationReport().setup(); 
 			
 			new SetupPediHIVConsultationSheet().setup();
@@ -181,11 +181,11 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupHIVResearchDataQualitySheet().setup();
 			new SetupHIVResearchExtractionSheet().setup();
 			new SetupIDProgramQuarterlyIndicatorReport().setup(); 
-			//new SetupMonthlyCD4DeclineReport().setup();
-			//new SetupMissingCD4Report().setup();
+			new SetupMonthlyCD4DeclineReport().setup();
+			new SetupMissingCD4Report().setup();
 			new SetupQuarterlyCrossSiteIndicatorByDistrictReport().setup();	
 			new SetupQuarterlyViralLoadReport().setup();
-			//new SetupPMTCTFormCompletionSheet().setup();
+			new SetupPMTCTFormCompletionSheet().setup();
 			new SetupEligibleForViralLoadReport().setup();
     }
 	public static void registerSiteReports() throws Exception {
@@ -201,8 +201,9 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupOncologyOutpatientClinicPatientList().setup();
 			new SetupOncologyOutpatientClinicMissedVisit().setup();
 			new SetupOncologyOutpatientAppointmentList().setup();
+			new SetupOncologyQuarterlyIndicatorReport().setup();
 			new SetupOncologyTestPatientList().setup();
-			new SetupOncologyExternalBiopsyContactList().setup();
+			new SetupOncologyExternalBiopsyContactList().setup();	
     }
 	public static void registerCHWReports() {
 	    
