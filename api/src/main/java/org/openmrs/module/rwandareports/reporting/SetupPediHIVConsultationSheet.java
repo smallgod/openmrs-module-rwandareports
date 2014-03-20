@@ -79,7 +79,6 @@ public class SetupPediHIVConsultationSheet {
 		Helper.saveReportDesign(design2);
 		
 		ReportDesign design3 = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "BactrimSheet.xls", "Bactrim.xls_", null);
-		
 		Properties props3 = new Properties();
 		props3.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
 		props3.put("sortWeight","5000");
@@ -148,11 +147,11 @@ public class SetupPediHIVConsultationSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfBirth("DOB", "dd-MMM-yyyy", "yyyy"),
 		    new HashMap<String, Object>());
 		
-		MostRecentObservation cd4Test = RowPerPatientColumns.getMostRecentCD4("CD4Test", "dd-MMM-yyyy",
-		    new RemoveDecimalFilter());
+		MostRecentObservation cd4Test = RowPerPatientColumns.getMostRecentCD4("CD4Test", "@ddMMMyy",
+		new RemoveDecimalFilter());
 		dataSetDefinition.addColumn(cd4Test, new HashMap<String, Object>());
 		
-		MostRecentObservation cd4Percent = RowPerPatientColumns.getMostRecentCD4Percentage("CD4Percent", "dd-MMM-yyyy");
+		MostRecentObservation cd4Percent = RowPerPatientColumns.getMostRecentCD4Percentage("CD4Percent", "@ddMMMyy");
 		dataSetDefinition.addColumn(cd4Percent,
 		    new HashMap<String, Object>());
 		
