@@ -87,8 +87,6 @@ public class SetupDataQualityIndicatorReport {
 	private List<String> onOrAfterOnOrBeforeParamterNames = new ArrayList<String>();
 	private RelationshipType motherChildRelationship;
 	private List<Program> allPrograms = new ArrayList<Program>();
-	private List<ProgramWorkflowState> allMotherGroupStates=new ArrayList<ProgramWorkflowState>();
-	private List<ProgramWorkflowState> allInfantsGroupStates=new ArrayList<ProgramWorkflowState>();
 	private List<Concept> allArtConceptDrug = new ArrayList<Concept>();
 	private Concept onAntiretroviral;
 	private OrderType drugOrderType;
@@ -860,11 +858,24 @@ public class SetupDataQualityIndicatorReport {
 		// =====================================================================================
 		
 		String infantprogramWorkflowsStates = null;
-		for (ProgramWorkflowState states : allInfantsGroupStates) {
-			infantprogramWorkflowsStates = infantprogramWorkflowsStates + ","
-					+ states.getId();
+		StringBuilder infantTreatmentGroupStates=new StringBuilder();
+		
+		for (ProgramWorkflow programWorkflow : pmtctCombinedClinicInfant.getAllWorkflows()) {
+			if(programWorkflow.getConcept().getName().toString().equalsIgnoreCase("TREATMENT GROUP")){
+				int check=0;
+				for (ProgramWorkflowState programWorkflowState : programWorkflow.getStates()) {
+					if(check!=0){
+						infantTreatmentGroupStates.append(",");
+						infantTreatmentGroupStates.append(programWorkflowState.getId());						
+					}
+					else{
+						infantTreatmentGroupStates.append(programWorkflowState.getId());
+					}
+					check++;
+				}
+			}
 		}
-		System.out.println("holahola "+allInfantsGroupStates);
+		infantprogramWorkflowsStates=infantTreatmentGroupStates.toString();		
 		
 		SqlCohortDefinition infantsInGroups = new SqlCohortDefinition(
 		"SELECT distinct p.patient_id FROM patient p, patient_program pp, patient_state ps " +
@@ -885,10 +896,25 @@ public class SetupDataQualityIndicatorReport {
      // 23. PMTCT Pregnancy without a treatment group
      // =====================================================================================
 		String motherprogramWorkflowsStates = null;
-		for (ProgramWorkflowState states : allMotherGroupStates) {
-			motherprogramWorkflowsStates = motherprogramWorkflowsStates + ","
-					+ states.getId();
+		StringBuilder treatmentGroupStates=new StringBuilder();
+		
+		for (ProgramWorkflow programWorkflow : pmtct.getAllWorkflows()) {
+			if(programWorkflow.getConcept().getName().toString().equalsIgnoreCase("TREATMENT GROUP")){
+				int check=0;
+				for (ProgramWorkflowState programWorkflowState : programWorkflow.getStates()) {
+					if(check!=0){
+						treatmentGroupStates.append(",");
+						treatmentGroupStates.append(programWorkflowState.getId());						
+					}
+					else{
+						treatmentGroupStates.append(programWorkflowState.getId());
+					}
+					check++;
+				}
+			}
 		}
+		motherprogramWorkflowsStates=treatmentGroupStates.toString();
+		
 		SqlCohortDefinition pregnancyMothersInGroups = new SqlCohortDefinition(
 		"SELECT distinct p.patient_id FROM patient p, patient_program pp, patient_state ps " +
 		"WHERE ps.patient_program_id = pp.patient_program_id AND pp.patient_id = p.patient_id " +
@@ -1324,8 +1350,6 @@ public class SetupDataQualityIndicatorReport {
 				.getOrderType(GlobalPropertiesManagement.DRUG_ORDER_TYPE);
 		transfeInEncounterType = gp
 				.getEncounterType(GlobalPropertiesManagement.TRANSFER_IN_ENCOUNTER_TYPE);
-		allInfantsGroupStates=gp.getProgramWorkflowStateList(GlobalPropertiesManagement.EXPOSED_INFANT_GROUP_STATES);
-		allMotherGroupStates=gp.getProgramWorkflowStateList(GlobalPropertiesManagement.PMTCT_MOTHER_GROUP_STATES);
 	}
 
 	private ReportDesign createCustomWebRenderer(ReportDefinition rd,
