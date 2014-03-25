@@ -147,7 +147,7 @@ public class SetupPediHIVConsultationSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfBirth("DOB", "dd-MMM-yyyy", "yyyy"),
 		    new HashMap<String, Object>());
 		
-		MostRecentObservation cd4Test = RowPerPatientColumns.getMostRecentCD4("CD4Test", "dd-MMM-yyyy",
+		MostRecentObservation cd4Test=RowPerPatientColumns.getMostRecentCD4("CD4Test", "dd-MMM-yyyy", 
 		new RemoveDecimalFilter());
 		dataSetDefinition.addColumn(cd4Test, new HashMap<String, Object>());
 		
