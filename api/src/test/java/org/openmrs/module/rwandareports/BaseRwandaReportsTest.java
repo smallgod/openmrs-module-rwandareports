@@ -13,11 +13,8 @@
  */
 package org.openmrs.module.rwandareports;
 
-import ch.vorburger.mariadb4j.DB;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.ObjectUtil;
@@ -30,27 +27,22 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Abstract class for testing Rwanda Reports
  */
 public abstract class BaseRwandaReportsTest extends BaseModuleContextSensitiveTest {
 
-	protected TestDataManager tdm;
-
 	public BaseRwandaReportsTest() {
 		super();
-		tdm = new TestDataManager();
 	}
 
 	protected abstract void setupTestData();
 
 	@Override
 	public Boolean useInMemoryDatabase() {
-		return false;
+		return true;
 	}
 
 	@Before
@@ -63,18 +55,6 @@ public abstract class BaseRwandaReportsTest extends BaseModuleContextSensitiveTe
 	public void teardownRwandaReports() throws Exception {
 		// TODO: If needed, here is where we need to iterate over the data created in "tdm" and delete from DB
 		// TODO: Though we should check to see if rolling back transactions will do this for us
-	}
-
-	@Override
-	public Properties getRuntimeProperties() {
-		Properties p = super.getRuntimeProperties();
-		p.setProperty("junit.username", "admin");
-		p.setProperty("junit.password", "Test1234");
-		p.setProperty("connection.username", "root");
-		p.setProperty("connection.password", "");
-		p.setProperty("connection.url", "jdbc:mysql://localhost:3307/test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8");
-		p.setProperty("hibernate.show_sql", "false");
-		return p;
 	}
 
 	public ReportDefinitionService getReportDefinitionService() {
