@@ -666,6 +666,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String DEATH_UNKNOWN_REASON="reports.deathunknownreason";
 	
+	public final static String CHEMOTHERAPY_INPATIENT_WARD_VISIT_DATE="reports.ChemotherapyInpatientWardVisit";
+	
+	public final static String CHEMOTHERAPY_INFUSION_CENTER_VISIT_DATE="reports.ChemotherapyInfusionCenterVisit";
+	
 	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
@@ -821,6 +825,8 @@ public class GlobalPropertiesManagement {
 	public final static String OUTPATIENT_CLINIC_VISITS_FORM="reports.outpatientClinicVisitsForm";
 	
 	public final static String ONCOLOGY_EXIT_FORM="reports.oncologyExitForm";
+	
+	public final static String ONCOLOGY_SCHEDULE_APPOINTMENT_FORM="reports.OncologyScheduleAppointmentForm";
 	
 	//Drug concepts
 	public final static String FUROSEMIDE= "reports.furosemide";

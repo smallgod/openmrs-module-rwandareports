@@ -3439,6 +3439,25 @@
 		<property>reports.oncochangeInDemo</property>
 		<defaultValue>67bae82e-38a6-4bec-b55a-1a4204c9ade8</defaultValue>
 		<description>concept uuid for change in demographics form</description>
+	</globalProperty> 
+	
+	<globalProperty>
+		<property>reports.OncologyScheduleAppointmentForm</property>
+		<defaultValue>198</defaultValue>
+		<description>form id for Oncology Schedule Appointment  form</description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.ChemotherapyInpatientWardVisit</property>
+		<defaultValue>6de4e3ee-fe8d-427e-b38f-1703e80f8513</defaultValue>
+		<description>uuid or id for Chemotherapy Inpatient Ward Visit date concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.ChemotherapyInfusionCenterVisit</property>
+		<defaultValue>9e597e90-b8c9-4784-82ff-2cc2420c62b7</defaultValue>
+		<description>uuid or id for Chemotherapy infusion center visit scheduled date concept</description>
+	</globalProperty>
+	
 		
 </module>
