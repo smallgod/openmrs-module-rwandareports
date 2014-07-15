@@ -346,15 +346,17 @@ public class SetupTracNetRwandaReportBySite {
           PatientStateCohortDefinition onFollowingEver = Cohorts.createPatientStateEverCohortDefinition("onFollowingEver", OnFollowingstates);      
           CompositionCohortDefinition everOnPreArtduringPeriod = new CompositionCohortDefinition();
           everOnPreArtduringPeriod.addParameter(new Parameter("endDate","endDate",Date.class));
+          everOnPreArtduringPeriod.addParameter(new Parameter("startDate","startDate",Date.class));
           everOnPreArtduringPeriod.setName("TR:everOnPreArtduringPeriod");
-          everOnPreArtduringPeriod.getSearches().put("1",new Mapped<CohortDefinition>(enrolledInAdultProgram, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+          everOnPreArtduringPeriod.getSearches().put("1",new Mapped<CohortDefinition>(enrolledInAdultProgram, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
           everOnPreArtduringPeriod.getSearches().put("2",new Mapped<CohortDefinition>(onFollowingEver, null));
           everOnPreArtduringPeriod.setCompositionString("1 AND 2");
            
           CompositionCohortDefinition pedienrolledInHIVCareUnder15 = new CompositionCohortDefinition();
           pedienrolledInHIVCareUnder15.addParameter(new Parameter("endDate","endDate",Date.class));
+          pedienrolledInHIVCareUnder15.addParameter(new Parameter("startDate","startDate",Date.class));
           pedienrolledInHIVCareUnder15.setName("TR:pedienrolledInHIVCareUnder15");
-          pedienrolledInHIVCareUnder15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+          pedienrolledInHIVCareUnder15.getSearches().put("1",new Mapped<CohortDefinition>(everOnPreArtduringPeriod, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
           pedienrolledInHIVCareUnder15.getSearches().put("2",new Mapped<CohortDefinition>(under15YrsAtEnrol,null));
           pedienrolledInHIVCareUnder15.setCompositionString("1 AND 2");
           CohortIndicator under15InHIVcareInAllProgram=Indicators.newCohortIndicator("TR:under15InHIVcareInAllProgram", pedienrolledInHIVCareUnder15, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
@@ -1013,10 +1015,10 @@ public class SetupTracNetRwandaReportBySite {
           //27 Number of ARV patients (age < 15) who have had their treatment interrupted this month
           SqlCohortDefinition pediArtDrugsInteruptedThisMonth = Cohorts.createUnder15yrsAtStartOfArtbyCompletedDuringP("TR:pediArtDrugsInteruptedThisMonth", pediatrichivProgram, pediOnART);
           SqlCohortDefinition adultArtDrugsInteruptedThisMonth = Cohorts.createOver15yrsAtStartOfArtbyCompletedDuringP("TR:adultArtDrugsInteruptedThisMonth", adulthivProgram, adultOnART);
-          CohortIndicator pediArtDrugsInteruptedThisMonthInd=Indicators.newCohortIndicator("adultsOnArtStateinWhostageXInd", pediArtDrugsInteruptedThisMonth,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+          CohortIndicator pediArtDrugsInteruptedThisMonthInd=Indicators.newCohortIndicator("pediArtDrugsInteruptedThisMonthInd", pediArtDrugsInteruptedThisMonth,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //28 Number of ARV patients (age 15+) who have had their treatment interrupted this month   
-          CohortIndicator adultArtDrugsInteruptedThisMonthInd=Indicators.newCohortIndicator("adultsOnArtStateinWhostageXInd", adultArtDrugsInteruptedThisMonth,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+          CohortIndicator adultArtDrugsInteruptedThisMonthInd=Indicators.newCohortIndicator("adultArtDrugsInteruptedThisMonthInd", adultArtDrugsInteruptedThisMonth,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
           
           //29 Number of ARV patients (age <15) who have died this month
           SqlCohortDefinition pediOnArtBeforeExitedFromCare = Cohorts.createArtOrPreArtAndActiveonPatientDiedORTransferedStateDuringPeriod("TR:pediOnArtBeforeExitedFromCare", pediatrichivProgram,pediOnART,pediPreAndArtDiedState);
@@ -1274,28 +1276,28 @@ public class SetupTracNetRwandaReportBySite {
            
            //Add global filters to the report
            //PRE-ART DATA ELEMENT
-           dsd.addColumn("1a","rwandareports.tracnetreport.indicator.preart.newPedsUnderEighteenMonthsInHivCare",new Mapped(newlyEnrolledInHIVCareunder18monthsInd, null), "");
-           dsd.addColumn("2a","rwandareports.tracnetreport.indicator.preart.newPedsUnderFiveInHivCare",new Mapped(newlyEnrolledInHIVCareunder5yrsInd,null),"");
-           dsd.addColumn("3a","rwandareports.tracnetreport.indicator.preart.newFemaleUnderFifteenInHivCare",new Mapped(femalesnewlyEnrolledInHIVCareunder15yrsInd,null),"");
-           dsd.addColumn("4a","rwandareports.tracnetreport.indicator.preart.newMaleUnderFifteenInHivCare",new Mapped(malesnewlyEnrolledInHIVCareunder15yrsInd,null),"");
-           dsd.addColumn("5a","rwandareports.tracnetreport.indicator.preart.newFemaleMoreThanFifteenInHivCare",new Mapped(femalesnewlyEnrolledInHIVCareOver15yrsInd,null),"");
-           dsd.addColumn("6a","rwandareports.tracnetreport.indicator.preart.newMaleMoreThanFifteenInHivCare",new Mapped(malesnewlyEnrolledInHIVCareOver15yrsInd,null),"");
-           dsd.addColumn("7a","rwandareports.tracnetreport.indicator.preart.pedUnderFifteenCurentlyInHiv",new Mapped(under15InHIVcareInAllProgram,null),"");
-           dsd.addColumn("8a","rwandareports.tracnetreport.indicator.preart.pedsOverFifteenCurentlyInHiv",new Mapped(pedienrolledInHIVCareOver15Indi,null),"");
-           dsd.addColumn("9a","rwandareports.tracnetreport.indicator.preart.femaleMoreThanFifteenEverInHiv",new Mapped(Over15FemalenHIVcareInd,null),"");
-           dsd.addColumn("10a","rwandareports.tracnetreport.indicator.preart.femalePedsUnderFifteenEverInHiv",new Mapped(under15FemaleInHIVcareInAllProgram,null),"");
-           dsd.addColumn("11a","rwandareports.tracnetreport.indicator.preart.maleMoreThanFifteenEverInHiv",new Mapped(Over15MalenHIVcareInd,null),"");
-           dsd.addColumn("12a","rwandareports.tracnetreport.indicator.preart.malePedsUnderFifteenEverInHiv",new Mapped(under15MalenHIVcare,null),"");
+           dsd.addColumn("1a","rwandareports.tracnetreport.indicator.preart.newPedsUnderEighteenMonthsInHivCare",new Mapped(newlyEnrolledInHIVCareunder18monthsInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+           dsd.addColumn("2a","rwandareports.tracnetreport.indicator.preart.newPedsUnderFiveInHivCare",new Mapped(newlyEnrolledInHIVCareunder5yrsInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+           dsd.addColumn("3a","rwandareports.tracnetreport.indicator.preart.newFemaleUnderFifteenInHivCare",new Mapped(femalesnewlyEnrolledInHIVCareunder15yrsInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+           dsd.addColumn("4a","rwandareports.tracnetreport.indicator.preart.newMaleUnderFifteenInHivCare",new Mapped(malesnewlyEnrolledInHIVCareunder15yrsInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+           dsd.addColumn("5a","rwandareports.tracnetreport.indicator.preart.newFemaleMoreThanFifteenInHivCare",new Mapped(femalesnewlyEnrolledInHIVCareOver15yrsInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+           dsd.addColumn("6a","rwandareports.tracnetreport.indicator.preart.newMaleMoreThanFifteenInHivCare",new Mapped(malesnewlyEnrolledInHIVCareOver15yrsInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+           dsd.addColumn("7a","rwandareports.tracnetreport.indicator.preart.pedUnderFifteenCurentlyInHiv",new Mapped(under15InHIVcareInAllProgram,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${endDate}")),"");
+           dsd.addColumn("8a","rwandareports.tracnetreport.indicator.preart.pedsOverFifteenCurentlyInHiv",new Mapped(pedienrolledInHIVCareOver15Indi,ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+           dsd.addColumn("9a","rwandareports.tracnetreport.indicator.preart.femaleMoreThanFifteenEverInHiv",new Mapped(Over15FemalenHIVcareInd,ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+           dsd.addColumn("10a","rwandareports.tracnetreport.indicator.preart.femalePedsUnderFifteenEverInHiv",new Mapped(under15FemaleInHIVcareInAllProgram,ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+           dsd.addColumn("11a","rwandareports.tracnetreport.indicator.preart.maleMoreThanFifteenEverInHiv",new Mapped(Over15MalenHIVcareInd,ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
+           dsd.addColumn("12a","rwandareports.tracnetreport.indicator.preart.malePedsUnderFifteenEverInHiv",new Mapped(under15MalenHIVcare,ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
            dsd.addColumn("13a","rwandareports.tracnetreport.indicator.preart.patientsOnCotrimoProphylaxis",new Mapped(patientsInHIVonCotrimoOrBactrimInd,null),"");
            dsd.addColumn("14a","rwandareports.tracnetreport.indicator.preart.patientsActiveTbAtEnrolThisMonth",new Mapped(screenedForTbInHIVProgramsIndi,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("15a","rwandareports.tracnetreport.indicator.preart.patientsTbPositiveAtEnrolThisMonth",new Mapped(screenedForTbPosInHIVProgramsInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
-           dsd.addColumn("16a","rwandareports.tracnetreport.indicator.preart.newEnrolledPedsStartTbTreatThisMonth",new Mapped(patientsOnTBdrugInHIvProgramsUnder15Ind,null),"");
-           dsd.addColumn("17a","rwandareports.tracnetreport.indicator.preart.newEnrolledAdultsStartTbTreatThisMonth",new Mapped(patientsOnTBdrugInHIvProgramsOver15Ind,null),"");
+           dsd.addColumn("16a","rwandareports.tracnetreport.indicator.preart.newEnrolledPedsStartTbTreatThisMonth",new Mapped(patientsOnTBdrugInHIvProgramsUnder15Ind,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+           dsd.addColumn("17a","rwandareports.tracnetreport.indicator.preart.newEnrolledAdultsStartTbTreatThisMonth",new Mapped(patientsOnTBdrugInHIvProgramsOver15Ind,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
            dsd.addColumn("18a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVDiedThisMonth",new Mapped(patientsDiedandNotOnARTInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("19a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTransferredInThisMonth",new Mapped(patientsTransferedIntAndnotOnARTInd,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("20a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTransferredOutThisMonth",new Mapped(patientsTransferedoutAndnotOnARTInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");  
            dsd.addColumn("21a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTLostToFollowUpThisMonth",new Mapped(patientsinHIVcareLostTofolowUpInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m},onOrBefore=${endDate}")),"");
-           dsd.addColumn("22a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTLostToFollowUpNotLostThisMonth",new Mapped(patientsinLostAndBackToPRogramThismonthInd,null),"");
+           dsd.addColumn("22a","rwandareports.tracnetreport.indicator.preart.patientsInPreARVTLostToFollowUpNotLostThisMonth",new Mapped(patientsinLostAndBackToPRogramThismonthInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");  
                                
            // ART DATA ELEMENTS
            dsd.addColumn("1b","rwandareports.tracnetreport.indicator.art.pedsUnderEighteenMonthsCurrentOnArv",new Mapped(pedsonARTStateHIVClinicInd,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},effectiveDate=${endDate}")),"");
@@ -1308,24 +1310,24 @@ public class SetupTracNetRwandaReportBySite {
            dsd.addColumn("8b","rwandareports.tracnetreport.indicator.art.maleMoreThanFifteenCurrentOnArv",new Mapped(malesOnArtStateinAllHIVProgramsInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")),"");
            dsd.addColumn("9b","rwandareports.tracnetreport.indicator.art.adultOnFirstLineReg",new Mapped(notoadultsOnCurrentKaletraDrugOrderInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")),"");
            dsd.addColumn("10b","rwandareports.tracnetreport.indicator.art.adultOnSecondLineReg",new Mapped(adultonCurrentKaletraDrugOrderCompoInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate}")),""); 
-           dsd.addColumn("11b","rwandareports.tracnetreport.indicator.art.newPedsUnderEighteenMonthStartArvThisMonth",new Mapped(pedsPatientsNotOnArtStateNotOnFolowingInd,null),"");  
-           dsd.addColumn("12b","rwandareports.tracnetreport.indicator.art.newPedsUnderFiveStartArvThisMonth",new Mapped(under5PatientsNotOnArtStateNotOnFolowingInd,null),"");  
-           dsd.addColumn("13b","rwandareports.tracnetreport.indicator.art.newFemalePedsUnderFifteenStartArvThisMonth",new Mapped(femalesPedsNotOnArtStateNotOnFolowingInd,null),"");  
-           dsd.addColumn("14b","rwandareports.tracnetreport.indicator.art.newMalePedsUnderFifteenStartArvThisMonth",new Mapped(malesPedsNotOnArtStateNotOnFolowingInd,null),"");
+           dsd.addColumn("11b","rwandareports.tracnetreport.indicator.art.newPedsUnderEighteenMonthStartArvThisMonth",new Mapped(pedsPatientsNotOnArtStateNotOnFolowingInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");  
+           dsd.addColumn("12b","rwandareports.tracnetreport.indicator.art.newPedsUnderFiveStartArvThisMonth",new Mapped(under5PatientsNotOnArtStateNotOnFolowingInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), ""); 
+           dsd.addColumn("13b","rwandareports.tracnetreport.indicator.art.newFemalePedsUnderFifteenStartArvThisMonth",new Mapped(femalesPedsNotOnArtStateNotOnFolowingInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");  
+           dsd.addColumn("14b","rwandareports.tracnetreport.indicator.art.newMalePedsUnderFifteenStartArvThisMonth",new Mapped(malesPedsNotOnArtStateNotOnFolowingInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
            dsd.addColumn("15b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageFourThisMonth",new Mapped(pediOnArtStateinWhostage4Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("16b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageThreeThisMonth",new Mapped(pediOnArtStateinWhostage3Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("17b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageTwoThisMonth",new Mapped(pediOnArtStateinWhostage2Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");  
            dsd.addColumn("18b","rwandareports.tracnetreport.indicator.art.newPedsWhoStageOneThisMonth",new Mapped(pediOnArtStateinWhostage1Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),""); 
            dsd.addColumn("19b","rwandareports.tracnetreport.indicator.art.newPedsUndefinedWhoStageThisMonth",new Mapped(pediOnArtStateInWhoStageXInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("20b","rwandareports.tracnetreport.indicator.art.newFemaleAdultStartiArvThisMonth",new Mapped(femaleAdultsadultsOnArtStateInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
-           dsd.addColumn("21b","rwandareports.tracnetreport.indicator.art.newMaleAdultStartiArvThisMonth",new Mapped(maleAdultsadultsOnArtStateInd,null),"");  
+           dsd.addColumn("21b","rwandareports.tracnetreport.indicator.art.newMaleAdultStartiArvThisMonth",new Mapped(maleAdultsadultsOnArtStateInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");  
            dsd.addColumn("22b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageFourThisMonth",new Mapped(adultsOnArtStateinWhostage4Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");  
            dsd.addColumn("23b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageThreeThisMonth",new Mapped(adultsOnArtStateinWhostage3Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("24b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageTwoThisMonth",new Mapped(adultsOnArtStateinWhostage2Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("25b","rwandareports.tracnetreport.indicator.art.newAdultWhoStageOneThisMonth",new Mapped(adultsOnArtStateinWhostage1Ind,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),""); 
            dsd.addColumn("26b","rwandareports.tracnetreport.indicator.art.newAdultUndefinedWhoStageThisMonth",new Mapped(adultsOnArtStateinWhostageXInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")),""); 
-           dsd.addColumn("27b","rwandareports.tracnetreport.indicator.art.arvPedsFifteenInterruptTreatThisMonth",new Mapped(pediArtDrugsInteruptedThisMonthInd,null),"");  
-           dsd.addColumn("28b","rwandareports.tracnetreport.indicator.art.arvAdultFifteenInterruptTreatThisMonth",new Mapped(adultArtDrugsInteruptedThisMonthInd,null),"");  
+           dsd.addColumn("27b","rwandareports.tracnetreport.indicator.art.arvPedsFifteenInterruptTreatThisMonth",new Mapped(pediArtDrugsInteruptedThisMonthInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+           dsd.addColumn("28b","rwandareports.tracnetreport.indicator.art.arvAdultFifteenInterruptTreatThisMonth",new Mapped(adultArtDrugsInteruptedThisMonthInd,ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), ""); 
            dsd.addColumn("29b","rwandareports.tracnetreport.indicator.art.arvPedsDiedThisMonth",new Mapped(preArtPediAndDiedThisMonthInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("30b","rwandareports.tracnetreport.indicator.art.arvAdultDiedThisMonth",new Mapped(preArtAdultAndDiedThisMonthInd,ParameterizableUtil.createParameterMappings("dateborn=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}")),"");
            dsd.addColumn("31b","rwandareports.tracnetreport.indicator.art.arvPedsLostFollowupMoreThreeMonths",new Mapped(pedsOnArtLostAndwithHIVFormsInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},dateborn=${endDate},onOrAfterDate=${startDate-3m},onOrBeforeDate=${startDate}")),"");  
