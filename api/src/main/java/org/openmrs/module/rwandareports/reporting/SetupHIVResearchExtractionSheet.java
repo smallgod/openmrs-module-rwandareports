@@ -737,6 +737,10 @@ public class SetupHIVResearchExtractionSheet {
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueID"), new HashMap<String, Object>());
 		
+		//system ID
+		dataSetDefinition.addColumn(RowPerPatientColumns.getSystemId("patientID"), new HashMap<String, Object>());
+		
+		
 		//hiv_pos_date - Date of HIV diagnosis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getHIVDiagnosisDate("diagnosis", "yyyy-MM-dd"), new HashMap<String, Object>());
 		
@@ -857,6 +861,7 @@ public class SetupHIVResearchExtractionSheet {
 		
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
+		
 		
 		//OI_pneu_art_start - acute pneumonia presumed bacterial
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_pneu_art_start", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerBeforeEndDate("OI_pneu_art_start", oiConcepts, pneumonia, 90, 30, artStart, "yyyy-MM-dd")), mappings);
@@ -1142,6 +1147,7 @@ public class SetupHIVResearchExtractionSheet {
 
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
+		
 		
 		//6 month Variables
 		//SE_anaph_06m - anaphylaxis	

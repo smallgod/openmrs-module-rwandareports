@@ -27,7 +27,7 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupChemotherapyExpectedPatientList {
+public class SetupOncologyOutpatientExpectedPatientList {
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
@@ -35,20 +35,26 @@ public class SetupChemotherapyExpectedPatientList {
 	private Program oncologyProgram;
 
 	private ProgramWorkflow diagnosis;
+   
+	private Concept scheduledVisit;
 	
-/*	private Concept chemotherapy;
-*/	
+	private Concept biopsyResultVisit;
+	
+	private Concept specialVisit;
+	
 	private Concept telephone;
 	
 	private Concept telephone2;
 	
 	private Concept confirmedDiagnosis;
+
 	
     private Form OncologyScheduleAppointmentForm;
     
-    private Concept ChemotherapyInpatientWardVisit;
+    private Form outpatientClinicVisitsForm;
     
-    private Concept ChemotherapyInfusionCenterVisit;
+   
+	private List<Concept> visitDates=new ArrayList<Concept>();
 	
 	private List<Form> visitForms=new ArrayList<Form>();
 	
@@ -59,50 +65,50 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDefinition rdInfusion = createInfusionReportDefinition();
+		/*ReportDefinition rdInfusion = createInfusionReportDefinition();
+		*/
 		
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "OncologyOutpatientExpectedPatientList.xls",
+		    "OncologyOutpatientExpectedPatientList.xls_", null);
 		
-		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "ChemotherapyExpectedPatientList.xls",
-		    "ChemotherapyPatientList.xls_", null);
-		
-		ReportDesign designInfusion = Helper.createRowPerPatientXlsOverviewReportDesign(rdInfusion, "ChemotherapyExpectedPatientListInfusion.xls",
+		/*ReportDesign designInfusion = Helper.createRowPerPatientXlsOverviewReportDesign(rdInfusion, "ChemotherapyExpectedPatientListInfusion.xls",
 			    "ChemotherapyPatientListInfusion.xls_", null);
-			
+		*/	
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:4,dataset:dataset2|sheet:2,row:7,dataset:dataset");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		Properties propsInfusion = new Properties();
+		/*Properties propsInfusion = new Properties();
 		propsInfusion.put("repeatingSections", "sheet:1,row:4,dataset:dataset2|sheet:2,row:7,dataset:dataset");
 		propsInfusion.put("sortWeight","5000");
 		designInfusion.setProperties(propsInfusion);
-		
+		*/
 		Helper.saveReportDesign(design);
 		
-		Helper.saveReportDesign(designInfusion);
+		/*Helper.saveReportDesign(designInfusion);*/
 	}
 	
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("ChemotherapyPatientList.xls_".equals(rd.getName())) {
+			if ("OncologyOutpatientExpectedPatientList.xls_".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
-			if ("ChemotherapyPatientListInfusion.xls_".equals(rd.getName())) {
+			/*if ("ChemotherapyPatientListInfusion.xls_".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
-			}
+			}*/
 		}
-		Helper.purgeReportDefinition("ONC-Oncology Expected Patient List - Inpatient Ward");
-		Helper.purgeReportDefinition("ONC-Oncology Expected Patient List - Infusion Center");
-		
+		Helper.purgeReportDefinition("ONC-Oncology Expected Patient List - Outpatient Ward");
+		/*Helper.purgeReportDefinition("ONC-Chemotherapy Expected Patient List - Infusion Center");
+		*/
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Oncology Expected Patient List - Inpatient Ward");
+		reportDefinition.setName("ONC-Oncology Expected Patient List - Outpatient Ward");
 					
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 	
@@ -113,10 +119,10 @@ public class SetupChemotherapyExpectedPatientList {
 		
 		return reportDefinition;
 	}
-private ReportDefinition createInfusionReportDefinition() {
+/*private ReportDefinition createInfusionReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Oncology Expected Patient List - Infusion Center");
+		reportDefinition.setName("ONC-Chemotherapy Expected Patient List - Infusion Center");
 					
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 	
@@ -126,7 +132,7 @@ private ReportDefinition createInfusionReportDefinition() {
 		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
-	}
+	}*/
 
 private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	// Create new dataset definition 
@@ -144,8 +150,8 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	dataSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
 	baseSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
 	*/
-	dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInpatientWardVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
-	baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInpatientWardVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
+	dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,visitDates), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
+	baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,visitDates), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
 	
 	
 	/*SortCriteria sortCriteria = new SortCriteria();
@@ -170,7 +176,9 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	
 	
 	//Add Columns
-	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", ChemotherapyInpatientWardVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
+	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDateScheduledVisit", scheduledVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
+	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDateBiopsyResultVisit", biopsyResultVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
+	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDateSpecialVisit", specialVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
 	
 	addCommonColumns(dataSetDefinition, baseSetDefinition);
 	
@@ -197,7 +205,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	
 }
 	
-	private void createInfusionDataSetDefinition(ReportDefinition reportDefinition) {
+	/*private void createInfusionDataSetDefinition(ReportDefinition reportDefinition) {
 		// Create new dataset definition 
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("Chemotherapy Patient List");
@@ -205,19 +213,19 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		RowPerPatientDataSetDefinition baseSetDefinition = new RowPerPatientDataSetDefinition();
 		baseSetDefinition.setName("Chemotherapy Base Patient List");
 		
-		/*UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
+		UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
 		baseCohort.setChemotherapyIndication(chemotherapy);
 		baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
 		baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
 		
 		dataSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
 		baseSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
-		*/
+		
 		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
 		baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
 		
 		
-		/*SortCriteria sortCriteria = new SortCriteria();
+		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("familyName", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
@@ -226,7 +234,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		baseSortCriteria.addSortElement("familyName", SortDirection.ASC);
 		baseSetDefinition.setSortCriteria(baseSortCriteria);
 		baseSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-		*/
+		
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
@@ -264,7 +272,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		
 		reportDefinition.addDataSetDefinition("dataset2", weekDataSetDefinition, baseMappings);
 		
-	}
+	}*/
 	
 	private void setupProperties() {
 		
@@ -272,28 +280,35 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		
 		diagnosis = gp.getProgramWorkflow(GlobalPropertiesManagement.DIAGNOSIS_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
-		/*chemotherapy = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY);*/
-		
 		telephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
 		
 		telephone2 = gp.getConcept(GlobalPropertiesManagement.SECONDARY_TELEPHONE_NUMBER_CONCEPT);
 		
 		OncologyScheduleAppointmentForm=gp.getForm(GlobalPropertiesManagement.ONCOLOGY_SCHEDULE_APPOINTMENT_FORM);
-		    
-		ChemotherapyInpatientWardVisit=gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY_INPATIENT_WARD_VISIT_DATE);
 		
-		ChemotherapyInfusionCenterVisit=gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY_INFUSION_CENTER_VISIT_DATE);
+		outpatientClinicVisitsForm=gp.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_FORM);		
+		
+		scheduledVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
+		
+		biopsyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_PATHOLOGY_RESULT_VISIT);
+		
+		specialVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SPECIAL_VISIT);
 		
 		visitForms.add(OncologyScheduleAppointmentForm);
+		visitForms.add(outpatientClinicVisitsForm);
 		
-		confirmedDiagnosis=gp.getConcept(GlobalPropertiesManagement.CONFIRMED_DIAGNOSIS_CONCEPT);
+		visitDates.add(scheduledVisit);
+		visitDates.add(biopsyResultVisit);
+		visitDates.add(specialVisit);
+		
+		confirmedDiagnosis=gp.getConcept(GlobalPropertiesManagement.CONFIRMED_DIAGNOSIS_CONCEPT);		
 		
 	}
 	
 	
 private void addCommonColumns(RowPerPatientDataSetDefinition dataSetDefinition,RowPerPatientDataSetDefinition baseSetDefinition){
 		
-	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDV",ChemotherapyInpatientWardVisit,"dd/MMM/yyyy",null), new HashMap<String, Object>());
+	//dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDV",ChemotherapyInpatientWardVisit,"dd/MMM/yyyy",null), new HashMap<String, Object>());
 	
 	
 	

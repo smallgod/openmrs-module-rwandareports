@@ -34,9 +34,11 @@ import org.openmrs.module.rwandareports.reporting.SetupNCDLateVisitandLTFUReport
 import org.openmrs.module.rwandareports.reporting.SetupOncologyDailyDrugList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyDataExtractionSheet;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyExternalBiopsyContactList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyInpatientClinicMissedVisit;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientAppointmentList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicMissedVisit;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicPatientList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
@@ -787,6 +789,45 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_oncologyquarterlyindicatorreport")
 	public ModelAndView removeOncologyQuarterlyIndicatorReport() throws Exception {
 		new SetupOncologyQuarterlyIndicatorReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	
+	// new oncology 
+	
+	@RequestMapping("/module/rwandareports/register_oncologyOutpatientExpectedPatientList")
+	public ModelAndView registerOncologyOutpatientExpectedPatientListReport() throws Exception {
+		new SetupOncologyOutpatientExpectedPatientList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_oncologyOutpatientExpectedPatientList")
+	public ModelAndView removeOncologyOutpatientExpectedPatientListReport() throws Exception {
+		new SetupOncologyOutpatientExpectedPatientList().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	/*@RequestMapping("/module/rwandareports/register_oncologyOutpatientClinicMissedVisit")
+	public ModelAndView registerOncologyOutpatientClinicMissedVisitReport() throws Exception {
+		new SetupOncologyOutpatientClinicMissedVisit().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_oncologyOutpatientClinicMissedVisit")
+	public ModelAndView removeOncologyOutpatientClinicMissedVisitReport() throws Exception {
+		new SetupOncologyOutpatientClinicMissedVisit().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}*/
+	
+	@RequestMapping("/module/rwandareports/register_oncologyInpatientClinicMissedVisit")
+	public ModelAndView registerOncologyInpatientClinicMissedVisitReport() throws Exception {
+		new SetupOncologyInpatientClinicMissedVisit().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_oncologyInpatientClinicMissedVisit")
+	public ModelAndView removeOncologyInpatientClinicMissedVisitReport() throws Exception {
+		new SetupOncologyInpatientClinicMissedVisit().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 

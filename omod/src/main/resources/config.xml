@@ -2543,6 +2543,24 @@
 		<description>The concept id for calculated body surface area
 		</description>
 	</globalProperty>
+	
+	
+	<globalProperty>
+		<property>reports.BSAVisitsForm</property>
+		<defaultValue>4beac39e-823c-408d-9e20-c9757d53542a</defaultValue>
+		<description>The form id for calculated body surface area
+		</description>
+	</globalProperty>
+	
+	
+	<globalProperty>
+		<property>reports.confirmedDiagnosisConcept</property>
+		<defaultValue>3dc2eb50-6981-43d3-b907-e3dd8b5ed620</defaultValue>
+		<description>The concept id for oncology confirmed diagnosis</description>
+	</globalProperty>
+	
+	
+	
 
 	<globalProperty>
 		<property>reports.oncAdminInstructions</property>
@@ -2856,7 +2874,7 @@
 
 	<globalProperty>
 		<property>reports.oncologyOutpatientScheduledVisit</property>
-		<defaultValue>c224989e-4d14-4880-b6b4-8208d6a1b786</defaultValue>
+		<defaultValue>a7aa7d20-3520-4d8a-9324-f7b8f6a3b109</defaultValue>
 		<description>The concept id for the scheduled outpatient clinic visit
 		</description>
 	</globalProperty>

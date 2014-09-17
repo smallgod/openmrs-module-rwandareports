@@ -1670,6 +1670,46 @@ public static SqlCohortDefinition getMondayToSundayPatientReturnVisit(List<Form>
 		cohortquery.addParameter(new Parameter("end", "end", Date.class));
 		return cohortquery;
 	}
+
+public static SqlCohortDefinition getMondayToSundayPatientReturnVisit(List<Form> forms,List<Concept> visitDates) {
+	
+	SqlCohortDefinition cohortquery = new SqlCohortDefinition();
+	//Concept returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+	StringBuilder formIds = new StringBuilder();
+	int i = 0;
+	for (Form form : forms) {
+		if (i == 0) {
+			formIds.append(form.getFormId());
+		} else {
+			formIds.append(",");
+			formIds.append(form.getFormId());
+		}
+		i++;
+	}
+	StringBuilder conceptIds = new StringBuilder();
+	
+	int j = 0;
+	for (Concept concept : visitDates) {
+		if (j == 0) {
+			conceptIds.append(concept.getConceptId());
+		} else {
+			conceptIds.append(",");
+			conceptIds.append(concept.getConceptId());
+		}
+		j++;
+	}
+	//cohortquery.setQuery("select o.person_id from obs o,(select * from (select * from encounter where (form_id="+asthmaDDBFormId+" or encounter_type="+flowsheetAsthmas.getEncounterTypeId()+") order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="+returnVisitDate.getConceptId()+" and o.value_datetime>=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)),'%Y-%m-%d')) and o.value_datetime<=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)+6),'%Y-%m-%d')) order by o.value_datetime");
+	cohortquery
+	        .setQuery("select o.person_id from obs o,(select * from (select * from encounter where form_id in ("
+	                + formIds.toString()
+	                + ")order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id in ("
+	                + conceptIds.toString()
+	                + ") and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
+	cohortquery.addParameter(new Parameter("start", "start", Date.class));
+	cohortquery.addParameter(new Parameter("end", "end", Date.class));
+	return cohortquery;
+}
+
 	
 	
 	public static SqlCohortDefinition createPatientsLateForVisit(List<Form> forms, EncounterType encounterType) {
@@ -1734,7 +1774,124 @@ public static SqlCohortDefinition getMondayToSundayPatientReturnVisit(List<Form>
 		return visit;
 	}
 	
-	public static CompositionCohortDefinition createPatientsLateForVisit(Concept concept, Form form) {
+	public static CompositionCohortDefinition createPatientsLateForVisit(List<Concept> concepts, List<Form> forms) {
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select lastObs.person_id from (select * from (select * from obs where voided = 0 and concept_id in (");		
+		boolean second = true;
+		for (Concept c : concepts) {
+			if (!second) {
+				sql.append(",");
+			}
+			
+			sql.append(c.getConceptId());
+			second = false;
+		}		
+		sql.append(") order by value_datetime desc) as o group by o.person_id) as lastObs, (select * from (select * from encounter where form_id in (");
+		boolean first = true;
+		for (Form f : forms) {
+			if (!first) {
+				sql.append(",");
+			}
+			
+			sql.append(f.getFormId());
+			first = false;
+		}		
+		sql.append(")  and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where ");
+		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)>6 and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
+		
+		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
+		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		StringBuilder sql2 = new StringBuilder();
+		sql2.append("select o.person_id from obs o where o.voided=0 and o.concept_id in (");		
+		boolean third = true;
+		for (Concept c : concepts) {
+			if (!third) {
+				sql2.append(",");
+			}
+			
+			sql2.append(c.getConceptId());
+			third = false;
+		}		
+		sql2.append(") and DATEDIFF(:endDate,o.value_datetime)>6 and o.person_id not in(select patient_id from encounter where form_id in (");
+		boolean fourth = true;
+		for (Form f : forms) {
+			if (!fourth) {
+				sql2.append(",");
+			}
+			
+			sql2.append(f.getFormId());
+			fourth = false;
+		}
+		sql2.append(") and voided = 0)");
+		
+		SqlCohortDefinition lateVisitNoEncounter = new SqlCohortDefinition(sql2.toString());
+		lateVisitNoEncounter.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		CompositionCohortDefinition visit = new CompositionCohortDefinition();
+		visit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		visit.getSearches().put("1",new Mapped<CohortDefinition>(lateVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit.getSearches().put("2",new Mapped<CohortDefinition>(lateVisitNoEncounter, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit.setCompositionString("1 OR 2");
+
+		return visit;
+	}
+	
+public static CompositionCohortDefinition createPatientsLateForVisit(Concept concept, List<Form> forms) {
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select lastObs.person_id from (select * from (select * from obs where voided = 0 and concept_id=");				
+			
+			sql.append(concept.getConceptId());
+				
+		sql.append(" order by value_datetime desc) as o group by o.person_id) as lastObs, (select * from (select * from encounter where form_id in (");
+		boolean first = true;
+		for (Form f : forms) {
+			if (!first) {
+				sql.append(",");
+			}
+			
+			sql.append(f.getFormId());
+			first = false;
+		}		
+		sql.append(")  and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where ");
+		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)>6 and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
+		
+		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
+		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		StringBuilder sql2 = new StringBuilder();
+		sql2.append("select o.person_id from obs o where o.voided=0 and o.concept_id=");		
+		sql2.append(concept.getConceptId());				
+		sql2.append(" and DATEDIFF(:endDate,o.value_datetime)>6 and o.person_id not in(select patient_id from encounter where form_id in (");
+		boolean fourth = true;
+		for (Form f : forms) {
+			if (!fourth) {
+				sql2.append(",");
+			}
+			
+			sql2.append(f.getFormId());
+			fourth = false;
+		}
+		sql2.append(") and voided = 0)");
+		
+		SqlCohortDefinition lateVisitNoEncounter = new SqlCohortDefinition(sql2.toString());
+		lateVisitNoEncounter.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		CompositionCohortDefinition visit = new CompositionCohortDefinition();
+		visit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		visit.getSearches().put("1",new Mapped<CohortDefinition>(lateVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit.getSearches().put("2",new Mapped<CohortDefinition>(lateVisitNoEncounter, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit.setCompositionString("1 OR 2");
+
+		return visit;
+	}
+	
+	
+	
+	
+public static CompositionCohortDefinition createPatientsLateForVisit(Concept concept, Form form) {
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("select lastObs.person_id from (select * from (select * from obs where voided = 0 and concept_id=  ");
@@ -1765,6 +1922,8 @@ public static SqlCohortDefinition getMondayToSundayPatientReturnVisit(List<Form>
 
 		return visit;
 	}
+	
+	
 	
 	public static CompositionCohortDefinition createPatientsWhereMostRecentEncounterIsForm(Form form, EncounterType encounterType) {
 		

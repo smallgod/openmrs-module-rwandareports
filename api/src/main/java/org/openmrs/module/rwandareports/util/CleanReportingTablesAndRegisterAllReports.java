@@ -55,9 +55,11 @@ import org.openmrs.module.rwandareports.reporting.SetupMissingCD4Report;
 import org.openmrs.module.rwandareports.reporting.SetupMonthlyCD4DeclineReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyDailyDrugList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyExternalBiopsyContactList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyInpatientClinicMissedVisit;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientAppointmentList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicMissedVisit;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicPatientList;
+import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
@@ -195,7 +197,9 @@ public class CleanReportingTablesAndRegisterAllReports {
 	public static void registerOncologyReports() throws Exception {
 			new SetupOncologyTreatmentAdministrationPlan().setup();
 			new SetupChemotherapyExpectedPatientList().setup();
+			new SetupOncologyOutpatientExpectedPatientList().setup();
 			new SetupChemotherapyDailyExpectedPatientList().setup();
+			new SetupOncologyInpatientClinicMissedVisit().setup();
 			new SetupOncologyDailyDrugList().setup();
 			new SetupMissedChemotherapyPatientList().setup();
 			new SetupOncologyOutpatientClinicPatientList().setup();
