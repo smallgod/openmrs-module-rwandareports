@@ -380,18 +380,54 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_heartFailureQuarterlyAndMonthlyReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="12" class="tabletd">Oncology</td>
+<td rowspan="15" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_treatmentAdministrationPlan.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
+
+
 <tr>
-<td>ONC-Chemotherapy Expected Patient List</td>
+<td>ONC-Oncology Expected Patient List - Inpatient ward and Infusion center</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_chemotherapyPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_chemotherapyPatientList.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
+
+
+<tr>
+<td>ONC-Oncology Expected Patient List - Outpatient Ward</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientExpectedPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyOutpatientExpectedPatientList.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+
+<tr>
+<td>ONC-Oncology Missed Visit Patient List - Outpatient Ward</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientClinicMissedVisit.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyOutpatientClinicMissedVisit.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+
+<tr>
+<td>ONC-Oncology Missed Visit Patient List - Inpatient Ward</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyInpatientClinicMissedVisit.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyInpatientClinicMissedVisit.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+
+
+
+
+
+
+
+
+
+
+
+
 <tr>
 <td>ONC-Chemotherapy Daily Expected Patient List</td>
 <td>At site</td>
@@ -416,12 +452,12 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientClinicPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyOutpatientClinicPatientList.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
-<tr>
+<%-- <tr>
 <td>ONC-Oncology Outpatient Clinic Missed Visit Patient List</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientClinicMissedVisit.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyOutpatientClinicMissedVisit.form" onclick=msgrem(this)>Remove</a></td>	
-</tr>
+</tr> --%>
 <tr>
 <td>ONC-Oncology Outpatient Clinic Appointment List</td>
 <td>At site</td>

@@ -36,11 +36,13 @@ public class SetupChemotherapyExpectedPatientList {
 
 	private ProgramWorkflow diagnosis;
 	
-	private Concept chemotherapy;
-	
+/*	private Concept chemotherapy;
+*/	
 	private Concept telephone;
 	
 	private Concept telephone2;
+	
+	private Concept confirmedDiagnosis;
 	
     private Form OncologyScheduleAppointmentForm;
     
@@ -92,15 +94,15 @@ public class SetupChemotherapyExpectedPatientList {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		Helper.purgeReportDefinition("ONC-Chemotherapy Expected Patient List - Inpatient Ward");
-		Helper.purgeReportDefinition("ONC-Chemotherapy Expected Patient List - Infusion Center");
+		Helper.purgeReportDefinition("ONC-Oncology Expected Patient List - Inpatient Ward");
+		Helper.purgeReportDefinition("ONC-Oncology Expected Patient List - Infusion Center");
 		
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Chemotherapy Expected Patient List - Inpatient Ward");
+		reportDefinition.setName("ONC-Oncology Expected Patient List - Inpatient Ward");
 					
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 	
@@ -114,7 +116,7 @@ public class SetupChemotherapyExpectedPatientList {
 private ReportDefinition createInfusionReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Chemotherapy Expected Patient List - Infusion Center");
+		reportDefinition.setName("ONC-Oncology Expected Patient List - Infusion Center");
 					
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 	
@@ -270,7 +272,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		
 		diagnosis = gp.getProgramWorkflow(GlobalPropertiesManagement.DIAGNOSIS_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
-		chemotherapy = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY);
+		/*chemotherapy = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY);*/
 		
 		telephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
 		
@@ -284,7 +286,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		
 		visitForms.add(OncologyScheduleAppointmentForm);
 		
-		
+		confirmedDiagnosis=gp.getConcept(GlobalPropertiesManagement.CONFIRMED_DIAGNOSIS_CONCEPT);
 		
 	}
 	
@@ -313,6 +315,9 @@ private void addCommonColumns(RowPerPatientDataSetDefinition dataSetDefinition,R
 	dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+7d}"));
 	
 	dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
+	
+	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("diagnosisNew", confirmedDiagnosis, null), new HashMap<String, Object>());
+	
 	
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone", telephone, null), new HashMap<String, Object>());
 	

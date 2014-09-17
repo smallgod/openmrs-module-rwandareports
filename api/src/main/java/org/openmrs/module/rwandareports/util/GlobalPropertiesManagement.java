@@ -671,6 +671,12 @@ public class GlobalPropertiesManagement {
 	public final static String CHEMOTHERAPY_INFUSION_CENTER_VISIT_DATE="reports.ChemotherapyInfusionCenterVisit";
 	
 	
+	public final static String CONFIRMED_DIAGNOSIS_CONCEPT="reports.confirmedDiagnosisConcept";
+	
+	
+	
+	
+	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
 	public static final String VCT_PROGRAM = "reports.vctProgram";							
@@ -823,6 +829,9 @@ public class GlobalPropertiesManagement {
 	public final static String DST_FORM="reports.dstPlanForm";
 	
 	public final static String OUTPATIENT_CLINIC_VISITS_FORM="reports.outpatientClinicVisitsForm";
+	
+	public final static String BSA_VISITS_FORM="reports.BSAVisitsForm";
+	
 	
 	public final static String ONCOLOGY_EXIT_FORM="reports.oncologyExitForm";
 	
