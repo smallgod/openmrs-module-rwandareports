@@ -670,6 +670,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String CHEMOTHERAPY_INFUSION_CENTER_VISIT_DATE="reports.ChemotherapyInfusionCenterVisit";
 	
+	public final static String STI = "reports.stiConcept";
+	
 	
 	public final static String CONFIRMED_DIAGNOSIS_CONCEPT="reports.confirmedDiagnosisConcept";
 	
