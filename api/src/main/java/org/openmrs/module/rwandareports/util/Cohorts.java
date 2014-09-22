@@ -364,7 +364,41 @@ public class Cohorts {
 		at18monthsOfAge.addParameter(new Parameter("effectiveDate", "endDate", Date.class));
 		return at18monthsOfAge;
 	}
-
+	public static AgeCohortDefinition createinfantUnder18months(String name) {
+		AgeCohortDefinition at18monthsOfAge = new AgeCohortDefinition();
+		at18monthsOfAge.setName(name);
+		at18monthsOfAge.setMinAge(2);
+		at18monthsOfAge.setMinAgeUnit(DurationUnit.WEEKS);
+		at18monthsOfAge.setMaxAge(17);
+		at18monthsOfAge.setMaxAgeUnit(DurationUnit.MONTHS);
+		//at18monthsOfAge.addParameter(new Parameter("effectiveDate", "endDate", Date.class));
+		return at18monthsOfAge;
+	}
+	public static SqlCohortDefinition getPediOnArtIn2Weeks(String name, Program program){
+		Concept artDrugConceptSet=gp.getConcept(GlobalPropertiesManagement.ART_DRUGS_SET);
+		SqlCohortDefinition onArtIn2weeks=new SqlCohortDefinition();
+		onArtIn2weeks.setQuery("select distinct o.patient_id from orders o, patient_program p where " +
+				"concept_id in (select concept_id from concept_set where concept_set="+artDrugConceptSet+") " +
+				"and p.date_enrolled < o.start_date and p.patient_id=o.patient_id " +
+				"and DATEDIFF(o.start_date, p.date_enrolled) <= 14 and p.program_id="+program.getProgramId()+" and o.voided=0  ");
+		
+		return onArtIn2weeks;
+	}
+   public static SqlCohortDefinition getPatientsOnArtIn3Months(String name, List<Program> program){
+		
+		String programId = getProgramString(program);
+		Concept artDrugConceptSet=gp.getConcept(GlobalPropertiesManagement.ART_DRUGS_SET);
+		
+		SqlCohortDefinition onArtIn3months=new SqlCohortDefinition();
+		onArtIn3months.setQuery("select distinct o.patient_id from orders o, patient_program p where " +
+				"concept_id in (select concept_id from concept_set where concept_set="+artDrugConceptSet+") " +
+				"and p.date_enrolled < o.start_date and p.patient_id=o.patient_id " +
+				"and DATEDIFF(o.start_date, p.date_enrolled) <= 90 and p.program_id in ("+programId+") and o.voided=0 ");
+		
+		return onArtIn3months;
+		
+	}
+	
 	public static AgeCohortDefinition createXtoYAgeCohort(String name, int minAge, int maxAge) {
 		AgeCohortDefinition xToYCohort = new AgeCohortDefinition();
 		xToYCohort.setName(name);
@@ -1328,6 +1362,19 @@ public class Cohorts {
 	}
 	
 	public static SqlCohortDefinition getPatientsCotrimoRegimenBasedOnStartDateEndDate(String name, Concept concept) {
+		SqlCohortDefinition patientOnRegimen = new SqlCohortDefinition();
+		
+		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
+		query.append(concept.getId());
+		query.append(") and voided=0 and start_date >= :startDate and discontinued=0 and start_date <= :endDate");
+		patientOnRegimen.setQuery(query.toString());
+		patientOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientOnRegimen.setName(name);
+		
+		return patientOnRegimen;
+	}
+	public static SqlCohortDefinition getPatientsOnRegimenBasedOnStartDateEndDate(String name, Concept concept) {
 		SqlCohortDefinition patientOnRegimen = new SqlCohortDefinition();
 		
 		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
