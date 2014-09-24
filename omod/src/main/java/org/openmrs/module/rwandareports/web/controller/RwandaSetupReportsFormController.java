@@ -18,6 +18,7 @@ import org.openmrs.module.rwandareports.reporting.SetupEpilepsyLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupExposedClinicInfantMonthly;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchDataQualitySheet;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchExtractionSheet;
+import org.openmrs.module.rwandareports.reporting.SetupHMISRwandaReportBySite;
 import org.openmrs.module.rwandareports.reporting.SetupHeartFailureConsultSheet;
 import org.openmrs.module.rwandareports.reporting.SetupHeartFailureLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupHeartFailureQuarterlyAndMonthlyReport;
@@ -42,6 +43,7 @@ import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientExpecte
 import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
+import org.openmrs.module.rwandareports.reporting.SetupPBFReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFoodDistributionReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFormCompletionSheet;
@@ -55,7 +57,6 @@ import org.openmrs.module.rwandareports.reporting.SetupQuarterlyCrossSiteIndicat
 import org.openmrs.module.rwandareports.reporting.SetupQuarterlyViralLoadReport;
 import org.openmrs.module.rwandareports.reporting.SetupRwandaPrimaryCareReport;
 import org.openmrs.module.rwandareports.reporting.SetupTBConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupTracNetRwandaReportBySite;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -395,16 +396,16 @@ public class RwandaSetupReportsFormController {
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
-	// Remove/Register TracNet report
-	@RequestMapping("/module/rwandareports/remove_tracNetReport")
-	public ModelAndView removeTracNetIndicator() throws Exception {
-		new SetupTracNetRwandaReportBySite().delete();
+	// Remove/Register HMIS report
+	@RequestMapping("/module/rwandareports/remove_hmisReport")
+	public ModelAndView removeHMISIndicator() throws Exception {
+		new SetupHMISRwandaReportBySite().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
-	@RequestMapping("/module/rwandareports/register_tracNetReport")
-	public ModelAndView registerTracNetIndicator() throws Exception {
-		new SetupTracNetRwandaReportBySite().setup();
+	@RequestMapping("/module/rwandareports/register_hmisReport")
+	public ModelAndView registerHMISIndicator() throws Exception {
+		new SetupHMISRwandaReportBySite().setup();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
@@ -816,5 +817,19 @@ public class RwandaSetupReportsFormController {
 		new SetupOncologyInpatientClinicMissedVisit().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+	
+	// Remove/Register PBF report
+			@RequestMapping("/module/rwandareports/remove_PBFReport")
+			public ModelAndView removePBFIndicator() throws Exception {
+				new SetupPBFReport().delete();
+				return new ModelAndView(new RedirectView("rwandareports.form"));
+			}
+
+			@RequestMapping("/module/rwandareports/register_PBFReport")
+			public ModelAndView registerPBFIndicator() throws Exception {
+				new SetupPBFReport().setup();
+				return new ModelAndView(new RedirectView("rwandareports.form"));
+			}
+
 
 }

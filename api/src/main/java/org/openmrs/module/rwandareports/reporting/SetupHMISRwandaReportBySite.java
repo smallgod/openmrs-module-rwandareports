@@ -44,9 +44,9 @@ import org.openmrs.module.rwandareports.util.MetadataLookup;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  
-public class SetupTracNetRwandaReportBySite {
+public class SetupHMISRwandaReportBySite {
         
-        protected final static Log log = LogFactory.getLog(SetupTracNetRwandaReportBySite.class);
+        protected final static Log log = LogFactory.getLog(SetupHMISRwandaReportBySite.class);
         
         GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
         //MetadataLookup mlookup=new MetadataLookup();

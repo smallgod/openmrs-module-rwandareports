@@ -53,7 +53,7 @@ import org.openmrs.module.rwandareports.reporting.SetupQuarterlyCrossSiteIndicat
 import org.openmrs.module.rwandareports.reporting.SetupQuarterlyViralLoadReport;
 import org.openmrs.module.rwandareports.reporting.SetupRwandaPrimaryCareReport;
 import org.openmrs.module.rwandareports.reporting.SetupTBConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupTracNetRwandaReportBySite;
+import org.openmrs.module.rwandareports.reporting.SetupHMISRwandaReportBySite;
 import org.openmrs.module.rwandareports.util.CleanReportingTablesAndRegisterAllReports;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

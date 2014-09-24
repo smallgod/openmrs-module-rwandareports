@@ -43,6 +43,7 @@ import org.openmrs.module.rwandareports.reporting.SetupEpilepsyLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupExposedClinicInfantMonthly;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchDataQualitySheet;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchExtractionSheet;
+import org.openmrs.module.rwandareports.reporting.SetupHMISRwandaReportBySite;
 import org.openmrs.module.rwandareports.reporting.SetupHeartFailureConsultSheet;
 import org.openmrs.module.rwandareports.reporting.SetupHeartFailureLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupHeartFailureQuarterlyAndMonthlyReport;
@@ -63,6 +64,7 @@ import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientExpecte
 import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
+import org.openmrs.module.rwandareports.reporting.SetupPBFReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFoodDistributionReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFormCompletionSheet;
@@ -75,8 +77,6 @@ import org.openmrs.module.rwandareports.reporting.SetupQuarterlyCrossSiteIndicat
 import org.openmrs.module.rwandareports.reporting.SetupQuarterlyViralLoadReport;
 import org.openmrs.module.rwandareports.reporting.SetupRwandaPrimaryCareReport;
 import org.openmrs.module.rwandareports.reporting.SetupTBConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupTracNetRwandaReportBySite;
-
 
 /**
  *
@@ -148,15 +148,13 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupPMTCTFoodDistributionReport().setup();
 			new SetupPMTCTFormulaDistributionReport().setup();
 			new SetupPMTCTPregnancyConsultationReport().setup(); 
-			
 			new SetupPediHIVConsultationSheet().setup();
 			new SetupAdultHIVConsultationSheet().setup();
 			new SetupTBConsultationSheet().setup();
 			new SetupAdultLateVisitAndCD4Report().setup();
 			new SetupPediatricLateVisitAndCD4Report().setup();
-			
-			
-			new SetupTracNetRwandaReportBySite().setup();
+			new SetupHMISRwandaReportBySite().setup();
+			new SetupPBFReport().setup();
 			new SetupPMTCTCombinedClinicMotherMonthlyReport().setup();
 			new SetupPMTCTPregnancyMonthlyReport().setup();
 			new SetupExposedClinicInfantMonthly().setup();
