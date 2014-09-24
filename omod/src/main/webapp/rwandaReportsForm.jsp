@@ -282,12 +282,19 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_PrimaryCareRegistrationData.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 <tr>
-<td rowspan="1" class="tabletd">TracNet Report</td>
-<td>TracNet Report</td>
+<td rowspan="1" class="tabletd">HMIS Report</td>
+<td>HIV-HMIS Report</td>
 <td>At site</td>
 <td> <a href="${pageContext.request.contextPath}/module/rwandareports/register_tracNetReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td> <a href="${pageContext.request.contextPath}/module/rwandareports/remove_tracNetReport.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
+<tr>
+<td rowspan="1" class="tabletd">PBF Report</td>
+<td>PBF Report</td>
+<td>At site</td>
+<td> <a href="${pageContext.request.contextPath}/module/rwandareports/register_PBFReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td> <a href="${pageContext.request.contextPath}/module/rwandareports/remove_PBFReport.form" onclick=msgrem(this)>Remove</a></td>	
+</tr> 
 <tr>
 <td rowspan="15" class="tabletd">NCD Reports</td>
 <td>NCD-Diabetes Indicator Report</td>
@@ -416,18 +423,6 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyInpatientClinicMissedVisit.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyInpatientClinicMissedVisit.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
-
-
-
-
-
-
-
-
-
-
-
-
 <tr>
 <td>ONC-Chemotherapy Daily Expected Patient List</td>
 <td>At site</td>
