@@ -65,29 +65,17 @@ public class SetupOncologyOutpatientExpectedPatientList {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		/*ReportDefinition rdInfusion = createInfusionReportDefinition();
-		*/
 		
 		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "OncologyOutpatientExpectedPatientList.xls",
 		    "OncologyOutpatientExpectedPatientList.xls_", null);
-		
-		/*ReportDesign designInfusion = Helper.createRowPerPatientXlsOverviewReportDesign(rdInfusion, "ChemotherapyExpectedPatientListInfusion.xls",
-			    "ChemotherapyPatientListInfusion.xls_", null);
-		*/	
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:4,dataset:dataset2|sheet:2,row:7,dataset:dataset");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
-		/*Properties propsInfusion = new Properties();
-		propsInfusion.put("repeatingSections", "sheet:1,row:4,dataset:dataset2|sheet:2,row:7,dataset:dataset");
-		propsInfusion.put("sortWeight","5000");
-		designInfusion.setProperties(propsInfusion);
-		*/
 		Helper.saveReportDesign(design);
 		
-		/*Helper.saveReportDesign(designInfusion);*/
 	}
 	
 	public void delete() {
@@ -96,13 +84,10 @@ public class SetupOncologyOutpatientExpectedPatientList {
 			if ("OncologyOutpatientExpectedPatientList.xls_".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
-			/*if ("ChemotherapyPatientListInfusion.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}*/
+			
 		}
 		Helper.purgeReportDefinition("ONC-Oncology Expected Patient List - Outpatient Ward");
-		/*Helper.purgeReportDefinition("ONC-Chemotherapy Expected Patient List - Infusion Center");
-		*/
+		
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -119,20 +104,6 @@ public class SetupOncologyOutpatientExpectedPatientList {
 		
 		return reportDefinition;
 	}
-/*private ReportDefinition createInfusionReportDefinition() {
-		
-		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Chemotherapy Expected Patient List - Infusion Center");
-					
-		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
-	
-		reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));
-		createInfusionDataSetDefinition(reportDefinition);
-		
-		Helper.saveReportDefinition(reportDefinition);
-		
-		return reportDefinition;
-	}*/
 
 private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	// Create new dataset definition 
@@ -142,28 +113,10 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	RowPerPatientDataSetDefinition baseSetDefinition = new RowPerPatientDataSetDefinition();
 	baseSetDefinition.setName("Chemotherapy Base Patient List");
 	
-	/*UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
-	baseCohort.setChemotherapyIndication(chemotherapy);
-	baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
-	baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
-	
-	dataSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
-	baseSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
-	*/
 	dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,visitDates), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
 	baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,visitDates), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
 	
 	
-	/*SortCriteria sortCriteria = new SortCriteria();
-	sortCriteria.addSortElement("familyName", SortDirection.ASC);
-	dataSetDefinition.setSortCriteria(sortCriteria);
-	dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-	
-	SortCriteria baseSortCriteria = new SortCriteria();
-	baseSortCriteria.addSortElement("familyName", SortDirection.ASC);
-	baseSetDefinition.setSortCriteria(baseSortCriteria);
-	baseSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-	*/
 	SortCriteria sortCriteria = new SortCriteria();
 	sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
 	dataSetDefinition.setSortCriteria(sortCriteria);
@@ -204,75 +157,6 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	reportDefinition.addDataSetDefinition("dataset2", weekDataSetDefinition, baseMappings);
 	
 }
-	
-	/*private void createInfusionDataSetDefinition(ReportDefinition reportDefinition) {
-		// Create new dataset definition 
-		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
-		dataSetDefinition.setName("Chemotherapy Patient List");
-		
-		RowPerPatientDataSetDefinition baseSetDefinition = new RowPerPatientDataSetDefinition();
-		baseSetDefinition.setName("Chemotherapy Base Patient List");
-		
-		UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
-		baseCohort.setChemotherapyIndication(chemotherapy);
-		baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
-		baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
-		
-		dataSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
-		baseSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
-		
-		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
-		baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
-		
-		
-		SortCriteria sortCriteria = new SortCriteria();
-		sortCriteria.addSortElement("familyName", SortDirection.ASC);
-		dataSetDefinition.setSortCriteria(sortCriteria);
-		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-		
-		SortCriteria baseSortCriteria = new SortCriteria();
-		baseSortCriteria.addSortElement("familyName", SortDirection.ASC);
-		baseSetDefinition.setSortCriteria(baseSortCriteria);
-		baseSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-		
-		SortCriteria sortCriteria = new SortCriteria();
-		sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
-		dataSetDefinition.setSortCriteria(sortCriteria);
-		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-		
-		SortCriteria baseSortCriteria = new SortCriteria();
-		baseSortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
-		baseSetDefinition.setSortCriteria(baseSortCriteria);
-		baseSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-		
-		
-		//Add Columns
-		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", ChemotherapyInpatientWardVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
-		
-		addCommonColumns(dataSetDefinition, baseSetDefinition);
-		
-		ConsecutiveCombinedDataSetDefinition consecutiveDataSetDefinition = new ConsecutiveCombinedDataSetDefinition();
-		consecutiveDataSetDefinition.setName("consecutiveDataSetDefinition");
-		consecutiveDataSetDefinition.setBaseDefinition(dataSetDefinition);
-		consecutiveDataSetDefinition.setNumberOfIterations(1);
-		consecutiveDataSetDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
-		
-		Map<String, Object> mappings = new HashMap<String, Object>();
-		mappings.put("startDate", "${endDate}");
-		
-		reportDefinition.addDataSetDefinition("dataset", consecutiveDataSetDefinition, mappings);
-		
-		WeekViewDataSetDefinition weekDataSetDefinition = new WeekViewDataSetDefinition();
-		weekDataSetDefinition.setName("weekDataSetDefinition");
-		weekDataSetDefinition.setBaseDefinition(baseSetDefinition);
-		weekDataSetDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
-		
-		Map<String, Object> baseMappings = new HashMap<String, Object>();
-		baseMappings.put("startDate", "${endDate}");
-		
-		reportDefinition.addDataSetDefinition("dataset2", weekDataSetDefinition, baseMappings);
-		
-	}*/
 	
 	private void setupProperties() {
 		

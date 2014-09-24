@@ -36,8 +36,6 @@ public class SetupChemotherapyExpectedPatientList {
 
 	private ProgramWorkflow diagnosis;
 	
-/*	private Concept chemotherapy;
-*/	
 	private Concept telephone;
 	
 	private Concept telephone2;
@@ -136,28 +134,9 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	RowPerPatientDataSetDefinition baseSetDefinition = new RowPerPatientDataSetDefinition();
 	baseSetDefinition.setName("Chemotherapy Base Patient List");
 	
-	/*UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
-	baseCohort.setChemotherapyIndication(chemotherapy);
-	baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
-	baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
-	
-	dataSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
-	baseSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
-	*/
 	dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInpatientWardVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
 	baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInpatientWardVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
 	
-	
-	/*SortCriteria sortCriteria = new SortCriteria();
-	sortCriteria.addSortElement("familyName", SortDirection.ASC);
-	dataSetDefinition.setSortCriteria(sortCriteria);
-	dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-	
-	SortCriteria baseSortCriteria = new SortCriteria();
-	baseSortCriteria.addSortElement("familyName", SortDirection.ASC);
-	baseSetDefinition.setSortCriteria(baseSortCriteria);
-	baseSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-	*/
 	SortCriteria sortCriteria = new SortCriteria();
 	sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
 	dataSetDefinition.setSortCriteria(sortCriteria);
@@ -205,28 +184,12 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		RowPerPatientDataSetDefinition baseSetDefinition = new RowPerPatientDataSetDefinition();
 		baseSetDefinition.setName("Chemotherapy Base Patient List");
 		
-		/*UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
-		baseCohort.setChemotherapyIndication(chemotherapy);
-		baseCohort.addParameter(new Parameter("asOfDate", "asOfDate", Date.class));
-		baseCohort.addParameter(new Parameter("untilDate", "untilDate", Date.class));
 		
-		dataSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
-		baseSetDefinition.addFilter(baseCohort,ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
-		*/
 		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
 		baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
 		
 		
-		/*SortCriteria sortCriteria = new SortCriteria();
-		sortCriteria.addSortElement("familyName", SortDirection.ASC);
-		dataSetDefinition.setSortCriteria(sortCriteria);
-		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		
-		SortCriteria baseSortCriteria = new SortCriteria();
-		baseSortCriteria.addSortElement("familyName", SortDirection.ASC);
-		baseSetDefinition.setSortCriteria(baseSortCriteria);
-		baseSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-		*/
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
@@ -271,8 +234,6 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		oncologyProgram = gp.getProgram(GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
 		diagnosis = gp.getProgramWorkflow(GlobalPropertiesManagement.DIAGNOSIS_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
-		
-		/*chemotherapy = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY);*/
 		
 		telephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
 		
@@ -326,9 +287,7 @@ private void addCommonColumns(RowPerPatientDataSetDefinition dataSetDefinition,R
 	dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("address", true, true, true, true),
 	    new HashMap<String, Object>());
 	
-	dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("accompagnateur"), new HashMap<String, Object>());
-	
-	
+	dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("accompagnateur"), new HashMap<String, Object>());	
 	
        }
 	

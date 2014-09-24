@@ -35,12 +35,6 @@ public class SetupOncologyInpatientClinicMissedVisit {
 
 	private ProgramWorkflow diagnosis;
 	
-	/*private Concept scheduledVisit;
-	
-	private Concept biopsyResultVisit;
-	
-	private Concept specialVisit;
-	*/
 	private Concept telephone;
 	
 	private Concept telephone2;
@@ -112,26 +106,14 @@ public class SetupOncologyInpatientClinicMissedVisit {
 		// Create new dataset definition 
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("Inpatient Missed List");
-		/*RowPerPatientDataSetDefinition dataSetDefinition2 = new RowPerPatientDataSetDefinition();
-		dataSetDefinition2.setName("Outpatient Biopsy Result List");
-		RowPerPatientDataSetDefinition dataSetDefinition3 = new RowPerPatientDataSetDefinition();
-		dataSetDefinition3.setName("Outpatient Special List");
-		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
-		dataSetDefinition3.setName("Outpatient All Lists");
-		*/
+		
 		
 		dataSetDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
-		/*dataSetDefinition2.addParameter(new Parameter("endDate", "Date", Date.class));
-		dataSetDefinition3.addParameter(new Parameter("endDate", "Date", Date.class));
-		dataSetDefinition4.addParameter(new Parameter("endDate", "Date", Date.class));
-		*/
+		
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
-		/*dataSetDefinition2.setSortCriteria(sortCriteria);
-		dataSetDefinition3.setSortCriteria(sortCriteria);
-		dataSetDefinition4.setSortCriteria(sortCriteria);
-		*/
+		
 		//Add filters
 		dataSetDefinition.addFilter(Cohorts.createPatientsLateForVisit(ChemotherapyInpatientWardVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
@@ -142,50 +124,21 @@ public class SetupOncologyInpatientClinicMissedVisit {
 
 		
 		
-		/*dataSetDefinition2.addFilter(Cohorts.createPatientsLateForVisit(biopsyResultVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		dataSetDefinition3.addFilter(Cohorts.createPatientsLateForVisit(specialVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		dataSetDefinition4.addFilter(Cohorts.createPatientsLateForVisit(visitDates, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		*/
+		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", ChemotherapyInpatientWardVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", biopsyResultVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", specialVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
-		*/
 		
-		/*dataSetDefinition4.addColumn(RowPerPatientColumns.getMostRecent("nextRDVscheduledVisit", scheduledVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getMostRecent("nextRDVbiopsyResultVisit", biopsyResultVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getMostRecent("nextRDVspecialVisit", specialVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
-		*/
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", ChemotherapyInpatientWardVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", biopsyResultVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", specialVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
-		*/
-		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
-		*/
-		dataSetDefinition.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
-		*/
-		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
-		*/
-		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
-		*/ 
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
-		*/
 		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
+		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
+		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
+		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
+				
 		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("diagnosisNew", confirmedDiagnosis, null), new HashMap<String, Object>());
@@ -193,37 +146,18 @@ public class SetupOncologyInpatientClinicMissedVisit {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone", telephone, null), new HashMap<String, Object>());
 		
 		
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getMostRecent("telephone", telephone, null), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("telephone", telephone, null), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getMostRecent("telephone", telephone, null), new HashMap<String, Object>());
-		*/
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone2", telephone2, null), new HashMap<String, Object>());
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getMostRecent("telephone2", telephone2, null), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getMostRecent("telephone2", telephone2, null), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getMostRecent("telephone2", telephone2, null), new HashMap<String, Object>());
-		*/
+		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("address", true, true, true, true),
 		    new HashMap<String, Object>());
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getPatientAddress("address", true, true, true, true),
-		    new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getPatientAddress("address", true, true, true, true),
-		    new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getPatientAddress("address", true, true, true, true),
-			    new HashMap<String, Object>());
-		*/	
+		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("accompagnateur"), new HashMap<String, Object>());
-		/*dataSetDefinition2.addColumn(RowPerPatientColumns.getAccompRelationship("accompagnateur"), new HashMap<String, Object>());
-		dataSetDefinition3.addColumn(RowPerPatientColumns.getAccompRelationship("accompagnateur"), new HashMap<String, Object>());
-		dataSetDefinition4.addColumn(RowPerPatientColumns.getAccompRelationship("accompagnateur"), new HashMap<String, Object>());
-		*/
+		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
 		
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
-		/*reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
-		reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
-		reportDefinition.addDataSetDefinition("datasetAll", dataSetDefinition4, mappings);
-	*/}
+		}
 	
 	private void setupProperties() {
 		
@@ -231,13 +165,7 @@ public class SetupOncologyInpatientClinicMissedVisit {
 		
 		diagnosis = gp.getProgramWorkflow(GlobalPropertiesManagement.DIAGNOSIS_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
-		/*scheduledVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
-		
-		biopsyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_PATHOLOGY_RESULT_VISIT);
-		
-		specialVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SPECIAL_VISIT);
-		
-		*/telephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
+		telephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
 		
 		telephone2 = gp.getConcept(GlobalPropertiesManagement.SECONDARY_TELEPHONE_NUMBER_CONCEPT);
 		
@@ -249,24 +177,16 @@ public class SetupOncologyInpatientClinicMissedVisit {
 		BSAForm=gp.getForm(GlobalPropertiesManagement.BSA_VISITS_FORM);
 		
 		preventedForms.add(outpatientClinicVisitsForm);
-		preventedForms.add(BSAForm);
+		preventedForms.add(BSAForm);		
 		
-		
-		ChemotherapyInpatientWardVisit=gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY_INPATIENT_WARD_VISIT_DATE);
-		
-		
+		ChemotherapyInpatientWardVisit=gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY_INPATIENT_WARD_VISIT_DATE);		
 		
 		visitForms.add(OncologyScheduleAppointmentForm);
-		/*visitForms.add(outpatientClinicVisitsForm);*/
 		
 		visitDates.add(ChemotherapyInpatientWardVisit);
-		/*visitDates.add(biopsyResultVisit);
-		visitDates.add(specialVisit);
-		*/
-		
+				
 		onOrAfterOnOrBefore.add("onOrAfter");
-		onOrAfterOnOrBefore.add("onOrBefore");
-		
+		onOrAfterOnOrBefore.add("onOrBefore");		
 		confirmedDiagnosis=gp.getConcept(GlobalPropertiesManagement.CONFIRMED_DIAGNOSIS_CONCEPT);
 	}
 }

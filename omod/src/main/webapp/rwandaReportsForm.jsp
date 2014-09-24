@@ -416,18 +416,6 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyInpatientClinicMissedVisit.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyInpatientClinicMissedVisit.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
-
-
-
-
-
-
-
-
-
-
-
-
 <tr>
 <td>ONC-Chemotherapy Daily Expected Patient List</td>
 <td>At site</td>
