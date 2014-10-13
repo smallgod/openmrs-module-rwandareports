@@ -154,7 +154,7 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupAdultLateVisitAndCD4Report().setup();
 			new SetupPediatricLateVisitAndCD4Report().setup();
 			new SetupHMISRwandaReportBySite().setup();
-			new SetupPBFReport().setup();
+			//new SetupPBFReport().setup();
 			new SetupPMTCTCombinedClinicMotherMonthlyReport().setup();
 			new SetupPMTCTPregnancyMonthlyReport().setup();
 			new SetupExposedClinicInfantMonthly().setup();
