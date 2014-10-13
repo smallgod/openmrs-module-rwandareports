@@ -61,6 +61,8 @@ public class SetupPBFReport {
         private Program pediatrichivProgram;
         private Program adulthivProgram;
         private Concept cotrimoxazole;
+        private Concept azt;
+        private Concept nvp;
         private Form tranferToCC;
         private List<Form> transferToCCForms=new ArrayList<Form>();
         List<Program> hivPrograms = new ArrayList<Program>();
@@ -143,79 +145,111 @@ public class SetupPBFReport {
          GenderCohortDefinition females = Cohorts.createFemaleCohortDefinition("femalesDefinition");
          
          // PMTCT Pregnancy Program
-        // 1 Pregnant women from the previous quarter
-         ProgramEnrollmentCohortDefinition enrolledInPMTCTPreg = Cohorts.createProgramEnrollment("PMTCT Pregnancy", pmtctPregnancyProgram);
-         enrolledInPMTCTPreg.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter",Date.class)); 
-         
-         CompositionCohortDefinition womenOnARTInPMTCTPreg = new CompositionCohortDefinition();
-         womenOnARTInPMTCTPreg.addParameter(new Parameter("enrolledOnOrAfter","enrolledOnOrAfter",Date.class));
-         womenOnARTInPMTCTPreg.setName("pedsonARTStateHIVClinicunder5");
-         womenOnARTInPMTCTPreg.getSearches().put("1",new Mapped<CohortDefinition>(enrolledInPMTCTPreg,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter}")));
-         womenOnARTInPMTCTPreg.getSearches().put("2",new Mapped<CohortDefinition>(females,null));
-         womenOnARTInPMTCTPreg.setCompositionString("1 AND 2");
-         
-         CohortIndicator onePMTCTPreg = Indicators.newCountIndicator( "PMTCTPregQ:in pmtctPreg ", womenOnARTInPMTCTPreg,
-                 ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter}"));
-         onePMTCTPreg.addParameter(new Parameter("enrolledOnOrAfter","enrolledOnOrAfter",Date.class));
-         
-         //1 ART Pregnant women from the previous quarter
-         InStateCohortDefinition pregWomenLastQuarter = Cohorts.createInCurrentState("PMTCTPregQ:in: pregWomenLastQuarter", ArtpregnantState,
+        // 1 Numerator Pregnant women from the previous quarter
+         InStateCohortDefinition pregnantOnFollowing = Cohorts.createInCurrentState("pregnantOnFollowing", ArtpregnantState,
                  onOrAfterOnOrBefore);
          
          CompositionCohortDefinition artPMTCTPreg = new CompositionCohortDefinition();
          artPMTCTPreg.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
          artPMTCTPreg.setName("pedsonARTStateHIVClinicunder5");
-         artPMTCTPreg.getSearches().put("1",new Mapped<CohortDefinition>(pregWomenLastQuarter,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter}")));
+         artPMTCTPreg.getSearches().put("1",new Mapped<CohortDefinition>(pregnantOnFollowing,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter}")));
          artPMTCTPreg.getSearches().put("2",new Mapped<CohortDefinition>(females,null));
          artPMTCTPreg.setCompositionString("1 AND 2");
          
-         CohortIndicator oneArtPMTCTPreg = Indicators.newCountIndicator( "PMTCTPregQ:in pmtctPreg ", artPMTCTPreg,
+         CohortIndicator oneArtPMTCTPreg = Indicators.newCountIndicator( "oneArtPMTCTPreg ", artPMTCTPreg,
                  ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter}"));
          oneArtPMTCTPreg.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        
+         //1 ART Pregnant women from the previous quarter 
+         InProgramCohortDefinition inPmtctPregnancyprogram = Cohorts.createInProgramParameterizableByStartEndDate("inPmtctPregnancyprogram",pmtctPregnancyProgram);
+         
+         CompositionCohortDefinition womenOnARTInPMTCTPreg = new CompositionCohortDefinition();
+         womenOnARTInPMTCTPreg.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+         womenOnARTInPMTCTPreg.setName("womenOnARTInPMTCTPreg");
+         womenOnARTInPMTCTPreg.getSearches().put("1",new Mapped<CohortDefinition>(inPmtctPregnancyprogram,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter}")));
+         womenOnARTInPMTCTPreg.getSearches().put("2",new Mapped<CohortDefinition>(females,null));
+         womenOnARTInPMTCTPreg.setCompositionString("1 AND 2");
+         
+         CohortIndicator onePMTCTPreg = Indicators.newCountIndicator( "onePMTCTPreg", womenOnARTInPMTCTPreg,
+                 ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter}"));
+         onePMTCTPreg.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+         
          
        //2 Numerator Number of exposed infant who received ARV prophylaxis
          AgeCohortDefinition at18monthsOfAge = Cohorts.createinfantUnder18months("under18months");
-         List<Program> infantProgram = new ArrayList<Program>();
-         infantProgram.add(exposedInfant);
-         InProgramCohortDefinition inExposedInfant = Cohorts.createInProgramParameterizableByDate("exposedInfant",infantProgram, "onDate");
+         
+       /*  ProgramEnrollmentCohortDefinition infantProgram = Cohorts.createProgramEnrollment("infantProgram", exposedInfant);
+         infantProgram.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter",Date.class)); 
+         infantProgram.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore",Date.class)); 
+        */ 
+       /*  List<Program> exposedInfants = new ArrayList<Program>();
+         exposedInfants.add(exposedInfant);
+         ProgramEnrollmentCohortDefinition infantProgram = new ProgramEnrollmentCohortDefinition();
+         infantProgram.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+         infantProgram.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
+         infantProgram.setPrograms(exposedInfants);
+         
+         
+         EncounterCohortDefinition inExposedInfantVisits = Cohorts.createEncounterBasedOnForms("inExposedInfant",startDateEndDate, transferToCCForms);
          SqlCohortDefinition startedCotrimoXazoleDuringP = Cohorts.getPatientsOnRegimenBasedOnStartDateEndDate("startedCotrimoXazoleDuringP", cotrimoxazole);
-          
+         SqlCohortDefinition patientstakingART = Cohorts.getPatientsWithFirstDrugOrdersOnlyDurindStartEndDate("patientstakingART");
+         
          CompositionCohortDefinition exposedinfantOnARV = new CompositionCohortDefinition();
          exposedinfantOnARV.setName("exposedinfantOnARV");
          exposedinfantOnARV.addParameter(new Parameter("startDate", "startDate", Date.class));
          exposedinfantOnARV.addParameter(new Parameter("endDate", "endDate", Date.class));
+         exposedinfantOnARV.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+         exposedinfantOnARV.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
+         exposedinfantOnARV.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
          exposedinfantOnARV.getSearches().put("1",new Mapped<CohortDefinition>(at18monthsOfAge, null));
-         exposedinfantOnARV.getSearches().put("2",new Mapped<CohortDefinition>(inExposedInfant, ParameterizableUtil.createParameterMappings("onDate=${now}")));
-         exposedinfantOnARV.getSearches().put("3",new Mapped<CohortDefinition>(startedCotrimoXazoleDuringP, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-         exposedinfantOnARV.setCompositionString("1 AND 2 AND 3");
+         exposedinfantOnARV.getSearches().put("2",new Mapped<CohortDefinition>(infantProgram, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter}")));
+         exposedinfantOnARV.getSearches().put("3",new Mapped<CohortDefinition>(infantProgram, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
+         exposedinfantOnARV.getSearches().put("4",new Mapped<CohortDefinition>(inExposedInfantVisits, ParameterizableUtil.createParameterMappings("startDate=${startDate}")));
+         exposedinfantOnARV.getSearches().put("5",new Mapped<CohortDefinition>(startedCotrimoXazoleDuringP, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+         exposedinfantOnARV.getSearches().put("6",new Mapped(patientstakingART, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter}")));
+         exposedinfantOnARV.setCompositionString("1 AND 2 AND (NOT 3) AND 4 AND (5 OR 6)");
          
-         CohortIndicator exposedinfantOnARVInd = Indicators.newCountIndicator( "exposedinfantOnARVInd ", exposedinfantOnARV,
-                 ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+         CohortIndicator exposedinfantOnARVInd = Indicators.newCountIndicator( "exposedinfantOnARVInd ", exposedinfantOnARV,ParameterizableUtil.
+           createParameterMappings("startDate=${startDate},endDate=${endDate},onOrAfter=${onOrAfter},enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}"));
          exposedinfantOnARVInd.addParameter(new Parameter("startDate","startDate",Date.class));
-         exposedinfantOnARVInd.addParameter(new Parameter("endDate","endDate",Date.class));
-         
+         exposedinfantOnARVInd.addParameter(new Parameter("endDate", "endDate", Date.class));
+         exposedinfantOnARVInd.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+         exposedinfantOnARVInd.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
+         exposedinfantOnARVInd.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+         */
          // 2 Denominator number of women who gave birth during the last quarter
-         ProgramEnrollmentCohortDefinition inPMTCTCCMother = Cohorts.createProgramEnrollment("PMTCT CCMother", CCMotherProgram);
+        /* ProgramEnrollmentCohortDefinition inPMTCTCCMother = Cohorts.createProgramEnrollment("PMTCT CCMother", CCMotherProgram);
          inPMTCTCCMother.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter",Date.class)); 
+         inPMTCTCCMother.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore",Date.class)); 
+         
+         */List<Program> inPMTCTCCMothers = new ArrayList<Program>();
+         inPMTCTCCMothers.add(CCMotherProgram);
+         ProgramEnrollmentCohortDefinition inPMTCTCCMother = new ProgramEnrollmentCohortDefinition();
+         inPMTCTCCMother.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+         inPMTCTCCMother.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
+         inPMTCTCCMother.setPrograms(inPMTCTCCMothers);
+         
+        
          EncounterCohortDefinition womenTranferedToCC = Cohorts.createEncounterBasedOnForms("womenTranferedToCC",startDateEndDate, transferToCCForms);
          
          CompositionCohortDefinition womeninCCandGaveBirth = new CompositionCohortDefinition();
          womeninCCandGaveBirth.setName("womeninCCandGaveBirth");
          womeninCCandGaveBirth.addParameter(new Parameter("startDate", "startDate", Date.class));
-         womeninCCandGaveBirth.addParameter(new Parameter("endDate", "endDate", Date.class));
          womeninCCandGaveBirth.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
+         womeninCCandGaveBirth.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
          womeninCCandGaveBirth.getSearches().put("1",new Mapped<CohortDefinition>(inPMTCTCCMother, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter}")));
-         womeninCCandGaveBirth.getSearches().put("2",new Mapped<CohortDefinition>(womenTranferedToCC, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-         womeninCCandGaveBirth.setCompositionString("1 OR 2");
+        // womeninCCandGaveBirth.getSearches().put("2",new Mapped<CohortDefinition>(inPMTCTCCMother, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
+         womeninCCandGaveBirth.getSearches().put("3",new Mapped<CohortDefinition>(womenTranferedToCC, ParameterizableUtil.createParameterMappings("startDate=${startDate}")));
+         womeninCCandGaveBirth.setCompositionString("(1 OR 3)");
          
          CohortIndicator womeninCCandGaveBirthInd = Indicators.newCountIndicator( "womeninCCandGaveBirthInd ", womeninCCandGaveBirth,
-                 ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},startDate=${startDate},endDate=${endDate}"));
+                 ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},startDate=${startDate}"));
          womeninCCandGaveBirthInd.addParameter(new Parameter("startDate","startDate",Date.class));
-         womeninCCandGaveBirthInd.addParameter(new Parameter("endDate","endDate",Date.class));
          womeninCCandGaveBirthInd.addParameter(new Parameter("enrolledOnOrAfter","enrolledOnOrAfter",Date.class));
+        // womeninCCandGaveBirthInd.addParameter(new Parameter("enrolledOnOrBefore","enrolledOnOrBefore",Date.class));
          
      //3 exposedInfant on PCT between 6 and 8 weeks
-         AgeCohortDefinition b6To8Weeks = new AgeCohortDefinition();
+        /* AgeCohortDefinition b6To8Weeks = new AgeCohortDefinition();
          b6To8Weeks.setName("b6To8Weeks");
          b6To8Weeks.setMinAge(6);
          b6To8Weeks.setMinAgeUnit(DurationUnit.WEEKS);
@@ -228,14 +262,14 @@ public class SetupPBFReport {
          infantOnPCR.setName("infantOnPCR");
          infantOnPCR.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
          infantOnPCR.getSearches().put("1",new Mapped<CohortDefinition>(b6To8Weeks, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-         infantOnPCR.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithPCR, null));
-         infantOnPCR.setCompositionString("1 AND 2");
-         
-         CohortIndicator infantOnPCRInd = Indicators.newCountIndicator( "exposedinfantOnARVInd ", infantOnPCR,ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}"));
+         infantOnPCR.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithPCR, null /*ADD DATETIME HERE));
+         infantOnPCR.setCompositionString("1 AND 2");        
+        
+         CohortIndicator infantOnPCRInd = Indicators.newCountIndicator( "infantOnPCRInd ", infantOnPCR,ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}"));
          infantOnPCRInd.addParameter(new Parameter("effectiveDate","effectiveDate",Date.class));
-      
+      */
          //3 denominator:
-        SqlCohortDefinition motherofExposedbabies=new SqlCohortDefinition();
+        /*SqlCohortDefinition motherofExposedbabies=new SqlCohortDefinition();
         motherofExposedbabies.setName("motherofExposedbabies");
         motherofExposedbabies.setQuery("SELECT DISTINCT r.person_a FROM relationship r, patient_program pr " +
         		"where pr.patient_id=r.person_a and r.person_b in " +
@@ -396,15 +430,15 @@ public class SetupPBFReport {
 		//15
 		SqlCohortDefinition patientsOnArt3MonthsAtProgEnrol=Cohorts.getPatientsOnArtIn3Months("adultsOnArt3MonthsAtProgEnrol", hivPrograms);
 		CohortIndicator patientsOnArtin3MonthsInd = Indicators.newCountIndicator( "patientsOnArtin3MonthsInd ", patientsOnArt3MonthsAtProgEnrol,null);
-        
+        */
            //Add global filters to the report
            //PRE-ART DATA ELEMENT
-           dsd.addColumn("1a","Pregnant Women from the previous quarter",new Mapped(onePMTCTPreg,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate-3m}")), "");
-           dsd.addColumn("1b","ART Pregnant Women from the previous quarter",new Mapped(oneArtPMTCTPreg,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m}")), "");
-           dsd.addColumn("2a","Exposed Infant on ARV from the previous quarter",new Mapped(exposedinfantOnARVInd,ParameterizableUtil.createParameterMappings("startDate=${startDate-3m},endDate=${endDate}")), "");
-           dsd.addColumn("2b","ART Pregnant Women from the previous quarter",new Mapped(womeninCCandGaveBirthInd,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate-3m},startDate=${startDate-3m},endDate=${endDate}")), "");
-           dsd.addColumn("3a","Exposed Infant tested for PCR from previous quarter",new Mapped(infantOnPCRInd,ParameterizableUtil.createParameterMappings("effectiveDate=${startDate-3m}")), "");
-           dsd.addColumn("3b","Pregnant women who gave birth (child between 6-8 weeks) in the previous quarter",new Mapped(motherofExposedbabiesInd,ParameterizableUtil.createParameterMappings("startDate=${startDate-3m}")), "");
+           dsd.addColumn("1a","Pregnant Women from the previous quarter",new Mapped(oneArtPMTCTPreg,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m}")), "");
+           dsd.addColumn("1b","ART Pregnant Women from the previous quarter",new Mapped(onePMTCTPreg,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-3m}")), "");
+           //dsd.addColumn("2a","Exposed Infant on ARV from the previous quarter",new Mapped(exposedinfantOnARVInd,ParameterizableUtil.createParameterMappings("startDate=${startDate-3m},endDate=${endDate},onOrAfter=${startDate-3m},enrolledOnOrAfter=${startDate-3m},enrolledOnOrBefore=${endDate}")), "");
+           dsd.addColumn("2b","ART Pregnant Women from the previous quarter",new Mapped(womeninCCandGaveBirthInd,ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate-3m},startDate=${startDate-3m}")), "");
+           ///dsd.addColumn("3a","Exposed Infant tested for PCR from previous quarter",new Mapped(infantOnPCRInd,ParameterizableUtil.createParameterMappings("effectiveDate=${startDate-3m}")), "");
+          /* dsd.addColumn("3b","Pregnant women who gave birth (child between 6-8 weeks) in the previous quarter",new Mapped(motherofExposedbabiesInd,ParameterizableUtil.createParameterMappings("startDate=${startDate-3m}")), "");
            dsd.addColumn("4a","Active Patients who initiated ARV in the last 12 months",new Mapped(activePatientsOnArtInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-12m}")), "");
            dsd.addColumn("4b","Patients who initiated ARV from the last 12 months",new Mapped(allPatientsOnArtInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-12m}")), "");
            dsd.addColumn("5a","Active Patients who initiated ARV in the last 24 months",new Mapped(activePatientsOnArtInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-24m}")), "");
@@ -420,7 +454,7 @@ public class SetupPBFReport {
            dsd.addColumn("13","Patients on ART eligible for VL",new Mapped(eligibleForViralLoadInd,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-1y},onOrBefore=${startDate}")), "");
            dsd.addColumn("14","Patients on Art", new Mapped(patientsOnArtInd,null), "");
            dsd.addColumn("15","Patient on started ART 3 months after program enrolment", new Mapped(patientsOnArtin3MonthsInd,null), "");
-           
+           */
            return dsd;     
         }
         
@@ -440,7 +474,6 @@ public class SetupPBFReport {
             startDateEndDate.add("startDate");
             startDateEndDate.add("endDate");
             cotrimoxazole = gp.getConcept(GlobalPropertiesManagement.COTRIMOXAZOLE_DRUG);
-            tranferToCC=gp.getForm(GlobalPropertiesManagement.TRANSFER_TO_CC);
             transferToCCForms.add(tranferToCC);
             hivPCR=gp.getConcept(GlobalPropertiesManagement.DBS_CONCEPT);
             sti = gp.getConcept(GlobalPropertiesManagement.STI);
