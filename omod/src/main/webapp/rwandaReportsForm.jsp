@@ -285,8 +285,8 @@ $(document).ready(function(){
 <td rowspan="1" class="tabletd">HMIS Report</td>
 <td>HIV-HMIS Report</td>
 <td>At site</td>
-<td> <a href="${pageContext.request.contextPath}/module/rwandareports/register_tracNetReport.form" onclick=msgreg(this)>(Re) register</a></td>
-<td> <a href="${pageContext.request.contextPath}/module/rwandareports/remove_tracNetReport.form" onclick=msgrem(this)>Remove</a></td>	
+<td> <a href="${pageContext.request.contextPath}/module/rwandareports/register_hmisReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td> <a href="${pageContext.request.contextPath}/module/rwandareports/remove_hmisReport.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 <tr>
 <td rowspan="1" class="tabletd">PBF Report</td>
@@ -393,16 +393,12 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_treatmentAdministrationPlan.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
-
-
 <tr>
 <td>ONC-Oncology Expected Patient List - Inpatient ward and Infusion center</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_chemotherapyPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_chemotherapyPatientList.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
-
-
 <tr>
 <td>ONC-Oncology Expected Patient List - Outpatient Ward</td>
 <td>At site</td>
@@ -482,6 +478,20 @@ $(document).ready(function(){
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyquarterlyindicatorreport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyquarterlyindicatorreport.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<tr>
+<td rowspan="3" class="tabletd">PDC Reports</td>
+<td>PDC-Weekly Consulation sheet</td>
+<td>At Site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pdcWeeklySheet.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pdcWeeklySheet.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<td>PDC-Monthly Consulation sheet</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pdcMonthlySheet.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pdcMonthlySheet.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 </table>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

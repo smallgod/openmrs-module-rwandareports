@@ -44,6 +44,8 @@ import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicato
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
 import org.openmrs.module.rwandareports.reporting.SetupPBFReport;
+import org.openmrs.module.rwandareports.reporting.SetupPDCMonthlyAlert;
+import org.openmrs.module.rwandareports.reporting.SetupPDCWeeklyAlert;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFoodDistributionReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFormCompletionSheet;
@@ -819,17 +821,39 @@ public class RwandaSetupReportsFormController {
 	}
 	
 	// Remove/Register PBF report
-			@RequestMapping("/module/rwandareports/remove_PBFReport")
-			public ModelAndView removePBFIndicator() throws Exception {
-				new SetupPBFReport().delete();
-				return new ModelAndView(new RedirectView("rwandareports.form"));
-			}
+	@RequestMapping("/module/rwandareports/remove_PBFReport")
+	public ModelAndView removePBFIndicator() throws Exception {
+	  new SetupPBFReport().delete();
+	  return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 
-			@RequestMapping("/module/rwandareports/register_PBFReport")
-			public ModelAndView registerPBFIndicator() throws Exception {
-				new SetupPBFReport().setup();
-				return new ModelAndView(new RedirectView("rwandareports.form"));
-			}
+	@RequestMapping("/module/rwandareports/register_PBFReport")
+	public ModelAndView registerPBFIndicator() throws Exception {
+	new SetupPBFReport().setup();
+	return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+// Remove/Register PDC-consultation sheet
+   @RequestMapping("/module/rwandareports/register_pdcWeeklySheet")
+   public ModelAndView registerPDCIndicators() throws Exception {
+   new SetupPDCWeeklyAlert().setup();
+   return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 
+	@RequestMapping("/module/rwandareports/remove_pdcWeeklySheet")
+	public ModelAndView removePDCIndicators() throws Exception {
+	new SetupPDCWeeklyAlert().delete();
+	return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+// Remove/Register PDC-Weekly Consultation sheet
+	 @RequestMapping("/module/rwandareports/register_pdcMonthlySheet")
+	 public ModelAndView registerPDCMonthlyIndicators() throws Exception {
+	 new SetupPDCMonthlyAlert().setup();
+	 return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 
+	@RequestMapping("/module/rwandareports/remove_pdcMonthlySheet")
+	public ModelAndView removePDCMonthlyIndicators() throws Exception{
+	new SetupPDCMonthlyAlert().delete();
+	return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 }

@@ -564,6 +564,34 @@ public class RowPerPatientColumns {
 				dateFormat);
 	}
 	
+	public static MostRecentObservation getMostRecentASQ(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.ASQ_SCORE),
+				dateFormat);
+	}
+	public static MostRecentObservation getMostRecentCondition(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.DISCHARGE_CONDITION),
+				dateFormat);
+	}
+	
+	public static MostRecentObservation getMostRecentSWA(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.SOCIAL_WORK_ASSESSMENT),
+				dateFormat);
+	}
+	
+	public static MostRecentObservation getMostRecentECDEDUC(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.ECD_EDUCATION),
+				dateFormat);
+	}
+	
+	
 	public static MostRecentObservation getMostRecenSideEffect(String name,
 			String dateFormat) {
 		return getMostRecent(name,
@@ -617,6 +645,32 @@ public class RowPerPatientColumns {
 		return getMostRecent(name,
 				gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),
 				dateFormat, resultFilter);
+	}
+	
+	public static MostRecentObservation getMostRecentTemperature(
+			String name, String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.TEMPERATURE),
+				dateFormat);
+	}
+	
+	public static MostRecentObservation getMostRecentRespiratoryRate(
+			String name, String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.RESPIRATORY_RATE),
+				dateFormat);
+	}
+	
+	public static MostRecentObservation getMostRecentWtAgezscore(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.WTAGEZScore), dateFormat);
+	}
+	
+	public static MostRecentObservation getMostRecentWtHeightzscore(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.WTHEIGHTZScore), dateFormat);
 	}
 
 	public static MostRecentObservation getMostRecentINR(String name,
@@ -711,6 +765,13 @@ public class RowPerPatientColumns {
 			String name, EncounterType encounterType) {
 		return getObservationInMostRecentEncounterOfType(name,
 				gp.getConcept(GlobalPropertiesManagement.IO_CONCEPT),
+				encounterType);
+	}
+	
+	public static ObservationInMostRecentEncounterOfType getReturnVisitInMostRecentEncounterOfType(
+			String name, EncounterType encounterType) {
+		return getObservationInMostRecentEncounterOfType(name,
+				gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),
 				encounterType);
 	}
 	public static AllMotherObservationValues getAllMotherCD4Values(String name,
