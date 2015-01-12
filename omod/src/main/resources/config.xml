@@ -1447,7 +1447,13 @@
 		</description>
 	</globalProperty>
 
-
+    <globalProperty>
+		<property>reports.pdcProgram</property>
+		<defaultValue>PDC Program</defaultValue>
+		<description>
+			The name of the PDC program to be used
+		</description>
+	</globalProperty>
 
 	<globalProperty>
 		<property>reports.epilepsyprogram</property>
@@ -2286,6 +2292,12 @@
 		<property>reports.AsthmaEncounterType</property>
 		<defaultValue>41</defaultValue>
 		<description>Astma encounter type id </description>
+	</globalProperty> 
+	
+	<globalProperty>
+		<property>reports.pdcEncounterType</property>
+		<defaultValue>46</defaultValue>
+		<description>PDC encounter type id </description>
 	</globalProperty>
 
 	<globalProperty>
@@ -2430,6 +2442,27 @@
 	</globalProperty>
 	<!-- end Asthma consult sheet & asthma monthly quaterly indicator report -->
 
+
+     <globalProperty>
+		<property>reports.pdcintakeForm</property>
+		<defaultValue>510a0e66-b526-4dce-aeb6-9857d98f4bf3</defaultValue>
+		<description>PDC intake form</description>
+	</globalProperty>
+	
+	 <globalProperty>
+		<property>reports.pdcreferralForm</property>
+		<defaultValue>c0107214-0064-4fc1-b948-0bd21fcd2c69</defaultValue>
+		<description>PDC referral form</description>
+	</globalProperty>
+	
+	 <globalProperty>
+		<property>reports.pdcvisitForm</property>
+		<defaultValue>47b339bb-0ae8-4a93-9064-740baa5d1a8f</defaultValue>
+		<description>PDC visit form</description>
+	</globalProperty>
+
+
+   
 	<globalProperty>
 		<property>report.exposed_infantencounter</property>
 		<defaultValue>26</defaultValue>
@@ -2559,9 +2592,59 @@
 		<description>The concept id for oncology confirmed diagnosis</description>
 	</globalProperty>
 	
+	<globalProperty>
+		<property>reports.weightAgezScore</property>
+		<defaultValue>c9d8c9db-518c-4a00-985d-d2fc8ac1f739</defaultValue>
+		<description>The concept id for weight/age zscore</description>
+	</globalProperty>
 	
+	<globalProperty>
+		<property>reports.weightHeightScore</property>
+		<defaultValue>2438e295-d9da-4d5c-bacc-13c313e34755</defaultValue>
+		<description>The concept id for weight/height zscore</description>
+	</globalProperty>
 	
-
+	<globalProperty>
+		<property>concept.temperature</property>
+		<defaultValue>3ce939d2-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept id for temperature</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.otherdangerSign</property>
+		<defaultValue>addf0593-74ae-4ece-b1dc-ea90b2d79e5a</defaultValue>
+		<description>The concept id for other danger signs</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.respiratoryRateSign</property>
+		<defaultValue>3ceb11f8-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept id for respiratory rate danger sign signs</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.asqscoredomain</property>
+		<defaultValue>1fca6d51-255f-493d-a281-7521b384a623</defaultValue>
+		<description>The concept id for asq score per domain</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.ecdeducation</property>
+		<defaultValue>082c3027-9875-4b1f-8d11-49640f096107</defaultValue>
+		<description>The concept id for ECD education</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.socialworkassesment</property>
+		<defaultValue>3cda0462-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The concept id for social work assessment</description>
+	</globalProperty> 
+	<globalProperty>
+		<property>reports.dischargeCondition</property>
+		<defaultValue>f470784b-d703-439c-958b-21f52862ff6b</defaultValue>
+		<description>The concept id for no condition met on last visit</description>
+	</globalProperty>
+	
 	<globalProperty>
 		<property>reports.oncAdminInstructions</property>
 		<defaultValue>7f90c6ed-f6d5-4bd7-abf9-d71f5c5321ff</defaultValue>

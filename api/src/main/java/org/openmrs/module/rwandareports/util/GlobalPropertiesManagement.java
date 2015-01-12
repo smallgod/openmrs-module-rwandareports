@@ -168,6 +168,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String EXTERNAL_HIV_PROGRAM = "reports.externalHivProgram";
 	
+	public final static String PDC_PROGRAM = "reports.pdcProgram";
+	
 	//ProgramWorkflow
 	public final static String TREATMENT_STATUS_WORKFLOW = "reports.hivworkflowstatus";
 	
@@ -662,6 +664,7 @@ public class GlobalPropertiesManagement {
 	public final static String CANCER_RELATED_DEATH="reports.cancerrelateddeath";
 	
 	public final static String NON_CANCER_RELATED_DEATH="reports.noncancerrelateddeath";
+	
 	public final static String PATIENT_PRESENTS_FOR_CHEMO = "reports.patientPresentsChemo";
 	
 	public final static String DEATH_UNKNOWN_REASON="reports.deathunknownreason";
@@ -672,12 +675,25 @@ public class GlobalPropertiesManagement {
 	
 	public final static String STI = "reports.stiConcept";
 	
-	
 	public final static String CONFIRMED_DIAGNOSIS_CONCEPT="reports.confirmedDiagnosisConcept";
 	
+	public final static String WTAGEZScore = "reports.weightAgezScore";
 	
+	public final static String WTHEIGHTZScore = "reports.weightHeightScore";
 	
+	public final static String TEMPERATURE_DANGER_SIGN = "reports.temperatureSign";
 	
+	public final static String OTHER_DANGER_SIGN = "reports.otherdangerSign";
+	
+	public final static String RESPIRATORY_RATE = "reports.respiratoryRateSign";
+	
+	public final static String ASQ_SCORE="reports.asqscoredomain";
+	
+	public final static String SOCIAL_WORK_ASSESSMENT="reports.socialworkassesment";
+	
+	public final static String ECD_EDUCATION="reports.ecdeducation";
+	
+	public final static String DISCHARGE_CONDITION="reports.dischargeCondition";
 	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
@@ -749,6 +765,14 @@ public class GlobalPropertiesManagement {
 	public final static String PEDIANDADULTHIV_ENCOUNTER_TYPES = "reports.hivencounterTypeIds";
 	
 	public final static String NCD_FOLLOWUP_FORM = "reports.ncdFollowUpForm";
+	
+	public final static String PDC_INTAKE_FORM = "reports.pdcintakeForm";
+	
+	public final static String PDC_REFERRAL_FORM = "reports.pdcreferralForm";
+	
+	public final static String PDC_VISIT_FORM = "reports.pdcvisitForm";
+	
+	public final static String PDC_VISIT="reports.pdcEncounterType";
 	
 	//RelationshipTypes
 	public final static String ACCOMPAGNATUER_RELATIONSHIP = "reports.accompagnatuerRelationship";
@@ -834,10 +858,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String BSA_VISITS_FORM="reports.BSAVisitsForm";
 	
-	
 	public final static String ONCOLOGY_EXIT_FORM="reports.oncologyExitForm";
 	
 	public final static String ONCOLOGY_SCHEDULE_APPOINTMENT_FORM="reports.OncologyScheduleAppointmentForm";
+	
 	
 	//Drug concepts
 	public final static String FUROSEMIDE= "reports.furosemide";
