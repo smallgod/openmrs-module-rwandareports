@@ -65,6 +65,8 @@ import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicato
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
 import org.openmrs.module.rwandareports.reporting.SetupPBFReport;
+import org.openmrs.module.rwandareports.reporting.SetupPDCMonthlyAlert;
+import org.openmrs.module.rwandareports.reporting.SetupPDCWeeklyAlert;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFoodDistributionReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTFormCompletionSheet;
@@ -213,5 +215,9 @@ public class CleanReportingTablesAndRegisterAllReports {
 	public static void registerPCReports() throws Exception {
 			new SetupRwandaPrimaryCareReport().setup();
 	}
-	
+	public static void registerPDCReports() throws Exception {
+		new SetupPDCWeeklyAlert().setup();
+		new SetupPDCMonthlyAlert().setup();
+}
+
 }

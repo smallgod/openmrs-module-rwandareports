@@ -161,7 +161,6 @@ public class SetupDataQualityIndicatorReport {
 		rdsites.setupDataSetDefinition();
 
 		rdsites.addDataSetDefinition(createIndicatorsForReports(), null);
-		//h.saveReportDefinition(rdsites);
 		rdsites.addDataSetDefinition(createObsDataSet(), ParameterizableUtil
 				.createParameterMappings("location=${location}"));
 		Helper.saveReportDefinition(rdsites);
