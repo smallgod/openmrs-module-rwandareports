@@ -28,13 +28,30 @@ public class PDCAlerts implements CustomCalculation {
         
 		StringBuffer alerts = new StringBuffer();
 		int babyAgeInmonths = 0;
+		
+		for ( PatientDataResult resultGrowth : results)
+			for ( PatientDataResult resultGrowthCoded : results){
+			if(resultGrowth.getName().equals("intervalgrowth") && resultGrowthCoded.getName().equals("inadequate")){
+			ObservationResult intervGrowth=(ObservationResult)resultGrowth;
+			ObservationResult inadequateGrowth = (ObservationResult)resultGrowthCoded;
+			try{
+			String intervalgrowth=intervGrowth.getValue();
+			String inadequate=inadequateGrowth.getValue();
+			 double lowIntgrowth=Double.parseDouble(intervalgrowth);
+			System.out.println("======growth===="+intervalgrowth+"===inadequate==="+inadequate);
+			if(intervGrowth.getValue()!=null && inadequateGrowth.getValue()!=null 
+					&& inadequate.toString().contains("INADEQUATE")){
+				alerts.append("Inadequate interval growth: "+lowIntgrowth+"\n");
+			    }
+			  }catch(Exception e){}
+			  }
+			 }
 		for ( PatientDataResult result : results){
 			
 			if (result.getName().equals("wtagezcore")) {
 					ObservationResult wtageZcore = (ObservationResult)result;
 					if(wtageZcore.getValue() != null && wtageZcore.getObs() != null && wtageZcore.getObs().getValueNumeric() < -3)
 					{
-						
 						alerts.append("Very Low Wt/Age Z-score: "+wtageZcore.getObs().getValueNumeric()+" \n");
 					}
 				}
@@ -46,8 +63,7 @@ public class PDCAlerts implements CustomCalculation {
 					alerts.append("Very Low Wt/Ht Z-score: " +wtHeightzcore.getObs().getValueNumeric()+" \n");
 				}
 			 }
-			if(result.getName().equals("age"))
-			  {
+			if(result.getName().equals("age")){
 				AgeResult ageinmonths=(AgeResult)result;
 				if(ageinmonths.getValue() != null){
 					babyAgeInmonths=ageinmonths.getValue();

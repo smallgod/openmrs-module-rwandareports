@@ -115,6 +115,12 @@ public class SetupPDCWeeklyAlert {
 		
     	dataSetDefinition.addColumn(RowPerPatientColumns.getGender("Sex"), new HashMap<String, Object>());		
 		
+		MostRecentObservation intervalgrowth = RowPerPatientColumns.getMostRecentIntervalGrowth("intervalgrowth", "@ddMMMyy");
+		dataSetDefinition.addColumn(intervalgrowth, new HashMap<String, Object>());
+		
+		MostRecentObservation intervalgrowthcoded = RowPerPatientColumns.getMostRecentCodedIntGrowth("inadequate", "@ddMMMyy");
+		dataSetDefinition.addColumn(intervalgrowthcoded, new HashMap<String, Object>());
+		
 		MostRecentObservation wtAgezscore = RowPerPatientColumns.getMostRecentWtAgezscore("wtagezcore", "@ddMMMyy");
 		dataSetDefinition.addColumn(wtAgezscore, new HashMap<String, Object>());
 		
@@ -150,6 +156,8 @@ public class SetupPDCWeeklyAlert {
 		
 		CustomCalculationBasedOnMultiplePatientDataDefinitions alert = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		alert.setName("alert");
+		alert.addPatientDataToBeEvaluated(intervalgrowth, new HashMap<String, Object>());
+		alert.addPatientDataToBeEvaluated(intervalgrowthcoded, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(wtAgezscore, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(wtHeightzcore, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(temperaturesign, new HashMap<String, Object>());

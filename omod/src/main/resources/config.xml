@@ -2646,6 +2646,18 @@
 	</globalProperty>
 	
 	<globalProperty>
+		<property>reports.intervalgrowth</property>
+		<defaultValue>ceb6b7b2-f26d-4f7b-92ae-9b0c1df86aa4</defaultValue>
+		<description>The concept id for interval growth</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.intervalgrowthcoded</property>
+		<defaultValue>aa1ab203-98f6-4b11-8987-b2de6b5a591f</defaultValue>
+		<description>The concept id for interval growth coded</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>reports.oncAdminInstructions</property>
 		<defaultValue>7f90c6ed-f6d5-4bd7-abf9-d71f5c5321ff</defaultValue>
 		<description>The concept id for recording the administration

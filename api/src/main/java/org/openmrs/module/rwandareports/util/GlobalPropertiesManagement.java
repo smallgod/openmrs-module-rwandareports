@@ -681,8 +681,6 @@ public class GlobalPropertiesManagement {
 	
 	public final static String WTHEIGHTZScore = "reports.weightHeightScore";
 	
-	public final static String TEMPERATURE_DANGER_SIGN = "reports.temperatureSign";
-	
 	public final static String OTHER_DANGER_SIGN = "reports.otherdangerSign";
 	
 	public final static String RESPIRATORY_RATE = "reports.respiratoryRateSign";
@@ -694,6 +692,10 @@ public class GlobalPropertiesManagement {
 	public final static String ECD_EDUCATION="reports.ecdeducation";
 	
 	public final static String DISCHARGE_CONDITION="reports.dischargeCondition";
+	
+	public final static String INTERVAL_GROWTH="reports.intervalgrowth";
+	
+	public final static String INTERVAL_GROWTH_CODED="reports.intervalgrowthcoded";
 	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	

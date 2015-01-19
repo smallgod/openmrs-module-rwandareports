@@ -661,6 +661,17 @@ public class RowPerPatientColumns {
 				dateFormat);
 	}
 	
+	public static MostRecentObservation getMostRecentIntervalGrowth(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.INTERVAL_GROWTH), dateFormat);
+	}
+	public static MostRecentObservation getMostRecentCodedIntGrowth(String name,
+			String dateFormat) {
+		return getMostRecent(name,
+				gp.getConcept(GlobalPropertiesManagement.INTERVAL_GROWTH_CODED), dateFormat);
+	}
+	
 	public static MostRecentObservation getMostRecentWtAgezscore(String name,
 			String dateFormat) {
 		return getMostRecent(name,
