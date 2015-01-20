@@ -3572,5 +3572,119 @@
 		<description>uuid or id for Chemotherapy infusion center visit scheduled date concept</description>
 	</globalProperty>
 	
+	<!-- PDC global property -->
+	<globalProperty>
+		<property>reports.reasonForReferral</property>
+		<defaultValue>1aa373f4-4db5-4b01-bce0-c10a636bb931</defaultValue>
+		<description>ID for Reason For Referral concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.breathingDangerSignsPresent</property>
+		<defaultValue>d8021d30-364a-4833-a1b7-e65eca46c66e</defaultValue>
+		<description>ID Breathing Danger Signs Present concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.convulsionsDangerSignsPresent</property>
+		<defaultValue>ec7de7cf-055f-48ac-897a-f8c789a7467b</defaultValue>
+		<description>ID for Convulsions Danger Signs Present concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.LethargyOrUnresponsivenessDangerSignsPresent</property>
+		<defaultValue>ffb87bc8-3121-4171-a151-b4c08e315521</defaultValue>
+		<description>ID Lethargy Or Unresponsiveness Danger Signs Present Concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.umbilicalCordRednessDangerSigns</property>
+		<defaultValue>62a031af-350d-4b08-9cde-6d2b87a5b0b1</defaultValue>
+		<description>ID for Umbilical Cord Redness Danger Signs Concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.stiffNeckOrBulgingFontanellesDangerSigns</property>
+		<defaultValue>4509cb04-9adf-4141-941e-d81d4377111f</defaultValue>
+		<description>ID for STIFF NECK OR BULGING FONTANELLES DANGER SIGNS PRESENT Concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.socialEconomicAssistanceAlreadyReceived</property>
+		<defaultValue>3ce169b4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>ID for Social Economic Assistance Already Received concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.socialEconomicAssistanceRecommanded</property>
+		<defaultValue>3ce16b30-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>ID Social Economic Assistance Recommanded concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.socialEconomicAssistanceNotRecommanded</property>
+		<defaultValue>ae866472-b781-44ee-be66-bb86c42057cc</defaultValue>
+		<description>ID Social Economic Assistance Not Recommanded concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.correctedAge</property>
+		<defaultValue>3cf15b3a-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>ID Corrected Age concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.heightForAgeZScore</property>
+		<defaultValue>6d4b1720-f45c-4069-98d9-e7e865105a7a</defaultValue>
+		<description>ID for Height For Age Z-Score concept </description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.HCForAgeZScore</property>
+		<defaultValue>9f3180c5-20ce-479f-9276-63d773765c28</defaultValue>
+		<description>ID for HC For Age Z-Score concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.headCircumference</property>
+		<defaultValue>3ceb96b4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>ID for Head Circumference concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.smallMuscleMovement</property>
+		<defaultValue>d0fdea6f-37f7-4a9c-9f95-488b9b31c6de</defaultValue>
+		<description>ID for Small Muscle Movement Concpet</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.largeMuscleMovement</property>
+		<defaultValue>497c7a76-1756-44b2-9fc9-c5b131004959</defaultValue>
+		<description>ID for Large Muscle Movement</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.communication</property>
+		<defaultValue>1fc5e9a8-e6c2-48c4-b6ed-9b21d733dc01</defaultValue>
+		<description>ID COMMUNICATION concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.problemSolving</property>
+		<defaultValue>b53ff26a-515c-4a7c-bebe-b80c594e6d4c</defaultValue>
+		<description>ID Problem Solving Concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.personalSocial</property>
+		<defaultValue>fda3b1a8-7e8f-4ae9-973a-f8c41713c595</defaultValue>
+		<description>ID Personal Social Concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.abnormal</property>
+		<defaultValue>3cd75230-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>ID for ABNORMAL concept</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.reasonForNotDoingFollowUp</property>
+		<defaultValue>f20d0cf4-2b39-4e4e-af91-628b95938f87</defaultValue>
+		<description>ID for Reason For Not Doing FollowUp concept</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.inadequate</property>
+		<defaultValue>571e04c6-3a91-41d6-9a40-3404961be403</defaultValue>
+		<description>ID for INADEQUATE concept</description>
+	</globalProperty>
+	
 		
 </module>

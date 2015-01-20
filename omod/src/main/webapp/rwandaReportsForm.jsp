@@ -63,7 +63,7 @@ $(document).ready(function(){
 <br /><br />
 
 <table class="reports" style="width:100%;">
-<tr><th>ALL</th><th>HIV</th><th>NCD</th><th>ONCOLOGY</th><th>CENTRAL</th><th>SITE</th><th>PRIMARY CARE</th><th>CHW</th></tr>
+<tr><th>ALL</th><th>HIV</th><th>NCD</th><th>ONCOLOGY</th><th>CENTRAL</th><th>SITE</th><th>PRIMARY CARE</th><th>CHW</th><th>PDC</th></tr>
 
 <tr>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allReports.form" onclick=msgreg(this)>(Re)Register</a></td>
@@ -74,10 +74,11 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allSiteReports.form" onclick=msgreg(this)>(Re)Register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allPCReport.form" onclick=msgreg(this)>(Re)Register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allCHWReport.form" onclick=msgreg(this)>(Re)Register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allPDCReport.form" onclick=msgreg(this)>(Re)Register</a></td>
 </tr>
 <tr>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_all.form" onclick=msgrem(this)>Remove All </a></td>
-<td colspan="7"><center><b>The category remove is not yet available</b></center></td>
+<td colspan="8"><center><b>The category remove is not yet available</b></center></td>
 </tr>
 
 </table>
@@ -481,7 +482,7 @@ $(document).ready(function(){
 </tr>
 <tr>
 <tr>
-<td rowspan="3" class="tabletd">PDC Reports</td>
+<td rowspan="4" class="tabletd">PDC Reports</td>
 <td>PDC-Weekly Consulation sheet</td>
 <td>At Site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pdcWeeklySheet.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -492,6 +493,12 @@ $(document).ready(function(){
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pdcMonthlySheet.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pdcMonthlySheet.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<td>PDC-Indicator report</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pdcIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pdcIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 </table>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

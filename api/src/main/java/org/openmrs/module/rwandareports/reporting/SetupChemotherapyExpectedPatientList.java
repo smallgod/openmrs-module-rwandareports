@@ -20,6 +20,7 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rwandareports.dataset.ConsecutiveCombinedDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.WeekViewDataSetDefinition;
 import org.openmrs.module.rwandareports.definition.UpcomingChemotherapyCohortDefinition;
@@ -49,6 +50,9 @@ public class SetupChemotherapyExpectedPatientList {
     private Concept ChemotherapyInfusionCenterVisit;
 	
 	private List<Form> visitForms=new ArrayList<Form>();
+	
+	//private Concept weight;
+	//private Concept height;
 	
 	
 	public void setup() throws Exception {
@@ -248,6 +252,8 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		visitForms.add(OncologyScheduleAppointmentForm);
 		
 		confirmedDiagnosis=gp.getConcept(GlobalPropertiesManagement.CONFIRMED_DIAGNOSIS_CONCEPT);
+		/*height=gp.getConcept(GlobalPropertiesManagement.HEIGHT_CONCEPT);
+		weight=gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);*/
 		
 	}
 	
@@ -278,6 +284,10 @@ private void addCommonColumns(RowPerPatientDataSetDefinition dataSetDefinition,R
 	dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 	
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("diagnosisNew", confirmedDiagnosis, null), new HashMap<String, Object>());
+	
+	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentHeight("RecentHeight",  null),new HashMap<String, Object>());
+	
+	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentWeight("RecentWeight", null),new HashMap<String, Object>());
 	
 	
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone", telephone, null), new HashMap<String, Object>());

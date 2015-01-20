@@ -843,6 +843,13 @@ public class Cohorts {
 		return encounter;
 	}
 	
+	public static EncounterCohortDefinition createEncounterBasedOnForms(String name,List<Form> forms) {
+EncounterCohortDefinition encounter = new EncounterCohortDefinition();
+encounter.setName(name);
+encounter.setFormList(forms);
+return encounter;
+}
+	
 	public static NumericObsCohortDefinition createNumericObsCohortDefinition(String name, Concept question, double value,
 	                                                                          RangeComparator setComparator,
 	                                                                          TimeModifier timeModifier) {
@@ -1022,7 +1029,37 @@ public class Cohorts {
 		query.addParameter(new Parameter("startDate", "startDate", Date.class));
 		query.addParameter(new Parameter("endDate", "endDate", Date.class));
 		return query;
-	}
+	}	
+	
+	public static SqlCohortDefinition getPatientsWithObservationInForm(String name, Form form,
+            Concept concept) {
+SqlCohortDefinition query = new SqlCohortDefinition(
+"select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id="
++ form.getId()
++ " and o.concept_id="
++ concept.getId()
++ " and o.voided=0 and e.voided=0 and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL or o.value_datetime is NOT NULL or o.value_boolean is NOT NULL)");
+query.setName(name);
+return query;
+}
+	
+	
+	
+	public static SqlCohortDefinition getPatientsWithObservationValueDateTimeInFormBetweenStartAndEndDate(String name, Form form,
+            Concept concept) {
+SqlCohortDefinition query = new SqlCohortDefinition(
+"select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id="
++ form.getId()
++ " and o.concept_id="
++ concept.getId()
++ " and o.voided=0 and e.voided=0 and o.value_datetime>= :startDate and o.value_datetime<= :endDate");
+query.setName(name);
+query.addParameter(new Parameter("startDate", "startDate", Date.class));
+query.addParameter(new Parameter("endDate", "endDate", Date.class));
+return query;
+}
+	
+	
 	
 	public static SqlCohortDefinition getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(String name,
 	                                                                                                                        Form form,

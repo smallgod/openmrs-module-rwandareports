@@ -44,6 +44,7 @@ import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicato
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
 import org.openmrs.module.rwandareports.reporting.SetupPBFReport;
+import org.openmrs.module.rwandareports.reporting.SetupPDCIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupPDCMonthlyAlert;
 import org.openmrs.module.rwandareports.reporting.SetupPDCWeeklyAlert;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
@@ -854,6 +855,19 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_pdcMonthlySheet")
 	public ModelAndView removePDCMonthlyIndicators() throws Exception{
 	new SetupPDCMonthlyAlert().delete();
+	return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	// Remove/Register PDC-Indicator Report
+	 @RequestMapping("/module/rwandareports/register_pdcIndicatorReport")
+	 public ModelAndView registerPDCIndicatorReport() throws Exception {
+	 new SetupPDCIndicatorReport().setup();
+	 return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_pdcIndicatorReport")
+	public ModelAndView removePDCIndicatorReport() throws Exception{
+	new SetupPDCIndicatorReport().delete();
 	return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 }

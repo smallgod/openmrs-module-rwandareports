@@ -116,7 +116,7 @@ public class RwandaRegisterAllReportsFormController {
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 	
-	@RequestMapping("/module/rwandareports/register_allCHWReport")
+	@RequestMapping("/module/rwandareports/register_allPDCReport")
 	public ModelAndView registerAllregisterPDCReports() throws Exception{
 		CleanReportingTablesAndRegisterAllReports.registerPDCReports();
 		return new ModelAndView(new RedirectView("rwandareports.form"));

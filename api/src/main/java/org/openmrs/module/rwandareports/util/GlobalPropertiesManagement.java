@@ -697,6 +697,48 @@ public class GlobalPropertiesManagement {
 	
 	public final static String INTERVAL_GROWTH_CODED="reports.intervalgrowthcoded";
 	
+	public final static String REASON_FOR_REFERRAL="reports.reasonForReferral";
+	
+	public final static String BREATHING_DANGER_SIGNS_PRESENT="reports.breathingDangerSignsPresent";
+	
+	public final static String CONVULSIONS_DANGER_SIGNS_PRESENT="reports.convulsionsDangerSignsPresent";
+	
+	public final static String LETHARGY_OR_UNRESPONSIVENESS_DANGER_SIGNS_PRESENT="reports.LethargyOrUnresponsivenessDangerSignsPresent";
+	
+	public final static String UMBILICAL_CORD_REDNESS_DANGER_SIGNS="reports.umbilicalCordRednessDangerSigns";
+	
+	public final static String STIFF_NECK_OR_BULGING_FONTANELLES_DANGER_SIGNS_PRESENT="reports.stiffNeckOrBulgingFontanellesDangerSigns";
+	
+	public final static String SOCIAL_ECONOMIC_ASSISTANCE_ALREADY_RECEIVED="reports.socialEconomicAssistanceAlreadyReceived";
+	
+	public final static String SOCIAL__ECONOMIC_ASSISTANCE_RECOMMANDED="reports.socialEconomicAssistanceRecommanded";
+	
+	public final static String SOCIAL__ECONOMIC_ASSISTANCE_NOT_RECOMMANDED="reports.socialEconomicAssistanceNotRecommanded";
+		
+	public final static String CORRECTED_AGE="reports.correctedAge";
+	
+	public final static String HEIGHT_FOR_AGE_Z_SCORE="reports.heightForAgeZScore";
+	
+	public final static String HC_FOR_AGE_ZSCORE="reports.HCForAgeZScore";
+	
+	public final static String HEAD_CIRCUMFERENCE="reports.headCircumference";
+	
+	public final static String SMALL_MUSCLE_MOVEMENTS="reports.smallMuscleMovement";
+	
+	public final static String LARGE_MUSCLE_MOVEMENTS="reports.largeMuscleMovement";
+	
+	public final static String COMMUNICATION="reports.communication";
+	
+	public final static String PROBLEM_SOLVING="reports.problemSolving";
+	
+	public final static String PERSONAL_SOCIAL="reports.personalSocial";
+	
+	public final static String ABNORMAL="reports.abnormal";
+	
+	public final static String REASON_FOR_NOT_DOING_FOLLOWUP="reports.reasonForNotDoingFollowUp";
+	
+	public final static String INTERVAL_GROWTH_INADEQUATE="reports.inadequate";
+	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
 	public static final String VCT_PROGRAM = "reports.vctProgram";							

@@ -18,7 +18,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.UserContext;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.ReportRequest.Status;
@@ -64,7 +63,7 @@ import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientExpecte
 import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
-import org.openmrs.module.rwandareports.reporting.SetupPBFReport;
+import org.openmrs.module.rwandareports.reporting.SetupPDCIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupPDCMonthlyAlert;
 import org.openmrs.module.rwandareports.reporting.SetupPDCWeeklyAlert;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
@@ -138,6 +137,10 @@ public class CleanReportingTablesAndRegisterAllReports {
 	       else if(category.equalsIgnoreCase("PC"))
 	       {
 	    	   registerPCReports();
+	       }
+	       else if(category.equalsIgnoreCase("PDC"))
+	       {
+	    	   registerPDCReports();
 	       }
         }
 			
@@ -218,6 +221,7 @@ public class CleanReportingTablesAndRegisterAllReports {
 	public static void registerPDCReports() throws Exception {
 		new SetupPDCWeeklyAlert().setup();
 		new SetupPDCMonthlyAlert().setup();
+		new SetupPDCIndicatorReport().setup();
 }
 
 }
