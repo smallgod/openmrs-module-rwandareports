@@ -38,7 +38,6 @@ public class PDCAlerts implements CustomCalculation {
 			String intervalgrowth=intervGrowth.getValue();
 			String inadequate=inadequateGrowth.getValue();
 			 double lowIntgrowth=Double.parseDouble(intervalgrowth);
-			System.out.println("======growth===="+intervalgrowth+"===inadequate==="+inadequate);
 			if(intervGrowth.getValue()!=null && inadequateGrowth.getValue()!=null 
 					&& inadequate.toString().contains("INADEQUATE")){
 				alerts.append("Inadequate interval growth: "+lowIntgrowth+"\n");
@@ -128,7 +127,6 @@ public class PDCAlerts implements CustomCalculation {
 						Date lastAsq=asqScore.getDateOfObservation();
 						Date date=Calendar.getInstance().getTime();
 						int diff=calculateMonthsDifference(date, lastAsq);
-						System.out.println("====myweekly diff===="+diff);
 						if( ((age > 6 || age < 30) && diff > 8) || (age >=30 && diff > 14)){
 							alerts.append("Late ASQ ("+diff+"months) \n");
 						} 
