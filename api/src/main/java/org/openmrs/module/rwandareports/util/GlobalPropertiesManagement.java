@@ -739,6 +739,8 @@ public class GlobalPropertiesManagement {
 	
 	public final static String INTERVAL_GROWTH_INADEQUATE="reports.inadequate";
 	
+	public final static String FOLLOW_UP_DATE="reports.followup";
+	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
 	public static final String VCT_PROGRAM = "reports.vctProgram";							

@@ -44,6 +44,9 @@ public class SetupPDCWeeklyAlert {
 	List<EncounterType> pdcEncounters;
 	private ArrayList<Form> intakeForm=new ArrayList<Form>();
 	private EncounterType pdcEncType;
+	private List<Form> referralAndVisitForms=new ArrayList<Form>();
+	private Form referralForm;
+    private Form visitForm;
 	
 	public void setup() throws Exception {
 		
@@ -101,7 +104,8 @@ public class SetupPDCWeeklyAlert {
 		
 		//Add filters
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+PDCProgram.getName(), PDCProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
-	
+		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisitAndFollowUp(referralAndVisitForms), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
+		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
@@ -184,6 +188,11 @@ public class SetupPDCWeeklyAlert {
 	    pdcEncounters = gp.getEncounterTypeList(GlobalPropertiesManagement.PDC_VISIT);
 	    pdcEncType = gp.getEncounterType(GlobalPropertiesManagement.PDC_VISIT);
 	    intakeForm.add(gp.getForm(GlobalPropertiesManagement.PDC_INTAKE_FORM));
+	    referralForm=gp.getForm(GlobalPropertiesManagement.PDC_REFERRAL_FORM);
+	    visitForm=gp.getForm(GlobalPropertiesManagement.PDC_VISIT_FORM);
+	    referralAndVisitForms.add(referralForm);
+	    referralAndVisitForms.add(visitForm);
+	   
 		
 	}
 	
