@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.openmrs.Concept;
-import org.openmrs.Form;
-import org.openmrs.Program;
-import org.openmrs.ProgramWorkflow;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
@@ -108,8 +105,10 @@ public class SetupChemotherapyExpectedPatientList {
 					
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 	
-		reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));
-		createDataSetDefinition(reportDefinition);
+		//reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));
+        reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
+
+        createDataSetDefinition(reportDefinition);
 		
 		Helper.saveReportDefinition(reportDefinition);
 		
@@ -122,7 +121,7 @@ private ReportDefinition createInfusionReportDefinition() {
 					
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 	
-		reportDefinition.addParameter(new Parameter("endDate", "Week of (select Monday)", Date.class));
+		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
 		createInfusionDataSetDefinition(reportDefinition);
 		
 		Helper.saveReportDefinition(reportDefinition);
@@ -138,8 +137,9 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	RowPerPatientDataSetDefinition baseSetDefinition = new RowPerPatientDataSetDefinition();
 	baseSetDefinition.setName("Chemotherapy Base Patient List");
 	
-	dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInpatientWardVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
-	baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInpatientWardVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
+	//dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInpatientWardVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
+    dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInpatientWardVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
+    baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInpatientWardVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
 	
 	SortCriteria sortCriteria = new SortCriteria();
 	sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
@@ -189,8 +189,9 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		baseSetDefinition.setName("Chemotherapy Base Patient List");
 		
 		
-		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
-		baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
+		//dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
+        dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
+        baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
 		
 		
 		
@@ -276,20 +277,24 @@ private void addCommonColumns(RowPerPatientDataSetDefinition dataSetDefinition,R
 	dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
 	baseSetDefinition.addColumn(RowPerPatientColumns.getIMBId("id"), new HashMap<String, Object>());
 	
-	dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+7d}"));
-	baseSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+7d}"));
-	
-	dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+7d}"));
-	
-	dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
+	//dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+7d}"));
+	//baseSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+7d}"));
+
+    dataSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
+    baseSetDefinition.addColumn(RowPerPatientColumns.getDrugRegimenInformationParameterized("regimen", false, false), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
+
+
+    //dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate+7d}"));
+    dataSetDefinition.addColumn(RowPerPatientColumns.getRegimenDateInformationParameterized("regimenDate", "dd/MMM/yyyy"), ParameterizableUtil.createParameterMappings("asOfDate=${endDate},untilDate=${endDate}"));
+
+    dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("diagnosis", oncologyProgram, diagnosis, null), new HashMap<String, Object>());
 	
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("diagnosisNew", confirmedDiagnosis, null), new HashMap<String, Object>());
 	
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentHeight("RecentHeight",  null),new HashMap<String, Object>());
 	
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentWeight("RecentWeight", null),new HashMap<String, Object>());
-	
-	
+
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone", telephone, null), new HashMap<String, Object>());
 	
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone2", telephone2, null), new HashMap<String, Object>());
