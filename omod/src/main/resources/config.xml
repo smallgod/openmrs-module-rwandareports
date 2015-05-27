@@ -3686,5 +3686,11 @@
 		<description>ID for INADEQUATE concept</description>
 	</globalProperty>
 	
+<globalProperty>
+  <property>reports.followup</property>
+ <defaultValue>4f6089bd-6d3a-4346-9aeb-1a6f852fc5c1</defaultValue>
+ <description>ID for follow up concept</description>
+</globalProperty>
+	
 		
 </module>
