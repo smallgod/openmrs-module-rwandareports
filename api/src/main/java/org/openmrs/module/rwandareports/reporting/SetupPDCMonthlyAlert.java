@@ -45,14 +45,12 @@ public class SetupPDCMonthlyAlert {
 	//properties retrieved from global variables
 	private Program PDCProgram;
 	List<EncounterType> pdcEncounters;
-	private Form intakeForm;
 	private EncounterType pdcEncType;
 	private List<Form> referralAndVisitForms=new ArrayList<Form>();
 	private List<Form> referralAndNotIntakeForm=new ArrayList<Form>();
 	private Form referralForm;
     private Form visitForm;
-    private Concept scheduledVisit;
-	
+    
 	
 	
 public void setup() throws Exception {
@@ -82,18 +80,6 @@ public void setup() throws Exception {
 	Helper.purgeReportDefinition("PDC-Monthly consulation Sheet");
 }
 	
-	/*private ReportDefinition createReportDefinition() {
-		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-Adult ART Report-Monthly");
-		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
-		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
-		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
-		    ParameterizableUtil.createParameterMappings("location=${location}"));
-		
-		return reportDefinition;
-	}*/
-	
 private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
@@ -101,7 +87,7 @@ private ReportDefinition createReportDefinition() {
 				
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));	
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),ParameterizableUtil.createParameterMappings("location=${location}"));
-		reportDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
+		reportDefinition.addParameter(new Parameter("endDate", "Month of", Date.class));
 		createDataSetDefinition(reportDefinition);
 		
 		Helper.saveReportDefinition(reportDefinition);
@@ -126,8 +112,8 @@ private ReportDefinition createReportDefinition() {
 		//add dates parameters to datasets
 		dataSetDefinition1.addParameter(new Parameter("location", "Location", Location.class));
 		dataSetDefinition2.addParameter(new Parameter("location", "Location", Location.class));
-		dataSetDefinition1.addParameter(new Parameter("endDate", "Monday", Date.class));
-		dataSetDefinition2.addParameter(new Parameter("endDate", "Monday", Date.class));
+		dataSetDefinition1.addParameter(new Parameter("endDate", "Month", Date.class));
+		dataSetDefinition2.addParameter(new Parameter("endDate", "Month", Date.class));
 		
 		//Add filters
 		dataSetDefinition1.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+PDCProgram.getName(), PDCProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
@@ -140,12 +126,9 @@ private ReportDefinition createReportDefinition() {
 		patientsNotEnrolledInPDC.getSearches().put("inPDCProgramCohort",new Mapped<CohortDefinition>(inPDCProgramCohort, ParameterizableUtil
 		            .createParameterMappings("onDate=${now}")));
 		patientsNotEnrolledInPDC.setCompositionString("NOT inPDCProgramCohort");
-		System.out.println("====test= pdc==="+patientsNotEnrolledInPDC.getName());
 				
-		//dataSetDefinition2.addFilter(Cohorts.createPatientLateForVisit(scheduledVisit, intakeForm), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition2.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(referralAndNotIntakeForm), ParameterizableUtil.createParameterMappings("end=${endDate+30d},start=${endDate}"));
 		dataSetDefinition2.addFilter(patientsNotEnrolledInPDC,ParameterizableUtil.createParameterMappings("onDate=${now}"));
-		System.out.println("====test2= pdc==="+dataSetDefinition2.getName().length());
 		//Add Columns
 				dataSetDefinition1.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 				dataSetDefinition1.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
@@ -169,7 +152,7 @@ private ReportDefinition createReportDefinition() {
 				ObservationInMostRecentEncounterOfType nextVisit = RowPerPatientColumns.getReturnVisitInMostRecentEncounterOfType("nextVisit",pdcEncType);
 				dataSetDefinition1.addColumn(nextVisit, new HashMap<String, Object>());
 				dataSetDefinition2.addColumn(nextVisit, new HashMap<String, Object>());
-				
+			
 				RecentEncounterType lastEncInMonth = RowPerPatientColumns.getRecentEncounterType("lastEnc",pdcEncounters,null, null);
 				dataSetDefinition1.addColumn(lastEncInMonth, new HashMap<String, Object>());
 				
@@ -198,13 +181,12 @@ private ReportDefinition createReportDefinition() {
 		PDCProgram = gp.getProgram(GlobalPropertiesManagement.PDC_PROGRAM);
 	    pdcEncounters = gp.getEncounterTypeList(GlobalPropertiesManagement.PDC_VISIT);
 	    pdcEncType = gp.getEncounterType(GlobalPropertiesManagement.PDC_VISIT);
-	    intakeForm= gp.getForm(GlobalPropertiesManagement.PDC_INTAKE_FORM);
 	    referralForm=gp.getForm(GlobalPropertiesManagement.PDC_REFERRAL_FORM);
 	    visitForm=gp.getForm(GlobalPropertiesManagement.PDC_VISIT_FORM);
 	    referralAndVisitForms.add(referralForm);
 	    referralAndVisitForms.add(visitForm);
 	    referralAndNotIntakeForm.add(referralForm);
-	    scheduledVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+	   
 		
 	}
 }
