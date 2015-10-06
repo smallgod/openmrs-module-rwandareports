@@ -264,7 +264,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_dataDelay.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="3" class="tabletd">Research</td>
+<td rowspan="4" class="tabletd">Research</td>
 <td>DQ-HIV Research Data Quality</td>
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_hivResearchDataQuality.form" onclick=msgreg(this)>(Re) register</a></td>
