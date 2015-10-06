@@ -67,8 +67,8 @@ public class RunReportsController {
 		
 		Report rep = rs.runReport(rr);
 		
-		String filename = rm.getRenderer().getFilename(rep.getRequest().getReportDefinition().getParameterizable(), rm.getArgument()).replace(" ", "_");
-		response.setContentType(rm.getRenderer().getRenderedContentType(rep.getRequest().getReportDefinition().getParameterizable(), rm.getArgument()));
+		String filename = rm.getRenderer().getFilename(rep.getRequest()).replace(" ", "_");
+		response.setContentType(rm.getRenderer().getRenderedContentType(rep.getRequest()));
 		byte[] data = rep.getRenderedOutput();
 		
 		if (data != null) {
@@ -125,8 +125,8 @@ public class RunReportsController {
 		
 		Report rep = rs.runReport(rr);
 		
-		String filename = rm.getRenderer().getFilename(rep.getRequest().getReportDefinition().getParameterizable(), rm.getArgument()).replace(" ", "_");
-		response.setContentType(rm.getRenderer().getRenderedContentType(rep.getRequest().getReportDefinition().getParameterizable(), rm.getArgument()));
+		String filename = rm.getRenderer().getFilename(rep.getRequest()).replace(" ", "_");
+		response.setContentType(rm.getRenderer().getRenderedContentType(rep.getRequest()));
 		byte[] data = rep.getRenderedOutput();
 		
 		if (data != null) {

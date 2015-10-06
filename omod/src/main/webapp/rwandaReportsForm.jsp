@@ -283,6 +283,12 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_PrimaryCareRegistrationData.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 <tr>
+<td>Generic Encounter Report</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_EncounterAndObsReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_EncounterAndObsReport.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
 <td rowspan="1" class="tabletd">HMIS Report</td>
 <td>HIV-HMIS Report</td>
 <td>At site</td>
@@ -296,6 +302,7 @@ $(document).ready(function(){
 <td> <a href="${pageContext.request.contextPath}/module/rwandareports/register_PBFReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td> <a href="${pageContext.request.contextPath}/module/rwandareports/remove_PBFReport.form" onclick=msgrem(this)>Remove</a></td>	
 </tr> 
+<tr>
 <tr>
 <td rowspan="15" class="tabletd">NCD Reports</td>
 <td>NCD-Diabetes Indicator Report</td>

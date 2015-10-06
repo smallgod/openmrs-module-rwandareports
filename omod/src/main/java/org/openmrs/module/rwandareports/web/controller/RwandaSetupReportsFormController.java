@@ -16,6 +16,7 @@ import org.openmrs.module.rwandareports.reporting.SetupEligibleForViralLoadRepor
 import org.openmrs.module.rwandareports.reporting.SetupEpilepsyConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupEpilepsyLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupExposedClinicInfantMonthly;
+import org.openmrs.module.rwandareports.reporting.SetupGenericEncounterReport;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchDataQualitySheet;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchExtractionSheet;
 import org.openmrs.module.rwandareports.reporting.SetupHMISRwandaReportBySite;
@@ -28,8 +29,6 @@ import org.openmrs.module.rwandareports.reporting.SetupHypertensionLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupHypertensionQuarterlyAndMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupIDProgramQuarterlyIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupMissedChemotherapyPatientList;
-import org.openmrs.module.rwandareports.reporting.SetupMissingCD4Report;
-import org.openmrs.module.rwandareports.reporting.SetupMonthlyCD4DeclineReport;
 import org.openmrs.module.rwandareports.reporting.SetupNCDConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupNCDLateVisitandLTFUReport;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyDailyDrugList;
@@ -48,9 +47,6 @@ import org.openmrs.module.rwandareports.reporting.SetupPDCIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupPDCMonthlyAlert;
 import org.openmrs.module.rwandareports.reporting.SetupPDCWeeklyAlert;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
-import org.openmrs.module.rwandareports.reporting.SetupPMTCTFoodDistributionReport;
-import org.openmrs.module.rwandareports.reporting.SetupPMTCTFormCompletionSheet;
-import org.openmrs.module.rwandareports.reporting.SetupPMTCTFormulaDistributionReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTPregnancyConsultationReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTPregnancyMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupPediHIVConsultationSheet;
@@ -115,6 +111,18 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_combinedHSCSPConsultation")
 	public ModelAndView removeCombinedHSCSPConsultation() throws Exception {
 		new SetupCombinedHFCSPConsultationReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/register_EncounterAndObsReport")
+	public ModelAndView registerEncounterAndObsReport() throws Exception {
+		new SetupGenericEncounterReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_EncounterAndObsReport")
+	public ModelAndView removeEncounterAndObsReport() throws Exception {
+		new SetupGenericEncounterReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 

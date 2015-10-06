@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.poi.util.IOUtils;
 import org.openmrs.api.context.Context;
@@ -13,6 +14,7 @@ import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.ExcelTemplateRenderer;
+import org.openmrs.module.reporting.report.renderer.XlsReportRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.util.OpenmrsClassLoader;
 
@@ -89,6 +91,26 @@ public class Helper {
 		
 		return design;
 	}
+	
+    public static ReportDesign xlsReportDesign(ReportDefinition reportDefinition, byte[] excelTemplate, Properties designProperties,String name) {
+        ReportDesign design = new ReportDesign();
+        design.setName(name);
+        design.setReportDefinition(reportDefinition);
+        design.setRendererType(XlsReportRenderer.class);
+        if (excelTemplate != null) {
+            ReportDesignResource resource = new ReportDesignResource();
+            resource.setName("template");
+            resource.setExtension("xls");
+            resource.setContentType("application/vnd.ms-excel");
+            resource.setContents(excelTemplate);
+            resource.setReportDesign(design);
+            design.addResource(resource);
+            if (designProperties != null) {
+                design.setProperties(designProperties);
+            }
+        }
+        return design;
+    }
 	
 	public static void saveReportDesign(ReportDesign design) {
 		ReportService rs = Context.getService(ReportService.class);
