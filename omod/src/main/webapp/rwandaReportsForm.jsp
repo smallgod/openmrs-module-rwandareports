@@ -297,6 +297,13 @@ $(document).ready(function(){
 <td> <a href="${pageContext.request.contextPath}/module/rwandareports/remove_PBFReport.form" onclick=msgrem(this)>Remove</a></td>	
 </tr> 
 <tr>
+<td>Encounter and Obs</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_EncounterAndObsReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_EncounterAndObsReport.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<tr>
 <td rowspan="15" class="tabletd">NCD Reports</td>
 <td>NCD-Diabetes Indicator Report</td>
 <td>Central</td>
