@@ -284,7 +284,7 @@ $(document).ready(function(){
 </tr>
 <tr>
 <td>Generic Encounter Report</td>
-<td>At site</td>
+<td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_EncounterAndObsReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_EncounterAndObsReport.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
