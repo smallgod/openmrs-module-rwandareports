@@ -28,14 +28,17 @@ public class SetupGenericEncounterReport {
 		
 	public void setup() throws Exception {		
 		ReportDefinition rd =createReportDefinition();		
-		  ReportDesign design = Helper.xlsReportDesign(rd, null,null,"Generic Encounter Report.xls_");			
-			Helper.saveReportDesign(design);
+		  ReportDesign designExcel = Helper.createExcelDesign(rd,"Generic Encounter Report.xls_",true);
+		  ReportDesign designCSV = Helper.createCsvReportDesign(rd,"Generic Encounter Report.csv_");
+		  
+			Helper.saveReportDesign(designExcel);
+			Helper.saveReportDesign(designCSV);
 	}
 	
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Generic Encounter Report.xls_".equals(rd.getName())) {
+			if ("Generic Encounter Report.xls_".equals(rd.getName()) || "Generic Encounter Report.csv_".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.poi.util.IOUtils;
 import org.openmrs.api.context.Context;
@@ -13,6 +12,7 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.reporting.report.renderer.CsvReportRenderer;
 import org.openmrs.module.reporting.report.renderer.ExcelTemplateRenderer;
 import org.openmrs.module.reporting.report.renderer.XlsReportRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
@@ -92,25 +92,29 @@ public class Helper {
 		return design;
 	}
 	
-    public static ReportDesign xlsReportDesign(ReportDefinition reportDefinition, byte[] excelTemplate, Properties designProperties,String name) {
-        ReportDesign design = new ReportDesign();
-        design.setName(name);
-        design.setReportDefinition(reportDefinition);
-        design.setRendererType(XlsReportRenderer.class);
-        if (excelTemplate != null) {
-            ReportDesignResource resource = new ReportDesignResource();
-            resource.setName("template");
-            resource.setExtension("xls");
-            resource.setContentType("application/vnd.ms-excel");
-            resource.setContents(excelTemplate);
-            resource.setReportDesign(design);
-            design.addResource(resource);
-            if (designProperties != null) {
-                design.setProperties(designProperties);
-            }
-        }
-        return design;
-    }
+	/**
+	 * @return a new ReportDesign for a standard Excel output
+	 */
+	public static ReportDesign createExcelDesign(ReportDefinition reportDefinition, String reportDesignName,boolean includeParameters) {
+		ReportDesign design = new ReportDesign();
+		design.setName(reportDesignName);
+		design.setReportDefinition(reportDefinition);
+		design.setRendererType(XlsReportRenderer.class);
+		if(includeParameters)
+		   design.addPropertyValue(XlsReportRenderer.INCLUDE_DATASET_NAME_AND_PARAMETERS_PROPERTY, "true");
+		return design;
+	}
+
+	/**
+	 * @return a new ReportDesign for a standard CSV output
+	 */
+	public static ReportDesign createCsvReportDesign(ReportDefinition reportDefinition, String reportDesignName) {
+		ReportDesign design = new ReportDesign();
+		design.setName(reportDesignName);
+		design.setReportDefinition(reportDefinition);
+		design.setRendererType(CsvReportRenderer.class);
+		return design;
+	}
 	
 	public static void saveReportDesign(ReportDesign design) {
 		ReportService rs = Context.getService(ReportService.class);
