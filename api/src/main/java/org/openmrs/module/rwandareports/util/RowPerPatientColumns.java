@@ -170,6 +170,10 @@ public class RowPerPatientColumns {
 		PatientIdentifierType pcType = gp
 				.getPatientIdentifier(GlobalPropertiesManagement.PC_IDENTIFIER);
 		PatientIdentifier pcId = new PatientIdentifier(pcType);
+		
+		PatientIdentifierType archivingType = gp
+				.getPatientIdentifier(GlobalPropertiesManagement.ARCHIVING_IDENTIFIER);
+		PatientIdentifier archivingId = new PatientIdentifier(archivingType);
 
 		PatientIdentifier anyId = new PatientIdentifier();
 
@@ -177,6 +181,7 @@ public class RowPerPatientColumns {
 		id.setName(name);
 		id.addPatientDataDefinition(imbId, new HashMap<String, Object>());
 		id.addPatientDataDefinition(pcId, new HashMap<String, Object>());
+		id.addPatientDataDefinition(archivingId, new HashMap<String, Object>());
 		id.addPatientDataDefinition(anyId, new HashMap<String, Object>());
 
 		return id;
@@ -186,6 +191,13 @@ public class RowPerPatientColumns {
 		PatientIdentifierType tracNetId = gp
 				.getPatientIdentifier(GlobalPropertiesManagement.TRACNET_IDENTIFIER);
 		PatientIdentifier id = new PatientIdentifier(tracNetId);
+
+		return id;
+	}
+	public static PatientIdentifier getArchivingId(String name) {
+		PatientIdentifierType archivingId = gp
+				.getPatientIdentifier(GlobalPropertiesManagement.ARCHIVING_IDENTIFIER);
+		PatientIdentifier id = new PatientIdentifier(archivingId);
 
 		return id;
 	}
