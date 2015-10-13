@@ -194,12 +194,16 @@ public class RowPerPatientColumns {
 
 		return id;
 	}
-	public static PatientIdentifier getArchivingId(String name) {
+	public static MultiplePatientDataDefinitions getArchivingId(String name) {
 		PatientIdentifierType archivingId = gp
 				.getPatientIdentifier(GlobalPropertiesManagement.ARCHIVING_IDENTIFIER);
 		PatientIdentifier id = new PatientIdentifier(archivingId);
-
-		return id;
+		
+		MultiplePatientDataDefinitions ids = new MultiplePatientDataDefinitions();
+		ids.setName(name);
+		ids.addPatientDataDefinition(id, new HashMap<String, Object>());
+		
+		return ids;
 	}
 
 	public static SystemIdentifier getSystemId(String name) {
