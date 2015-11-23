@@ -17,6 +17,7 @@ import org.openmrs.module.rwandareports.reporting.SetupEpilepsyConsultationSheet
 import org.openmrs.module.rwandareports.reporting.SetupEpilepsyLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupExposedClinicInfantMonthly;
 import org.openmrs.module.rwandareports.reporting.SetupGenericEncounterReport;
+import org.openmrs.module.rwandareports.reporting.SetupGenericPatientByProgramReport;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchDataQualitySheet;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchExtractionSheet;
 import org.openmrs.module.rwandareports.reporting.SetupHMISRwandaReportBySite;
@@ -876,6 +877,18 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_pdcIndicatorReport")
 	public ModelAndView removePDCIndicatorReport() throws Exception{
 	new SetupPDCIndicatorReport().delete();
+	return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	 @RequestMapping("/module/rwandareports/register_PatientByProgramReport.form")
+	 public ModelAndView registerGenericPatientsByProgramReport() throws Exception {
+	 new SetupGenericPatientByProgramReport().setup();
+	 return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_PatientByProgramReport.form")
+	public ModelAndView removeGenericPatientsByProgramReport() throws Exception{
+	new SetupGenericPatientByProgramReport().delete();
 	return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 }

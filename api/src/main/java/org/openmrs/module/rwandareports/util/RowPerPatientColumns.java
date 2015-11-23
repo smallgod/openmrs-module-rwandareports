@@ -37,6 +37,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProg
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramEnrolment;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfWorkflowStateChange;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DatesOfVisitsByStartDateAndEndDate;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.EnrolledInProgram;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.EvaluateDefinitionForOtherPersonData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugOrderStartedAfterDateRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugOrderStartedRestrictedByConceptSet;
@@ -1920,5 +1921,30 @@ public class RowPerPatientColumns {
 		dateOfVisits.setEncounterTypes(encounterTypes);
 		dateOfVisits.setFilter(filter);
 		return dateOfVisits;
+	}
+	
+	public static PatientAddress getPatientAddress(String name,boolean province,
+			boolean district, boolean sector, boolean cell, boolean umudugudu) {
+		PatientAddress address = new PatientAddress();
+		address.setName(name);
+		address.setDescription("Address");
+		address.setIncludeCountry(false);
+		address.setIncludeProvince(province);
+		address.setIncludeDistrict(district);
+		address.setIncludeSector(sector);
+		address.setIncludeCell(cell);
+		address.setIncludeUmudugudu(umudugudu);
+		return address;
+	}
+	
+	public static EnrolledInProgram getPatientProgramInfo(String name,Program program,String valueType,ResultFilter filter){
+		EnrolledInProgram patientEnrollementDate=new EnrolledInProgram();
+		patientEnrollementDate.setName(name);
+		patientEnrollementDate.setValueType(valueType);
+		patientEnrollementDate.setProgram(program);
+		if(filter!=null){
+		patientEnrollementDate.setFilter(filter);
+		}
+		return patientEnrollementDate;
 	}
 }
