@@ -483,7 +483,7 @@ $(document).ready(function(){
 </tr>
 <tr>
 <tr>
-<td rowspan="4" class="tabletd">PDC Reports</td>
+<td rowspan="5" class="tabletd">PDC Reports</td>
 <td>PDC-Weekly Consulation sheet</td>
 <td>At Site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pdcWeeklySheet.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -506,6 +506,12 @@ $(document).ready(function(){
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pdcMissedVisitsReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pdcMissedVisitsReport.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<td>PDC-Monthly Lost to Follow-up report</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pdcMonthlyLTFUReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pdcMonthlyLTFUReport.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 <tr>
 <td rowspan="2" class="tabletd">Generic Reports</td>

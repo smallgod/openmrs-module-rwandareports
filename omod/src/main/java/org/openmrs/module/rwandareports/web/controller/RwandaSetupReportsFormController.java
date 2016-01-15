@@ -47,6 +47,7 @@ import org.openmrs.module.rwandareports.reporting.SetupPBFReport;
 import org.openmrs.module.rwandareports.reporting.SetupPDCIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupPDCMissedVisits;
 import org.openmrs.module.rwandareports.reporting.SetupPDCMonthlyAlert;
+import org.openmrs.module.rwandareports.reporting.SetupPDCMonthlyLTFU;
 import org.openmrs.module.rwandareports.reporting.SetupPDCWeeklyAlert;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTPregnancyConsultationReport;
@@ -896,6 +897,19 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_pdcMissedVisitsReport")
 	public ModelAndView removePDCMissedVisits() throws Exception {
 		new SetupPDCMissedVisits().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	// Register/Remove PDC Monthly Lost to Follow-up report
+	@RequestMapping("/module/rwandareports/register_pdcMonthlyLTFUReport")
+	public ModelAndView registerPDCMonthlyLTFU() throws Exception {
+		new SetupPDCMonthlyLTFU().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_pdcMonthlyLTFUReport")
+	public ModelAndView removePDCMonthlyLTFU() throws Exception {
+		new SetupPDCMonthlyLTFU().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
