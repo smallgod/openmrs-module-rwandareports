@@ -514,7 +514,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pdcMonthlyLTFUReport.form" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 <tr>
-<td rowspan="2" class="tabletd">Generic Reports</td>
+<td rowspan="3" class="tabletd">Generic Reports</td>
 <td>Generic Encounter Report</td>
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_EncounterAndObsReport.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -525,6 +525,12 @@ $(document).ready(function(){
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_PatientByProgramReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_PatientByProgramReport.form" onclick=msgrem(this)>Remove</a></td>	
+</tr>
+<tr>
+<td>Generic Drug Report</td>
+<td>Central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_DrugReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_DrugReport" onclick=msgrem(this)>Remove</a></td>	
 </tr>
 </table>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

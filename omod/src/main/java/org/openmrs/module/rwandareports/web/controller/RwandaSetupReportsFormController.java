@@ -16,6 +16,7 @@ import org.openmrs.module.rwandareports.reporting.SetupEligibleForViralLoadRepor
 import org.openmrs.module.rwandareports.reporting.SetupEpilepsyConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupEpilepsyLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupExposedClinicInfantMonthly;
+import org.openmrs.module.rwandareports.reporting.SetupGenericDrugReport;
 import org.openmrs.module.rwandareports.reporting.SetupGenericEncounterReport;
 import org.openmrs.module.rwandareports.reporting.SetupGenericPatientByProgramReport;
 import org.openmrs.module.rwandareports.reporting.SetupHIVResearchDataQualitySheet;
@@ -923,6 +924,17 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_PatientByProgramReport.form")
 	public ModelAndView removeGenericPatientsByProgramReport() throws Exception {
 		new SetupGenericPatientByProgramReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_DrugReport")
+	public ModelAndView registerDrugReport() throws Exception {
+		new SetupGenericDrugReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_DrugReport")
+	public ModelAndView removeDrugReport() throws Exception {
+		new SetupGenericDrugReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 }
