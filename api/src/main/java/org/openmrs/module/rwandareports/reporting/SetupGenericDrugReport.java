@@ -1,29 +1,14 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import java.nio.file.DirectoryStream.Filter;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Drug;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.common.ObjectUtil;
-import org.openmrs.module.reporting.dataset.definition.EncounterAndObsDataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.MultiParameterDataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.RepeatPerTimePeriodDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
-import org.openmrs.module.reporting.query.BaseSqlQuery;
-import org.openmrs.module.reporting.query.encounter.definition.BasicEncounterQuery;
-import org.openmrs.module.reporting.query.encounter.definition.MappedParametersEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
