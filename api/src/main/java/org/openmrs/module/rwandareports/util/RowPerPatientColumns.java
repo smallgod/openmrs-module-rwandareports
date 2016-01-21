@@ -188,12 +188,16 @@ public class RowPerPatientColumns {
 		return id;
 	}
 
-	public static PatientIdentifier getTracnetId(String name) {
+	public static MultiplePatientDataDefinitions getTracnetId(String name) {
 		PatientIdentifierType tracNetId = gp
 				.getPatientIdentifier(GlobalPropertiesManagement.TRACNET_IDENTIFIER);
 		PatientIdentifier id = new PatientIdentifier(tracNetId);
 
-		return id;
+		MultiplePatientDataDefinitions ids = new MultiplePatientDataDefinitions();
+		ids.setName(name);
+		ids.addPatientDataDefinition(id, new HashMap<String, Object>());	
+		
+		return ids;
 	}
 	public static MultiplePatientDataDefinitions getArchivingId(String name) {
 		PatientIdentifierType archivingId = gp
