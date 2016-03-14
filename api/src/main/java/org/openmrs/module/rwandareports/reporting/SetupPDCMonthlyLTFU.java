@@ -59,7 +59,7 @@ public class SetupPDCMonthlyLTFU {
 		    "PDCLostToFollowUpSheet.xls_", null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:9,dataset:undreOneYearDataSetDefinition");
+		props.put("repeatingSections", "sheet:1,row:9,dataset:undreOneYearDataSetDefinition|sheet:1,row:22,dataset:undreTwoYearsDataSetDefinition|sheet:1,row:33,dataset:aboveTwoYearsDataSetDefinition");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
@@ -92,31 +92,59 @@ public class SetupPDCMonthlyLTFU {
 	}
 	
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
-		// Create new dataset definition 
-		RowPerPatientDataSetDefinition undreOneYearDataSetDefinition = new RowPerPatientDataSetDefinition();
-		undreOneYearDataSetDefinition.setName("Under One Year Data Set");
+		// Create Under One Year DataSet definition 
+		RowPerPatientDataSetDefinition undreOneYearDataSetDefinition = addNameAndParameters("undreOneYearDataSetDefinition");		
+		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		
+		addColumns(undreOneYearDataSetDefinition);
+		
+		// Create Under two Years DataSet definition 
+		RowPerPatientDataSetDefinition undreTwoYearsDataSetDefinition = addNameAndParameters("undreTwoYearsDataSetDefinition");		
+		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		
+		addColumns(undreTwoYearsDataSetDefinition);
+		
+		// Create Above Two Years DataSet definition 
+		RowPerPatientDataSetDefinition aboveTwoYearsDataSetDefinition = addNameAndParameters("aboveTwoYearsDataSetDefinition");		
+		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		
+		addColumns(aboveTwoYearsDataSetDefinition);
+		
+		
+		Map<String, Object> mappings = new HashMap<String, Object>();
+		mappings.put("location", "${location}");
+		mappings.put("endDate", "${endDate}");
+		
+		reportDefinition.addDataSetDefinition("undreOneYearDataSetDefinition", undreOneYearDataSetDefinition, mappings);
+		reportDefinition.addDataSetDefinition("undreTwoYearsDataSetDefinition", undreTwoYearsDataSetDefinition, mappings);
+		reportDefinition.addDataSetDefinition("aboveTwoYearsDataSetDefinition", aboveTwoYearsDataSetDefinition, mappings);
+	}
+
+	/**
+     * @param datasetName 
+	 * @return
+     */
+    public RowPerPatientDataSetDefinition addNameAndParameters(String datasetName) {
+	    RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
+		dataSetDefinition.setName(datasetName);
 		
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("LastVisit", SortDirection.DESC);
-		undreOneYearDataSetDefinition.setSortCriteria(sortCriteria);
+		dataSetDefinition.setSortCriteria(sortCriteria);
 		
-		undreOneYearDataSetDefinition.addParameter(new Parameter("location", "Location", Location.class));
-		undreOneYearDataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
+		dataSetDefinition.addParameter(new Parameter("location", "Location", Location.class));
+		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		
 		//Add filters
-		undreOneYearDataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+PDCProgram.getName(), PDCProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
-		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		
-		Map<String, Object> mappings = addColumns(undreOneYearDataSetDefinition);
-		
-		reportDefinition.addDataSetDefinition("undreOneYearDataSetDefinition", undreOneYearDataSetDefinition, mappings);
-	}
+		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+PDCProgram.getName(), PDCProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+	    return dataSetDefinition;
+    }
 
 	/**
      * @param dataSetDefinition
      * @return
      */
-    public Map<String, Object> addColumns(RowPerPatientDataSetDefinition dataSetDefinition) {
+    public RowPerPatientDataSetDefinition addColumns(RowPerPatientDataSetDefinition dataSetDefinition) {
 	    //Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
@@ -187,10 +215,8 @@ public class SetupPDCMonthlyLTFU {
 		alert.setCalculator(new PDCAlerts());
 		dataSetDefinition.addColumn(alert, new HashMap<String, Object>());	
 		
-		Map<String, Object> mappings = new HashMap<String, Object>();
-		mappings.put("location", "${location}");
-		mappings.put("endDate", "${endDate}");
-	    return mappings;
+		
+	    return dataSetDefinition;
     }
 	
 	private void setupProperties() {
