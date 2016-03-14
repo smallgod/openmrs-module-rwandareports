@@ -59,7 +59,7 @@ public class SetupPDCMonthlyLTFU {
 		    "PDCLostToFollowUpSheet.xls_", null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:9,dataset:dataSet");
+		props.put("repeatingSections", "sheet:1,row:9,dataset:undreOneYearDataSetDefinition");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
@@ -73,13 +73,13 @@ public class SetupPDCMonthlyLTFU {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		Helper.purgeReportDefinition("PDC Missed Visits");
+		Helper.purgeReportDefinition("PDC Monthly LTFU");
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("PDC Missed Visits");
+		reportDefinition.setName("PDC Monthly LTFU");
 				
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));	
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),ParameterizableUtil.createParameterMappings("location=${location}"));
@@ -93,21 +93,31 @@ public class SetupPDCMonthlyLTFU {
 	
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		// Create new dataset definition 
-		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
-		dataSetDefinition.setName("PDC Missed Visits Data Set");
+		RowPerPatientDataSetDefinition undreOneYearDataSetDefinition = new RowPerPatientDataSetDefinition();
+		undreOneYearDataSetDefinition.setName("Under One Year Data Set");
 		
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("LastVisit", SortDirection.DESC);
-		dataSetDefinition.setSortCriteria(sortCriteria);
+		undreOneYearDataSetDefinition.setSortCriteria(sortCriteria);
 		
-		dataSetDefinition.addParameter(new Parameter("location", "Location", Location.class));
-		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
+		undreOneYearDataSetDefinition.addParameter(new Parameter("location", "Location", Location.class));
+		undreOneYearDataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		
 		//Add filters
-		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+PDCProgram.getName(), PDCProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
-		dataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		undreOneYearDataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+PDCProgram.getName(), PDCProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
-		//Add Columns
+		Map<String, Object> mappings = addColumns(undreOneYearDataSetDefinition);
+		
+		reportDefinition.addDataSetDefinition("undreOneYearDataSetDefinition", undreOneYearDataSetDefinition, mappings);
+	}
+
+	/**
+     * @param dataSetDefinition
+     * @return
+     */
+    public Map<String, Object> addColumns(RowPerPatientDataSetDefinition dataSetDefinition) {
+	    //Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("Id"), new HashMap<String, Object>());
@@ -180,9 +190,8 @@ public class SetupPDCMonthlyLTFU {
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("location", "${location}");
 		mappings.put("endDate", "${endDate}");
-		
-		reportDefinition.addDataSetDefinition("dataSet", dataSetDefinition, mappings);
-	}
+	    return mappings;
+    }
 	
 	private void setupProperties() {
 		PDCProgram = gp.getProgram(GlobalPropertiesManagement.PDC_PROGRAM);
