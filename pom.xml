@@ -27,7 +27,7 @@
 		<reportingVersion>0.9.7</reportingVersion>
 		<rowperpatientsVersion>1.5.3</rowperpatientsVersion>
 		<orderextensionVersion>2.0-SNAPSHOT</orderextensionVersion>
-		<reportingobjectgroupVersion>1.1-SNAPSHOT</reportingobjectgroupVersion>
+		<reportingobjectgroupVersion>1.0.4.4.</reportingobjectgroupVersion>
 		<htmlwidgetsVersion>1.6.4</htmlwidgetsVersion>
 		<serializationVersion>0.2.7</serializationVersion>
 		<heightweighttrackerVersion>1.0.2</heightweighttrackerVersion>
