@@ -25,7 +25,7 @@
 	<properties>
 		<openMRSVersion>1.9.2</openMRSVersion>
 		<reportingVersion>0.9.7</reportingVersion>
-		<rowperpatientsVersion>1.5.3-SNAPSHOT</rowperpatientsVersion>
+		<rowperpatientsVersion>1.5.3</rowperpatientsVersion>
 		<orderextensionVersion>2.0-SNAPSHOT</orderextensionVersion>
 		<reportingobjectgroupVersion>1.1-SNAPSHOT</reportingobjectgroupVersion>
 		<htmlwidgetsVersion>1.6.4</htmlwidgetsVersion>
@@ -35,7 +35,7 @@
 		<logicVersion>0.5.2</logicVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<MODULE_ID>${project.parent.artifactId}</MODULE_ID>
-		<MODULE_NAME>${project.parent.name}</MODULE_NAME>
+		<MODULE_NAME>Rwanda Reports</MODULE_NAME>
 		<MODULE_VERSION>${project.parent.version}</MODULE_VERSION>
 		<MODULE_PACKAGE>${project.parent.groupId}.${project.parent.artifactId}</MODULE_PACKAGE>
 	</properties>
