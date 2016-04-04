@@ -330,6 +330,24 @@ public class Cohorts {
 		return underAgeCohort;
 	}
 	
+	public static AgeCohortDefinition createUnderAgeCohort(String name, int age, DurationUnit unit) {
+		AgeCohortDefinition underAgeCohort = new AgeCohortDefinition();
+		underAgeCohort.setName(name);
+		underAgeCohort.setMaxAge(new Integer(age));
+		underAgeCohort.setMaxAgeUnit(unit);
+		underAgeCohort.addParameter(new Parameter("effectiveDate", "endDate", Date.class));
+		return underAgeCohort;
+	}
+	
+	public static AgeCohortDefinition createAboveAgeCohort(String name, int age, DurationUnit unit) {
+		AgeCohortDefinition aboveAgeCohort = new AgeCohortDefinition();
+		aboveAgeCohort.setName(name);
+		aboveAgeCohort.setMinAge(new Integer(age));
+		aboveAgeCohort.setMinAgeUnit(unit);
+		aboveAgeCohort.addParameter(new Parameter("effectiveDate", "endDate", Date.class));
+		return aboveAgeCohort;
+	}
+	
 	public static AgeCohortDefinition createUnder3AgeCohort(String name) {
 		AgeCohortDefinition under3Cohort = new AgeCohortDefinition();
 		under3Cohort.setName(name);
@@ -1909,7 +1927,7 @@ public class Cohorts {
 		return visit;
 	}
 	
-	public static CompositionCohortDefinition createPatientsLateForPDCVisit(Concept concept, EncounterType encounterType) {
+	public static CompositionCohortDefinition createPatientsLateForPDCVisit(Concept concept, EncounterType encounterType, int diff) {
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("select lastObs.person_id from (select * from (select * from obs where voided = 0 and concept_id=  ");
@@ -1917,7 +1935,9 @@ public class Cohorts {
 		sql.append(" order by value_datetime desc) as o group by o.person_id) as lastObs, (select * from (select * from encounter where encounter_type=");
 		sql.append(encounterType.getEncounterTypeId());
 		sql.append("  and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where ");
-		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)>1 and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
+		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)> ");
+		sql.append(diff);
+		sql.append("and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
 		
 		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
 		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1925,7 +1945,9 @@ public class Cohorts {
 		StringBuilder sql2 = new StringBuilder();
 		sql2.append("select o.person_id from obs o where o.voided=0 and o.concept_id=");
 		sql2.append(concept.getConceptId());
-		sql2.append(" and DATEDIFF(:endDate,o.value_datetime)>1 and o.person_id not in(select patient_id from encounter where encounter_type =");
+		sql2.append(" and DATEDIFF(:endDate,o.value_datetime)> ");
+		sql2.append(diff);
+		sql2.append("and o.person_id not in(select patient_id from encounter where encounter_type =");
 		sql2.append(encounterType.getEncounterTypeId());
 		sql2.append(" and voided = 0)");
 		

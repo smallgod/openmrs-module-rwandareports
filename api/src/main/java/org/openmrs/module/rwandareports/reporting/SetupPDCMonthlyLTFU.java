@@ -13,6 +13,7 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.common.DurationUnit;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -87,26 +88,27 @@ public class SetupPDCMonthlyLTFU {
 		createDataSetDefinition(reportDefinition);
 		
 		Helper.saveReportDefinition(reportDefinition);
-		
 		return reportDefinition;
 	}
 	
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		// Create Under One Year DataSet definition 
 		RowPerPatientDataSetDefinition undreOneYearDataSetDefinition = addNameAndParameters("undreOneYearDataSetDefinition");		
-		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		
+		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType,180), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		undreOneYearDataSetDefinition.addFilter(Cohorts.createUnderAgeCohort("undreOneYear",1,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 		addColumns(undreOneYearDataSetDefinition);
 		
 		// Create Under two Years DataSet definition 
 		RowPerPatientDataSetDefinition undreTwoYearsDataSetDefinition = addNameAndParameters("undreTwoYearsDataSetDefinition");		
-		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createUnderAgeCohort("undreTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
+		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType,270), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		addColumns(undreTwoYearsDataSetDefinition);
 		
 		// Create Above Two Years DataSet definition 
 		RowPerPatientDataSetDefinition aboveTwoYearsDataSetDefinition = addNameAndParameters("aboveTwoYearsDataSetDefinition");		
-		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createAboveAgeCohort("aboveTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
+		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType,540), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		addColumns(aboveTwoYearsDataSetDefinition);
 		
