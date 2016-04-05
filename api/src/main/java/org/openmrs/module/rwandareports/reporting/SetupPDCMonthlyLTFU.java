@@ -56,11 +56,10 @@ public class SetupPDCMonthlyLTFU {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PDC_LTFU_Sheet.xls",
-		    "PDCLostToFollowUpSheet.xls_", null);
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "PDC_LTFU_Sheet.xls", "PDCLostToFollowUpSheet.xls_", null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:9,dataset:undreOneYearDataSetDefinition|sheet:1,row:22,dataset:undreTwoYearsDataSetDefinition|sheet:1,row:33,dataset:aboveTwoYearsDataSetDefinition");
+		props.put("repeatingSections", "sheet:1,row:9,dataset:undreOneYearDataSetDefinition|sheet:2,row:9,dataset:undreTwoYearsDataSetDefinition|sheet:3,row:9,dataset:aboveTwoYearsDataSetDefinition");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
@@ -96,19 +95,20 @@ public class SetupPDCMonthlyLTFU {
 		RowPerPatientDataSetDefinition undreOneYearDataSetDefinition = addNameAndParameters("undreOneYearDataSetDefinition");		
 		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType,180), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		undreOneYearDataSetDefinition.addFilter(Cohorts.createUnderAgeCohort("undreOneYear",1,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
+		
 		addColumns(undreOneYearDataSetDefinition);
 		
 		// Create Under two Years DataSet definition 
 		RowPerPatientDataSetDefinition undreTwoYearsDataSetDefinition = addNameAndParameters("undreTwoYearsDataSetDefinition");		
-		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createUnderAgeCohort("undreTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType,270), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		
+		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createUnderAgeCohort("undreTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
+
 		addColumns(undreTwoYearsDataSetDefinition);
 		
 		// Create Above Two Years DataSet definition 
 		RowPerPatientDataSetDefinition aboveTwoYearsDataSetDefinition = addNameAndParameters("aboveTwoYearsDataSetDefinition");		
-		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createAboveAgeCohort("aboveTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType,540), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createAboveAgeCohort("aboveTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 		
 		addColumns(aboveTwoYearsDataSetDefinition);
 		
