@@ -93,21 +93,21 @@ public class SetupPDCMonthlyLTFU {
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		// Create Under One Year DataSet definition 
 		RowPerPatientDataSetDefinition undreOneYearDataSetDefinition = addNameAndParameters("undreOneYearDataSetDefinition");		
-		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType,180), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType, referralAndVisitForms,180), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		undreOneYearDataSetDefinition.addFilter(Cohorts.createUnderAgeCohort("undreOneYear",1,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 		
 		addColumns(undreOneYearDataSetDefinition);
 		
 		// Create Under two Years DataSet definition 
 		RowPerPatientDataSetDefinition undreTwoYearsDataSetDefinition = addNameAndParameters("undreTwoYearsDataSetDefinition");		
-		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType,270), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType, referralAndVisitForms,270), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createUnderAgeCohort("undreTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 
 		addColumns(undreTwoYearsDataSetDefinition);
 		
 		// Create Above Two Years DataSet definition 
 		RowPerPatientDataSetDefinition aboveTwoYearsDataSetDefinition = addNameAndParameters("aboveTwoYearsDataSetDefinition");		
-		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType,540), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType, referralAndVisitForms,540), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createAboveAgeCohort("aboveTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 		
 		addColumns(aboveTwoYearsDataSetDefinition);

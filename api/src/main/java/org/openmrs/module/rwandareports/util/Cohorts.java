@@ -1791,15 +1791,26 @@ public class Cohorts {
 		return lateVisit;
 	}
 	
-	public static CompositionCohortDefinition createPatientsLateForPDCVisit(Concept concept, EncounterType encounterType, int diff) {
+	public static CompositionCohortDefinition createPatientsLateForPDCVisit(Concept concept, EncounterType encounterType, List<Form> forms, int diff) {
+		
 		
 		StringBuilder sql = new StringBuilder();
-		sql.append("select lastObs.person_id from (select * from (select * from obs where voided = 0 and concept_id=  ");
+		sql.append("select lastObs.person_id from (select * from (select * from obs where voided = 0 and concept_id=");
+		
 		sql.append(concept.getConceptId());
-		sql.append(" order by value_datetime desc) as o group by o.person_id) as lastObs, (select * from (select * from encounter where encounter_type=");
-		sql.append(encounterType.getEncounterTypeId());
-		sql.append("  and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where ");
-		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)> ");
+		
+		sql.append(" order by value_datetime desc) as o group by o.person_id) as lastObs, (select * from (select * from encounter where form_id in (");
+		boolean first = true;
+		for (Form f : forms) {
+			if (!first) {
+				sql.append(",");
+			}
+			
+			sql.append(f.getFormId());
+			first = false;
+		}
+		sql.append(")  and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where ");
+		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)>");
 		sql.append(diff);
 		sql.append("and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
 		
@@ -1811,17 +1822,29 @@ public class Cohorts {
 		sql2.append(concept.getConceptId());
 		sql2.append(" and DATEDIFF(:endDate,o.value_datetime)> ");
 		sql2.append(diff);
-		sql2.append("and o.person_id not in(select patient_id from encounter where encounter_type =");
-		sql2.append(encounterType.getEncounterTypeId());
-		sql2.append(" and voided = 0)");
+		sql2.append("and o.person_id not in(select patient_id from encounter where form_id in (");
+		boolean fourth = true;
+		for (Form f : forms) {
+			if (!fourth) {
+				sql2.append(",");
+			}
+			
+			sql2.append(f.getFormId());
+			fourth = false;
+		}
+		sql2.append(") and voided = 0)");
 		
 		SqlCohortDefinition lateVisitNoEncounter = new SqlCohortDefinition(sql2.toString());
 		lateVisitNoEncounter.addParameter(new Parameter("endDate", "endDate", Date.class));
 		
 		CompositionCohortDefinition visit = new CompositionCohortDefinition();
 		visit.addParameter(new Parameter("endDate", "endDate", Date.class));
-		visit.getSearches().put("1", new Mapped<CohortDefinition>(lateVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		visit.getSearches().put("2", new Mapped<CohortDefinition>(lateVisitNoEncounter, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit.getSearches().put("1",
+		    new Mapped<CohortDefinition>(lateVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		visit.getSearches().put(
+		    "2",
+		    new Mapped<CohortDefinition>(lateVisitNoEncounter, ParameterizableUtil
+		            .createParameterMappings("endDate=${endDate}")));
 		visit.setCompositionString("1 OR 2");
 		
 		return visit;

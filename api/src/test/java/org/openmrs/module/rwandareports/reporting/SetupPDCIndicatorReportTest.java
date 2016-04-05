@@ -1,5 +1,7 @@
 package org.openmrs.module.rwandareports.reporting;
 
+import java.util.Date;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Cohort;
@@ -16,8 +18,6 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.MetadataLookup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.Date;
 
 /**
  * Tests the indicators in the PDC Indicator Report

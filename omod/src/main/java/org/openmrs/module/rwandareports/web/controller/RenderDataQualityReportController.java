@@ -13,8 +13,16 @@
  */
 package org.openmrs.module.rwandareports.web.controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
@@ -36,7 +44,6 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.indicator.dimension.CohortIndicatorAndDimensionResult;
 import org.openmrs.module.reporting.report.ReportData;
-import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicatorResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
