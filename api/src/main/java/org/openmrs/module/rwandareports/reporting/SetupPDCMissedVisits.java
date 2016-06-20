@@ -97,7 +97,7 @@ public class SetupPDCMissedVisits {
 		dataSetDefinition.setName("PDC Missed Visits Data Set");
 		
 		SortCriteria sortCriteria = new SortCriteria();
-		sortCriteria.addSortElement("LastVisit", SortDirection.DESC);
+		sortCriteria.addSortElement("LastVisit Date", SortDirection.DESC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 		
 		dataSetDefinition.addParameter(new Parameter("location", "Location", Location.class));
