@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +28,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.orderextension.DrugOrderComparator;
 import org.openmrs.module.orderextension.DrugRegimen;
 import org.openmrs.module.orderextension.ExtendedDrugOrder;
 import org.openmrs.module.orderextension.api.OrderExtensionService;
@@ -156,12 +156,8 @@ public class ExtendedDrugOrderDataSetEvaluator implements DataSetEvaluator {
 			dataSet.getMetaData().addColumn(discontuedReason);
 			
 			
-			Collections.sort(orders, new Comparator<ExtendedDrugOrder>() {
-				
-				public int compare(ExtendedDrugOrder left, ExtendedDrugOrder right) {
-					return left.getStartDate().compareTo(right.getStartDate());
-				}
-			});
+			Collections.sort(orders, new DrugOrderComparator());
+
 			for (ExtendedDrugOrder edo : orders) {
 				//if(edo.getDiscontinued() == false){
 				SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
