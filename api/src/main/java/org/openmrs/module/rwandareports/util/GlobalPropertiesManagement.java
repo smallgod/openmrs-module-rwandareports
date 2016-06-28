@@ -744,6 +744,12 @@ public class GlobalPropertiesManagement {
 	
 	public final static String FOLLOW_UP_DATE="reports.followup";
 	
+	
+	public final static String TDF="reports.concept.TDF";
+	
+	public final static String TDF_3TC="reports.concept.TenofovirandLamivudine";
+	
+	
 	//Primary Care Service concepts
 	public static final String PRIMARY_CARE_SERVICE_REQUESTED = "reports.primaryCareServiceRequested";	
 	public static final String VCT_PROGRAM = "reports.vctProgram";							

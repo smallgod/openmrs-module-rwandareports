@@ -3697,6 +3697,16 @@
  <defaultValue>4f6089bd-6d3a-4346-9aeb-1a6f852fc5c1</defaultValue>
  <description>ID for follow up concept</description>
 </globalProperty>
+<globalProperty>
+		<property>reports.concept.TDF</property>
+		<defaultValue>3cd45166-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>This is the concept Id of TENOFOVIR</description>
+</globalProperty>
+<globalProperty>
+		<property>reports.concept.TenofovirandLamivudine</property>
+		<defaultValue>06793d30-bf06-469f-8ae9-c9c06a8c444b</defaultValue>
+		<description>This is the concept Id of Tenofovir and Lamivudine</description>
+</globalProperty>
 	
 		
 </module>

@@ -8,7 +8,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculation;
 import org.openmrs.module.rowperpatientreports.patientdata.result.AllObservationValuesResult;
@@ -16,10 +18,13 @@ import org.openmrs.module.rowperpatientreports.patientdata.result.DateValueResul
 import org.openmrs.module.rowperpatientreports.patientdata.result.ObservationResult;
 import org.openmrs.module.rowperpatientreports.patientdata.result.PatientAttributeResult;
 import org.openmrs.module.rowperpatientreports.patientdata.result.PatientDataResult;
+import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
 public class HIVAdultAlerts implements CustomCalculation{
 
 	protected Log log = LogFactory.getLog(this.getClass());
+	
+	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	public PatientDataResult calculateResult(List<PatientDataResult> results, EvaluationContext context) {
 		
@@ -124,6 +129,60 @@ public class HIVAdultAlerts implements CustomCalculation{
 					}
 				}	
 			}
+			
+			
+
+			// start creatinine
+			
+			
+			if(result.getName().equals("creatinineTest"))
+			{
+				AllObservationValuesResult creatinine = (AllObservationValuesResult)result;
+				
+				if(creatinine.getValue() != null)
+				{
+					Obs lastviCreatinine = null;
+					
+					if(creatinine.getValue().size() > 0)
+					{
+						lastviCreatinine = creatinine.getValue().get(creatinine.getValue().size()-1);
+					}
+					
+					List<Order> orders=Context.getOrderService().getOrdersByPatient(result.getPatientData().getPatient());
+					Order currrentTDF=null;
+					for (Order order : orders) {
+						if(((order.getConcept().getConceptId()==gp.getConcept(GlobalPropertiesManagement.TDF).getConceptId()) || (order.getConcept().getConceptId()==gp.getConcept(GlobalPropertiesManagement.TDF_3TC).getConceptId())) && order.getVoided()==false && order.getDiscontinued()==false)
+						{
+							currrentTDF=order;
+							break;
+						}
+					}
+					
+					if(currrentTDF!=null && (lastviCreatinine == null))
+					{
+						alerts.append("No Creatinine recorded.\n");
+					}
+					else if(currrentTDF!=null && (lastviCreatinine != null))
+					{  
+					 try{
+						Date dateCre = lastviCreatinine.getObsDatetime();
+						Date date = Calendar.getInstance().getTime();
+						
+						int diff = calculateMonthsDifference(date, dateCre);
+						
+						if(diff > 6){
+							alerts.append("Late Creatinine(" + diff + " months ago).\n");
+						}						
+					  
+						}
+						catch(Exception e){}
+					}
+				}	
+			}
+			
+			
+			//end creatinine
+			
 			if(result.getName().equals("weightObs"))
 			{
 				AllObservationValuesResult wt = (AllObservationValuesResult)result;

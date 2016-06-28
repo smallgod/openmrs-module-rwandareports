@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Program;
@@ -43,6 +44,8 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 	private EncounterType flowsheetAdult;
 	
 	private List<EncounterType> clinicalEnountersIncLab;
+	
+	private Concept creatinine;
 	
 	public void setup() throws Exception {
 		
@@ -127,6 +130,11 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentCD4("CD4Test", "@ddMMMyy"),
 		    new HashMap<String, Object>());
 		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentCreatinine("RecentCreatinine", "@ddMMMyy"),
+			    new HashMap<String, Object>());
+			
+		
+		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentViralLoad("ViralLoad", "@ddMMMyy"),
 		    new HashMap<String, Object>());
 		
@@ -158,6 +166,8 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 				new LastThreeObsFilter(), new ObservationFilter());	
 		RecentEncounterType lastEncInMonth = RowPerPatientColumns.getRecentEncounterType("lastEncInMonth",clinicalEnountersIncLab,null, null);
 		
+		AllObservationValues creatinineTest = RowPerPatientColumns.getAllObservationValues("creatinineTest", creatinine, "ddMMMyy", new LastThreeObsFilter(), new ObservationFilter());
+				
 		
 		CustomCalculationBasedOnMultiplePatientDataDefinitions alert = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		alert.setName("alert");
@@ -168,6 +178,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		alert.addPatientDataToBeEvaluated(sideEffect, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(viralLoadTest, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(lastEncInMonth, new HashMap<String, Object>());
+		alert.addPatientDataToBeEvaluated(creatinineTest, new HashMap<String, Object>());
 		alert.setCalculator(new HIVAdultAlerts());
 		alert.addParameter(new Parameter("state", "State",Date.class));
 		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("state=${state}"));
@@ -191,5 +202,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		flowsheetAdult = gp.getEncounterType(GlobalPropertiesManagement.ADULT_FLOWSHEET_ENCOUNTER);
 		
 		clinicalEnountersIncLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES);
+	    
+		creatinine=gp.getConcept(GlobalPropertiesManagement.SERUM_CREATININE);
 	}
 }
