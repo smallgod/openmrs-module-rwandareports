@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.openmrs.Concept;
-import org.openmrs.api.PatientSetService.TimeModifier;
+import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
 import org.openmrs.module.reporting.common.SetComparator;

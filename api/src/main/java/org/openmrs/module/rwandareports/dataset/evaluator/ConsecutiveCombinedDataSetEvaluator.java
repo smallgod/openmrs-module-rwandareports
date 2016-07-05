@@ -10,6 +10,7 @@ import org.openmrs.module.reporting.common.ObjectUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
+import org.openmrs.module.reporting.dataset.DataSetRowList;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
@@ -63,23 +64,19 @@ public class ConsecutiveCombinedDataSetEvaluator implements DataSetEvaluator {
 		
 			SimpleDataSet day = (SimpleDataSet) Context.getService(DataSetDefinitionService.class).evaluate(base, ec);
 		
-			if(day.getRowMap().size() > 0 && sample)
+			if(day.getRows().size() > 0 && sample)
 			{
 				addColumns(result, day);
 				sample = false;
 			}
 		
-			Map<Integer, DataSetRow> rows = day.getRowMap();
-			for(Integer rowNum: rows.keySet())
-			{
-				DataSetRow row = rows.get(rowNum);
-				
+			DataSetRowList rows = day.getRows();
+			for (DataSetRow dataSetRow : rows) {
 				List<DataSetColumn> columns = result.getMetaData().getColumns();
 				for (DataSetColumn column : columns) {
-					result.addColumnValue(j, column, row.getColumnValue(column.getName()));
+					result.addColumnValue(j, column, dataSetRow.getColumnValue(column.getName()));
 					
 				}
-				j++;
 			}
 		}
 		

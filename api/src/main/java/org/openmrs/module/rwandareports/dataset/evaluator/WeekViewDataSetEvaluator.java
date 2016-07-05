@@ -11,6 +11,7 @@ import org.openmrs.module.reporting.common.ObjectUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
+import org.openmrs.module.reporting.dataset.DataSetRowList;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
@@ -102,8 +103,8 @@ public class WeekViewDataSetEvaluator implements DataSetEvaluator {
 		SimpleDataSet sample = monday;
 		
 		for (SimpleDataSet day : week.keySet()) {
-			if (day.getRowMap().size() > maxSize) {
-				maxSize = day.getRowMap().size();
+			if (day.getRows().size() > maxSize) {
+				maxSize = day.getRows().size();
 				sample = day;
 			}
 		}
@@ -114,14 +115,14 @@ public class WeekViewDataSetEvaluator implements DataSetEvaluator {
 			
 			for (SimpleDataSet day : week.keySet()) {
 				String dayName = week.get(day);
-				Map<Integer, DataSetRow> rows = day.getRowMap();
+				DataSetRowList rows = day.getRows();
 					
 				List<DataSetColumn> columns = result.getMetaData().getColumns();
 				for (DataSetColumn column : columns) {
 					if (column.getName().contains(dayName)) {
 						String columnName = column.getName().substring(dayName.length());
 						
-						if (day.getRowMap().size() > i) {
+						if (day.getRows().size() > i) {
 							DataSetRow row = rows.get(i+1);
 							result.addColumnValue(i, column, row.getColumnValue(columnName));
 						} else {

@@ -6,7 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
-import org.openmrs.api.PatientSetService;
+import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
@@ -35,7 +35,7 @@ public class SetupPDCIndicatorReportTest extends StandaloneContextSensitiveTest 
         context.addParameterValue("endDate", new Date());
 
         Concept reasonForNotDoingFollowUp= MetadataLookup.getConcept("REASON FOR NOT DOING FOLLOW-UP");
-        CodedObsCohortDefinition codedObsDef = Cohorts.createCodedObsCohortDefinition("reasonForNotDoingFollowUpCohort",reasonForNotDoingFollowUp, null, SetComparator.IN, PatientSetService.TimeModifier.LAST);
+        CodedObsCohortDefinition codedObsDef = Cohorts.createCodedObsCohortDefinition("reasonForNotDoingFollowUpCohort",reasonForNotDoingFollowUp, null, SetComparator.IN, BaseObsCohortDefinition.TimeModifier.LAST);
         Cohort codedObsCohort = cohortDefinitionService.evaluate(codedObsDef, context);
         System.out.println("Coded obs cohort: " + codedObsCohort.size());
 
