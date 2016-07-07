@@ -23,7 +23,7 @@
 	</modules>
 
 	<properties>
-		<openMRSVersion>1.9.2</openMRSVersion>
+		<openMRSVersion>1.9.9</openMRSVersion>
 		<reportingVersion>0.10.0</reportingVersion>
 		<rowperpatientsVersion>1.5.3</rowperpatientsVersion>
 		<orderextensionVersion>2.0-SNAPSHOT</orderextensionVersion>
@@ -99,6 +99,14 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>reporting-api-tests</artifactId>
+            <version>${reportingVersion}</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
