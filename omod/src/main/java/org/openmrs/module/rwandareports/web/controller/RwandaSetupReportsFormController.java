@@ -5,6 +5,7 @@ import org.openmrs.module.rwandareports.reporting.SetupAdultLateVisitAndCD4Repor
 import org.openmrs.module.rwandareports.reporting.SetupAsthmaConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SetupAsthmaLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupAsthmaQuarterlyAndMonthReport;
+import org.openmrs.module.rwandareports.reporting.SetupCROWNReports;
 import org.openmrs.module.rwandareports.reporting.SetupChemotherapyDailyExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupChemotherapyExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupCombinedHFCSPConsultationReport;
@@ -198,6 +199,18 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_adultHIVConsultationSheet")
 	public ModelAndView removeAdultHIVConsultationSheet() throws Exception {
 		new SetupAdultHIVConsultationSheet().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	
+	@RequestMapping("/module/rwandareports/register_CROWNReports")
+	public ModelAndView registerCROWNReports() throws Exception {
+		new SetupCROWNReports().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_CROWNReports")
+	public ModelAndView removeCROWNReports() throws Exception {
+		new SetupCROWNReports().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
