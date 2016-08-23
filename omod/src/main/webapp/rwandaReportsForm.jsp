@@ -136,11 +136,17 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pmtctregister.form" onclick=msgrem(this)>Remove</a></td>	 
 </tr>-->
 <tr>
-<td class="tabletd">Adult HIV Program</td>
+<td rowspan="2" class="tabletd">Adult HIV Program</td>
 <td>HIV-Adult Consultation Sheet</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_adultHIVConsultationSheet.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_adultHIVConsultationSheet.form" onclick=msgrem(this)>Remove</a></td>	 
+</tr>
+<tr>
+<td>CROWN Reports</td>
+<td>Central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CROWNReports.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CROWNReports.form" onclick=msgrem(this)>Remove</a></td>	 
 </tr>
 <tr>
 <td class="tabletd">Pedi HIV Program</td>
