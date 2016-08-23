@@ -123,7 +123,7 @@ public class WeekViewDataSetEvaluator implements DataSetEvaluator {
 						String columnName = column.getName().substring(dayName.length());
 						
 						if (day.getRows().size() > i) {
-							DataSetRow row = rows.get(i+1);
+							DataSetRow row = rows.get(i);
 							result.addColumnValue(i, column, row.getColumnValue(columnName));
 						} else {
 							result.addColumnValue(i, column, "");

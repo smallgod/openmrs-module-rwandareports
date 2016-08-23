@@ -69,12 +69,12 @@ public class SetupChemotherapyExpectedPatientList {
 			
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:4,dataset:dataset2|sheet:2,row:7,dataset:dataset");
+		props.put("repeatingSections", "sheet:1,row:4,dataset:dataset1d|sheet:2,row:7,dataset:dataset1");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		
 		Properties propsInfusion = new Properties();
-		propsInfusion.put("repeatingSections", "sheet:1,row:4,dataset:dataset2|sheet:2,row:7,dataset:dataset");
+		propsInfusion.put("repeatingSections", "sheet:1,row:4,dataset:dataset2d|sheet:2,row:7,dataset:dataset2");
 		propsInfusion.put("sortWeight","5000");
 		designInfusion.setProperties(propsInfusion);
 		
@@ -166,7 +166,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	Map<String, Object> mappings = new HashMap<String, Object>();
 	mappings.put("startDate", "${endDate}");
 	
-	reportDefinition.addDataSetDefinition("dataset", consecutiveDataSetDefinition, mappings);
+	reportDefinition.addDataSetDefinition("dataset1", consecutiveDataSetDefinition, mappings);
 	
 	WeekViewDataSetDefinition weekDataSetDefinition = new WeekViewDataSetDefinition();
 	weekDataSetDefinition.setName("weekDataSetDefinition");
@@ -176,7 +176,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	Map<String, Object> baseMappings = new HashMap<String, Object>();
 	baseMappings.put("startDate", "${endDate}");
 	
-	reportDefinition.addDataSetDefinition("dataset2", weekDataSetDefinition, baseMappings);
+	reportDefinition.addDataSetDefinition("dataset1d", weekDataSetDefinition, baseMappings);
 	
 }
 	
@@ -220,7 +220,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("startDate", "${endDate}");
 		
-		reportDefinition.addDataSetDefinition("dataset", consecutiveDataSetDefinition, mappings);
+		reportDefinition.addDataSetDefinition("dataset2", consecutiveDataSetDefinition, mappings);
 		
 		WeekViewDataSetDefinition weekDataSetDefinition = new WeekViewDataSetDefinition();
 		weekDataSetDefinition.setName("weekDataSetDefinition");
@@ -230,7 +230,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		Map<String, Object> baseMappings = new HashMap<String, Object>();
 		baseMappings.put("startDate", "${endDate}");
 		
-		reportDefinition.addDataSetDefinition("dataset2", weekDataSetDefinition, baseMappings);
+		reportDefinition.addDataSetDefinition("dataset2d", weekDataSetDefinition, baseMappings);
 		
 	}
 	
