@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
@@ -16,6 +17,7 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
@@ -25,6 +27,8 @@ public class SetupCROWNReports implements SetupReport {
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
+	private Concept reasonForExitingCare;
+	
 	private Program adultHiv;
 	
 	private Program pmtct;
@@ -89,6 +93,10 @@ public class SetupCROWNReports implements SetupReport {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("Id"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
+		
+		MostRecentObservation exitingCareReason = RowPerPatientColumns.getMostRecent("Reason for exiting care", reasonForExitingCare, "dd/MM/yyyy");
+		dataSetDefinition.addColumn(exitingCareReason, new HashMap<String, Object>());	
+		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true),
 		    new HashMap<String, Object>());
@@ -102,6 +110,7 @@ public class SetupCROWNReports implements SetupReport {
 	}
 	
 	private void setupProperties() {
+		reasonForExitingCare = Context.getConceptService().getConceptByUuid("3cde5ef4-26fe-102b-80cb-0017a47871b2");
 		adultHiv = gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
 		pmtct = gp.getProgram(GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
 		pmtctCC = gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM);
