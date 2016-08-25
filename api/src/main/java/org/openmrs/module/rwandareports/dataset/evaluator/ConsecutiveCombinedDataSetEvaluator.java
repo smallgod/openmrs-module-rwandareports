@@ -77,6 +77,7 @@ public class ConsecutiveCombinedDataSetEvaluator implements DataSetEvaluator {
 					result.addColumnValue(j, column, dataSetRow.getColumnValue(column.getName()));
 					
 				}
+				j++;
 			}
 		}
 		
