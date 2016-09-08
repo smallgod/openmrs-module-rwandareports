@@ -143,7 +143,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_adultHIVConsultationSheet.form" onclick=msgrem(this)>Remove</a></td>	 
 </tr>
 <tr>
-<td>CROWN Reports</td>
+<td>HIV-CROWN Reports</td>
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CROWNReports.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CROWNReports.form" onclick=msgrem(this)>Remove</a></td>	 

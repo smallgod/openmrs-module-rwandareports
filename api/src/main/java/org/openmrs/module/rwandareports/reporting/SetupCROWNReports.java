@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.openmrs.Concept;
+import org.openmrs.EncounterType;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
@@ -18,6 +19,8 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
+import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
@@ -37,6 +40,8 @@ public class SetupCROWNReports implements SetupReport {
 	
 	private List<Program> crownHivPrograms = new ArrayList<Program>();
 	
+	private List<EncounterType> hivEncounterTypes;
+	
 	public void setup() throws Exception {
 		
 		setupProperties();
@@ -47,7 +52,7 @@ public class SetupCROWNReports implements SetupReport {
 		    null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
+		props.put("repeatingSections", "sheet:1,row:6,dataset:patientsDataSet");
 		props.put("sortWeight", "5000");
 		design.setProperties(props);
 		
@@ -70,43 +75,46 @@ public class SetupCROWNReports implements SetupReport {
 		reportDefinition.setName("HIV-CROWN Reports");
 		
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		createDataSetDefinition(reportDefinition);
+		createPatientsDataSet(reportDefinition);
 		
 		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}
 	
-	private void createDataSetDefinition(ReportDefinition reportDefinition) {
+	private void createPatientsDataSet(ReportDefinition reportDefinition) {
 		// Create new dataset definition 
-		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
-		dataSetDefinition.setName(reportDefinition.getName() + " Data Set");
-		dataSetDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
+		RowPerPatientDataSetDefinition patientsDataset = new RowPerPatientDataSetDefinition();
+		patientsDataset.setName(reportDefinition.getName() + " Data Set");
+		patientsDataset.addParameter(new Parameter("endDate", "End Date", Date.class));
 		
 		InProgramCohortDefinition inCrownHIVProgram = Cohorts.createInProgramParameterizableByDate(
 		    "inCROWNhiv: In CROWN Programs", crownHivPrograms, "onDate");
 		//Add Filters		
-		dataSetDefinition.addFilter(inCrownHIVProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+		patientsDataset.addFilter(inCrownHIVProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		
 		//Add Columns
-		dataSetDefinition.addColumn(RowPerPatientColumns.getTracnetId("TRACNET_ID"), new HashMap<String, Object>());
-		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("Id"), new HashMap<String, Object>());
-		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
-		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
+		patientsDataset.addColumn(RowPerPatientColumns.getTracnetId("TRACNET_ID"), new HashMap<String, Object>());
+		patientsDataset.addColumn(RowPerPatientColumns.getIMBId("Id"), new HashMap<String, Object>());
+		patientsDataset.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
+		patientsDataset.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
+		
+		RecentEncounterType lastEncounterType = RowPerPatientColumns.getRecentEncounterType("LastVisit",hivEncounterTypes, "dd-MMM-yyyy", null);
+		patientsDataset.addColumn(lastEncounterType, new HashMap<String, Object>());
 		
 		MostRecentObservation exitingCareReason = RowPerPatientColumns.getMostRecent("Reason for exiting care", reasonForExitingCare, "dd/MM/yyyy");
-		dataSetDefinition.addColumn(exitingCareReason, new HashMap<String, Object>());	
+		patientsDataset.addColumn(exitingCareReason, new HashMap<String, Object>());	
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
-		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true),
+		patientsDataset.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
+		patientsDataset.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true),
 		    new HashMap<String, Object>());
-		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfBirth("Date of Birth", null, null),
+		patientsDataset.addColumn(RowPerPatientColumns.getDateOfBirth("Date of Birth", null, null),
 		    new HashMap<String, Object>());
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
 		
-		reportDefinition.addDataSetDefinition("dataSet", dataSetDefinition, mappings);
+		reportDefinition.addDataSetDefinition("patientsDataSet", patientsDataset, mappings);
 	}
 	
 	private void setupProperties() {
@@ -118,5 +126,7 @@ public class SetupCROWNReports implements SetupReport {
 		crownHivPrograms.add(adultHiv);
 		crownHivPrograms.add(pmtct);
 		crownHivPrograms.add(pmtctCC);
+		
+		hivEncounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.HIV_ENCOUNTER_TYPES,":");
 	}
 }
