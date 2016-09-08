@@ -829,6 +829,14 @@ public class SetupDataQualityIndicatorReport {
 		// 21. PMTCT Infants without a mother relationship
 		// =====================================================================================
 
+		List<Program> pmtctCombinedInfantProgram = new ArrayList<Program>();
+		pmtctCombinedInfantProgram.add(pmtctCombinedClinicInfant);
+
+		InProgramCohortDefinition inPmtctCCInfantprogram = Cohorts
+				.createInProgramParameterizableByDate("DQ: In Pmtct Combined Clinic Infant Program",
+						pmtctCombinedInfantProgram, "onDate");
+
+
 		SqlCohortDefinition infantsWithNoMotherAcc = new SqlCohortDefinition();
 		infantsWithNoMotherAcc
 				.setQuery(" select distinct rel.person_b FROM relationship rel, relationship_type relt, person pe WHERE rel.relationship=relt.relationship_type_id AND relt.relationship_type_id="
@@ -844,7 +852,7 @@ public class SetupDataQualityIndicatorReport {
 				new Mapped(infantsWithNoMotherAcc, null));
 		infantsInPmtctClinicInfant.getSearches().put(
 				"2",
-				new Mapped(inPmtctInfantprogram, ParameterizableUtil
+				new Mapped(inPmtctCCInfantprogram, ParameterizableUtil
 						.createParameterMappings("onDate=${now}")));
 		infantsInPmtctClinicInfant.setCompositionString("2 AND (NOT 1)");
 
