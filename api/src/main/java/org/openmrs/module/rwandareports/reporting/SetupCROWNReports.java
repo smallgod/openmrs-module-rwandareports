@@ -12,6 +12,8 @@ import org.openmrs.EncounterType;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
+import org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition;
+import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -20,7 +22,6 @@ import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
-import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
@@ -46,9 +47,9 @@ public class SetupCROWNReports implements SetupReport {
 		
 		setupProperties();
 		
-		ReportDefinition rd = createReportDefinition();
+		ReportDefinition patientsTable = createPatientsReportDefinition();
 		
-		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "CROWNReports.xls", "CROWNReports.xls_",
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(patientsTable, "CROWN-PatientsTable.xls", "CROWN-PatientsTable.xls_",
 		    null);
 		
 		Properties props = new Properties();
@@ -57,6 +58,10 @@ public class SetupCROWNReports implements SetupReport {
 		design.setProperties(props);
 		
 		Helper.saveReportDesign(design);
+		
+		ReportDefinition rd =createRegimensReportDefinition();		
+		ReportDesign designCSV = Helper.createCsvReportDesign(rd,"CROWN-Regimens Table.csv_");
+		Helper.saveReportDesign(designCSV);
 	}
 	
 	public void delete() {
@@ -66,17 +71,27 @@ public class SetupCROWNReports implements SetupReport {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		Helper.purgeReportDefinition("HIV-CROWN Reports");
+		Helper.purgeReportDefinition("CROWN-Patients Table");
+		Helper.purgeReportDefinition("CROWN-Regimens Table");
 	}
 	
-	private ReportDefinition createReportDefinition() {
+	private ReportDefinition createPatientsReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-CROWN Reports");
-		
+		reportDefinition.setName("CROWN-Patients Table");		
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		createPatientsDataSet(reportDefinition);
+		createPatientsDataSet(reportDefinition);		
+		Helper.saveReportDefinition(reportDefinition);
 		
+		return reportDefinition;
+	}
+	
+	private ReportDefinition createRegimensReportDefinition() {
+		
+		ReportDefinition reportDefinition = new ReportDefinition();
+		reportDefinition.setName("CROWN-Regimens Table");	
+		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));				
+		createRegimensDataSet(reportDefinition);
 		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
@@ -115,6 +130,21 @@ public class SetupCROWNReports implements SetupReport {
 		mappings.put("endDate", "${endDate}");
 		
 		reportDefinition.addDataSetDefinition("patientsDataSet", patientsDataset, mappings);
+	}
+	
+	private void createRegimensDataSet(ReportDefinition reportDefinition) {
+		
+		SqlDataSetDefinition sqldsd=new SqlDataSetDefinition();
+		sqldsd.setSqlQuery("select o.patient_id,d.name,dro.dose,d.units,o.start_date,o.discontinued_date,o.auto_expire_date,d.route from orders o " +
+				"inner join drug_order dro on o.order_id=dro.order_id " +
+				"left join drug d on dro.drug_inventory_id=d.drug_id" +
+				" where o.start_date<=:endDate");		
+		sqldsd.addParameter(new Parameter("endDate", "End Date:", Date.class));		
+		
+		
+		reportDefinition.addDataSetDefinition("regimensDataSet",Mapped.mapStraightThrough(sqldsd));
+		
+		
 	}
 	
 	private void setupProperties() {
