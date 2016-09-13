@@ -13,11 +13,7 @@ import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.*;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -32,21 +28,21 @@ import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupHIVResearchExtractionSheet {
-	
+
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	//properties retrieved from global variables
-	
+
 	private Program pmtct;
 	private Program adultHiv;
 	private Program pediHiv;
 	private Program pmtctCC;
 	private Program externalHiv;
 	private Program tb;
-	
+
 	private ProgramWorkflowState onArt;
 	private ProgramWorkflowState onArtPMTCTPreg;
-	
+
 	private Concept art;
 	private Concept who;
 	private Concept cd4;
@@ -65,7 +61,7 @@ public class SetupHIVResearchExtractionSheet {
 	private Concept encephalopathy;
 	private Concept extraPulmonaryTB;
 	private Concept genitalSores;
-	private Concept herpesSimplex; 
+	private Concept herpesSimplex;
 	private Concept herpesZoster;
 	private Concept kaposisSarcoma;
 	private Concept meningitisCrypto;
@@ -91,50 +87,50 @@ public class SetupHIVResearchExtractionSheet {
 	private Concept lipodistrophy;
 	private Concept bactrim;
 	private Concept viralLoad;
-	
+
 	private List<Concept> sideEffects = new ArrayList<Concept>();
-	
+
 	private List<Concept> oiConcepts = new ArrayList<Concept>();
-	
+
 	private List<Program> allHivPrograms = new ArrayList<Program>();
-	
+
 	private List<Program> pmtctPrograms = new ArrayList<Program>();
-	
+
 	private List<EncounterType> clinicalEnountersIncLab;
-	
+
 	private List<ProgramWorkflow> pw = new ArrayList<ProgramWorkflow>();
-	
+
 	private CompositionCohortDefinition adultPreArtMale;
 	private CompositionCohortDefinition adultPreArtMalePlus40;
-	
+
 	private CompositionCohortDefinition adultPreArtFemale;
 	private CompositionCohortDefinition adultPreArtFemalePlus40;
-	
+
 	private CompositionCohortDefinition adultArtMale;
 	private CompositionCohortDefinition adultArtMalePlus40;
-	
+
 	private CompositionCohortDefinition adultArtFemale;
 	private CompositionCohortDefinition adultArtFemalePlus40;
-	
+
 	private CompositionCohortDefinition adultFemale;
 	private CompositionCohortDefinition adultFemalePlus40;
-	
+
 	private CompositionCohortDefinition adultMale;
 	private CompositionCohortDefinition adultMalePlus40;
-	
+
 	private InProgramCohortDefinition pedi;
-	
+
 	private InProgramCohortDefinition allHiv;
-	
+
 	public void setup() throws Exception {
-		
+
 		setupProperties();
-		
+
 		createReportPediDefinition();
 		createReportFemaleDefinition();
 		createReportMaleDefinition();
 	}
-	
+
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
@@ -155,251 +151,251 @@ public class SetupHIVResearchExtractionSheet {
 		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Ongoing Adult Male");
 		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Ongoing Adult Female");
 	}
-	
+
 	private void createReportPediDefinition() throws Exception {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("onOrBefore", "${endDate}");
-		
+
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("Research-Extraction Data for HIV Research - Demographics Pediatric");
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createDemographicsPediatricDataSetDefinition(reportDefinition);
-		
+
 		//All Pediatic HIV Patients
 		reportDefinition.setBaseCohortDefinition(pedi, new HashMap<String, Object>());
 		Helper.saveReportDefinition(reportDefinition);
-		
+
 		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinition, "HIVResearchExtractionDemographicsPedi.xls",
-		    "ResearchDemographicsPediatricExcel", null);
-		
+				"ResearchDemographicsPediatricExcel", null);
+
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:2,dataset:dataset");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		
+
 		Helper.saveReportDesign(design);
-		
+
 		ReportDefinition reportDefinitionOI = new ReportDefinition();
 		reportDefinitionOI.setName("Research-Extraction Data for HIV Research - OI Pediatric");
 		reportDefinitionOI.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createOIPediatricDataSetDefinition(reportDefinitionOI);
-		
+
 		//All Pediatic HIV Patients
 		reportDefinitionOI.setBaseCohortDefinition(pedi, mappings);
 		Helper.saveReportDefinition(reportDefinitionOI);
-		
+
 		ReportDesign designOI = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOI, "HIVResearchExtractionOIPedi.xls",
-		    "ResearchOIPediatricExcel", null);
-		
+				"ResearchOIPediatricExcel", null);
+
 		designOI.setProperties(props);
-		
+
 		Helper.saveReportDesign(designOI);
-		
+
 		ReportDefinition reportDefinitionSE = new ReportDefinition();
 		reportDefinitionSE.setName("Research-Extraction Data for HIV Research - SE Pediatric");
 		reportDefinitionSE.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createSEPediatricDataSetDefinition(reportDefinitionSE);
-		
+
 		//All Pediatic HIV Patients
 		reportDefinitionSE.setBaseCohortDefinition(pedi, mappings);
 		Helper.saveReportDefinition(reportDefinitionSE);
-		
+
 		ReportDesign designSE = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionSE, "HIVResearchExtractionSEPedi.xls",
-		    "ResearchSEPediatricExcel", null);
-		
+				"ResearchSEPediatricExcel", null);
+
 		designSE.setProperties(props);
-		
+
 		Helper.saveReportDesign(designSE);
-		
+
 		ReportDefinition reportDefinitionOn = new ReportDefinition();
 		reportDefinitionOn.setName("Research-Extraction Data for HIV Research - Ongoing Pediatric");
 		reportDefinitionOn.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createOngoingPediatricDataSetDefinition(reportDefinitionOn);
-		
+
 		//All Pediatic HIV Patients
 		reportDefinitionOn.setBaseCohortDefinition(pedi, mappings);
 		Helper.saveReportDefinition(reportDefinitionOn);
-		
+
 		ReportDesign designOn = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingPedi.xls",
-		    "ResearchOngoingPediatricExcel", null);
-		
+				"ResearchOngoingPediatricExcel", null);
+
 		designOn.setProperties(props);
-		
+
 		Helper.saveReportDesign(designOn);
 	}
-	
+
 	private void createReportFemaleDefinition() throws Exception {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("onOrBefore", "${endDate}");
-		
+
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("Research-Extraction Data for HIV Research - Demographics Adult Female");
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createDemographicsFemaleDataSetDefinition(reportDefinition);
-		
+
 		//All HIV Patients
 		reportDefinition.setBaseCohortDefinition(allHiv, mappings);
 		Helper.saveReportDefinition(reportDefinition);
-		
+
 		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinition, "HIVResearchExtractionDemographicsAdult.xls",
-		    "ResearchDemographicsAdultFemaleExcel", null);
-		
+				"ResearchDemographicsAdultFemaleExcel", null);
+
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:2,dataset:dataset|sheet:1,row:3,dataset:dataset2|sheet:1,row:4,dataset:dataset3|sheet:1,row:5,dataset:dataset4");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		
+
 		Helper.saveReportDesign(design);
-		
+
 		ReportDefinition reportDefinitionOI = new ReportDefinition();
 		reportDefinitionOI.setName("Research-Extraction Data for HIV Research - OI Adult Female");
 		reportDefinitionOI.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createOIFemaleDataSetDefinition(reportDefinitionOI);
-		
+
 		//All HIV Patients
 		reportDefinitionOI.setBaseCohortDefinition(allHiv, mappings);
 		Helper.saveReportDefinition(reportDefinitionOI);
-		
+
 		ReportDesign designOI = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOI, "HIVResearchExtractionOIAdult.xls",
-		    "ResearchOIAdultFemaleExcel", null);
-		
+				"ResearchOIAdultFemaleExcel", null);
+
 		Properties propsOI = new Properties();
 		propsOI.put("repeatingSections", "sheet:1,row:2,dataset:dataset|sheet:1,row:3,dataset:dataset2");
 		propsOI.put("sortWeight","5000");
 		designOI.setProperties(propsOI);
-		
+
 		Helper.saveReportDesign(designOI);
-		
+
 		ReportDefinition reportDefinitionSE = new ReportDefinition();
 		reportDefinitionSE.setName("Research-Extraction Data for HIV Research - SE Adult Female");
 		reportDefinitionSE.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createSEFemaleDataSetDefinition(reportDefinitionSE);
-		
+
 		//All HIV Patients
 		reportDefinitionSE.setBaseCohortDefinition(allHiv, mappings);
 		Helper.saveReportDefinition(reportDefinitionSE);
-		
+
 		ReportDesign designSE = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionSE, "HIVResearchExtractionSEAdult.xls",
-		    "ResearchSEAdultFemaleExcel", null);
-		
+				"ResearchSEAdultFemaleExcel", null);
+
 		designSE.setProperties(props);
-		
+
 		Helper.saveReportDesign(designSE);
-		
+
 		ReportDefinition reportDefinitionOn = new ReportDefinition();
 		reportDefinitionOn.setName("Research-Extraction Data for HIV Research - Ongoing Adult Female");
 		reportDefinitionOn.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createOngoingFemaleDataSetDefinition(reportDefinitionOn);
-		
+
 		//All HIV Patients
 		reportDefinitionOn.setBaseCohortDefinition(allHiv, mappings);
 		Helper.saveReportDefinition(reportDefinitionOn);
-		
+
 		ReportDesign designOn = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingAdult.xls",
-		    "ResearchOngoingAdultFemaleExcel", null);
-		
+				"ResearchOngoingAdultFemaleExcel", null);
+
 		designOn.setProperties(props);
-		
+
 		Helper.saveReportDesign(designOn);
-		
+
 	}
-	
+
 	private void createReportMaleDefinition() throws Exception {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("onOrBefore", "${endDate}");
-		
+
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("Research-Extraction Data for HIV Research - Demographics Adult Male");
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createDemographicsMaleDataSetDefinition(reportDefinition);
-		
+
 		//All Pediatic HIV Patients
 		reportDefinition.setBaseCohortDefinition(allHiv, mappings);
 		Helper.saveReportDefinition(reportDefinition);
-		
+
 		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinition, "HIVResearchExtractionDemographicsAdult.xls",
-		    "ResearchDemographicsAdultMaleExcel", null);
-		
+				"ResearchDemographicsAdultMaleExcel", null);
+
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:2,dataset:dataset|sheet:1,row:3,dataset:dataset2|sheet:1,row:4,dataset:dataset3|sheet:1,row:5,dataset:dataset4");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
-		
+
 		Helper.saveReportDesign(design);
-		
+
 		ReportDefinition reportDefinitionOI = new ReportDefinition();
 		reportDefinitionOI.setName("Research-Extraction Data for HIV Research - OI Adult Male");
 		reportDefinitionOI.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createOIMaleDataSetDefinition(reportDefinitionOI);
-		
+
 		//All Pediatic HIV Patients
 		reportDefinitionOI.setBaseCohortDefinition(allHiv, mappings);
 		Helper.saveReportDefinition(reportDefinitionOI);
-		
+
 		ReportDesign designOI = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOI, "HIVResearchExtractionOIAdult.xls",
-		    "ResearchIOAdultMaleExcel", null);
-		
+				"ResearchIOAdultMaleExcel", null);
+
 		Properties propsOI = new Properties();
 		propsOI.put("repeatingSections", "sheet:1,row:2,dataset:dataset|sheet:1,row:3,dataset:dataset2");
 		propsOI.put("sortWeight","5000");
 		designOI.setProperties(propsOI);
-		
+
 		Helper.saveReportDesign(designOI);
-		
+
 		ReportDefinition reportDefinitionSE = new ReportDefinition();
 		reportDefinitionSE.setName("Research-Extraction Data for HIV Research - SE Adult Male");
 		reportDefinitionSE.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createSEMaleDataSetDefinition(reportDefinitionSE);
-		
+
 		//All Pediatic HIV Patients
 		reportDefinitionSE.setBaseCohortDefinition(allHiv, mappings);
 		Helper.saveReportDefinition(reportDefinitionSE);
-		
+
 		ReportDesign designSE = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionSE, "HIVResearchExtractionSEAdult.xls",
-		    "ResearchSEAdultMaleExcel", null);
-		
+				"ResearchSEAdultMaleExcel", null);
+
 		designSE.setProperties(props);
-		
+
 		Helper.saveReportDesign(designSE);
-		
+
 		ReportDefinition reportDefinitionOn = new ReportDefinition();
 		reportDefinitionOn.setName("Research-Extraction Data for HIV Research - Ongoing Adult Male");
 		reportDefinitionOn.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		createOngoingMaleDataSetDefinition(reportDefinitionOn);
-		
+
 		//All Pediatic HIV Patients
 		reportDefinitionOn.setBaseCohortDefinition(allHiv, mappings);
 		Helper.saveReportDefinition(reportDefinitionOn);
-		
+
 		ReportDesign designOn = Helper.createRowPerPatientXlsOverviewReportDesign(reportDefinitionOn, "HIVResearchExtractionOngoingAdult.xls",
-		    "ResearchOngoingAdultMaleExcel", null);
-		
+				"ResearchOngoingAdultMaleExcel", null);
+
 		designOn.setProperties(props);
-		
+
 		Helper.saveReportDesign(designOn);
 	}
-	
-	
+
+
 	private void createDemographicsMaleDataSetDefinition(ReportDefinition reportDefinition) {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		// Create new dataset definition 
+		// Create new dataset definition
 		//break it up into 4 datasets so that it is able to run as large datasets slow down
 		//over time
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
@@ -410,7 +406,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.setName("dataset3");
 		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition4.setName("dataset4");
-		
+
 		//Add filter for adultPreArtMale
 		dataSetDefinition.addFilter(adultPreArtMale, mappings);
 		//Add filter for adultArtMale
@@ -419,49 +415,49 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.addFilter(adultPreArtMalePlus40, mappings);
 		//Add filter for adultArtMale
 		dataSetDefinition4.addFilter(adultArtMalePlus40, mappings);
-		
+
 		addDemographicsColumns(dataSetDefinition);
 		addDemographicsColumns(dataSetDefinition2);
 		addDemographicsColumns(dataSetDefinition3);
 		addDemographicsColumns(dataSetDefinition4);
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 		reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
 		reportDefinition.addDataSetDefinition("dataset4", dataSetDefinition4, mappings);
 	}
-	
+
 	private void createOIMaleDataSetDefinition(ReportDefinition reportDefinition) {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		//break it up into 4 datasets so that it is able to run as large datasets slow down
 		//over time
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("dataset");
 		RowPerPatientDataSetDefinition dataSetDefinition2 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition2.setName("dataset2");
-		
+
 		//Add filter for adultPreArtMale
 		dataSetDefinition.addFilter(adultMale, mappings);
 		//Add filter for adultArtMale
 		dataSetDefinition2.addFilter(adultMalePlus40, mappings);
-		
+
 		addOIColumns(dataSetDefinition);
 		addOIColumns(dataSetDefinition2);
 
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 	}
-	
+
 	private void createSEMaleDataSetDefinition(ReportDefinition reportDefinition) {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		//break it up into 4 datasets so that it is able to run as large datasets slow down
 		//over time
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
@@ -472,7 +468,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.setName("dataset3");
 		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition4.setName("dataset4");
-		
+
 		//Add filter for adultPreArtMale
 		dataSetDefinition.addFilter(adultPreArtMale, mappings);
 		//Add filter for adultArtMale
@@ -481,24 +477,24 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.addFilter(adultPreArtMalePlus40, mappings);
 		//Add filter for adultArtMale
 		dataSetDefinition4.addFilter(adultArtMalePlus40, mappings);
-		
+
 		addSEColumns(dataSetDefinition);
 		addSEColumns(dataSetDefinition2);
 		addSEColumns(dataSetDefinition3);
 		addSEColumns(dataSetDefinition4);
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 		reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
 		reportDefinition.addDataSetDefinition("dataset4", dataSetDefinition4, mappings);
 	}
-	
+
 	private void createOngoingMaleDataSetDefinition(ReportDefinition reportDefinition) {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		//break it up into 4 datasets so that it is able to run as large datasets slow down
 		//over time
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
@@ -509,7 +505,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.setName("dataset3");
 		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition4.setName("dataset4");
-		
+
 		//Add filter for adultPreArtMale
 		dataSetDefinition.addFilter(adultPreArtMale, mappings);
 		//Add filter for adultArtMale
@@ -518,24 +514,24 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.addFilter(adultPreArtMalePlus40, mappings);
 		//Add filter for adultArtMale
 		dataSetDefinition4.addFilter(adultArtMalePlus40, mappings);
-		
+
 		addOngoingColumns(dataSetDefinition);
 		addOngoingColumns(dataSetDefinition2);
 		addOngoingColumns(dataSetDefinition3);
 		addOngoingColumns(dataSetDefinition4);
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 		reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
 		reportDefinition.addDataSetDefinition("dataset4", dataSetDefinition4, mappings);
 	}
-	
+
 	private void createDemographicsFemaleDataSetDefinition(ReportDefinition reportDefinition) {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		//break it up into 4 datasets so that it is able to run as large datasets slow down
 		//over time
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
@@ -546,7 +542,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.setName("dataset3");
 		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition4.setName("dataset4");
-		
+
 		//Add filter for adultPreArtFemale
 		dataSetDefinition.addFilter(adultPreArtFemale, mappings);
 		//Add filter for adultArtFemale
@@ -555,49 +551,49 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.addFilter(adultPreArtFemalePlus40, mappings);
 		//Add filter for adultArtFemale
 		dataSetDefinition4.addFilter(adultArtFemalePlus40, mappings);
-		
+
 		addDemographicsColumns(dataSetDefinition);
 		addDemographicsColumns(dataSetDefinition2);
 		addDemographicsColumns(dataSetDefinition3);
 		addDemographicsColumns(dataSetDefinition4);
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 		reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
 		reportDefinition.addDataSetDefinition("dataset4", dataSetDefinition4, mappings);
 	}
-	
+
 	private void createOIFemaleDataSetDefinition(ReportDefinition reportDefinition) {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		//break it up into 4 datasets so that it is able to run as large datasets slow down
 		//over time
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("dataset");
 		RowPerPatientDataSetDefinition dataSetDefinition2 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition2.setName("dataset2");
-	
+
 		//Add filter for adultPreArtFemale
 		dataSetDefinition.addFilter(adultFemale, mappings);
 		//Add filter for adultArtFemale
 		dataSetDefinition2.addFilter(adultFemalePlus40, mappings);
-		
+
 		addOIColumns(dataSetDefinition);
 		addOIColumns(dataSetDefinition2);
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 	}
-	
+
 	private void createSEFemaleDataSetDefinition(ReportDefinition reportDefinition) {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		//break it up into 4 datasets so that it is able to run as large datasets slow down
 		//over time
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
@@ -608,7 +604,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.setName("dataset3");
 		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition4.setName("dataset4");
-	
+
 		//Add filter for adultPreArtFemale
 		dataSetDefinition.addFilter(adultPreArtFemale, mappings);
 		//Add filter for adultArtFemale
@@ -617,24 +613,24 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.addFilter(adultPreArtFemalePlus40, mappings);
 		//Add filter for adultArtFemale
 		dataSetDefinition4.addFilter(adultArtFemalePlus40, mappings);
-		
+
 		addSEColumns(dataSetDefinition);
 		addSEColumns(dataSetDefinition2);
 		addSEColumns(dataSetDefinition3);
 		addSEColumns(dataSetDefinition4);
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 		reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
 		reportDefinition.addDataSetDefinition("dataset4", dataSetDefinition4, mappings);
 	}
-	
+
 	private void createOngoingFemaleDataSetDefinition(ReportDefinition reportDefinition) {
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		//break it up into 4 datasets so that it is able to run as large datasets slow down
 		//over time
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
@@ -645,7 +641,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.setName("dataset3");
 		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition4.setName("dataset4");
-		
+
 		//Add filter for adultPreArtFemale
 		dataSetDefinition.addFilter(adultPreArtFemale, mappings);
 		//Add filter for adultArtFemale
@@ -654,215 +650,216 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition3.addFilter(adultPreArtFemalePlus40, mappings);
 		//Add filter for adultArtFemale
 		dataSetDefinition4.addFilter(adultArtFemalePlus40, mappings);
-		
+
 		addOngoingColumns(dataSetDefinition);
 		addOngoingColumns(dataSetDefinition2);
 		addOngoingColumns(dataSetDefinition3);
 		addOngoingColumns(dataSetDefinition4);
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);
 		reportDefinition.addDataSetDefinition("dataset3", dataSetDefinition3, mappings);
 		reportDefinition.addDataSetDefinition("dataset4", dataSetDefinition4, mappings);
 	}
-	
+
 	private void createDemographicsPediatricDataSetDefinition(ReportDefinition reportDefinition) {
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("dataset");
-		
+
 		addDemographicsColumns(dataSetDefinition);
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 	}
-	
+
 	private void createOIPediatricDataSetDefinition(ReportDefinition reportDefinition) {
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("dataset");
-		
+
 		addOIColumns(dataSetDefinition);
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 	}
-	
+
 	private void createSEPediatricDataSetDefinition(ReportDefinition reportDefinition) {
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("dataset");
-		
+
 		addSEColumns(dataSetDefinition);
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 	}
-	
+
 	private void createOngoingPediatricDataSetDefinition(ReportDefinition reportDefinition) {
-		
-		// Create new dataset definition 
+
+		// Create new dataset definition
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("dataset");
-		
+
 		addOngoingColumns(dataSetDefinition);
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 	}
-	
+
 	private void addDemographicsColumns(RowPerPatientDataSetDefinition dataSetDefinition)
 	{
 		dataSetDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
+
 		//Add Columns
 		DateOfFirstDrugOrderStartedRestrictedByConceptSet artStart = RowPerPatientColumns.getDateOfDrugOrderForStartOfARTBeforeDate("artStart", "yyyy-MM-dd");
 		//IMB Id
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAnyId("IMB Id"), new HashMap<String, Object>());
-	
+
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueID"), new HashMap<String, Object>());
-		
+
 		//system ID
 		dataSetDefinition.addColumn(RowPerPatientColumns.getSystemId("patientID"), new HashMap<String, Object>());
-		
-		
+
+
 		//hiv_pos_date - Date of HIV diagnosis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getHIVDiagnosisDate("diagnosis", "yyyy-MM-dd"), new HashMap<String, Object>());
-		
+
 		//art_start_date - ART start date
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDrugOrderForStartOfARTBeforeDate("art_start_date", "yyyy-MM-dd"), mappings);
-		
+
 		//hiv_care_start_date - HIV Care program enrollment date
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfAllHIVEnrolment("hiv_care_start_date", "yyyy-MM-dd"), new HashMap<String, Object>());
-		
+
 		//art_prog_start_date - ART program enrollment date
-		
+
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfWorkflowStateChange("art_prog_start_date", art, "endDate", "yyyy-MM-dd"), mappings);
-		
+
 		//transfer - Transfer In
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("transfer", RowPerPatientColumns.getDateOfProgramEnrolment("transferEnroll", externalHiv, "yyyy-MM-dd")), new HashMap<String, Object>());
-		
+
 		//last_clinic_date - last_clinic_date
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfMostRecentEncounterType("last_clinic_date", clinicalEnountersIncLab, "endDate", "yyyy-MM-dd"), mappings);
-		
+
 		//outcome - Outcome
 		dataSetDefinition.addColumn(RowPerPatientColumns.getHIVOutcomeOnEndDate("outcome", "yyyy-MM-dd"), mappings);
-		
+
 		//village - Umudugudu
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("village", false, false, false, true), new HashMap<String, Object>());
-		
+
 		//cell - Cell
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("cell", false, false, true, false), new HashMap<String, Object>());
-		
+
 		//healthcenter - Health Center
 		dataSetDefinition.addColumn(RowPerPatientColumns.getHealthCenter("healthcenter"), new HashMap<String, Object>());
-		
+
 		//district - District
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("district", true, false, false, false), new HashMap<String, Object>());
-		
+
 		//gender - Gender
 		dataSetDefinition.addColumn(RowPerPatientColumns.getGender("gender"), new HashMap<String, Object>());
-		
+
 		//birth_date - Date of birth
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfBirth("birth_date", "yyyy-MM-dd", "yyyy-MM-dd"), new HashMap<String, Object>());
-		
+
 		//pmtct_ever - PMTCT
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("pmtct_ever", "endDate", mappings, RowPerPatientColumns.getDateOfAllPMTCTEnrolment("pmtct", "yyyy-MM-dd")), mappings);
-		
+
 		//pmtct_drug - PMTCT treatment
 		//TODO
-		
+
 		//accompaniment - Accompaniment
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("accompaniment", RowPerPatientColumns.getAccompRelationship("accomp")), new HashMap<String, Object>());
-		
+
 		//age_art_start - Age at ART start
 		//TODO
-		
+
 		//who_stage_art_start - WHO Stage at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("who_stage_art_start", who, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
-		
+
 		//cd4_art_start - CD4 at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("cd4_art_start", cd4, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
-		
+
 		//cd4_perc_art_start - CD4 percent at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("cd4%_art_start", cd4Perc, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
-		
+
 		//weight_art_start - weight at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("weight_art_start", weight, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
-		
+
 		//height_art_start - height at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("height_art_start", height, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
-		
+
 		//hgb_art_start - hemoglobin at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservation("hgb_art_start", hgb, 90, 30, artStart, "yyyy-MM-dd"), new HashMap<String, Object>());
-		
+
 		//regimen_art_start - ART regimen at ART start
 		StartOfArt startOfArt = RowPerPatientColumns.getDrugOrdersForStartOfARTBeforeDate("regimen_art_start");
 		dataSetDefinition.addColumn(startOfArt, mappings);
-		
+
 		//bactrim_art_start - Bactrim at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("bactrim_art_start", "endDate", mappings, RowPerPatientColumns.getBaselineDrugOrderBeforeEndDate("bactrim", bactrim, 30, 30, artStart, mappings, "yyyy-MM-dd")), mappings);
-		
+
 		//tb_art_start - TB at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("tb_art_start", "endDate", mappings, RowPerPatientColumns.getBaselineProgramEnrollmentBeforeEndDate("tb", tb, 30, 30, artStart, mappings, "yyyy-MM-dd")), mappings);
-		
+
 		ArtSwitch switch1 = RowPerPatientColumns.getDrugOrdersForARTSwitchBeforeDate("ART_switch_1_reg", startOfArt, mappings);
-		//ART_switch_1	
+		//ART_switch_1
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("ART_switch_1", "endDate", mappings, switch1), mappings);
-		//ART_switch_1_reg	
+		//ART_switch_1_reg
 		dataSetDefinition.addColumn(switch1, mappings);
-		//ART_switch_1_date	
+		//ART_switch_1_date
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateForARTSwitchBeforeDate("ART_switch_1_date", startOfArt, mappings), mappings);
-		
+
 		ArtSwitch switch2 = RowPerPatientColumns.getDrugOrdersForARTSwitchBeforeDate("ART_switch_2_reg", switch1, mappings);
-		//ART_switch_2	
+		//ART_switch_2
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("ART_switch_2", "endDate", mappings, switch2), mappings);
-		//ART_switch_2_reg	
+		//ART_switch_2_reg
 		dataSetDefinition.addColumn(switch2, mappings);
 		//ART_switch_2_date
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateForARTSwitchBeforeDate("ART_switch_2_date", switch1, mappings), mappings);
-		
+
 		ArtSwitch switch3 = RowPerPatientColumns.getDrugOrdersForARTSwitchBeforeDate("ART_switch_3_reg", switch2, mappings);
-		//ART_switch_3	
+		//ART_switch_3
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("ART_switch_3", "endDate", mappings, switch3), mappings);
 		//ART_switch_3_reg
 		dataSetDefinition.addColumn(switch3, mappings);
-		//ART_switch_3_date	
+		//ART_switch_3_date
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateForARTSwitchBeforeDate("ART_switch_3_date", switch2, mappings), mappings);
-		
-		//viralload	
+
+		//viralload
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValuesBeforeEndDate("viralload", viralLoad, 5, "yyyy-MM-dd", null, null), mappings);
 	}
-	
+
 	private void addOIColumns(RowPerPatientDataSetDefinition dataSetDefinition) {
-		
+
 		dataSetDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
+
 		//Add Columns
 		DateOfFirstDrugOrderStartedRestrictedByConceptSet artStart = RowPerPatientColumns.getDateOfDrugOrderForStartOfARTBeforeDate("artStart", "yyyy-MM-dd");
-		
+
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
-		
-		
+
+
+
 		//OI_pneu_art_start - acute pneumonia presumed bacterial
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_pneu_art_start", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerBeforeEndDate("OI_pneu_art_start", oiConcepts, pneumonia, 90, 30, artStart, "yyyy-MM-dd")), mappings);
 		//OI_cand_art_start - candidiasis
@@ -899,7 +896,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_art_start", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerBeforeEndDate("OI_tuberculoma_art_start", oiConcepts, tuberculoma, 90, 30, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_art_start - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_art_start", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerBeforeEndDate("OI_TBent_art_start", oiConcepts, tuberculousEnteritis, 90, 30, artStart, "yyyy-MM-dd")), mappings);
-		
+
 		//6 month Variable
 		//OI_pneu_06m - acute pneumonia presumed bacterial
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_pneu_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_pneu_06m", oiConcepts, pneumonia, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
@@ -937,9 +934,9 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_06m", oiConcepts, tuberculoma, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_06m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_06m", oiConcepts, tuberculousEnteritis, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
-		
-		
-		//12 month variables	
+
+
+		//12 month variables
 		//OI_pneu_12m - acute pneumonia presumed bacterial
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_pneu_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_pneu_12m", oiConcepts, pneumonia, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
 		//OI_cand_12m	 - candidiasis
@@ -976,7 +973,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_12m", oiConcepts, tuberculoma, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_12m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_12m", oiConcepts, tuberculousEnteritis, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
-		
+
 		//24 month variables
 		//OI_pneu_24m - acute pneumonia presumed bacterial
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_pneu_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_pneu_24m", oiConcepts, pneumonia, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
@@ -1016,7 +1013,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_24m", oiConcepts, tuberculoma, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_24m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_24m", oiConcepts, tuberculousEnteritis, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
-		
+
 		//36 month variables
 		//OI_pneu_36m - acute pneumonia presumed bacterial
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_pneu_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_pneu_36m", oiConcepts, pneumonia, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
@@ -1054,7 +1051,7 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_36m", oiConcepts, tuberculoma, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_36m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_36m", oiConcepts, tuberculousEnteritis, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
-		
+
 		//48 month variables
 		//OI_pneu_48m - acute pneumonia presumed bacterial
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_pneu_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_pneu_48m", oiConcepts, pneumonia, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
@@ -1092,8 +1089,8 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_tuberculoma_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_tuberculoma_48m", oiConcepts, tuberculoma, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
 		//OI_TBent_48m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_48m", oiConcepts, tuberculousEnteritis, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
-		
-		
+
+
 		//60 month variables
 		//OI_pneu_60m - acute pneumonia presumed bacterial
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_pneu_60m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_pneu_60m", oiConcepts, pneumonia, 30, 30, 60, artStart, "yyyy-MM-dd")), mappings);
@@ -1134,23 +1131,23 @@ public class SetupHIVResearchExtractionSheet {
 		//OI_TBent_60m - tuberculous enteritis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("OI_TBent_60m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("OI_TBent_60m", oiConcepts, tuberculousEnteritis, 30, 30, 60, artStart, "yyyy-MM-dd")), mappings);
 	}
-	
+
 	private void addSEColumns(RowPerPatientDataSetDefinition dataSetDefinition) {
-		
+
 		dataSetDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
+
 		//Add Columns
 		DateOfFirstDrugOrderStartedRestrictedByConceptSet artStart = RowPerPatientColumns.getDateOfDrugOrderForStartOfARTBeforeDate("artStart", "yyyy-MM-dd");
 
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
-		
-		
+
+
 		//6 month Variables
-		//SE_anaph_06m - anaphylaxis	
+		//SE_anaph_06m - anaphylaxis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_06m", sideEffects, anaphylaxis, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_06m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_06m", sideEffects, rashModerate, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
@@ -1176,10 +1173,10 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_lipodis_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_lipodis_06m", sideEffects, lipodistrophy, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
 		//SE_other_06m - other
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_06m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_06m", sideEffects, nonCoded, 30, 30, 6, artStart, "yyyy-MM-dd")), mappings);
-		
-		
+
+
 		//12 month variables
-		//SE_anaph_12m - anaphylaxis	
+		//SE_anaph_12m - anaphylaxis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_12m", sideEffects, anaphylaxis, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_12m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_12m", sideEffects, rashModerate, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
@@ -1205,9 +1202,9 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_lipodis_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_lipodis_12m", sideEffects, lipodistrophy, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
 		//SE_other_12m - other
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_12m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_12m", sideEffects, nonCoded, 30, 30, 12, artStart, "yyyy-MM-dd")), mappings);
-	
+
 		//24 month variables
-		//SE_anaph_24m - anaphylaxis	
+		//SE_anaph_24m - anaphylaxis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_24m", sideEffects, anaphylaxis, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_24m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_24m", sideEffects, rashModerate, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
@@ -1233,9 +1230,9 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_lipodis_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_lipodis_24m", sideEffects, lipodistrophy, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
 		//SE_other_24m - other
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_24m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_24m", sideEffects, nonCoded, 30, 30, 24, artStart, "yyyy-MM-dd")), mappings);
-		
+
 		//36 month variables
-		//SE_anaph_36m - anaphylaxis	
+		//SE_anaph_36m - anaphylaxis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_36m", sideEffects, anaphylaxis, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_36m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_36m", sideEffects, rashModerate, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
@@ -1261,9 +1258,9 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_lipodis_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_lipodis_36m", sideEffects, lipodistrophy, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
 		//SE_other_36m - other
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_36m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_36m", sideEffects, nonCoded, 30, 30, 36, artStart, "yyyy-MM-dd")), mappings);
-		
+
 		//48 month variables
-		//SE_anaph_48m - anaphylaxis	
+		//SE_anaph_48m - anaphylaxis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_48m", sideEffects, anaphylaxis, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_48m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_48m", sideEffects, rashModerate, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
@@ -1289,9 +1286,9 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_lipodis_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_lipodis_48m", sideEffects, lipodistrophy, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
 		//SE_other_48m - other
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_other_48m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_other_48m", sideEffects, nonCoded, 30, 30, 48, artStart, "yyyy-MM-dd")), mappings);
-		
+
 		//60 month variables
-		//SE_anaph_60m - anaphylaxis	
+		//SE_anaph_60m - anaphylaxis
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_anaph_60m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_anaph_60m", sideEffects, anaphylaxis, 30, 30, 60, artStart, "yyyy-MM-dd")), mappings);
 		//SE_rash_mod_60m - moderate rash
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("SE_rash_mod_60m", "endDate", mappings, RowPerPatientColumns.getBaselineObservationAnswerAtMonthBeforeEndDate("SE_rash_mod_60m", sideEffects, rashModerate, 30, 30, 60, artStart, "yyyy-MM-dd")), mappings);
@@ -1320,21 +1317,21 @@ public class SetupHIVResearchExtractionSheet {
 	}
 
 	private void addOngoingColumns(RowPerPatientDataSetDefinition dataSetDefinition) {
-		
+
 		dataSetDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
+
 		//Add Columns
 		DateOfFirstDrugOrderStartedRestrictedByConceptSet artStart = RowPerPatientColumns.getDateOfDrugOrderForStartOfARTBeforeDate("artStart", "yyyy-MM-dd");
-		
+
 		//unique identifier
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientHash("uniqueId"), new HashMap<String, Object>());
-	
+
 		//6 month Variables
-		
-		//art_retention_06m	
+
+		//art_retention_06m
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("art_retention_06m", "endDate", mappings, RowPerPatientColumns.getBaselineEncounterAtMonthBeforeEndDate("artRetention", clinicalEnountersIncLab, 60, 60, 6, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//cd4_06m - CD4, X months
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservationAtMonthBeforeEndDate("cd4_06m", cd4, 30, 30, 6, artStart, mappings, "yyyy-MM-dd"), mappings);
@@ -1350,10 +1347,10 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("bactrim_06m", "endDate", mappings, RowPerPatientColumns.getBaselineDrugOrderAtMonthBeforeEndDate("bactrim", bactrim, 30, 30, 6, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//tb_06m - TB at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("tb_06m", "endDate", mappings, RowPerPatientColumns.getBaselineProgramEnrollmentAtMonthBeforeEndDate("tb", tb, 30, 30, 6, artStart, mappings, "yyyy-MM-dd")), mappings);
-			
-		
+
+
 		//12 month variables
-		//art_retention_12m	
+		//art_retention_12m
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("art_retention_12m", "endDate", mappings, RowPerPatientColumns.getBaselineEncounterAtMonthBeforeEndDate("artRetention", clinicalEnountersIncLab, 60, 60, 12, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//cd4_12m - CD4, X months
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservationAtMonthBeforeEndDate("cd4_12m", cd4, 30, 30, 12, artStart, mappings, "yyyy-MM-dd"), mappings);
@@ -1369,9 +1366,9 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("bactrim_12m", "endDate", mappings, RowPerPatientColumns.getBaselineDrugOrderAtMonthBeforeEndDate("bactrim", bactrim, 30, 30, 12, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//tb_12m - TB at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("tb_12m", "endDate", mappings, RowPerPatientColumns.getBaselineProgramEnrollmentAtMonthBeforeEndDate("tb", tb, 30, 30, 12, artStart, mappings, "yyyy-MM-dd")), mappings);
-		
+
 		//24 month variables
-		//art_retention_24m	
+		//art_retention_24m
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("art_retention_24m", "endDate", mappings, RowPerPatientColumns.getBaselineEncounterAtMonthBeforeEndDate("artRetention", clinicalEnountersIncLab, 60, 60, 24, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//cd4_24m - CD4, X months
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservationAtMonthBeforeEndDate("cd4_24m", cd4, 30, 30, 24, artStart, mappings, "yyyy-MM-dd"), mappings);
@@ -1384,12 +1381,12 @@ public class SetupHIVResearchExtractionSheet {
 		//hgb_24m - hemoglobin, X months
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservationAtMonthBeforeEndDate("hgb_24m", hgb, 30, 30, 24, artStart, mappings, "yyyy-MM-dd"), mappings);
 		//bactrim_24m - Bactrim at X months on ART treatment
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("bactrim_24m", "endDate", mappings, RowPerPatientColumns.getBaselineDrugOrderAtMonthBeforeEndDate("bactrim", bactrim, 30, 30, 24, artStart, mappings, "yyyy-MM-dd")), mappings);	
+		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("bactrim_24m", "endDate", mappings, RowPerPatientColumns.getBaselineDrugOrderAtMonthBeforeEndDate("bactrim", bactrim, 30, 30, 24, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//tb_24m - TB at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("tb_24m", "endDate", mappings, RowPerPatientColumns.getBaselineProgramEnrollmentAtMonthBeforeEndDate("tb", tb, 30, 30, 24, artStart, mappings, "yyyy-MM-dd")), mappings);
-		
+
 		//36 month variables
-		//art_retention_36m	
+		//art_retention_36m
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("art_retention_36m", "endDate", mappings, RowPerPatientColumns.getBaselineEncounterAtMonthBeforeEndDate("artRetention", clinicalEnountersIncLab, 60, 60, 36, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//cd4_36m - CD4, X months
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservationAtMonthBeforeEndDate("cd4_36m", cd4, 30, 30, 36, artStart, mappings, "yyyy-MM-dd"), mappings);
@@ -1405,9 +1402,9 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("bactrim_36m", "endDate", mappings, RowPerPatientColumns.getBaselineDrugOrderAtMonthBeforeEndDate("bactrim", bactrim, 30, 30, 36, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//tb_36m - TB at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("tb_36m", "endDate", mappings, RowPerPatientColumns.getBaselineProgramEnrollmentAtMonthBeforeEndDate("tb", tb, 30, 30, 36, artStart, mappings, "yyyy-MM-dd")), mappings);
-		
+
 		//48 month variables
-		//art_retention_48m	
+		//art_retention_48m
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("art_retention_48m", "endDate", mappings, RowPerPatientColumns.getBaselineEncounterAtMonthBeforeEndDate("artRetention", clinicalEnountersIncLab, 60, 60, 48, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//cd4_48m - CD4, X months
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservationAtMonthBeforeEndDate("cd4_48m", cd4, 30, 30, 48, artStart, mappings, "yyyy-MM-dd"), mappings);
@@ -1423,9 +1420,9 @@ public class SetupHIVResearchExtractionSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("bactrim_48m", "endDate", mappings, RowPerPatientColumns.getBaselineDrugOrderAtMonthBeforeEndDate("bactrim", bactrim, 30, 30, 48, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//tb_48m - TB at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("tb_48m", "endDate", mappings, RowPerPatientColumns.getBaselineProgramEnrollmentAtMonthBeforeEndDate("tb", tb, 30, 30, 48, artStart, mappings, "yyyy-MM-dd")), mappings);
-		
+
 		//60 month variables
-		//art_retention_60m	
+		//art_retention_60m
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("art_retention_60m", "endDate", mappings, RowPerPatientColumns.getBaselineEncounterAtMonthBeforeEndDate("artRetention", clinicalEnountersIncLab, 60, 60, 60, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//cd4_60m - CD4, X months
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservationAtMonthBeforeEndDate("cd4_60m", cd4, 30, 30, 60, artStart, mappings, "yyyy-MM-dd"), mappings);
@@ -1438,28 +1435,28 @@ public class SetupHIVResearchExtractionSheet {
 		//hgb_60m - hemoglobin, X months
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBaselineObservationAtMonthBeforeEndDate("hgb_60m", hgb, 30, 30, 60, artStart, mappings, "yyyy-MM-dd"), mappings);
 		//bactrim_60m - Bactrim at X months on ART treatment
-		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("bactrim_60m", "endDate", mappings, RowPerPatientColumns.getBaselineDrugOrderAtMonthBeforeEndDate("bactrim", bactrim, 30, 30, 60, artStart, mappings, "yyyy-MM-dd")), mappings);	
+		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("bactrim_60m", "endDate", mappings, RowPerPatientColumns.getBaselineDrugOrderAtMonthBeforeEndDate("bactrim", bactrim, 30, 30, 60, artStart, mappings, "yyyy-MM-dd")), mappings);
 		//tb_60m - TB at ART start
 		dataSetDefinition.addColumn(RowPerPatientColumns.getBooleanRepresentation("tb_60m", "endDate", mappings, RowPerPatientColumns.getBaselineProgramEnrollmentAtMonthBeforeEndDate("tb", tb, 30, 30, 60, artStart, mappings, "yyyy-MM-dd")), mappings);
 	}
-	
+
 	private void setupProperties() {
-		
+
 		pmtct = gp.getProgram(GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
 		adultHiv = gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
 		pediHiv = gp.getProgram(GlobalPropertiesManagement.PEDI_HIV_PROGRAM);
 		pmtctCC = gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM);
 		externalHiv = gp.getProgram(GlobalPropertiesManagement.EXTERNAL_HIV_PROGRAM);
 		tb = gp.getProgram(GlobalPropertiesManagement.TB_PROGRAM);
-		
+
 		allHivPrograms.add(pmtct);
 		allHivPrograms.add(adultHiv);
 		//allHivPrograms.add(pediHiv);
 		allHivPrograms.add(pmtctCC);
-		
+
 		pmtctPrograms.add(pmtct);
 		pmtctPrograms.add(pmtctCC);
-		
+
 		art = gp.getConcept(GlobalPropertiesManagement.ON_ART_TREATMENT_STATUS_CONCEPT);
 		who = gp.getConcept(GlobalPropertiesManagement.WHOSTAGE);
 		cd4 = gp.getConcept(GlobalPropertiesManagement.CD4_TEST);
@@ -1504,234 +1501,256 @@ public class SetupHIVResearchExtractionSheet {
 		lipodistrophy = gp.getConcept(GlobalPropertiesManagement.LIPODISTROPHY);
 		bactrim = gp.getConcept(GlobalPropertiesManagement.BACTRIM_CONCEPT);
 		viralLoad = gp.getConcept(GlobalPropertiesManagement.VIRAL_LOAD_TEST);
-		
+
 		sideEffects.add(sideEffect);
-		
+
 		oiConcepts.add(oi_one);
 		oiConcepts.add(oi_two);
-		
+
 		clinicalEnountersIncLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES);
-		
+
 		ProgramWorkflow treatAdult = gp.getProgramWorkflow(GlobalPropertiesManagement.TREATMENT_STATUS_WORKFLOW, GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
 		ProgramWorkflow treatPedi = gp.getProgramWorkflow(GlobalPropertiesManagement.TREATMENT_STATUS_WORKFLOW, GlobalPropertiesManagement.PEDI_HIV_PROGRAM);
 		ProgramWorkflow treatPMTCT = gp.getProgramWorkflow(GlobalPropertiesManagement.TREATMENT_STATUS_WORKFLOW, GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
-		
+
 		pw.add(treatPMTCT);
 		pw.add(treatAdult);
 		pw.add(treatPedi);
-		
+
 		onArt = gp.getProgramWorkflowState(GlobalPropertiesManagement.ON_ANTIRETROVIRALS_STATE, GlobalPropertiesManagement.TREATMENT_STATUS_WORKFLOW, GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
 		onArtPMTCTPreg = gp.getProgramWorkflowState(GlobalPropertiesManagement.ON_ANTIRETROVIRALS_STATE, GlobalPropertiesManagement.TREATMENT_STATUS_WORKFLOW, GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
 		Map<String, Object> mappingsPedi = new HashMap<String, Object>();
 		mappingsPedi.put("onOrBefore", "${endDate}");
 		Map<String, Object> mappingsAge = new HashMap<String, Object>();
 		mappingsAge.put("effectiveDate", "${endDate}");
-		
+
 		allHiv = Cohorts.createInProgramParameterizableByDate("inHiv", allHivPrograms, "onOrBefore");
-		
+
 		pedi = Cohorts.createInProgramParameterizableByDate("pedi", pediHiv, "onOrBefore");
-		
+
 		GenderCohortDefinition females = Cohorts.createFemaleCohortDefinition("Female");
-		
+
 		CompositionCohortDefinition onAllArt = new CompositionCohortDefinition();
 		onAllArt.setName("onArt");
 		onAllArt.getSearches().put(
-		    "adult",
-		    new Mapped<CohortDefinition>(Cohorts.createPatientStateCohortDefinition("onArt", onArt), new HashMap<String, Object>()));
+				"adult",
+				new Mapped<CohortDefinition>(Cohorts.createPatientStateCohortDefinition("onArt", onArt), new HashMap<String, Object>()));
 		onAllArt.getSearches().put(
-		    "pmtctPreg",
-		    new Mapped<CohortDefinition>(Cohorts.createPatientStateCohortDefinition("onArtPMTCTPreg", onArtPMTCTPreg), new HashMap<String, Object>()));
+				"pmtctPreg",
+				new Mapped<CohortDefinition>(Cohorts.createPatientStateCohortDefinition("onArtPMTCTPreg", onArtPMTCTPreg), new HashMap<String, Object>()));
 		onAllArt.setCompositionString("adult or pmtctPreg");
-		
+
+/*
+
+		List<ProgramWorkflowState> onArtstates=new ArrayList<ProgramWorkflowState>();
+
+		onArtstates.add(onArt);
+		onArtstates.add(onArtPMTCTPreg);
+
+		//PatientStateCohortDefinition onAllArt= new PatientStateCohortDefinition();
+		SqlCohortDefinition onAllArt=new SqlCohortDefinition();
+		onAllArt.setName("onArt");
+		onAllArt.setQuery("select distinct pp.patient_id from patient_program pp, patient_state ps where ps.state in (select program_workflow_state_id from program_workflow_state where concept_id=1577) and pp.patient_program_id=ps.patient_program_id and pp.program_id in (3,6) and pp.voided=0 and ps.start_date <= :endDate");
+		//onAllArt.setStates(onArtstates);
+		onAllArt.addParameter(new Parameter("endDate", "endDate", Date.class));
+*/
+
+
+
+		Map<String, Object> onArtmappings = new HashMap<String, Object>();
+		onArtmappings.put("endDate", "${endDate}");
+
 		CompositionCohortDefinition adultArt = new CompositionCohortDefinition();
 		adultArt.setName("adultArt");
 		adultArt.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultArt.getSearches().put(
-		    "adult",
-		    new Mapped<CohortDefinition>(allHiv, new HashMap<String, Object>()));
+				"adult",
+				new Mapped<CohortDefinition>(allHiv, new HashMap<String, Object>()));
 		adultArt.getSearches().put(
-		    "pedi",
-		    new Mapped<CohortDefinition>(pedi, mappingsPedi));
+				"pedi",
+				new Mapped<CohortDefinition>(pedi, mappingsPedi));
 		adultArt.getSearches().put(
-		    "onArt",
-		    new Mapped<CohortDefinition>(onAllArt, new HashMap<String, Object>()));
-		adultArt.setCompositionString("adult and onArt and not pedi");
-		
+				"onArt",
+				new Mapped<CohortDefinition>(onAllArt, new HashMap<String, Object>()));
+		//adultArt.setCompositionString("adult and onArt and not pedi");
+		adultArt.setCompositionString("onArt");
+
 		CompositionCohortDefinition adultPreArt = new CompositionCohortDefinition();
 		adultPreArt.setName("adultPreArt");
 		adultPreArt.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultPreArt.getSearches().put(
-		    "adult",
-		    new Mapped<CohortDefinition>(allHiv, new HashMap<String, Object>()));
+				"adult",
+				new Mapped<CohortDefinition>(allHiv, new HashMap<String, Object>()));
 		adultPreArt.getSearches().put(
-		    "pedi",
-		    new Mapped<CohortDefinition>(pedi, mappingsPedi));
+				"pedi",
+				new Mapped<CohortDefinition>(pedi, mappingsPedi));
 		adultPreArt.getSearches().put(
-		    "onArt",
-		    new Mapped<CohortDefinition>(onAllArt, new HashMap<String, Object>()));
-		adultPreArt.setCompositionString("adult and not onArt and not pedi");
-		
+				"onArt",
+				new Mapped<CohortDefinition>(onAllArt, new HashMap<String, Object>()));
+		//adultPreArt.setCompositionString("adult and not onArt and not pedi");
+		adultPreArt.setCompositionString("not onArt");
+
 		AgeCohortDefinition plus40 = new AgeCohortDefinition();
 		plus40.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		plus40.setMinAge(40);
-		
+
 		adultPreArtMale = new CompositionCohortDefinition();
 		adultPreArtMale.setName("adultPreArtMale");
 		adultPreArtMale.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultPreArtMale.getSearches().put(
-		    "adultPreArt",
-		    new Mapped<CohortDefinition>(adultPreArt, mappings));
+				"adultPreArt",
+				new Mapped<CohortDefinition>(adultPreArt, mappings));
 		adultPreArtMale.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultPreArtMale.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultPreArtMale.setCompositionString("adultPreArt and not female and not plus40");
-		
+
 		adultPreArtFemale = new CompositionCohortDefinition();
 		adultPreArtFemale.setName("adultPreArtFemale");
 		adultPreArtFemale.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultPreArtFemale.getSearches().put(
-		    "adultPreArt",
-		    new Mapped<CohortDefinition>(adultPreArt, mappings));
+				"adultPreArt",
+				new Mapped<CohortDefinition>(adultPreArt, mappings));
 		adultPreArtFemale.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultPreArtFemale.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultPreArtFemale.setCompositionString("adultPreArt and female and not plus40");
-		
+
 		adultArtMale = new CompositionCohortDefinition();
 		adultArtMale.setName("adultArtMale");
 		adultArtMale.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultArtMale.getSearches().put(
-		    "adultArt",
-		    new Mapped<CohortDefinition>(adultArt, mappings));
+				"adultArt",
+				new Mapped<CohortDefinition>(adultArt, mappings));
 		adultArtMale.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultArtMale.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultArtMale.setCompositionString("adultArt and not female and not plus40");
-		
+
 		adultArtFemale = new CompositionCohortDefinition();
 		adultArtFemale.setName("adultArtFemale");
 		adultArtFemale.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultArtFemale.getSearches().put(
-		    "adultArt",
-		    new Mapped<CohortDefinition>(adultArt, mappings));
+				"adultArt",
+				new Mapped<CohortDefinition>(adultArt, mappings));
 		adultArtFemale.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultArtFemale.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultArtFemale.setCompositionString("adultArt and female and not plus40");
-		
+
 		adultPreArtMalePlus40 = new CompositionCohortDefinition();
 		adultPreArtMalePlus40.setName("adultPreArtMalePlus40");
 		adultPreArtMalePlus40.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultPreArtMalePlus40.getSearches().put(
-		    "adultPreArt",
-		    new Mapped<CohortDefinition>(adultPreArt, mappings));
+				"adultPreArt",
+				new Mapped<CohortDefinition>(adultPreArt, mappings));
 		adultPreArtMalePlus40.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultPreArtMalePlus40.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultPreArtMalePlus40.setCompositionString("adultPreArt and not female and plus40");
-		
+
 		adultPreArtFemalePlus40 = new CompositionCohortDefinition();
 		adultPreArtFemalePlus40.setName("adultPreArtFemalePlus40");
 		adultPreArtFemalePlus40.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultPreArtFemalePlus40.getSearches().put(
-		    "adultPreArt",
-		    new Mapped<CohortDefinition>(adultPreArt, mappings));
+				"adultPreArt",
+				new Mapped<CohortDefinition>(adultPreArt, mappings));
 		adultPreArtFemalePlus40.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultPreArtFemalePlus40.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultPreArtFemalePlus40.setCompositionString("adultPreArt and female and plus40");
-		
+
 		adultArtMalePlus40 = new CompositionCohortDefinition();
 		adultArtMalePlus40.setName("adultArtMalePlus40");
 		adultArtMalePlus40.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultArtMalePlus40.getSearches().put(
-		    "adultArt",
-		    new Mapped<CohortDefinition>(adultArt, mappings));
+				"adultArt",
+				new Mapped<CohortDefinition>(adultArt, mappings));
 		adultArtMalePlus40.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultArtMalePlus40.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultArtMalePlus40.setCompositionString("adultArt and not female and plus40");
-		
+
 		adultArtFemalePlus40 = new CompositionCohortDefinition();
 		adultArtFemalePlus40.setName("adultArtFemalePlus40");
 		adultArtFemalePlus40.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultArtFemalePlus40.getSearches().put(
-		    "adultArt",
-		    new Mapped<CohortDefinition>(adultArt, mappings));
+				"adultArt",
+				new Mapped<CohortDefinition>(adultArt, mappings));
 		adultArtFemalePlus40.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultArtFemalePlus40.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultArtFemalePlus40.setCompositionString("adultArt and female and plus40");
-		
+
 		adultFemalePlus40 = new CompositionCohortDefinition();
 		adultFemalePlus40.setName("adultFemalePlus40");
 		adultFemalePlus40.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultFemalePlus40.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultFemalePlus40.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultFemalePlus40.setCompositionString("female and plus40");
-		
+
 		adultFemale = new CompositionCohortDefinition();
 		adultFemale.setName("adultFemale");
 		adultFemale.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultFemale.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultFemale.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultFemale.setCompositionString("female and not plus40");
-		
+
 		adultMalePlus40 = new CompositionCohortDefinition();
 		adultMalePlus40.setName("adultMalePlus40");
 		adultMalePlus40.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultMalePlus40.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultMalePlus40.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultMalePlus40.setCompositionString("not female and plus40");
-		
+
 		adultMale = new CompositionCohortDefinition();
 		adultMale.setName("adultMale");
 		adultMale.addParameter(new Parameter("endDate", "End Date", Date.class));
 		adultMale.getSearches().put(
-		    "female",
-		    new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
+				"female",
+				new Mapped<CohortDefinition>(females, new HashMap<String, Object>()));
 		adultMale.getSearches().put(
-		    "plus40",
-		    new Mapped<CohortDefinition>(plus40, mappingsAge));
+				"plus40",
+				new Mapped<CohortDefinition>(plus40, mappingsAge));
 		adultMale.setCompositionString("not female and not plus40");
 	}
 }
