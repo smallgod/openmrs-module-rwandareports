@@ -62,6 +62,10 @@ public class SetupCROWNReports implements SetupReport {
 		ReportDefinition rd =createRegimensReportDefinition();		
 		ReportDesign designCSV = Helper.createCsvReportDesign(rd,"CROWN-Regimens Table.csv_");
 		Helper.saveReportDesign(designCSV);
+		
+		ReportDefinition viral_load_rd =createViralLoadReportDefinition();
+		ReportDesign viral_load_designCSV = Helper.createCsvReportDesign(viral_load_rd,"CROWN-Viral Load Table.csv_");
+		Helper.saveReportDesign(viral_load_designCSV);
 	}
 	
 	public void delete() {
@@ -73,6 +77,7 @@ public class SetupCROWNReports implements SetupReport {
 		}
 		Helper.purgeReportDefinition("CROWN-Patients Table");
 		Helper.purgeReportDefinition("CROWN-Regimens Table");
+		Helper.purgeReportDefinition("CROWN-Viral Load Table");
 	}
 	
 	private ReportDefinition createPatientsReportDefinition() {
@@ -92,6 +97,17 @@ public class SetupCROWNReports implements SetupReport {
 		reportDefinition.setName("CROWN-Regimens Table");	
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));				
 		createRegimensDataSet(reportDefinition);
+		Helper.saveReportDefinition(reportDefinition);
+		
+		return reportDefinition;
+	}
+	
+private ReportDefinition createViralLoadReportDefinition() {
+		
+		ReportDefinition reportDefinition = new ReportDefinition();
+		reportDefinition.setName("CROWN-Viral Load Table");	
+		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));				
+		createViralLoadDataSet(reportDefinition);
 		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
@@ -143,6 +159,19 @@ public class SetupCROWNReports implements SetupReport {
 		
 		
 		reportDefinition.addDataSetDefinition("regimensDataSet",Mapped.mapStraightThrough(sqldsd));
+		
+		
+	}
+	
+	private void createViralLoadDataSet(ReportDefinition reportDefinition) {
+		
+		SqlDataSetDefinition sqldsd=new SqlDataSetDefinition();
+		sqldsd.setSqlQuery("select o.patient_id as 'PATIENT ID', o.date_created as 'VIRAL LOAD SAMPLE DATE', obs.value_numeric as 'VIRAL LOAD RESULT', obs.date_created as 'VIRAL LOAD ENTRY DATE' from orders o " +
+				"left join obs on o.order_id=obs.order_id " +
+				" where o.date_created<=:endDate");		
+		sqldsd.addParameter(new Parameter("endDate", "End Date:", Date.class));				
+		
+		reportDefinition.addDataSetDefinition("viralLoadDataSet",Mapped.mapStraightThrough(sqldsd));
 		
 		
 	}
