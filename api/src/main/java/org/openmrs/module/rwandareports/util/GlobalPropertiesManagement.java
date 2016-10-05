@@ -1104,4 +1104,23 @@ public class GlobalPropertiesManagement {
 	public final static String DATA_ENTRY_DELAY = "reports.dataEntryDelay";
 	public final static String REPORT_CLASSIFICATION="reports.classifications";
 	public final static String DATA_ENTRY_DELAY_ACCEPTABLE = "reports.dataEntryDelayAccepted";
+
+	public final static String LOW_BIRTH_WEIGHT= "reports.concept.lowBirthWeight";
+	public final static String PRE_MATURE_BIRTH= "reports.concept.prematureBirth";
+	public final static String HYPOXIC_ISCHEMIS_ENCEPHALOPATHY= "reports.concept.hypoxicIschemicEncephalopathy";
+	public final static String HYDROCEPHALUS= "reports.concept.hydrocephalus";
+	public final static String TRISOMY21= "reports.concept.trisomy21";
+	public final static String CLEFTLIP_OR_PILATE= "reports.concept.cleftLipOrPalate";
+	public final static String OTHER_DEVELOPMENT_DELAY= "reports.concept.otherDevelopmentalDelay";
+	public final static String SEVERE_MALNUTRITION= "reports.concept.severeMalnutrition";
+	public final static String CENTRAL_NERVOUS_SYSTEM_INFECTION= "reports.concept.centralNervousSystemInfection";
+
+	public final static String PDC_WEIGHT_FOR_AGE_ZSCORE= "reports.concept.PDCweightForAgeZScore";
+	public final static String PDC_HEIGHT_FOR_AGE_ZSCORE= "reports.concept.PDCHeightForAgeZScore";
+	public final static String PDC_WEIGHT_FOR_HEIGHT_ZSCORE= "reports.concept.PDCweightForHeightZScore";
+	public final static String NOT_APPLICABLE= "reports.concept.na";
+	public final static String ZSCORE_GREATER_THAN_NEGATIVE_THREE_AND_LESS_THAN_NEGATIVE_TWO= "reports.concept.zScoreGreaterThatMinesThreeAndLessThanTwo";
+	public final static String ZSCORE_LESS_THAN_NEGATIVE_THREE= "reports.concept.zSccoreLessThanThree";
+
+
 }

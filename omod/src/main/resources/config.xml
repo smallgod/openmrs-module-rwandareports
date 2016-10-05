@@ -3705,6 +3705,82 @@
 		<defaultValue>06793d30-bf06-469f-8ae9-c9c06a8c444b</defaultValue>
 		<description>This is the concept Id of Tenofovir and Lamivudine</description>
 </globalProperty>
-	
-		
+
+
+	<globalProperty>
+		<property>reports.concept.lowBirthWeight</property>
+		<defaultValue>4f628144-0a53-4e06-b5d1-b2bc0beebfc7</defaultValue>
+		<description>This is the concept Id of LOW_BIRTH_WEIGHT</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.prematureBirth</property>
+		<defaultValue>113841AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</defaultValue>
+		<description>This is the concept Id of PRE_MATURE_BIRTH</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.hypoxicIschemicEncephalopathy</property>
+		<defaultValue>8860c040-c0d1-4e3b-aa26-7e19b8186286</defaultValue>
+		<description>This is the concept Id of HYPOXIC_ISCHEMIS_ENCEPHALOPATHY</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.hydrocephalus</property>
+		<defaultValue>f602d28d-0914-4468-baa7-43a230b994a7</defaultValue>
+		<description>This is the concept Id of HYDROCEPHALUS</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.trisomy21</property>
+		<defaultValue>3719ec38-d852-45aa-90a6-1c82e560624e</defaultValue>
+		<description>This is the concept Id of TRISOMY21</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.cleftLipOrPalate</property>
+		<defaultValue>038e1355-d46d-47a3-903e-7c5b876fa89c</defaultValue>
+		<description>This is the concept Id of CLEFTLIP_OR_PILATE</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.otherDevelopmentalDelay</property>
+		<defaultValue>1850960b-3695-4508-86e8-cfdd639a240a</defaultValue>
+		<description>This is the concept Id of OTHER_DEVELOPMENT_DELAY</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.severeMalnutrition</property>
+		<defaultValue>6537dabc-b0bc-4e7c-926d-53851a6585c2</defaultValue>
+		<description>This is the concept Id of SEVERE_MALNUTRITION</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.centralNervousSystemInfection</property>
+		<defaultValue>55bf0068-ab55-4d7f-85dd-95a9d7f34dff</defaultValue>
+		<description>This is the concept Id of CENTRAL_NERVOUS_SYSTEM_INFECTION</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.PDCweightForAgeZScore</property>
+		<defaultValue>93a0b208-8308-487e-9446-c4fc0e486ac7</defaultValue>
+		<description>This is the concept Id of PDC_WEIGHT_FOR_AGE_ZSCORE</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.PDCHeightForAgeZScore</property>
+		<defaultValue>a72a6c45-9d6b-4e79-a490-6f5818a2eb8f</defaultValue>
+		<description>This is the concept Id of PDC_HEIGHT_FOR_AGE_ZSCORE</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.PDCweightForHeightZScore</property>
+		<defaultValue>786ca5b4-484f-4ebe-81da-364918353043</defaultValue>
+		<description>This is the concept Id of PDC_WEIGHT_FOR_HEIGHT_ZSCORE</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.na</property>
+		<defaultValue>3cd7b72a-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>This is the concept Id of NOT_APPLICABLE</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.zScoreGreaterThatMinesThreeAndLessThanTwo</property>
+		<defaultValue>fcbe1549-6bd3-4c9a-bb3c-38187264b26d</defaultValue>
+		<description>This is the concept Id of ZSCORE_GREATER_THAN_NEGATIVE_THREE_AND_LESS_THAN_NEGATIVE_TWO</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.concept.zSccoreLessThanThree</property>
+		<defaultValue>43539cee-6f90-4ffa-ba25-0338105783a3</defaultValue>
+		<description>This is the concept Id of ZSCORE_LESS_THAN_NEGATIVE_THREE</description>
+	</globalProperty>
+
 </module>

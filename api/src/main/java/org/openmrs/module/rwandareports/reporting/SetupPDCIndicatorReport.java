@@ -1,16 +1,9 @@
 package org.openmrs.module.rwandareports.reporting;
  
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import org.omg.CORBA.PRIVATE_MEMBER;
-import org.openmrs.Concept;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Program;
-import org.openmrs.ProgramWorkflowState;
+import org.openmrs.*;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
@@ -52,7 +45,7 @@ public class SetupPDCIndicatorReport {
         private Program PDCProgram;
         
         private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
-        
+
         
         private Concept reasoForReferral;
         
@@ -132,15 +125,38 @@ public class SetupPDCIndicatorReport {
         private Concept ECDCounselingSession;
         
         private Concept reasonForNotDoingFollowUp;
+
+        private Concept reasonForExitingFromCare;
         
         private Concept intervalgrowthCoded;
         
         private Concept inadequate;
-        
 
-        
-        public void setup() throws Exception {
-                
+    private List<Concept> reasonsForReferral=new ArrayList<Concept>();
+    private Concept lowBirthWeight;
+    private Concept prematureBirth;
+    private Concept hypoxicIschemicEncephalopathy;
+    private Concept hydrocephalus;
+    private Concept trisomy21;
+    private Concept cleftLipOrPalate;
+    private Concept otherDevelopmentalDelay;
+    private Concept otherNoneCoded;
+    private Concept severeMalnutrition;
+    private Concept centralNervousSystemInfection;
+
+    private Concept PDCweightForAgeZScore;
+    private Concept na;
+    private Concept zScoreGreaterThatMinesThreeAndLessThanTwo;
+    private Concept zSccoreLessThanThree;
+    private Concept PDCHeightForAgeZScore;
+    private Concept PDCweightForHeightZScore;
+
+
+
+
+
+    public void setup() throws Exception {
+
                 setUpProperties();
                 
                 
@@ -156,8 +172,10 @@ public class SetupPDCIndicatorReport {
                 
                 rd.addDataSetDefinition(createQuarterlyLocationDataSet(),
                     ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
-                        
-                
+
+                InProgramCohortDefinition inProgram = Cohorts.createInProgram("PDCProgram", PDCProgram);
+                rd.setBaseCohortDefinition(inProgram,new HashMap<String, Object>());
+
                 Helper.saveReportDefinition(rd);
                 
                 
@@ -211,7 +229,7 @@ public class SetupPDCIndicatorReport {
         private void createQuarterlyIndicators(EncounterIndicatorDataSetDefinition dsd) {
                         	
 // PDC6N       	
-        	
+        	/*
         	  SqlEncounterQuery visitWithNutritionDangerSignSreeningAndASQdocumentedQuery=new SqlEncounterQuery();
         	  visitWithNutritionDangerSignSreeningAndASQdocumentedQuery.setName("visitWithNutritionDangerSignSreeningAndASQdocumentedQuery");
         	  visitWithNutritionDangerSignSreeningAndASQdocumentedQuery.setQuery("select e.encounter_id from encounter e"
@@ -228,7 +246,22 @@ public class SetupPDCIndicatorReport {
 				+" inner join person p on e.patient_id=p.person_id and DATEDIFF(e.encounter_datetime,p.birthdate)>180 and DATEDIFF(e.encounter_datetime,p.birthdate)<=720" 
 				+" where  e.form_id="+PDCVisitForm.getFormId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate");
         	  visitWithNutritionDangerSignSreeningAndASQdocumentedQuery.addParameter(new Parameter("startDate", "startDate", Date.class));
-        	  visitWithNutritionDangerSignSreeningAndASQdocumentedQuery.addParameter(new Parameter("endDate", "endDate", Date.class));
+        	  visitWithNutritionDangerSignSreeningAndASQdocumentedQuery.addParameter(new Parameter("endDate", "endDate", Date.class));*/
+
+            SqlEncounterQuery visitWithNutritionDangerSignSreeningAndASQdocumentedQuery=new SqlEncounterQuery();
+            visitWithNutritionDangerSignSreeningAndASQdocumentedQuery.setName("visitWithNutritionDangerSignSreeningAndASQdocumentedQuery");
+            visitWithNutritionDangerSignSreeningAndASQdocumentedQuery.setQuery("select e.encounter_id from encounter e"
+                    +" inner join obs o1 on e.encounter_id=o1.encounter_id and o1.concept_id= "+breathingDangerSignsPresent.getConceptId()+" and o1.value_coded="+yes.getConceptId()+" and o1.voided=0"
+                    +" inner join obs o2 on e.encounter_id=o2.encounter_id and o2.concept_id= "+convulsionsDangerSignsPresent.getConceptId()+" and o2.value_coded="+yes.getConceptId()+" and o2.voided=0"
+                    +" inner join obs o3 on e.encounter_id=o3.encounter_id and o3.concept_id= "+LethargyOrUnresponsivenessDangerSignsPresent.getConceptId()+" and o3.value_coded="+yes.getConceptId()+" and o3.voided=0"
+                    +" inner join obs o4 on e.encounter_id=o4.encounter_id and o4.concept_id= "+umbilicalCordRednessDangerSigns.getConceptId()+" and o4.value_coded="+yes.getConceptId()+" and o4.voided=0"
+                    +" inner join obs o5 on e.encounter_id=o5.encounter_id and o5.concept_id= "+stiffNeckOrBulgingFontanellesDangerSigns.getConceptId()+" and o5.value_coded="+yes.getConceptId()+" and o5.voided=0"
+                    +" inner join obs o6 on e.encounter_id!=o6.encounter_id and o6.concept_id= "+ASQAgeUsed.getConceptId()+" and o6.value_coded is not null and o6.voided=0 and DATEDIFF(e.encounter_datetime,o6.obs_datetime)<=180 and o6.value_coded!="+na.getConceptId()+" "
+                    +" inner join obs o7 on e.encounter_id=o7.encounter_id and o7.concept_id= "+PDCweightForAgeZScore.getConceptId()+" and o7.value_coded is not null and o7.voided=0"
+                    +" inner join person p on e.patient_id=p.person_id and DATEDIFF(e.encounter_datetime,p.birthdate)>180 and DATEDIFF(e.encounter_datetime,p.birthdate)<=720"
+                    +" where  e.form_id="+PDCVisitForm.getFormId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate");
+            visitWithNutritionDangerSignSreeningAndASQdocumentedQuery.addParameter(new Parameter("startDate", "startDate", Date.class));
+            visitWithNutritionDangerSignSreeningAndASQdocumentedQuery.addParameter(new Parameter("endDate", "endDate", Date.class));
               
         	  
         	  
@@ -313,33 +346,37 @@ public class SetupPDCIndicatorReport {
                 
                 InProgramCohortDefinition inPDCProgramByStartDateAndEndDate = Cohorts.createInProgramParameterizableByDate(
                     "In PDC Programs by startdate and enddate", PDCProgram, onOrAfterOnOrBefore);
-                
-                EncounterCohortDefinition  patientWithVisitInQuarter=Cohorts.createEncounterBasedOnForms("patientWithVisitInQuarter", onOrAfterOnOrBefore, PDCVisitForms);
+
+                ProgramEnrollmentCohortDefinition completedPCDProgramByStartDateAndEnddate=Cohorts.createProgramEnrollment("completedPCDProgramByStartDateAndEnddate",PDCProgram);
+                completedPCDProgramByStartDateAndEnddate.addParameter(new Parameter("completedOnOrBefore","completedOnOrBefore",Date.class));
+
+
+            EncounterCohortDefinition  patientWithVisitInQuarter=Cohorts.createEncounterBasedOnForms("patientWithVisitInQuarter", onOrAfterOnOrBefore, PDCVisitForms);
                 
                 
 //PDC1
                 SqlCohortDefinition patientUnderOneYear=new SqlCohortDefinition();
                 patientUnderOneYear.setName("patientUnderOneYear");
-                patientUnderOneYear.setQuery("select p.person_id from person p where DATEDIFF(:endDate,p.birthdate)<365 and p.voided=0");
+                patientUnderOneYear.setQuery("select p.person_id from person p,patient pt where DATEDIFF(:endDate,p.birthdate)<365 and p.voided=0 and p.person_id=pt.patient_id and pt.voided=0");
                 patientUnderOneYear.addParameter(new Parameter("endDate","endDate",Date.class));
 
                 
                 SqlCohortDefinition patientGreatterThanOrEqualOneYearAndLessThanTwoyears=new SqlCohortDefinition();
                 patientGreatterThanOrEqualOneYearAndLessThanTwoyears.setName("patientGreatterThanOrEqualOneYearAndLessThanTwoyears");
-                patientGreatterThanOrEqualOneYearAndLessThanTwoyears.setQuery("select p.person_id from person p where DATEDIFF(:endDate,p.birthdate)>=365 and DATEDIFF(:endDate,p.birthdate)<730 and p.voided=0");
+                patientGreatterThanOrEqualOneYearAndLessThanTwoyears.setQuery("select p.person_id from person p,patient pt where DATEDIFF(:endDate,p.birthdate)>=365 and DATEDIFF(:endDate,p.birthdate)<730 and p.voided=0 and p.person_id=pt.patient_id and pt.voided=0");
                 patientGreatterThanOrEqualOneYearAndLessThanTwoyears.addParameter(new Parameter("endDate","endDate",Date.class));
 
                 SqlCohortDefinition patientGreatterThanOrEqualTwoyears=new SqlCohortDefinition();
                 patientGreatterThanOrEqualTwoyears.setName("patientGreatterThanOrEqualTwoyears");
-                patientGreatterThanOrEqualTwoyears.setQuery("select p.person_id from person p where DATEDIFF(:endDate,p.birthdate)>=730 and p.voided=0");
+                patientGreatterThanOrEqualTwoyears.setQuery("select p.person_id from person p,patient pt where DATEDIFF(:endDate,p.birthdate)>=730 and p.voided=0 and p.person_id=pt.patient_id and pt.voided=0");
                 patientGreatterThanOrEqualTwoyears.addParameter(new Parameter("endDate","endDate",Date.class));
                 
                 //CodedObsCohortDefinition reasonForNotDoingFollowUpCohort=Cohorts.createCodedObsCohortDefinition("reasonForNotDoingFollowUpCohort",reasonForNotDoingFollowUp, null, SetComparator.IN, TimeModifier.LAST);
                 
                 SqlCohortDefinition reasonForNotDoingFollowUpCohort=new SqlCohortDefinition();
                 reasonForNotDoingFollowUpCohort.setName("reasonForNotDoingFollowUpCohort");
-                reasonForNotDoingFollowUpCohort.setQuery("select distinct o.person_id from obs o where o.concept_id="+reasonForNotDoingFollowUp.getConceptId()+" and o.voided=0 order by o.obs_datetime desc");
-                reasonForNotDoingFollowUpCohort.addParameter(new Parameter("endDate","endDate",Date.class));
+                reasonForNotDoingFollowUpCohort.setQuery("select o.person_id from obs o where (o.concept_id="+reasonForNotDoingFollowUp.getConceptId()+" or o.concept_id="+reasonForExitingFromCare.getConceptId()+") and o.voided=0 order by o.obs_datetime desc");
+                //reasonForNotDoingFollowUpCohort.addParameter(new Parameter("endDate","endDate",Date.class));
 
              
                 CompositionCohortDefinition activePatient = new CompositionCohortDefinition();
@@ -354,10 +391,15 @@ public class SetupPDCIndicatorReport {
                 activePatient.getSearches().put("6", new Mapped(patientGreatterThanOrEqualOneYearAndLessThanTwoyears, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
                 activePatient.getSearches().put("7", new Mapped(patientGreatterThanOrEqualTwoyears, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
                 activePatient.getSearches().put("8", new Mapped(reasonForNotDoingFollowUpCohort, null));
-                activePatient.setCompositionString("1 AND (NOT (2 AND 5)) AND (NOT (3 AND 6)) AND (NOT (4 AND 7)) AND (NOT 8)");
-                
-                
-                CohortIndicator activePatientIndicator = Indicators.newCountIndicator("Number of active patients Indicator", activePatient,
+                activePatient.getSearches().put("9", new Mapped(completedPCDProgramByStartDateAndEnddate, ParameterizableUtil.createParameterMappings("completedOnOrBefore=${startDate-1d}")));
+                //activePatient.setCompositionString("1 AND (NOT (2 AND 5)) AND (NOT (3 AND 6)) AND (NOT (4 AND 7)) AND (NOT 8) AND (NOT 9)");
+                //activePatient.setCompositionString("1 AND (NOT (((NOT 2) AND 5) OR ((NOT 3) AND 6) OR ((NOT 4) AND 7) OR 8 OR 9))");
+                activePatient.setCompositionString("1 AND (NOT (((NOT 2) AND 5) OR ((NOT 3) AND 6) OR ((NOT 4) AND 7) OR 8 OR 9))");
+
+                //activePatient.setCompositionString("1");
+
+
+            CohortIndicator activePatientIndicator = Indicators.newCountIndicator("Number of active patients Indicator", activePatient,
                         ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
                            
                     
@@ -367,70 +409,151 @@ public class SetupPDCIndicatorReport {
                     
 // PDC2
                // SqlCohortDefinition patientWithRefferralReasonOnIntakeForm=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("patientWithReferralReason",PDCIntakeForm,reasoForReferral);
-                SqlCohortDefinition patientWithRefferralReasonOnIntakeForm=new SqlCohortDefinition();
-                patientWithRefferralReasonOnIntakeForm.setName("patientWithRefferralReasonOnIntakeForm");
-                patientWithRefferralReasonOnIntakeForm.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id="+PDCIntakeForm.getFormId()+" and o.concept_id="+reasoForReferral.getConceptId()+" " +
-                "and o.voided=0 and e.voided=0 and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL or o.value_datetime is NOT NULL or o.value_boolean is NOT NULL) and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
-                patientWithRefferralReasonOnIntakeForm.addParameter(new Parameter("startDate","startDate",Date.class));
-                patientWithRefferralReasonOnIntakeForm.addParameter(new Parameter("endDate","endDate",Date.class));
+                SqlCohortDefinition patientWithRefferralReasons=new SqlCohortDefinition();
+                patientWithRefferralReasons.setName("patientWithRefferralReasons");
+                patientWithRefferralReasons.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and (e.form_id="+PDCIntakeForm.getFormId()+" or e.form_id="+PDCReferralForm.getFormId()+") and o.concept_id="+reasoForReferral.getConceptId()+" " +
+                "and o.voided=0 and e.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+                patientWithRefferralReasons.addParameter(new Parameter("startDate","startDate",Date.class));
+                patientWithRefferralReasons.addParameter(new Parameter("endDate","endDate",Date.class));
                 
                 //SqlCohortDefinition patientWithRefferralReasonOnReferralForm=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("patientWithReferralReason",PDCReferralForm,reasoForReferral);
-                SqlCohortDefinition patientWithRefferralReasonOnReferralForm=new SqlCohortDefinition();
+                /*SqlCohortDefinition patientWithRefferralReasonOnReferralForm=new SqlCohortDefinition();
                 patientWithRefferralReasonOnReferralForm.setName("patientWithRefferralReasonOnReferralForm");
                 patientWithRefferralReasonOnReferralForm.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id="+PDCReferralForm.getFormId()+" and o.concept_id="+reasoForReferral.getConceptId()+" and o.voided=0 and e.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
                 patientWithRefferralReasonOnReferralForm.addParameter(new Parameter("startDate","startDate",Date.class));
                 patientWithRefferralReasonOnReferralForm.addParameter(new Parameter("endDate","endDate",Date.class));
-                
+                */
                 CompositionCohortDefinition newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm = new CompositionCohortDefinition();
                 newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.setName("newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm");
                 newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.addParameter(new Parameter("startDate", "startDate", Date.class));
                 newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.addParameter(new Parameter("endDate", "endDate", Date.class));
                 newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("1", new Mapped(inPDCProgramByDate, ParameterizableUtil.createParameterMappings("onOrBefore=${startDate}")));
                 newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("2", new Mapped(inPDCProgramByStartDateAndEndDate, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
-                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("3", new Mapped(patientWithRefferralReasonOnIntakeForm, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("4", new Mapped(patientWithRefferralReasonOnReferralForm, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.setCompositionString("(2 AND (NOT 1)) AND (3 OR 4)");
-                           
-                CohortIndicator newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormIndicator = Indicators.newCountIndicator("Number of newly enrolled patients total and per intake category indicator", newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm,
+                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("3", new Mapped(patientWithRefferralReasons, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+                //newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("4", new Mapped(patientWithRefferralReasonOnReferralForm, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+               // newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.setCompositionString("(2 AND (NOT 1)) AND (3 OR 4)");
+                //newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.setCompositionString("(2 AND (NOT 1)) AND 3");
+                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.setCompositionString("2 AND (NOT 1)");
+
+
+            CohortIndicator newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormIndicator = Indicators.newCountIndicator("Number of newly enrolled patients total and per intake category indicator", newPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm,
                     ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
                        
                 dsd.addColumn("PDC2", "Number of newly enrolled patients total and per intake category",
                     new Mapped(newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
-        
-                
+
+// PDC20  Low Birth Weight
+// PDC21  Premature Birth
+// PDC22  Hypoxic ischemic encephalopathy
+// PDC23  Central Nervous System Infection
+// PDC24  Hydrocephalus
+// PDC25  Trisomy 21
+// PDC26  Cleft Lip or Palate
+// PDC27  Other Developmental Delay, Suspected Neuromuscular Disease, and Suspected Genetic Syndromes
+// PDC28  Severe malnutrition requiring hospitalization
+// PDC29 Others
+            for(int i=0;i<reasonsForReferral.size();i++){
+
+            SqlCohortDefinition patientWithRefferralReason=new SqlCohortDefinition();
+                patientWithRefferralReason.setName("patientWithRefferralReason"+reasonsForReferral.get(i).getName().toString());
+                patientWithRefferralReason.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and (e.form_id="+PDCIntakeForm.getFormId()+" or e.form_id="+PDCReferralForm.getFormId()+") and o.concept_id="+reasoForReferral.getConceptId()+" " +
+                    "and o.voided=0 and e.voided=0 and o.value_coded="+reasonsForReferral.get(i).getConceptId()+" and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+                patientWithRefferralReason.addParameter(new Parameter("startDate","startDate",Date.class));
+                patientWithRefferralReason.addParameter(new Parameter("endDate","endDate",Date.class));
+
+            //SqlCohortDefinition patientWithRefferralReasonOnReferralForm=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("patientWithReferralReason",PDCReferralForm,reasoForReferral);
+                /*SqlCohortDefinition patientWithRefferralReasonOnReferralForm=new SqlCohortDefinition();
+                patientWithRefferralReasonOnReferralForm.setName("patientWithRefferralReasonOnReferralForm");
+                patientWithRefferralReasonOnReferralForm.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id="+PDCReferralForm.getFormId()+" and o.concept_id="+reasoForReferral.getConceptId()+" and o.voided=0 and e.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+                patientWithRefferralReasonOnReferralForm.addParameter(new Parameter("startDate","startDate",Date.class));
+                patientWithRefferralReasonOnReferralForm.addParameter(new Parameter("endDate","endDate",Date.class));
+                */
+            CompositionCohortDefinition newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory = new CompositionCohortDefinition();
+                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.setName("newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory"+reasonsForReferral.get(i).getName().toString());
+                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.addParameter(new Parameter("startDate", "startDate", Date.class));
+                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.addParameter(new Parameter("endDate", "endDate", Date.class));
+                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.getSearches().put("1", new Mapped(inPDCProgramByDate, ParameterizableUtil.createParameterMappings("onOrBefore=${startDate}")));
+                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.getSearches().put("2", new Mapped(inPDCProgramByStartDateAndEndDate, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.getSearches().put("3", new Mapped(patientWithRefferralReason, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+                newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.setCompositionString("(2 AND (NOT 1)) AND 3");
+
+
+            CohortIndicator newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategoryIndicator = Indicators.newCountIndicator("Number of newly enrolled patients total and per intake category indicator "+reasonsForReferral.get(i).getName().toString(), newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+
+            dsd.addColumn("PDC2"+i, "Number of newly enrolled patients total and per intake category",
+                    new Mapped(newPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategoryIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+            }
+
 // PDC3
                // SqlCohortDefinition patientWithRefferralReasonOnIntakeFormAnyTime=Cohorts.getPatientsWithObservationInForm("patientWithReferralReasonAnyTime",PDCIntakeForm,reasoForReferral);
                 
-                SqlCohortDefinition patientWithRefferralReasonOnIntakeFormAnyTime=new SqlCohortDefinition();
-                patientWithRefferralReasonOnIntakeFormAnyTime.setName("patientWithRefferralReasonOnIntakeFormAnyTime");
-                patientWithRefferralReasonOnIntakeFormAnyTime.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id="+PDCIntakeForm.getFormId()+" and o.concept_id="+reasoForReferral.getConceptId()+" " +
-                "and o.voided=0 and e.voided=0 and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL or o.value_datetime is NOT NULL or o.value_boolean is NOT NULL)");
+                SqlCohortDefinition patientWithRefferralReasonAnyTime=new SqlCohortDefinition();
+                patientWithRefferralReasonAnyTime.setName("patientWithRefferralReasonAnyTime");
+                patientWithRefferralReasonAnyTime.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and (e.form_id="+PDCIntakeForm.getFormId()+" or e.form_id="+PDCReferralForm.getFormId()+") and o.concept_id="+reasoForReferral.getConceptId()+" " +
+                "and o.voided=0 and e.voided=0 ");
                 
                 
                 //SqlCohortDefinition patientWithRefferralReasonOnReferralFormAnyTime=Cohorts.getPatientsWithObservationInForm("patientWithReferralReasonAnyTime",PDCReferralForm,reasoForReferral);
                 
-                SqlCohortDefinition patientWithRefferralReasonOnReferralFormAnyTime=new SqlCohortDefinition();
+               /* SqlCohortDefinition patientWithRefferralReasonOnReferralFormAnyTime=new SqlCohortDefinition();
                 patientWithRefferralReasonOnReferralFormAnyTime.setName("patientWithRefferralReasonOnIntakeFormAnyTime");
                 patientWithRefferralReasonOnReferralFormAnyTime.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id="+PDCReferralForm.getFormId()+" and o.concept_id="+reasoForReferral.getConceptId()+" " +
                 "and o.voided=0 and e.voided=0 and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL or o.value_datetime is NOT NULL or o.value_boolean is NOT NULL)");
-                
+                */
                 
                 CompositionCohortDefinition everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm = new CompositionCohortDefinition();
                 everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.setName("everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm");
                 everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.addParameter(new Parameter("endDate", "endDate", Date.class));
                 everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("1", new Mapped(inPDCProgramByDate, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
-                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("2", new Mapped(patientWithRefferralReasonOnIntakeFormAnyTime, null));
-                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("3", new Mapped(patientWithRefferralReasonOnReferralFormAnyTime, null));
-                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.setCompositionString("1 AND (2 OR 3)");
-                           
-                CohortIndicator everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormIndicator = Indicators.newCountIndicator("Number of ever enrolled patients total and per intake category indicator", everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm,
+                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("2", new Mapped(patientWithRefferralReasonAnyTime, null));
+               // everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.getSearches().put("3", new Mapped(patientWithRefferralReasonOnReferralFormAnyTime, null));
+                //everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.setCompositionString("1 AND 2");
+                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm.setCompositionString("1");
+
+            CohortIndicator everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormIndicator = Indicators.newCountIndicator("Number of ever enrolled patients total and per intake category indicator", everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm,
                     ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
                        
                 
                 dsd.addColumn("PDC3", "Number of ever enrolled patients total and per intake category",
                     new Mapped(everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
-                  
+            for(int i=0;i<reasonsForReferral.size();i++){
+                // SqlCohortDefinition patientWithRefferralReasonOnIntakeFormAnyTime=Cohorts.getPatientsWithObservationInForm("patientWithReferralReasonAnyTime",PDCIntakeForm,reasoForReferral);
+
+                SqlCohortDefinition patientWithRefferralReasonAnyTimeByCategory=new SqlCohortDefinition();
+                patientWithRefferralReasonAnyTimeByCategory.setName("patientWithRefferralReasonAnyTimeByCategory"+reasonsForReferral.get(i).getName().toString());
+                patientWithRefferralReasonAnyTimeByCategory.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and (e.form_id="+PDCIntakeForm.getFormId()+" or e.form_id="+PDCReferralForm.getFormId()+") and o.concept_id="+reasoForReferral.getConceptId()+" " +
+                        "and o.voided=0 and o.value_coded="+reasonsForReferral.get(i).getConceptId()+" and e.voided=0 ");
+
+
+                //SqlCohortDefinition patientWithRefferralReasonOnReferralFormAnyTime=Cohorts.getPatientsWithObservationInForm("patientWithReferralReasonAnyTime",PDCReferralForm,reasoForReferral);
+
+               /* SqlCohortDefinition patientWithRefferralReasonOnReferralFormAnyTime=new SqlCohortDefinition();
+                patientWithRefferralReasonOnReferralFormAnyTime.setName("patientWithRefferralReasonOnIntakeFormAnyTime");
+                patientWithRefferralReasonOnReferralFormAnyTime.setQuery("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id="+PDCReferralForm.getFormId()+" and o.concept_id="+reasoForReferral.getConceptId()+" " +
+                "and o.voided=0 and e.voided=0 and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL or o.value_datetime is NOT NULL or o.value_boolean is NOT NULL)");
+                */
+
+                CompositionCohortDefinition everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory = new CompositionCohortDefinition();
+                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.setName("everPatientEnrolledWithRefferralReasonOnIntakeOrReferralForm"+reasonsForReferral.get(i).getName().toString());
+                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.addParameter(new Parameter("endDate", "endDate", Date.class));
+                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.getSearches().put("1", new Mapped(inPDCProgramByDate, ParameterizableUtil.createParameterMappings("onOrBefore=${endDate}")));
+                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.getSearches().put("2", new Mapped(patientWithRefferralReasonAnyTimeByCategory, null));
+                // everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.getSearches().put("3", new Mapped(patientWithRefferralReasonOnReferralFormAnyTime, null));
+                everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory.setCompositionString("1 AND 2");
+
+                CohortIndicator everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormIndicatorByCategory = Indicators.newCountIndicator("Number of ever enrolled patients total and per intake category indicator"+reasonsForReferral.get(i).getName().toString(), everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormByCategory,
+                        ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+
+
+                dsd.addColumn("PDC3"+i, "Number of ever enrolled patients total and per intake category"+reasonsForReferral.get(i).getName().toString(),
+                        new Mapped(everPatientEnrolledWithRefferralReasonOnIntakeOrReferralFormIndicatorByCategory, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+            }
+
+
 //PDC4
               // EncounterCohortDefinition patientWithIntakeVisit=Cohorts.createEncounterBasedOnForms("patientWithIntakeVisit", onOrAfterOnOrBefore, intakeVisitForms);
                 //SqlCohortDefinition patientWithIntakeDateOnPDCReferralForm=Cohorts.getPatientsWithObservationValueDateTimeInFormBetweenStartAndEndDate("patientWithIntakeDateOnPDCReferralForm",PDCReferralForm,returnVisitDate);
@@ -470,15 +593,20 @@ public class SetupPDCIndicatorReport {
  //PDC5               
                    
                    
-                   EncounterCohortDefinition patientWithVisitForm=Cohorts.createEncounterBasedOnForms("patientWithIntakeVisit",PDCVisitForms);
-                   
+                   //EncounterCohortDefinition patientWithVisitForm=Cohorts.createEncounterBasedOnForms("patientWithIntakeVisit",PDCVisitForms);
+
+                   SqlCohortDefinition patientWithVisitFormNotOnSameDayOfIntake=new SqlCohortDefinition();
+                   patientWithVisitFormNotOnSameDayOfIntake.setName("patientWithVisitFormNotOnSameDayOfIntake");
+                   patientWithVisitFormNotOnSameDayOfIntake.setQuery("select distinct vis.patient_id from (select patient_id,encounter_datetime from encounter where form_id="+PDCIntakeForm.getFormId()+" and voided=0) as intk,(select patient_id,encounter_datetime from encounter where form_id="+PDCVisitForm.getFormId()+" and voided=0) as vis where intk.encounter_datetime!=vis.encounter_datetime and intk.encounter_datetime < vis.encounter_datetime and intk.patient_id=vis.patient_id");
+
+
                    ProgramEnrollmentCohortDefinition patientsEverEnrolled=Cohorts.createProgramEnrollment("patientsEverEnrolled", PDCProgram);
                 
                    CompositionCohortDefinition patientWithVisitFormEverEnrolled = new CompositionCohortDefinition();
                    patientWithVisitFormEverEnrolled.setName("patientWithVisitFormEverEnrolled");
                    patientWithVisitFormEverEnrolled.addParameter(new Parameter("startDate", "startDate", Date.class));
                    patientWithVisitFormEverEnrolled.addParameter(new Parameter("endDate", "endDate", Date.class));
-                   patientWithVisitFormEverEnrolled.getSearches().put("1", new Mapped(patientWithVisitForm, null));
+                   patientWithVisitFormEverEnrolled.getSearches().put("1", new Mapped(patientWithVisitFormNotOnSameDayOfIntake, null));
                    patientWithVisitFormEverEnrolled.getSearches().put("2", new Mapped(patientsEverEnrolled, null));
                    patientWithVisitFormEverEnrolled.setCompositionString("1 AND 2");
                               
@@ -638,11 +766,71 @@ public class SetupPDCIndicatorReport {
                               
                    dsd.addColumn("PDC11N", "Number of children with a visit in the reference quarter with age <6months at the time of visit who have inadequate interval growth ",
                            new Mapped(patientUnderSixMonthWithInadaquateIntervalGrowthDocumentedInLastVisitIndicatorNumerator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
-                   
-                               
+ //PDC12
+
+            SqlCohortDefinition patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit=new SqlCohortDefinition();
+            patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setName("patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit");
+            patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setQuery("select e.patient_id from encounter e"
+                    +" inner join obs o on e.patient_id=o.person_id and e.encounter_id=o.encounter_id and o.concept_id="+PDCweightForHeightZScore.getConceptId()+" and (o.value_coded="+zScoreGreaterThatMinesThreeAndLessThanTwo.getConceptId()+" or o.value_coded="+zSccoreLessThanThree.getConceptId()+") and o.voided=0"
+                    +" where e.form_id="+PDCVisitForm.getFormId()+" and  e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate ");
+            patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+
+            SqlCohortDefinition patientWithPDCWeightForHeightzScoreDocumentedInLastVisit=new SqlCohortDefinition();
+            patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.setName("patientWithPDCWeightForHeightzScoreDocumentedInLastVisit");
+            patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.setQuery("select e.patient_id from encounter e"
+                    +" inner join obs o on e.patient_id=o.person_id and e.encounter_id=o.encounter_id and o.concept_id="+PDCweightForHeightZScore.getConceptId()+" and o.voided=0"
+                    +" where e.form_id="+PDCVisitForm.getFormId()+" and  e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate ");
+            patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+
+            CohortIndicator patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisitIndicatorNumerator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who have wt/ht z-score <=-2 at last appointment indicator", patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+
+            dsd.addColumn("PDC12N", "Number of children with a visit in the reference quarter who have wt/ht z-score <=-2 at last appointment ",
+                    new Mapped(patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisitIndicatorNumerator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+            CohortIndicator patientWithPDCWeightForHeightzScoreDocumentedInLastVisitIndicatorDenominator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who had wt/ht z-score documented at last appointment indicator", patientWithPDCWeightForHeightzScoreDocumentedInLastVisit,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+
+            dsd.addColumn("PDC12D", "Number of children with a visit in the reference quarter who had wt/ht z-score documented at last appointment",
+                    new Mapped(patientWithPDCWeightForHeightzScoreDocumentedInLastVisitIndicatorDenominator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
+//PDC13
+
+            SqlCohortDefinition patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit=new SqlCohortDefinition();
+            patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setName("patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit");
+            patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setQuery("select e.patient_id from encounter e"
+                    +" inner join obs o on e.patient_id=o.person_id and e.encounter_id=o.encounter_id and o.concept_id="+PDCHeightForAgeZScore.getConceptId()+" and (o.value_coded="+zScoreGreaterThatMinesThreeAndLessThanTwo.getConceptId()+" or o.value_coded="+zSccoreLessThanThree.getConceptId()+") and o.voided=0"
+                    +" where e.form_id="+PDCVisitForm.getFormId()+" and  e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate ");
+            patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+
+            SqlCohortDefinition patientWithPDCheightForAgeZScoreDocumentedInLastVisit=new SqlCohortDefinition();
+            patientWithPDCheightForAgeZScoreDocumentedInLastVisit.setName("patientWithPDCheightForAgeZScoreDocumentedInLastVisit");
+            patientWithPDCheightForAgeZScoreDocumentedInLastVisit.setQuery("select e.patient_id from encounter e"
+                    +" inner join obs o on e.patient_id=o.person_id and e.encounter_id=o.encounter_id and o.concept_id="+PDCHeightForAgeZScore.getConceptId()+" and o.voided=0"
+                    +" where e.form_id="+PDCVisitForm.getFormId()+" and  e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate ");
+            patientWithPDCheightForAgeZScoreDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithPDCheightForAgeZScoreDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+
+            CohortIndicator patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisitIndicatorNumerator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who have ht/age z-score <=-2 at last appointment indicator", patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+
+            dsd.addColumn("PDC13N", "Number of children with a visit in the reference quarter who have ht/age z-score <=-2 at last appointment",
+                    new Mapped(patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisitIndicatorNumerator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+            CohortIndicator patientWithPDCheightForAgeZScoreDocumentedInLastVisitIndicatorDenominator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who had ht/age z-score documented at last appointment indicator", patientWithPDCheightForAgeZScoreDocumentedInLastVisit,
+                    ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+
+            dsd.addColumn("PDC13D", "Number of children with a visit in the reference quarter who had ht/age z-score documented at last appointment",
+                    new Mapped(patientWithPDCheightForAgeZScoreDocumentedInLastVisitIndicatorDenominator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
 //PDC14
                    
-                   NumericObsCohortDefinition patientWithCorrectedAge=Cohorts.createNumericObsCohortDefinition("patientWithCorrectedAge", correctedAge, 40.0, RangeComparator.LESS_THAN, TimeModifier.LAST);
+                  /* NumericObsCohortDefinition patientWithCorrectedAge=Cohorts.createNumericObsCohortDefinition("patientWithCorrectedAge", correctedAge, 40.0, RangeComparator.LESS_THAN, TimeModifier.LAST);
                    
                    SqlCohortDefinition patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter=new SqlCohortDefinition();
                    patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter.setName("patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter");
@@ -658,22 +846,41 @@ public class SetupPDCIndicatorReport {
 					+" where lastEnc.encounter_datetime >= :startDate and lastEnc.encounter_datetime <= :endDate");
                    patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter.addParameter(new Parameter("startDate","startDate",Date.class));
                    patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter.addParameter(new Parameter("endDate","endDate",Date.class));
-                   
-                   CompositionCohortDefinition patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge = new CompositionCohortDefinition();
+*/
+
+            NumericObsCohortDefinition patientWithCorrectedAge=Cohorts.createNumericObsCohortDefinition("patientWithCorrectedAge", correctedAge, 40.0, RangeComparator.LESS_THAN, TimeModifier.LAST);
+
+            SqlCohortDefinition patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter=new SqlCohortDefinition();
+            patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter.setName("patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter");
+            patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter.setQuery("select lastEnc.patient_id from (select * from (select * from encounter where form_id="+PDCVisitForm.getFormId()+" and voided=0 order by encounter_datetime desc) as orderedEnc group by orderedEnc.encounter_id) as lastEnc"
+                    +" inner join person p on lastEnc.patient_id=p.person_id and DATEDIFF(lastEnc.encounter_datetime,p.birthdate)<730 and p.voided=0"
+                    +" inner join obs o1 on lastEnc.patient_id=o1.person_id and o1.concept_id="+weight.getConceptId()+" and o1.voided=0"
+                    +" inner join obs o2 on lastEnc.patient_id=o2.person_id and o2.concept_id="+height.getConceptId()+" and o2.voided=0"
+                    +" inner join obs o3 on lastEnc.patient_id=o3.person_id and o3.concept_id="+headCircumference.getConceptId()+" and o3.voided=0"
+                    +" inner join obs o4 on lastEnc.patient_id=o4.person_id and o4.concept_id="+correctedAge.getConceptId()+" and o4.voided=0"
+                    +" inner join obs o5 on lastEnc.patient_id=o5.person_id and o5.concept_id="+prematureBirth.getConceptId()+" and o5.voided=0"
+                    +" inner join obs o6 on lastEnc.patient_id=o6.person_id and o6.concept_id="+lowBirthWeight.getConceptId()+" and o6.voided=0"
+                    +" where lastEnc.encounter_datetime >= :startDate and lastEnc.encounter_datetime <= :endDate");
+            patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter.addParameter(new Parameter("endDate","endDate",Date.class));
+
+
+
+          /*  CompositionCohortDefinition patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge = new CompositionCohortDefinition();
                    patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge.setName("patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge");
                    patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge.addParameter(new Parameter("startDate", "startDate", Date.class));
                    patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge.addParameter(new Parameter("endDate", "endDate", Date.class));
                    patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge.getSearches().put("1", new Mapped(patientWithCorrectedAge,null));
                    patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge.getSearches().put("2", new Mapped(patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
                    patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge.setCompositionString("2 AND (NOT 1)");
-                   
-                   CohortIndicator patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAgeIndicatorNumerator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who are  < 2 years and >1 month and no documented corrected age <0 or 40 week at time of encounter who have wt/ht/HC  measured and z scores determined at last appointment", patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge,
+          */
+                   CohortIndicator patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAgeIndicatorNumerator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who are  < 2 years and >1 month and no documented corrected age <0 or 40 week at time of encounter who have wt/ht/HC  measured and z scores determined at last appointment", patientWithOneMonthToTwoYearAndWithHeightWeightHCAndZScoresInLastEncounter,
                            ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
                               
                    dsd.addColumn("PDC14N", "Number of children with a visit in the reference quarter who are  < 2 years and >1 month and no documented corrected age <0 or 40 week at time of encounter who have wt/ht/HC  measured and z scores determined at last appointment",
                            new Mapped(patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAgeIndicatorNumerator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
                    
-                   
+                /*
                    SqlCohortDefinition patientWithOneMonthToTwoYearAtLastEncounter=new SqlCohortDefinition();
                    patientWithOneMonthToTwoYearAtLastEncounter.setName("patientWithOneMonthToTwoYearAtLastEncounter");
                    patientWithOneMonthToTwoYearAtLastEncounter.setQuery("select lastEnc.patient_id from (select * from (select * from encounter where form_id="+PDCVisitForm.getFormId()+" and voided=0 order by encounter_datetime desc) as orderedEnc group by orderedEnc.encounter_id) as lastEnc"
@@ -681,17 +888,27 @@ public class SetupPDCIndicatorReport {
                 	+" where lastEnc.encounter_datetime >= :startDate and lastEnc.encounter_datetime <= :endDate");
                    patientWithOneMonthToTwoYearAtLastEncounter.addParameter(new Parameter("startDate","startDate",Date.class));
                    patientWithOneMonthToTwoYearAtLastEncounter.addParameter(new Parameter("endDate","endDate",Date.class));
-                  
-                   
-                   CompositionCohortDefinition patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAge = new CompositionCohortDefinition();
+*/
+            SqlCohortDefinition patientWithOneMonthToTwoYearAtLastEncounter=new SqlCohortDefinition();
+            patientWithOneMonthToTwoYearAtLastEncounter.setName("patientWithOneMonthToTwoYearAtLastEncounter");
+            patientWithOneMonthToTwoYearAtLastEncounter.setQuery("select lastEnc.patient_id from (select * from (select * from encounter where form_id="+PDCVisitForm.getFormId()+" and voided=0 order by encounter_datetime desc) as orderedEnc group by orderedEnc.encounter_id) as lastEnc"
+                    +" inner join person p on lastEnc.patient_id=p.person_id and DATEDIFF(lastEnc.encounter_datetime,p.birthdate)<730 and p.voided=0"
+                    +" inner join obs o5 on lastEnc.patient_id=o5.person_id and o5.concept_id="+prematureBirth.getConceptId()+" and o5.voided=0"
+                    +" inner join obs o6 on lastEnc.patient_id=o6.person_id and o6.concept_id="+lowBirthWeight.getConceptId()+" and o6.voided=0"
+                    +" where lastEnc.encounter_datetime >= :startDate and lastEnc.encounter_datetime <= :endDate");
+            patientWithOneMonthToTwoYearAtLastEncounter.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithOneMonthToTwoYearAtLastEncounter.addParameter(new Parameter("endDate","endDate",Date.class));
+
+
+            /*CompositionCohortDefinition patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAge = new CompositionCohortDefinition();
                    patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAge.setName("patientWithweightForAgeZScoreInLastEncounterWithoutCorrectedAge");
                    patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAge.addParameter(new Parameter("startDate", "startDate", Date.class));
                    patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAge.addParameter(new Parameter("endDate", "endDate", Date.class));
                    patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAge.getSearches().put("1", new Mapped(patientWithCorrectedAge,null));
                    patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAge.getSearches().put("2", new Mapped(patientWithOneMonthToTwoYearAtLastEncounter, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
                    patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAge.setCompositionString("2 AND (NOT 1)");
-                   
-                   CohortIndicator patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAgeIndicatorDenominator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who are  < 2 years and >1 month and no documented corrected age <0 or 40 week at time of encounter", patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAge,
+                 */
+                   CohortIndicator patientWithOneMonthToTwoYearAtLastEncounterWithoutCorrectedAgeIndicatorDenominator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who are  < 2 years and >1 month and no documented corrected age <0 or 40 week at time of encounter", patientWithOneMonthToTwoYearAtLastEncounter,
                            ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
                               
                    dsd.addColumn("PDC14D", "Number of children with a visit in the reference quarter who are  < 2 years and >1 month and no documented corrected age <0 or 40 week at time of encounter",
@@ -739,7 +956,7 @@ public class SetupPDCIndicatorReport {
                            
 //PDC16
                    
-                   SqlCohortDefinition patientBetween6And12MonthsWithASQDocumentedInLastEncounter=new SqlCohortDefinition();
+                   /*SqlCohortDefinition patientBetween6And12MonthsWithASQDocumentedInLastEncounter=new SqlCohortDefinition();
                    patientBetween6And12MonthsWithASQDocumentedInLastEncounter.setName("patientBetween6And12MonthsWithASQDocumentedInLastEncounter");
                    patientBetween6And12MonthsWithASQDocumentedInLastEncounter.setQuery("select lastEnc.patient_id from (select * from (select * from encounter where form_id="+PDCVisitForm.getFormId()+" and voided=0 order by encounter_datetime desc) as orderedEnc group by orderedEnc.encounter_id) as lastEnc"
                 	+" inner join person p on lastEnc.patient_id=p.person_id and DATEDIFF(lastEnc.encounter_datetime,p.birthdate)<=365 and DATEDIFF(lastEnc.encounter_datetime,p.birthdate)>180 and p.voided=0"
@@ -747,8 +964,22 @@ public class SetupPDCIndicatorReport {
                 	+" where lastEnc.encounter_datetime >= :startDate and lastEnc.encounter_datetime <= :endDate");
                    patientBetween6And12MonthsWithASQDocumentedInLastEncounter.addParameter(new Parameter("startDate","startDate",Date.class));
                    patientBetween6And12MonthsWithASQDocumentedInLastEncounter.addParameter(new Parameter("endDate","endDate",Date.class));
-                      
-                   SqlCohortDefinition patientBetween6And12MonthsInLastEncounter=new SqlCohortDefinition();
+                   */
+
+            SqlCohortDefinition patientBetween6And12MonthsWithASQDocumentedInLastEncounter=new SqlCohortDefinition();
+            patientBetween6And12MonthsWithASQDocumentedInLastEncounter.setName("patientBetween6And12MonthsWithASQDocumentedInLastEncounter");
+            patientBetween6And12MonthsWithASQDocumentedInLastEncounter.setQuery("select lastEnc.patient_id from (select * from (select * from encounter where form_id="+PDCVisitForm.getFormId()+" and voided=0 order by encounter_datetime desc) as orderedEnc group by orderedEnc.encounter_id) as lastEnc"
+                    +" inner join person p on lastEnc.patient_id=p.person_id and DATEDIFF(lastEnc.encounter_datetime,p.birthdate)<=365 and DATEDIFF(lastEnc.encounter_datetime,p.birthdate)>180 and p.voided=0"
+                    +" inner join obs o1 on lastEnc.patient_id=o1.person_id and o1.concept_id="+communication.getConceptId()+" and o1.voided=0"
+                    +" inner join obs o2 on lastEnc.patient_id=o2.person_id and o2.concept_id="+largeMuscleMovement.getConceptId()+" and o2.voided=0"
+                    +" inner join obs o3 on lastEnc.patient_id=o3.person_id and o3.concept_id="+smallMuscleMovement.getConceptId()+" and o3.voided=0"
+                    +" inner join obs o4 on lastEnc.patient_id=o4.person_id and o4.concept_id="+problemSolving.getConceptId()+" and o4.voided=0"
+                    +" inner join obs o5 on lastEnc.patient_id=o5.person_id and o5.concept_id="+personalSocial.getConceptId()+" and o5.voided=0"
+                    +" where lastEnc.encounter_datetime >= :startDate and lastEnc.encounter_datetime <= :endDate");
+            patientBetween6And12MonthsWithASQDocumentedInLastEncounter.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientBetween6And12MonthsWithASQDocumentedInLastEncounter.addParameter(new Parameter("endDate","endDate",Date.class));
+
+            SqlCohortDefinition patientBetween6And12MonthsInLastEncounter=new SqlCohortDefinition();
                    patientBetween6And12MonthsInLastEncounter.setName("patientBetween6And12MonthsWithASQDocumentedInLastEncounter");
                    patientBetween6And12MonthsInLastEncounter.setQuery("select lastEnc.patient_id from (select * from (select * from encounter where form_id="+PDCVisitForm.getFormId()+" and voided=0 order by encounter_datetime desc) as orderedEnc group by orderedEnc.encounter_id) as lastEnc"
                 	+" inner join person p on lastEnc.patient_id=p.person_id and DATEDIFF(lastEnc.encounter_datetime,p.birthdate)<=365 and DATEDIFF(lastEnc.encounter_datetime,p.birthdate)>180 and p.voided=0"
@@ -815,259 +1046,76 @@ public class SetupPDCIndicatorReport {
                 onOrAfterOnOrBefore.add("onOrBefore");
                 
                 PDCProgram = gp.getProgram(GlobalPropertiesManagement.PDC_PROGRAM);
-                	//Context.getProgramWorkflowService().getProgramByName("PDC Program");               
-                
-                
                 reasoForReferral=gp.getConcept(GlobalPropertiesManagement.REASON_FOR_REFERRAL);
-                	//Context.getConceptService().getConceptByUuid("1aa373f4-4db5-4b01-bce0-c10a636bb931");
-                
                 PDCIntakeForm=gp.getForm(GlobalPropertiesManagement.PDC_INTAKE_FORM);
-                	//Context.getFormService().getForm("PDC Intake Visit");
-                
                 PDCReferralForm=gp.getForm(GlobalPropertiesManagement.PDC_REFERRAL_FORM);
-                	//Context.getFormService().getForm("PDC Referral Form");
-                
                 PDCVisitForm=gp.getForm(GlobalPropertiesManagement.PDC_VISIT_FORM);
-                	
-                	//Context.getFormService().getForm("PDC Visit Form");
-                
                 intakeVisitForms.add(PDCIntakeForm);
-                                
                 PDCVisitForms.add(PDCVisitForm);
-                
                 returnVisitDate=gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
-                
-                
-                
-                
-               /* 8199
-                UUID 	d8021d30-364a-4833-a1b7-e65eca46c66e
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	BREATHING DANGER SIGNS PRESENT
-               */ 
-                
                 breathingDangerSignsPresent=gp.getConcept(GlobalPropertiesManagement.BREATHING_DANGER_SIGNS_PRESENT);
-                	//Context.getConceptService().getConcept(8199);
-                
-                
-                /*Id 	8200
-                UUID 	ec7de7cf-055f-48ac-897a-f8c789a7467b
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	CONVULSIONS DANGER SIGNS PRESENT*/
-                
-                
                 convulsionsDangerSignsPresent=gp.getConcept(GlobalPropertiesManagement.CONVULSIONS_DANGER_SIGNS_PRESENT);
-                	//Context.getConceptService().getConcept(8200);
-
-                
-               /* Id 	8201
-                UUID 	ffb87bc8-3121-4171-a151-b4c08e315521
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	LETHARGY OR UNRESPONSIVENESS DANGER SIGNS PRESENT*/
-                
-                
                 LethargyOrUnresponsivenessDangerSignsPresent=gp.getConcept(GlobalPropertiesManagement.LETHARGY_OR_UNRESPONSIVENESS_DANGER_SIGNS_PRESENT);
-                	//Context.getConceptService().getConcept(8201);
-
-                
-                
-               /* 
-                Id 	8202
-                UUID 	62a031af-350d-4b08-9cde-6d2b87a5b0b1
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	UMBILICAL CORD REDNESS DANGER SIGNS
-                Synonyms */
-                
                 umbilicalCordRednessDangerSigns=gp.getConcept(GlobalPropertiesManagement.UMBILICAL_CORD_REDNESS_DANGER_SIGNS);
-                	//Context.getConceptService().getConcept(8202);
-
-                
-               /* Id 	8203
-                UUID 	4509cb04-9adf-4141-941e-d81d4377111f
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	STIFF NECK OR BULGING FONTANELLES DANGER SIGNS PRESENT*/
-                
                 stiffNeckOrBulgingFontanellesDangerSigns=gp.getConcept(GlobalPropertiesManagement.STIFF_NECK_OR_BULGING_FONTANELLES_DANGER_SIGNS_PRESENT);
-                	//Context.getConceptService().getConcept(8203);
-
-                
-              
-               /* Id 	8214
-                UUID 	1fca6d51-255f-493d-a281-7521b384a623
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	AGE USED*/
-                
                 ASQAgeUsed=gp.getConcept(GlobalPropertiesManagement.ASQ_SCORE);
-                	//Context.getConceptService().getConcept(8214);
-
-                
-              //numeric
-                
-               /* Id 	6984
-                UUID 	6d4b1720-f45c-4069-98d9-e7e865105a7a
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	Height for age z-score
-              */  
-                // heightForAgeZScore=Context.getConceptService().getConcept(6984);
-
-             /*   
-                Id 	5088
-                UUID 	3ce939d2-26fe-102b-80cb-0017a47871b2
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	TEMPERATURE (C)
-                
-              */
-                 temperature=gp.getConcept(GlobalPropertiesManagement.TEMPERATURE);
-                	 //Context.getConceptService().getConcept(5088);
- 
-                 
-               /*
-                
-                Id 	5242
-                UUID 	3ceb11f8-26fe-102b-80cb-0017a47871b2
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	RESPIRATORY RATE*/
-                
+                temperature=gp.getConcept(GlobalPropertiesManagement.TEMPERATURE);
                 respiratoryRate=gp.getConcept(GlobalPropertiesManagement.RESPIRATORY_RATE);
-                	
-                	//Context.getConceptService().getConcept(5242);                
-                
-                
                 yes=gp.getConcept(GlobalPropertiesManagement.YES);
-                	//Context.getConceptService().getConcept(1065);
-                
                 socialEconomicAssistance=gp.getConcept(GlobalPropertiesManagement.SOCIAL_WORK_ASSESSMENT);
-                	
-                	//Context.getConceptService().getConceptByUuid("3cda0462-26fe-102b-80cb-0017a47871b2");
-                
                 socialEconomicAssistanceAlreadyReceived=gp.getConcept(GlobalPropertiesManagement.SOCIAL_ECONOMIC_ASSISTANCE_ALREADY_RECEIVED);
-                	
-                	//Context.getConceptService().getConceptByUuid("3ce169b4-26fe-102b-80cb-0017a47871b2");
-                
                 socialEconomicAssistanceRecommanded=gp.getConcept(GlobalPropertiesManagement.SOCIAL__ECONOMIC_ASSISTANCE_RECOMMANDED);
-                	//Context.getConceptService().getConceptByUuid("3ce16b30-26fe-102b-80cb-0017a47871b2");
-                
                 socialEconomicAssistanceNotRecommanded=gp.getConcept(GlobalPropertiesManagement.SOCIAL__ECONOMIC_ASSISTANCE_NOT_RECOMMANDED);
-                	//Context.getConceptService().getConceptByUuid("ae866472-b781-44ee-be66-bb86c42057cc");
-                
-                /*socialAssistanceTypes.add(socialEconomicAssistanceAlreadyReceived);
-                socialAssistanceTypes.add(socialEconomicAssistanceRecommanded);
-                */socialAssistanceTypes.add(socialEconomicAssistanceNotRecommanded);
-                
-                
-                
-                /* Id 	8228
-                UUID 	ceb6b7b2-f26d-4f7b-92ae-9b0c1df86aa4
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	INTERVAL GROWTH
-                
-                
-                
-                Id 	5916
-                UUID 	3cf15b3a-26fe-102b-80cb-0017a47871b2
-                Locale 	English | French | Kinyarwanda
-                Fully Specified Name 	BIRTH WEIGHT*/
-                
+                socialAssistanceTypes.add(socialEconomicAssistanceNotRecommanded);
                 intervalGrogth=gp.getConcept(GlobalPropertiesManagement.INTERVAL_GROWTH);
-                	//Context.getConceptService().getConceptByUuid("ceb6b7b2-f26d-4f7b-92ae-9b0c1df86aa4");
-                
                 birthWeight=gp.getConcept(GlobalPropertiesManagement.BIRTH_WEIGHT);
-                	//Context.getConceptService().getConceptByUuid("3cf15b3a-26fe-102b-80cb-0017a47871b2");
-                
                 correctedAge=gp.getConcept(GlobalPropertiesManagement.CORRECTED_AGE);
-                	//Context.getConceptService().getConceptByUuid("5ed677a7-ecfe-4d27-9d19-8c45d89ed6db");
-              
-              
-             /* @WEIGHT_FOR_AGE_Z_SCORE@=c9d8c9db-518c-4a00-985d-d2fc8ac1f739
-              @HEIGHT_FOR_AGE_Z_SCORE@=6d4b1720-f45c-4069-98d9-e7e865105a7a              
-              @HC_FOR_AGE_Z_SCORE@=9f3180c5-20ce-479f-9276-63d773765c28
-              
-              @HEAD_CIRCUMFERENCE@=3ceb96b4-26fe-102b-80cb-0017a47871b2
-              @WEIGHT@=3ce93b62-26fe-102b-80cb-0017a47871b2
-    			@HEIGHT@=3ce93cf2-26fe-102b-80cb-0017a47871b2
-              @WEIGHT_FOR_HEIGHT_Z_SCORE@=2438e295-d9da-4d5c-bacc-13c313e34755
-                */
-              
-              weightForAgeZScore=gp.getConcept(GlobalPropertiesManagement.WTAGEZScore);
-              
-            	  
-            	  //Context.getConceptService().getConceptByUuid("c9d8c9db-518c-4a00-985d-d2fc8ac1f739");
+                weightForAgeZScore=gp.getConcept(GlobalPropertiesManagement.WTAGEZScore);
               weightForHeightZScore=gp.getConcept(GlobalPropertiesManagement.WTHEIGHTZScore);
-            	  //Context.getConceptService().getConceptByUuid("2438e295-d9da-4d5c-bacc-13c313e34755");
-              heightForAgeZScore=gp.getConcept(GlobalPropertiesManagement.HEIGHT_FOR_AGE_Z_SCORE);
-            	  //Context.getConceptService().getConceptByUuid("6d4b1720-f45c-4069-98d9-e7e865105a7a");
-              HCForAgeZScore=gp.getConcept(GlobalPropertiesManagement.HC_FOR_AGE_ZSCORE);
-            	  //Context.getConceptService().getConceptByUuid("9f3180c5-20ce-479f-9276-63d773765c28");
-              headCircumference=gp.getConcept(GlobalPropertiesManagement.HEAD_CIRCUMFERENCE);
-            	  //Context.getConceptService().getConceptByUuid("3ceb96b4-26fe-102b-80cb-0017a47871b2");
-              weight=gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);
-            	  //Context.getConceptService().getConceptByUuid("3ce93b62-26fe-102b-80cb-0017a47871b2");
-              height=gp.getConcept(GlobalPropertiesManagement.HEIGHT_CONCEPT);
-            	  //Context.getConceptService().getConceptByUuid("3ce93cf2-26fe-102b-80cb-0017a47871b2");
-              
-              
-              
-             /* 8217
-              UUID 	d0fdea6f-37f7-4a9c-9f95-488b9b31c6de
-              Locale 	English | French | Kinyarwanda
-              Fully Specified Name 	SMALL MUSCLE MOVEMENTS
-              
-              
-              Id 	8216
-              UUID 	497c7a76-1756-44b2-9fc9-c5b131004959
-              Locale 	English | French | Kinyarwanda
-              Fully Specified Name 	LARGE MUSCLE MOVEMENTS
-              
-              
-              Id 	8215
-              UUID 	1fc5e9a8-e6c2-48c4-b6ed-9b21d733dc01
-              Locale 	English | French | Kinyarwanda
-              Fully Specified Name 	COMMUNICATION
-              
-              
-              Id 	8218
-              UUID 	b53ff26a-515c-4a7c-bebe-b80c594e6d4c
-              Locale 	English | French | Kinyarwanda
-              Fully Specified Name 	PROBLEM SOLVING
-              
-              
-              Id 	8219
-              UUID 	fda3b1a8-7e8f-4ae9-973a-f8c41713c595
-              Locale 	English | French | Kinyarwanda
-              Fully Specified Name 	PERSONAL-SOCIAL
-              
-              
-              Id 	1116
-              UUID 	3cd75230-26fe-102b-80cb-0017a47871b2
-              Locale 	English | French | Kinyarwanda
-              Fully Specified Name 	ABNORMAL*/
-              
-              smallMuscleMovement=gp.getConcept(GlobalPropertiesManagement.SMALL_MUSCLE_MOVEMENTS);
-            	  //Context.getConceptService().getConceptByUuid("d0fdea6f-37f7-4a9c-9f95-488b9b31c6de");
-              largeMuscleMovement=gp.getConcept(GlobalPropertiesManagement.LARGE_MUSCLE_MOVEMENTS);
-            	  //Context.getConceptService().getConceptByUuid("497c7a76-1756-44b2-9fc9-c5b131004959");
-              communication=gp.getConcept(GlobalPropertiesManagement.COMMUNICATION);
-            	  //Context.getConceptService().getConceptByUuid("1fc5e9a8-e6c2-48c4-b6ed-9b21d733dc01");
-              problemSolving=gp.getConcept(GlobalPropertiesManagement.PROBLEM_SOLVING);
-            	  //Context.getConceptService().getConceptByUuid("b53ff26a-515c-4a7c-bebe-b80c594e6d4c");
-              personalSocial=gp.getConcept(GlobalPropertiesManagement.PERSONAL_SOCIAL);
-            	  //Context.getConceptService().getConceptByUuid("fda3b1a8-7e8f-4ae9-973a-f8c41713c595");
-              abnormal=gp.getConcept(GlobalPropertiesManagement.ABNORMAL);
-            	  //Context.getConceptService().getConceptByUuid("3cd75230-26fe-102b-80cb-0017a47871b2");
-              
-              /*@RECEIVED_AT_LEAST_ONE_ECD_EDUCATION_SESSION@=082c3027-9875-4b1f-8d11-49640f096107*/
-              
-              ECDCounselingSession=gp.getConcept(GlobalPropertiesManagement.ECD_EDUCATION);
-            	  //Context.getConceptService().getConceptByUuid("082c3027-9875-4b1f-8d11-49640f096107");
-              
-              
-              /*@REASON_FOR_NOT_DOING_FOLLOW_UP@=f20d0cf4-2b39-4e4e-af91-628b95938f87*/
-              
-              reasonForNotDoingFollowUp=gp.getConcept(GlobalPropertiesManagement.REASON_FOR_NOT_DOING_FOLLOWUP);
-            	  //Context.getConceptService().getConceptByUuid("f20d0cf4-2b39-4e4e-af91-628b95938f87");
-              
-              intervalgrowthCoded=gp.getConcept(GlobalPropertiesManagement.INTERVAL_GROWTH_CODED);
-              inadequate=gp.getConcept(GlobalPropertiesManagement.INTERVAL_GROWTH_INADEQUATE);
-              
+            heightForAgeZScore=gp.getConcept(GlobalPropertiesManagement.HEIGHT_FOR_AGE_Z_SCORE);
+            HCForAgeZScore=gp.getConcept(GlobalPropertiesManagement.HC_FOR_AGE_ZSCORE);
+            headCircumference=gp.getConcept(GlobalPropertiesManagement.HEAD_CIRCUMFERENCE);
+            weight=gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);
+            height=gp.getConcept(GlobalPropertiesManagement.HEIGHT_CONCEPT);
+            smallMuscleMovement=gp.getConcept(GlobalPropertiesManagement.SMALL_MUSCLE_MOVEMENTS);
+            largeMuscleMovement=gp.getConcept(GlobalPropertiesManagement.LARGE_MUSCLE_MOVEMENTS);
+            communication=gp.getConcept(GlobalPropertiesManagement.COMMUNICATION);
+            problemSolving=gp.getConcept(GlobalPropertiesManagement.PROBLEM_SOLVING);
+            personalSocial=gp.getConcept(GlobalPropertiesManagement.PERSONAL_SOCIAL);
+            abnormal=gp.getConcept(GlobalPropertiesManagement.ABNORMAL);
+            ECDCounselingSession=gp.getConcept(GlobalPropertiesManagement.ECD_EDUCATION);
+            reasonForNotDoingFollowUp=gp.getConcept(GlobalPropertiesManagement.REASON_FOR_NOT_DOING_FOLLOWUP);
+            reasonForExitingFromCare=gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
+            intervalgrowthCoded=gp.getConcept(GlobalPropertiesManagement.INTERVAL_GROWTH_CODED);
+            inadequate=gp.getConcept(GlobalPropertiesManagement.INTERVAL_GROWTH_INADEQUATE);
+            lowBirthWeight= gp.getConcept(GlobalPropertiesManagement.LOW_BIRTH_WEIGHT);
+            prematureBirth=gp.getConcept(GlobalPropertiesManagement.PRE_MATURE_BIRTH);
+            hypoxicIschemicEncephalopathy=gp.getConcept(GlobalPropertiesManagement.HYPOXIC_ISCHEMIS_ENCEPHALOPATHY);
+            hydrocephalus=gp.getConcept(GlobalPropertiesManagement.HYDROCEPHALUS);
+            trisomy21=gp.getConcept(GlobalPropertiesManagement.TRISOMY21);
+            cleftLipOrPalate=gp.getConcept(GlobalPropertiesManagement.CLEFTLIP_OR_PILATE);
+            otherDevelopmentalDelay=gp.getConcept(GlobalPropertiesManagement.OTHER_DEVELOPMENT_DELAY);
+            severeMalnutrition=gp.getConcept(GlobalPropertiesManagement.SEVERE_MALNUTRITION);
+            centralNervousSystemInfection=gp.getConcept(GlobalPropertiesManagement.CENTRAL_NERVOUS_SYSTEM_INFECTION);
+            otherNoneCoded=gp.getConcept(GlobalPropertiesManagement.OTHER_NON_CODED);
+
+            reasonsForReferral.add(lowBirthWeight);
+            reasonsForReferral.add(prematureBirth);
+            reasonsForReferral.add(hypoxicIschemicEncephalopathy);
+            reasonsForReferral.add(hydrocephalus);
+            reasonsForReferral.add(trisomy21);
+            reasonsForReferral.add(cleftLipOrPalate);
+            reasonsForReferral.add(otherDevelopmentalDelay);
+            reasonsForReferral.add(severeMalnutrition);
+            reasonsForReferral.add(centralNervousSystemInfection);
+            reasonsForReferral.add(otherNoneCoded);
+
+            PDCweightForAgeZScore=gp.getConcept(GlobalPropertiesManagement.PDC_WEIGHT_FOR_AGE_ZSCORE);
+            PDCHeightForAgeZScore=gp.getConcept(GlobalPropertiesManagement.PDC_HEIGHT_FOR_AGE_ZSCORE);
+            PDCweightForHeightZScore=gp.getConcept(GlobalPropertiesManagement.PDC_WEIGHT_FOR_HEIGHT_ZSCORE);
+            na=gp.getConcept(GlobalPropertiesManagement.NOT_APPLICABLE);
+            zScoreGreaterThatMinesThreeAndLessThanTwo= gp.getConcept(GlobalPropertiesManagement.ZSCORE_GREATER_THAN_NEGATIVE_THREE_AND_LESS_THAN_NEGATIVE_TWO);
+            zSccoreLessThanThree=gp.getConcept(GlobalPropertiesManagement.ZSCORE_LESS_THAN_NEGATIVE_THREE);
+
         }
 }
