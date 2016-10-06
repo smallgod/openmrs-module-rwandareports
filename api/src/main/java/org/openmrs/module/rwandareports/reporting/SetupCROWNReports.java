@@ -20,8 +20,10 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.EnrolledInProgram;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
@@ -127,8 +129,17 @@ private ReportDefinition createViralLoadReportDefinition() {
 		//Add Columns
 		patientsDataset.addColumn(RowPerPatientColumns.getTracnetId("TRACNET_ID"), new HashMap<String, Object>());
 		patientsDataset.addColumn(RowPerPatientColumns.getIMBId("Id"), new HashMap<String, Object>());
+		patientsDataset.addColumn(RowPerPatientColumns.getSystemId("System_ID"), new HashMap<String, Object>());
 		patientsDataset.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		patientsDataset.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
+		
+	/*	for (Program program : crownHivPrograms) {
+			EnrolledInProgram patientEnrollementDate=RowPerPatientColumns.getPatientProgramInfo(program.getName()+" EnrollmentDate", program, "EnrollmentDate", null);
+			EnrolledInProgram patientCompletedDate=RowPerPatientColumns.getPatientProgramInfo(program.getName()+" ExitDate", program, "ExitDate", null);
+			
+			patientsDataset.addColumn(patientEnrollementDate, new HashMap<String, Object>());	
+			patientsDataset.addColumn(patientCompletedDate, new HashMap<String, Object>());
+		}*/	
 		
 		RecentEncounterType lastEncounterType = RowPerPatientColumns.getRecentEncounterType("LastVisit",hivEncounterTypes, "dd-MMM-yyyy", null);
 		patientsDataset.addColumn(lastEncounterType, new HashMap<String, Object>());
