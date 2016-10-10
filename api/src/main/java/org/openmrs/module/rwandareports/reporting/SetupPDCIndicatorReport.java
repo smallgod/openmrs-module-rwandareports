@@ -173,8 +173,9 @@ public class SetupPDCIndicatorReport {
                 rd.addDataSetDefinition(createQuarterlyLocationDataSet(),
                     ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 
-                InProgramCohortDefinition inProgram = Cohorts.createInProgram("PDCProgram", PDCProgram);
-                rd.setBaseCohortDefinition(inProgram,new HashMap<String, Object>());
+                ProgramEnrollmentCohortDefinition everEnrolled=Cohorts.createProgramEnrollment("PDCProgram", PDCProgram);
+                //InProgramCohortDefinition inProgram = Cohorts.createInProgram("PDCProgram", PDCProgram);
+                rd.setBaseCohortDefinition(everEnrolled,new HashMap<String, Object>());
 
                 Helper.saveReportDefinition(rd);
                 
@@ -768,21 +769,47 @@ public class SetupPDCIndicatorReport {
                            new Mapped(patientUnderSixMonthWithInadaquateIntervalGrowthDocumentedInLastVisitIndicatorNumerator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
  //PDC12
 
-            SqlCohortDefinition patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit=new SqlCohortDefinition();
+           /* SqlCohortDefinition patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit=new SqlCohortDefinition();
             patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setName("patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit");
             patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setQuery("select e.patient_id from encounter e"
                     +" inner join obs o on e.patient_id=o.person_id and e.encounter_id=o.encounter_id and o.concept_id="+PDCweightForHeightZScore.getConceptId()+" and (o.value_coded="+zScoreGreaterThatMinesThreeAndLessThanTwo.getConceptId()+" or o.value_coded="+zSccoreLessThanThree.getConceptId()+") and o.voided=0"
                     +" where e.form_id="+PDCVisitForm.getFormId()+" and  e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate ");
             patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
             patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+*/
+            SqlCohortDefinition patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit=new SqlCohortDefinition();
+            patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setName("patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit");
+            patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setQuery("Select lastenc.patient_id " +
+                    "from " +
+                    "(select * from (select e.patient_id,e.encounter_id,e.encounter_datetime from encounter e where e.form_id="+PDCVisitForm.getFormId()+" and e.voided=0 order by e.encounter_datetime desc) ordered group by ordered.patient_id) lastenc, obs o " +
+                    " where " +
+                    "lastenc.encounter_id=o.encounter_id and o.concept_id="+PDCweightForHeightZScore.getConceptId()+" and (o.value_coded="+zScoreGreaterThatMinesThreeAndLessThanTwo.getConceptId()+" or o.value_coded="+zSccoreLessThanThree.getConceptId()+") and o.voided=0 and lastenc.encounter_datetime>= :startDate and lastenc.encounter_datetime <= :endDate");
+            patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
 
-            SqlCohortDefinition patientWithPDCWeightForHeightzScoreDocumentedInLastVisit=new SqlCohortDefinition();
+
+
+
+
+
+            /*SqlCohortDefinition patientWithPDCWeightForHeightzScoreDocumentedInLastVisit=new SqlCohortDefinition();
             patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.setName("patientWithPDCWeightForHeightzScoreDocumentedInLastVisit");
             patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.setQuery("select e.patient_id from encounter e"
                     +" inner join obs o on e.patient_id=o.person_id and e.encounter_id=o.encounter_id and o.concept_id="+PDCweightForHeightZScore.getConceptId()+" and o.voided=0"
                     +" where e.form_id="+PDCVisitForm.getFormId()+" and  e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate ");
             patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));*/
+
+            SqlCohortDefinition patientWithPDCWeightForHeightzScoreDocumentedInLastVisit=new SqlCohortDefinition();
+            patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.setName("patientWithPDCWeightForHeightzScoreDocumentedInLastVisit");
+            patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.setQuery("Select lastenc.patient_id " +
+                    "from " +
+                    "(select * from (select e.patient_id,e.encounter_id,e.encounter_datetime from encounter e where e.form_id="+PDCVisitForm.getFormId()+" and e.voided=0 order by e.encounter_datetime desc) ordered group by ordered.patient_id) lastenc, obs o " +
+                    "where " +
+                    "lastenc.encounter_id=o.encounter_id and o.concept_id="+PDCweightForHeightZScore.getConceptId()+" and o.voided=0 and lastenc.encounter_datetime>= :startDate and lastenc.encounter_datetime <= :endDate ");
+            patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
             patientWithPDCWeightForHeightzScoreDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+
 
             CohortIndicator patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisitIndicatorNumerator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who have wt/ht z-score <=-2 at last appointment indicator", patientWithPDCWeightForHeightzScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit,
                     ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
@@ -798,6 +825,7 @@ public class SetupPDCIndicatorReport {
 
 
 //PDC13
+/*
 
             SqlCohortDefinition patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit=new SqlCohortDefinition();
             patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setName("patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit");
@@ -806,14 +834,44 @@ public class SetupPDCIndicatorReport {
                     +" where e.form_id="+PDCVisitForm.getFormId()+" and  e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate ");
             patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
             patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+*/
 
-            SqlCohortDefinition patientWithPDCheightForAgeZScoreDocumentedInLastVisit=new SqlCohortDefinition();
+
+
+            SqlCohortDefinition patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit=new SqlCohortDefinition();
+            patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setName("patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit");
+            patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.setQuery("Select lastenc.patient_id " +
+                    "from " +
+                    "(select * from (select e.patient_id,e.encounter_id,e.encounter_datetime from encounter e where e.form_id="+PDCVisitForm.getFormId()+" and e.voided=0 order by e.encounter_datetime desc) ordered group by ordered.patient_id) lastenc, obs o " +
+                    " where " +
+                    "lastenc.encounter_id=o.encounter_id and o.concept_id="+PDCHeightForAgeZScore.getConceptId()+" and (o.value_coded="+zScoreGreaterThatMinesThreeAndLessThanTwo.getConceptId()+" or o.value_coded="+zSccoreLessThanThree.getConceptId()+") and o.voided=0 and lastenc.encounter_datetime>= :startDate and lastenc.encounter_datetime <= :endDate");
+            patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+
+
+
+
+            /*SqlCohortDefinition patientWithPDCheightForAgeZScoreDocumentedInLastVisit=new SqlCohortDefinition();
             patientWithPDCheightForAgeZScoreDocumentedInLastVisit.setName("patientWithPDCheightForAgeZScoreDocumentedInLastVisit");
             patientWithPDCheightForAgeZScoreDocumentedInLastVisit.setQuery("select e.patient_id from encounter e"
                     +" inner join obs o on e.patient_id=o.person_id and e.encounter_id=o.encounter_id and o.concept_id="+PDCHeightForAgeZScore.getConceptId()+" and o.voided=0"
                     +" where e.form_id="+PDCVisitForm.getFormId()+" and  e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate ");
             patientWithPDCheightForAgeZScoreDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
             patientWithPDCheightForAgeZScoreDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+*/
+
+            SqlCohortDefinition patientWithPDCheightForAgeZScoreDocumentedInLastVisit=new SqlCohortDefinition();
+            patientWithPDCheightForAgeZScoreDocumentedInLastVisit.setName("patientWithPDCheightForAgeZScoreDocumentedInLastVisit");
+            patientWithPDCheightForAgeZScoreDocumentedInLastVisit.setQuery("Select lastenc.patient_id " +
+                    "from " +
+                    "(select * from (select e.patient_id,e.encounter_id,e.encounter_datetime from encounter e where e.form_id="+PDCVisitForm.getFormId()+" and e.voided=0 order by e.encounter_datetime desc) ordered group by ordered.patient_id) lastenc, obs o " +
+                    "where " +
+                    "lastenc.encounter_id=o.encounter_id and o.concept_id="+PDCHeightForAgeZScore.getConceptId()+" and o.voided=0 and lastenc.encounter_datetime>= :startDate and lastenc.encounter_datetime <= :endDate ");
+            patientWithPDCheightForAgeZScoreDocumentedInLastVisit.addParameter(new Parameter("startDate","startDate",Date.class));
+            patientWithPDCheightForAgeZScoreDocumentedInLastVisit.addParameter(new Parameter("endDate","endDate",Date.class));
+
+
+
 
             CohortIndicator patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisitIndicatorNumerator = Indicators.newCountIndicator("Number of children with a visit in the reference quarter who have ht/age z-score <=-2 at last appointment indicator", patientWithPDCheightForAgeZScoreGreaterThatMinesThreeAndLessThanTwoDocumentedInLastVisit,
                     ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
