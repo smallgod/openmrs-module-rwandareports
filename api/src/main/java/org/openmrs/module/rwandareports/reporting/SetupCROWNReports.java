@@ -133,13 +133,23 @@ private ReportDefinition createViralLoadReportDefinition() {
 		patientsDataset.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		patientsDataset.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		
-	/*	for (Program program : crownHivPrograms) {
-			EnrolledInProgram patientEnrollementDate=RowPerPatientColumns.getPatientProgramInfo(program.getName()+" EnrollmentDate", program, "EnrollmentDate", null);
-			EnrolledInProgram patientCompletedDate=RowPerPatientColumns.getPatientProgramInfo(program.getName()+" ExitDate", program, "ExitDate", null);
-			
-			patientsDataset.addColumn(patientEnrollementDate, new HashMap<String, Object>());	
-			patientsDataset.addColumn(patientCompletedDate, new HashMap<String, Object>());
-		}*/	
+		EnrolledInProgram patientAdultHivEnrollementDate=RowPerPatientColumns.getPatientProgramInfo("adultHivEnrollmentDate", adultHiv, "EnrollmentDate", null);
+		EnrolledInProgram patientAdultHivCompletedDate=RowPerPatientColumns.getPatientProgramInfo(" adultHivExitDate", adultHiv, "ExitDate", null);
+		
+		patientsDataset.addColumn(patientAdultHivEnrollementDate, new HashMap<String, Object>());	
+		patientsDataset.addColumn(patientAdultHivCompletedDate, new HashMap<String, Object>());
+		
+		EnrolledInProgram patientpmtctEnrollementDate=RowPerPatientColumns.getPatientProgramInfo("pmtctEnrollmentDate", pmtct, "EnrollmentDate", null);
+		EnrolledInProgram patientpmtctCompletedDate=RowPerPatientColumns.getPatientProgramInfo(" pmtctExitDate", pmtct, "ExitDate", null);
+		
+		patientsDataset.addColumn(patientpmtctEnrollementDate, new HashMap<String, Object>());	
+		patientsDataset.addColumn(patientpmtctCompletedDate, new HashMap<String, Object>());
+		
+		EnrolledInProgram patientpmtctCCEnrollementDate=RowPerPatientColumns.getPatientProgramInfo("pmtctCCEnrollmentDate", pmtctCC, "EnrollmentDate", null);
+		EnrolledInProgram patientpmtctCCCompletedDate=RowPerPatientColumns.getPatientProgramInfo(" pmtctCCExitDate", pmtctCC, "ExitDate", null);
+		
+		patientsDataset.addColumn(patientpmtctCCEnrollementDate, new HashMap<String, Object>());	
+		patientsDataset.addColumn(patientpmtctCCCompletedDate, new HashMap<String, Object>());
 		
 		RecentEncounterType lastEncounterType = RowPerPatientColumns.getRecentEncounterType("LastVisit",hivEncounterTypes, "dd-MMM-yyyy", null);
 		patientsDataset.addColumn(lastEncounterType, new HashMap<String, Object>());
