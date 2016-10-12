@@ -104,6 +104,10 @@ public class SetupDiabetesConsultAndLTFU {
 		reportDefinition.setName("NCD-Diabetes Late Visit");	
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));	
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
+
+		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
+				ParameterizableUtil.createParameterMappings("location=${location}"));
+
 		createLTFUDataSetDefinition(reportDefinition,diabetesProgram);	
 
 		Helper.saveReportDefinition(reportDefinition);
