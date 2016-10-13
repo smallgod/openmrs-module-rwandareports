@@ -1,6 +1,5 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +10,7 @@ import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
 import org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -20,11 +19,8 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.EnrolledInProgram;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
-import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
@@ -33,16 +29,7 @@ public class SetupCROWNReports implements SetupReport {
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//properties retrieved from global variables
-	private Concept reasonForExitingCare;
-	
-	private Program adultHiv;
-	
-	private Program pmtct;
-	
-	private Program pmtctCC;
-	
-	private List<Program> crownHivPrograms = new ArrayList<Program>();
-	
+	private Concept reasonForExitingCare;	
 	private List<EncounterType> hivEncounterTypes;
 	
 	public void setup() throws Exception {
@@ -84,10 +71,14 @@ public class SetupCROWNReports implements SetupReport {
 	
 	private ReportDefinition createPatientsReportDefinition() {
 		
+		Parameter prog=new Parameter("programs", "Program",Program.class);
+		prog.setRequired(false);
+		
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("CROWN-Patients Table");		
-		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		createPatientsDataSet(reportDefinition);		
+		reportDefinition.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		reportDefinition.addParameter(prog);
+		createPatientsDataSet(reportDefinition, prog);		
 		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
@@ -115,16 +106,22 @@ private ReportDefinition createViralLoadReportDefinition() {
 		return reportDefinition;
 	}
 	
-	private void createPatientsDataSet(ReportDefinition reportDefinition) {
+	private void createPatientsDataSet(ReportDefinition reportDefinition, Parameter prog) {
 		// Create new dataset definition 
 		RowPerPatientDataSetDefinition patientsDataset = new RowPerPatientDataSetDefinition();
 		patientsDataset.setName(reportDefinition.getName() + " Data Set");
-		patientsDataset.addParameter(new Parameter("endDate", "End Date", Date.class));
+		patientsDataset.addParameter(new Parameter("startDate", "From Date", Date.class));	
+		patientsDataset.addParameter(prog);
 		
-		InProgramCohortDefinition inCrownHIVProgram = Cohorts.createInProgramParameterizableByDate(
-		    "inCROWNhiv: In CROWN Programs", crownHivPrograms, "onDate");
-		//Add Filters		
-		patientsDataset.addFilter(inCrownHIVProgram, ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+		//Add Filters
+		
+		ProgramEnrollmentCohortDefinition prEnoll=new ProgramEnrollmentCohortDefinition();
+		prEnoll.addParameter(prog);
+		prEnoll.addParameter(new Parameter("enrolledOnOrAfter","enrolledOnOrAfter",Date.class));
+		
+		
+		patientsDataset.addFilter(prEnoll, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},programs=${programs}"));
+		
 		
 		//Add Columns
 		patientsDataset.addColumn(RowPerPatientColumns.getTracnetId("TRACNET_ID"), new HashMap<String, Object>());
@@ -132,24 +129,6 @@ private ReportDefinition createViralLoadReportDefinition() {
 		patientsDataset.addColumn(RowPerPatientColumns.getSystemId("System_ID"), new HashMap<String, Object>());
 		patientsDataset.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		patientsDataset.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
-		
-		EnrolledInProgram patientAdultHivEnrollementDate=RowPerPatientColumns.getPatientProgramInfo("adultHivEnrollmentDate", adultHiv, "EnrollmentDate", null);
-		EnrolledInProgram patientAdultHivCompletedDate=RowPerPatientColumns.getPatientProgramInfo(" adultHivExitDate", adultHiv, "ExitDate", null);
-		
-		patientsDataset.addColumn(patientAdultHivEnrollementDate, new HashMap<String, Object>());	
-		patientsDataset.addColumn(patientAdultHivCompletedDate, new HashMap<String, Object>());
-		
-		EnrolledInProgram patientpmtctEnrollementDate=RowPerPatientColumns.getPatientProgramInfo("pmtctEnrollmentDate", pmtct, "EnrollmentDate", null);
-		EnrolledInProgram patientpmtctCompletedDate=RowPerPatientColumns.getPatientProgramInfo(" pmtctExitDate", pmtct, "ExitDate", null);
-		
-		patientsDataset.addColumn(patientpmtctEnrollementDate, new HashMap<String, Object>());	
-		patientsDataset.addColumn(patientpmtctCompletedDate, new HashMap<String, Object>());
-		
-		EnrolledInProgram patientpmtctCCEnrollementDate=RowPerPatientColumns.getPatientProgramInfo("pmtctCCEnrollmentDate", pmtctCC, "EnrollmentDate", null);
-		EnrolledInProgram patientpmtctCCCompletedDate=RowPerPatientColumns.getPatientProgramInfo(" pmtctCCExitDate", pmtctCC, "ExitDate", null);
-		
-		patientsDataset.addColumn(patientpmtctCCEnrollementDate, new HashMap<String, Object>());	
-		patientsDataset.addColumn(patientpmtctCCCompletedDate, new HashMap<String, Object>());
 		
 		RecentEncounterType lastEncounterType = RowPerPatientColumns.getRecentEncounterType("LastVisit",hivEncounterTypes, "dd-MMM-yyyy", null);
 		patientsDataset.addColumn(lastEncounterType, new HashMap<String, Object>());
@@ -163,10 +142,13 @@ private ReportDefinition createViralLoadReportDefinition() {
 		patientsDataset.addColumn(RowPerPatientColumns.getDateOfBirth("Date of Birth", null, null),
 		    new HashMap<String, Object>());
 		
-		Map<String, Object> mappings = new HashMap<String, Object>();
-		mappings.put("endDate", "${endDate}");
 		
-		reportDefinition.addDataSetDefinition("patientsDataSet", patientsDataset, mappings);
+		Map<String, Object> mappings = new HashMap<String, Object>();
+		mappings.put("startDate", "${startDate}");
+		mappings.put("programs", "${programs}");
+		
+		
+		reportDefinition.addDataSetDefinition("patientsDataSet",patientsDataset,mappings);
 	}
 	
 	private void createRegimensDataSet(ReportDefinition reportDefinition) {
@@ -198,15 +180,7 @@ private ReportDefinition createViralLoadReportDefinition() {
 	}
 	
 	private void setupProperties() {
-		reasonForExitingCare = Context.getConceptService().getConceptByUuid("3cde5ef4-26fe-102b-80cb-0017a47871b2");
-		adultHiv = gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
-		pmtct = gp.getProgram(GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
-		pmtctCC = gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM);
-		
-		crownHivPrograms.add(adultHiv);
-		crownHivPrograms.add(pmtct);
-		crownHivPrograms.add(pmtctCC);
-		
+		reasonForExitingCare = Context.getConceptService().getConceptByUuid("3cde5ef4-26fe-102b-80cb-0017a47871b2");		
 		hivEncounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.HIV_ENCOUNTER_TYPES,":");
 	}
 }

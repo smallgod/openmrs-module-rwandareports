@@ -71,7 +71,6 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPati
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatientMatchWithEncounter;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
-import org.openmrs.module.rowperpatientreports.patientdata.evaluator.DatesOfVisitsByStartDateAndEndDateEvaluator;
 import org.openmrs.module.rwandareports.customcalculator.BooleanCalculation;
 import org.openmrs.module.rwandareports.definition.AllMotherObservationValues;
 import org.openmrs.module.rwandareports.definition.ArtSwitch;
@@ -1951,4 +1950,5 @@ public class RowPerPatientColumns {
 		}
 		return patientEnrollementDate;
 	}
+	
 }
