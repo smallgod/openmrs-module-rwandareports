@@ -1477,7 +1477,11 @@ public class RowPerPatientColumns {
 			Program program, String dateFormat) {
 		DateOfProgramEnrolment progEnrol = new DateOfProgramEnrolment();
 		progEnrol.setName(name);
-		progEnrol.setProgramId(program.getProgramId());
+		if (program != null) {
+			progEnrol.setProgramId(program.getProgramId());
+		}else{ //this is only for the crown report
+			progEnrol.addParameter(new Parameter("programs", "Program",Program.class));
+		}
 		if (dateFormat != null) {
 			progEnrol.setDateFormat(dateFormat);
 		}
@@ -1512,7 +1516,11 @@ public class RowPerPatientColumns {
 			String name, Program program, String dateFormat) {
 		DateOfProgramCompletion progEnrol = new DateOfProgramCompletion();
 		progEnrol.setName(name);
-		progEnrol.setProgramId(program.getProgramId());
+		if (program != null) {
+			progEnrol.setProgramId(program.getProgramId());
+		}else{ //this is only for the crown report
+			progEnrol.addParameter(new Parameter("programs", "Program",Program.class));
+		}
 		if (dateFormat != null) {
 			progEnrol.setDateFormat(dateFormat);
 		}

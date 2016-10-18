@@ -19,6 +19,8 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramCompletion;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramEnrolment;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -132,6 +134,15 @@ private ReportDefinition createViralLoadReportDefinition() {
 		
 		RecentEncounterType lastEncounterType = RowPerPatientColumns.getRecentEncounterType("LastVisit",hivEncounterTypes, "dd-MMM-yyyy", null);
 		patientsDataset.addColumn(lastEncounterType, new HashMap<String, Object>());
+		
+		DateOfProgramEnrolment enrollmentDate = RowPerPatientColumns.getDateOfProgramEnrolment("enrollmentDate", null, "dd-MMM-yyyy");
+		
+		DateOfProgramCompletion exitDate = RowPerPatientColumns.getDateOfProgramCompletion("exitDate", null, "dd-MMM-yyyy");
+		
+		
+		patientsDataset.addColumn(enrollmentDate, ParameterizableUtil.createParameterMappings("programs=${programs}"));
+		patientsDataset.addColumn(exitDate, ParameterizableUtil.createParameterMappings("programs=${programs}"));
+		
 		
 		MostRecentObservation exitingCareReason = RowPerPatientColumns.getMostRecent("Reason for exiting care", reasonForExitingCare, "dd/MM/yyyy");
 		patientsDataset.addColumn(exitingCareReason, new HashMap<String, Object>());	
