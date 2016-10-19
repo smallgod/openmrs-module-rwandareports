@@ -10,7 +10,7 @@ import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -117,12 +117,12 @@ private ReportDefinition createViralLoadReportDefinition() {
 		
 		//Add Filters
 		
-		ProgramEnrollmentCohortDefinition prEnoll=new ProgramEnrollmentCohortDefinition();
-		prEnoll.addParameter(prog);
-		prEnoll.addParameter(new Parameter("enrolledOnOrAfter","enrolledOnOrAfter",Date.class));
+		InProgramCohortDefinition inprogram=new InProgramCohortDefinition();
+		inprogram.addParameter(prog);
+		inprogram.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
 		
 		
-		patientsDataset.addFilter(prEnoll, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},programs=${programs}"));
+		patientsDataset.addFilter(inprogram, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},programs=${programs}"));
 		
 		
 		//Add Columns
@@ -144,7 +144,7 @@ private ReportDefinition createViralLoadReportDefinition() {
 		patientsDataset.addColumn(exitDate, ParameterizableUtil.createParameterMappings("programs=${programs}"));
 		
 		
-		MostRecentObservation exitingCareReason = RowPerPatientColumns.getMostRecent("Reason for exiting care", reasonForExitingCare, "dd/MM/yyyy");
+		MostRecentObservation exitingCareReason = RowPerPatientColumns.getMostRecent("exitReason", reasonForExitingCare, "dd/MM/yyyy");
 		patientsDataset.addColumn(exitingCareReason, new HashMap<String, Object>());	
 		
 		patientsDataset.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
