@@ -21,7 +21,9 @@ import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramCompletion;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramEnrolment;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugOrderStartedRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAttribute;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
@@ -136,6 +138,8 @@ private ReportDefinition createViralLoadReportDefinition() {
 		patientsDataset.addColumn(lastEncounterType, new HashMap<String, Object>());
 		
 		DateOfProgramEnrolment enrollmentDate = RowPerPatientColumns.getDateOfProgramEnrolment("enrollmentDate", null, "dd-MMM-yyyy");
+		FirstDrugOrderStartedRestrictedByConceptSet startArt = RowPerPatientColumns.getDrugOrderForStartOfART("StartART", "dd-MMM-yyyy");
+		patientsDataset.addColumn(startArt,new HashMap<String, Object>());
 		
 		DateOfProgramCompletion exitDate = RowPerPatientColumns.getDateOfProgramCompletion("exitDate", null, "dd-MMM-yyyy");
 		
@@ -148,6 +152,8 @@ private ReportDefinition createViralLoadReportDefinition() {
 		patientsDataset.addColumn(exitingCareReason, new HashMap<String, Object>());	
 		
 		patientsDataset.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
+		PatientAttribute healthCenter = RowPerPatientColumns.getHealthCenter("healthcenter");
+		patientsDataset.addColumn(healthCenter, new HashMap<String, Object>());
 		patientsDataset.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true),
 		    new HashMap<String, Object>());
 		patientsDataset.addColumn(RowPerPatientColumns.getDateOfBirth("Date of Birth", null, null),
