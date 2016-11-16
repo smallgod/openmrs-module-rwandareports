@@ -64,7 +64,8 @@ public class SetupCROWNReports implements SetupReport {
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("CROWNReports.xls_".equals(rd.getName())) {
+			String name = rd.getName();
+			if ("CROWNReports.xls_".equals(name) || "CROWN-Regimens Table.csv_".equals(name) || "CROWN-Viral Load Table.csv_".equals(name)) {
 				rs.purgeReportDesign(rd);
 			}
 		}
