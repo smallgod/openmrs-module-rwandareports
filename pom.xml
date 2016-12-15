@@ -25,7 +25,7 @@
 	<properties>
 		<openMRSVersion>1.9.9</openMRSVersion>
 		<reportingVersion>0.10.0</reportingVersion>
-		<rowperpatientsVersion>1.5.3</rowperpatientsVersion>
+		<rowperpatientsVersion>1.5.4-SNAPSHOT</rowperpatientsVersion>
 		<orderextensionVersion>2.0-SNAPSHOT</orderextensionVersion>
 		<reportingobjectgroupVersion>1.1</reportingobjectgroupVersion>
 		<htmlwidgetsVersion>1.6.4</htmlwidgetsVersion>
