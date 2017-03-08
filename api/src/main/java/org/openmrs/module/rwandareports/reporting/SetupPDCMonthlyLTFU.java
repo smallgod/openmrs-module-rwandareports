@@ -93,21 +93,21 @@ public class SetupPDCMonthlyLTFU {
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		// Create Under One Year DataSet definition 
 		RowPerPatientDataSetDefinition undreOneYearDataSetDefinition = addNameAndParameters("undreOneYearDataSetDefinition");		
-		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType, referralAndVisitForms,180), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		undreOneYearDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(pdcEncType, 180), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		undreOneYearDataSetDefinition.addFilter(Cohorts.createUnderAgeCohort("undreOneYear",1,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 		
 		addColumns(undreOneYearDataSetDefinition);
 		
 		// Create Under two Years DataSet definition 
 		RowPerPatientDataSetDefinition undreTwoYearsDataSetDefinition = addNameAndParameters("undreTwoYearsDataSetDefinition");		
-		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType, referralAndVisitForms,270), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(pdcEncType, 270), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		undreTwoYearsDataSetDefinition.addFilter(Cohorts.createUnderAgeCohort("undreTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 
 		addColumns(undreTwoYearsDataSetDefinition);
 		
 		// Create Above Two Years DataSet definition 
 		RowPerPatientDataSetDefinition aboveTwoYearsDataSetDefinition = addNameAndParameters("aboveTwoYearsDataSetDefinition");		
-		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType, referralAndVisitForms,540), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(pdcEncType, 540), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createAboveAgeCohort("aboveTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 		
 		addColumns(aboveTwoYearsDataSetDefinition);
@@ -225,11 +225,14 @@ public class SetupPDCMonthlyLTFU {
 		PDCProgram = gp.getProgram(GlobalPropertiesManagement.PDC_PROGRAM);
 	    pdcEncounters = gp.getEncounterTypeList(GlobalPropertiesManagement.PDC_VISIT);
 	    pdcEncType = gp.getEncounterType(GlobalPropertiesManagement.PDC_VISIT);
+	    
 	    intakeForm.add(gp.getForm(GlobalPropertiesManagement.PDC_INTAKE_FORM));
 	    referralForm=gp.getForm(GlobalPropertiesManagement.PDC_REFERRAL_FORM);
 	    visitForm=gp.getForm(GlobalPropertiesManagement.PDC_VISIT_FORM);
+	   
 	    referralAndVisitForms.add(referralForm);
 	    referralAndVisitForms.add(visitForm);
+	   
 	    returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
 	   
 		

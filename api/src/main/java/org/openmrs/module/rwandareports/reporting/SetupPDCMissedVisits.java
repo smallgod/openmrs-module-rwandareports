@@ -105,7 +105,7 @@ public class SetupPDCMissedVisits {
 		
 		//Add filters
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+PDCProgram.getName(), PDCProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
-		dataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(returnVisitDate,pdcEncType, referralAndVisitForms,1), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition.addFilter(Cohorts.createPatientsLateForPDCVisit(pdcEncType,1), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
