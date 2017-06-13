@@ -456,6 +456,15 @@ public class Cohorts {
 		
 		return patientsUnderFifteenAtEnrollementDate;
 	}
+
+	public static SqlCohortDefinition createUnder16AtEnrollmentCohort(String name, Program program) {
+		SqlCohortDefinition patientsUnderFifteenAtEnrollementDate = new SqlCohortDefinition(
+				"select distinct pp.patient_id from person p,patient_program pp where p.person_id=pp.patient_id and DATEDIFF(pp.date_enrolled,p.birthdate)<5760 and pp.program_id= "
+						+ program.getId() + " and p.voided=0 and pp.voided=0");
+		patientsUnderFifteenAtEnrollementDate.setName(name);
+
+		return patientsUnderFifteenAtEnrollementDate;
+	}
 	
 	public static SqlCohortDefinition create15orOverAtEnrollmentCohort(String name, Program program) {
 		SqlCohortDefinition patientsOverFifteenAtEnrollementDate = new SqlCohortDefinition(
@@ -713,7 +722,7 @@ public class Cohorts {
 	public static CompositionCohortDefinition createEnrolledInProgramDuringPeriod(String name, Program program) {
 		ProgramEnrollmentCohortDefinition enrolledBefore = createProgramEnrollment(name, program);
 		enrolledBefore.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
-		
+
 		CompositionCohortDefinition enrolledDuringPeriod = new CompositionCohortDefinition();
 		enrolledDuringPeriod.setName(name);
 		enrolledDuringPeriod.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -723,7 +732,7 @@ public class Cohorts {
 		enrolledDuringPeriod.getSearches().put("2",
 		    new Mapped(enrolledBefore, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}")));
 		enrolledDuringPeriod.setCompositionString("2 and not 1");
-		
+
 		return enrolledDuringPeriod;
 	}
 	
@@ -749,6 +758,20 @@ public class Cohorts {
 		
 		return stateCohort;
 	}
+
+	public static InStateCohortDefinition createInProgramStateParameterizableByDate(String name, ProgramWorkflowState state,String parameter) {
+		InStateCohortDefinition stateCohort = new InStateCohortDefinition();
+
+		List<ProgramWorkflowState> states = new ArrayList<ProgramWorkflowState>();
+		states.add(state);
+
+		stateCohort.setStates(states);
+		stateCohort.setName(name);
+		stateCohort.addParameter(new Parameter(parameter, parameter, Date.class));
+
+		return stateCohort;
+	}
+
 	
 	public static PatientStateCohortDefinition createPatientStateCohortDefinition(String name,
 	                                                                              ProgramWorkflowState programWorkflowState) {
@@ -833,6 +856,19 @@ public class Cohorts {
 		encounter.setEncounterTypeList(encounters);
 		return encounter;
 	}
+
+
+	public static EncounterCohortDefinition createEncounterParameterizedByDate(String name, String parameterName,
+																			   EncounterType encounterType) {
+		List<EncounterType> encounters = new ArrayList<EncounterType>();
+		encounters.add(encounterType);
+
+		EncounterCohortDefinition encounter = createEncounterParameterizedByDate(name, parameterName);
+		encounter.setEncounterTypeList(encounters);
+		return encounter;
+	}
+
+
 	
 	public static EncounterCohortDefinition createEncounterParameterizedByDate(String name, String parameterName) {
 		EncounterCohortDefinition encounter = new EncounterCohortDefinition();
@@ -1064,7 +1100,7 @@ public class Cohorts {
 	                                                                          Concept outcomevalues) {
 		SqlCohortDefinition query = new SqlCohortDefinition(
 		        "select DISTINCT pp.patient_id FROM patient_program pp, program pro WHERE pro.program_id=pp.program_id AND pro.outcomes_concept_id="
-		                + +outcomequestion.getId()
+		                + outcomequestion.getId()
 		                + " AND pp.outcome_concept_id="
 		                + outcomevalues.getId()
 		                + " AND pp.date_completed IS not null AND pp.voided=0 AND pp.date_completed>= :startDate AND pp.date_completed<= :endDate ");
@@ -1073,7 +1109,35 @@ public class Cohorts {
 		query.addParameter(new Parameter("endDate", "endDate", Date.class));
 		return query;
 	}
-	
+
+	public static SqlCohortDefinition getPatientsWithOutcomeprogramEndReasons(String name, Concept outcomequestion,
+																			  List<Concept> outcomevalues) {
+		SqlCohortDefinition query = new SqlCohortDefinition();
+		query.setName(name);
+		StringBuilder queryStr = new StringBuilder();
+
+		//queryStr.append("select DISTINCT pp.patient_id FROM patient_program pp, program pro WHERE pro.program_id=pp.program_id AND pro.outcomes_concept_id="+outcomequestion.getConceptId()+" AND pp.outcome_concept_id in (8370,8269,8364) AND pp.date_completed IS not null AND pp.voided=0 AND pp.date_completed>= :onOrAfter AND pp.date_completed<= :onOrBefore ");
+		queryStr.append("select DISTINCT pp.patient_id FROM patient_program pp, program pro WHERE pro.program_id=pp.program_id AND pro.outcomes_concept_id=");
+		queryStr.append(outcomequestion.getConceptId());
+		queryStr.append(" AND pp.outcome_concept_id in (");
+
+		int i = 0;
+		for (Concept c : outcomevalues) {
+			if (i > 0) {
+				queryStr.append(",");
+			}
+			queryStr.append(c.getConceptId());
+
+			i++;
+		}
+		queryStr.append(") AND pp.date_completed IS not null AND pp.voided=0 AND pp.date_completed>= :onOrAfter AND pp.date_completed<= :onOrBefore");
+		query.setQuery(queryStr.toString());
+		query.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		query.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		return query;
+	}
+
+
 	public static SqlCohortDefinition getPatientsWithObservationInFormBetweenStartAndEndDate(String name, List<Form> forms,
 	                                                                                         Concept concept,
 	                                                                                         Concept obsAnswer) {
@@ -1119,6 +1183,22 @@ public class Cohorts {
 		query.setName(name);
 		query.addParameter(new Parameter("startDate", "startDate", Date.class));
 		query.addParameter(new Parameter("endDate", "endDate", Date.class));
+		return query;
+	}
+	public static SqlCohortDefinition getPatientsWithObservationInForm(String name, Form form,
+																							 Concept concept,
+																							 Concept obsAnswer) {
+		SqlCohortDefinition query = new SqlCohortDefinition();
+		StringBuilder queryStr = new StringBuilder();
+		queryStr.append("select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id=");
+		queryStr.append(form.getId());
+		queryStr.append(" and o.concept_id=");
+		queryStr.append(concept.getId());
+		queryStr.append(" and o.value_coded=");
+		queryStr.append(obsAnswer.getId());
+		queryStr.append(" and o.voided=0 and e.voided=0");
+		query.setQuery(queryStr.toString());
+		query.setName(name);
 		return query;
 	}
 	
@@ -1318,7 +1398,7 @@ public class Cohorts {
 		
 		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
 		query.append(concept.getId());
-		query.append(") and voided=0 and start_date >= :startDate and discontinued=0 and discontinued_date <= :endDate");
+		query.append(") and voided=0 and start_date >= :startDate and start_date <= :endDate");
 		patientOnRegimen.setQuery(query.toString());
 		patientOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1435,6 +1515,26 @@ public class Cohorts {
 		
 		return obsBetweenStartDateAndEndDate;
 	}
+
+
+	public static SqlCohortDefinition getPatientsWithCodedObservationsBetweenStartDateAndEndDate(String name, Concept conceptQuestion,Concept conceptAnswer) {
+		SqlCohortDefinition obsBetweenStartDateAndEndDate = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select distinct o.person_id from obs o where o.concept_id= ");
+
+		query.append(conceptQuestion.getConceptId());
+
+		query.append(" and o.voided=0 and o.obs_datetime>= :onOrAfter and o.obs_datetime<= :onOrBefore and o.value_coded= ");
+		query.append(conceptAnswer.getConceptId());
+
+		obsBetweenStartDateAndEndDate.setQuery(query.toString());
+		obsBetweenStartDateAndEndDate.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		obsBetweenStartDateAndEndDate.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+
+		return obsBetweenStartDateAndEndDate;
+	}
+
+
 	
 	public static SqlCohortDefinition getPatientsOnRegimenAtLastVisit(String name, List<Concept> concepts,
 	                                                                  EncounterType encounterType) {
@@ -2092,5 +2192,107 @@ public class Cohorts {
 		
 		return regimenAtLastVist;
 	}
-	
+
+	public static ProgramEnrollmentCohortDefinition createProgramCompletedByEndDate(String name, Program program) {
+
+		ProgramEnrollmentCohortDefinition programEnrollmentCohortDefinition = new ProgramEnrollmentCohortDefinition();
+		programEnrollmentCohortDefinition.setName(name);
+		programEnrollmentCohortDefinition.addParameter(new Parameter("completedOnOrBefore","completedOnOrBefore",Date.class));
+
+		List<Program> programs = new ArrayList<Program>();
+		programs.add(program);
+
+		programEnrollmentCohortDefinition.setPrograms(programs);
+		return programEnrollmentCohortDefinition;
+	}
+	public static ProgramEnrollmentCohortDefinition createProgramEnrollmentEverByEndDate(String name,
+																									   Program program) {
+
+		ProgramEnrollmentCohortDefinition programEnrollmentCohortDefinition = createProgramEnrollment(name, program);
+		programEnrollmentCohortDefinition
+				.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		return programEnrollmentCohortDefinition;
+	}
+	public static SqlCohortDefinition getPatientsWithObsEver(String name, Concept concept) {
+		SqlCohortDefinition patientWithObs = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select distinct person_id from obs where concept_id = ");
+		query.append(concept.getId());
+		query.append(" and voided=0");
+		patientWithObs.setQuery(query.toString());
+		patientWithObs.setName(name);
+
+		return patientWithObs;
+	}
+	public static SqlCohortDefinition getPatientsWithCodedObsEver(String name, Concept conceptQuestion,Concept conceptAnswer) {
+		SqlCohortDefinition patientWithObs = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select distinct person_id from obs where concept_id = ");
+		query.append(conceptQuestion.getId());
+		query.append(" and value_coded= ");
+		query.append(conceptAnswer.getId());
+		query.append(" and voided=0");
+		patientWithObs.setQuery(query.toString());
+		patientWithObs.setName(name);
+
+		return patientWithObs;
+	}
+	public static SqlCohortDefinition getPatientsWithLastCodedObsEver(String name, Concept conceptQuestion,Concept conceptAnswer) {
+		SqlCohortDefinition patientWithObs = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select obg.person_id from (select * from (select person_id,value_coded from obs where concept_id = ");
+		query.append(conceptQuestion.getId());
+		query.append(" and voided=0 order by obs_datetime desc) ob group by ob.person_id) obg where value_coded=");
+		query.append(conceptAnswer.getId());
+		patientWithObs.setQuery(query.toString());
+		patientWithObs.setName(name);
+
+		return patientWithObs;
+
+
+
+		//query.append(" and value_coded= ");
+		//query.append(conceptAnswer.getId());
+
+	}
+
+
+	public static SqlCohortDefinition getPatientsWithObsGreaterThanNtimesByStartDateEndDate(String name, Concept concept, int times) {
+		SqlCohortDefinition patientWithObsNtimes = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select groupobs.person_id from (select person_id,count(person_id) as times from obs where concept_id= ");
+		query.append(concept.getId());
+		query.append(" and voided=0 and obs_datetime>= :startDate and obs_datetime<= :endDate group by person_id) as groupobs where groupobs.times>=");
+		query.append(times);
+		patientWithObsNtimes.setQuery(query.toString());
+		patientWithObsNtimes.setName(name);
+		patientWithObsNtimes.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientWithObsNtimes.addParameter(new Parameter("endDate", "endDate", Date.class));
+		return patientWithObsNtimes;
+	}
+
+	public static SqlCohortDefinition getPatientsWithObsinLastFormSubmitted(String name, Concept concept, Form form) {
+		SqlCohortDefinition patientsWithObsinLastFormSubmitted = new SqlCohortDefinition();
+		StringBuilder query = new StringBuilder("select encg.patient_id from (select * from (select * from encounter where form_id="+form.getFormId()+" and voided=0 order by encounter_datetime desc) enc group by enc.patient_id) encg, (select * from obs where concept_id="+concept.getConceptId()+" and voided=0) o where encg.encounter_id=o.encounter_id");
+		patientsWithObsinLastFormSubmitted.setQuery(query.toString());
+		patientsWithObsinLastFormSubmitted.setName(name);
+		return patientsWithObsinLastFormSubmitted;
+	}
+	public static SqlCohortDefinition getPatientsWithObsinLastFormSubmitted(String name, Concept concept, EncounterType type) {
+		SqlCohortDefinition patientsWithObsinLastFormSubmitted = new SqlCohortDefinition();
+		StringBuilder query = new StringBuilder("select encg.patient_id from (select * from (select * from encounter where encounter_type="+type.getEncounterTypeId()+" and voided=0 order by encounter_datetime desc) enc group by enc.patient_id) encg, (select * from obs where concept_id="+concept.getConceptId()+" and voided=0) o where encg.encounter_id=o.encounter_id");
+		patientsWithObsinLastFormSubmitted.setQuery(query.toString());
+		patientsWithObsinLastFormSubmitted.setName(name);
+		return patientsWithObsinLastFormSubmitted;
+	}
+
+
+	public static SqlCohortDefinition getPatientsWithBMI(String name, String condition,Concept weight, Concept height) {
+		SqlCohortDefinition patientsWithBMI = new SqlCohortDefinition();
+		StringBuilder query = new StringBuilder("select gweight.person_id from (select * from (select person_id,value_numeric from obs where concept_id="+weight.getConceptId()+" and voided=0 order by obs_datetime desc) oweight group by oweight.person_id) gweight left join (select * from (select person_id,value_numeric from obs where concept_id="+height.getConceptId()+" and voided=0 order by obs_datetime desc) oheight group by oheight.person_id) gheight on gweight.person_id=gheight.person_id  where TRUNCATE((gweight.value_numeric/power((gheight.value_numeric*0.01),2)),1)"+condition+" and gheight.value_numeric!=0");
+		patientsWithBMI.setQuery(query.toString());
+		patientsWithBMI.setName(name);
+		return patientsWithBMI;
+	}
+
 }

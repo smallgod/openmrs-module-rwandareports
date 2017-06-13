@@ -3783,4 +3783,65 @@
 		<description>This is the concept Id of ZSCORE_LESS_THAN_NEGATIVE_THREE</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.diagnosisWhileHospitalized</property>
+		<defaultValue>3ce1492a-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>This is the concept Id of DIAGNOSIS WHILE HOSPITALIZED</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.asthmaExacerbration</property>
+		<defaultValue>3ccc49bc-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>This is the concept Id of ASTHMA EXACERBATION</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.intermittentasthma</property>
+		<defaultValue>153753AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</defaultValue>
+		<description>This is the concept Id of intermittent asthma</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.moderatePersistentAsthma</property>
+		<defaultValue>134026AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</defaultValue>
+		<description>This is the concept Id of Moderate Persistent Asthma</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.mildPersistentAsthma</property>
+		<defaultValue>0016512d-4388-44f0-a4b6-f6ad9e18fdcd</defaultValue>
+		<description>This is the concept Id of Mild persistent asthma</description>
+	</globalProperty>
+
+
+	<globalProperty>
+		<property>reports.NCDSpecificOutcomes</property>
+		<defaultValue>b1c014cb-a027-43b4-ba9a-9e791b9fe716</defaultValue>
+		<description>This is the concept Id of NCD Specific Outcomes</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.NCDRelatedDeathOutcomes</property>
+		<defaultValue>9561a7ea-8662-4e21-b969-d69ac732fc64</defaultValue>
+		<description>This is the concept Id of NCD Related Death Outcomes</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.unknownCauseDeathOutcomes</property>
+		<defaultValue>08176d5d-3cbe-4c40-8436-26b2e26a1acf</defaultValue>
+		<description>This is the concept Id of Unknown Cause of Death Outcomes</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.otherCauseOfDeathOutcomes</property>
+		<defaultValue>a18bc25f-1757-4568-88a7-d58c4100f7f2</defaultValue>
+		<description>This is the concept Id of Other Cause Of Death Outcomes</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.postCardiacSurgeryVisit</property>
+		<defaultValue>POST CARDIAC SURGERY VISIT</defaultValue>
+		<description>Encounter type name of POST CARDIAC SURGERY VISIT</description>
+	</globalProperty>
+
+
 </module>

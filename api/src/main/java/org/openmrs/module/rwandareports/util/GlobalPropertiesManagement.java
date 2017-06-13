@@ -134,6 +134,9 @@ public class GlobalPropertiesManagement {
 		String globalProperty = Context.getAdministrationService().getGlobalProperty(globalPropertyName);
 		return Integer.parseInt(globalProperty);
 	}
+//encounter
+	public final static String POST_CARDIAC_SURGERY_VISIT="reports.postCardiacSurgeryVisit";
+
 
 	//Programs
 	public final static String ADULT_HIV_PROGRAM = "reports.adulthivprogramname"; 
@@ -451,8 +454,12 @@ public class GlobalPropertiesManagement {
 	public final static String PEAK_FLOW_BEFORE_SALBUTAMOL="reports.peakFlowBeforeSalbutamolConcept";
 	
 	public final static String ASTHMA_CLASSIFICATION="reports.asthmaclassificationConcept";
+
+	public final static String INTERMITTENT_ASTHMA="reports.intermittentasthma";
 	
 	public final static String SEVERE_PERSISTENT_ASTHMA="reports.severePersistentAsthma";
+	public final static String MODERATE_PERSISTENT_ASTHMA="reports.moderatePersistentAsthma";
+	public final static String MILD_PERSISTENT_ASTHMA="reports.mildPersistentAsthma";
 	
 	public final static String SEVERE_UNCONTROLLED_ASTHMA="reports.severeUncontrolledAsthma";
 	
@@ -743,8 +750,12 @@ public class GlobalPropertiesManagement {
 	public final static String INTERVAL_GROWTH_INADEQUATE="reports.inadequate";
 	
 	public final static String FOLLOW_UP_DATE="reports.followup";
-	
-	
+
+	public final static String DIAGNOSIS_WHILE_HOSPITALIZED="reports.diagnosisWhileHospitalized";
+
+	public final static String ASTHMA_EXACERBATION="reports.asthmaExacerbration";
+
+
 	public final static String TDF="reports.concept.TDF";
 	
 	public final static String TDF_3TC="reports.concept.TenofovirandLamivudine";
@@ -766,8 +777,13 @@ public class GlobalPropertiesManagement {
 	public static final String PHARMACY_SERVICES = "reports.pharmacyService";					
 	public static final String MATERNITY_SERVICE = "reports.maternityService";					
 	public static final String HOSPITALIZATION_SERVICE = "reports.hospitalizationService";				
-	public static final String VACCINATION_SERVICE = "reports.vaccinationService";	
-	
+	public static final String VACCINATION_SERVICE = "reports.vaccinationService";
+	public static final String NCD_SPECIFIC_OUTCOMES = "reports.NCDSpecificOutcomes";
+	public static final String NCD_RELATED_DEATH_OUTCOMES = "reports.NCDRelatedDeathOutcomes";
+	public static final String UNKNOWN_CAUSE_OF_DEATH_OUTCOMES = "reports.unknownCauseDeathOutcomes";
+	public static final String OTHER_CAUSE_OF_DEATH_OUTCOMES = "reports.otherCauseOfDeathOutcomes";
+
+
 	//Encounters
 	public final static String ADULT_FLOWSHEET_ENCOUNTER = "reports.adultflowsheetencounter";
 
