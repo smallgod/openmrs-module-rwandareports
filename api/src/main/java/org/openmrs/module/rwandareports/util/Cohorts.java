@@ -1516,6 +1516,22 @@ public class Cohorts {
 		return obsBetweenStartDateAndEndDate;
 	}
 
+	public static SqlCohortDefinition getPatientsWithObservationsByStartDateAndEndDate(String name, Concept concept) {
+		SqlCohortDefinition obsBetweenStartDateAndEndDate = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select distinct o.person_id from obs o where o.concept_id= ");
+
+		query.append(concept.getId());
+
+		query.append(" and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL)");
+
+		obsBetweenStartDateAndEndDate.setQuery(query.toString());
+		obsBetweenStartDateAndEndDate.addParameter(new Parameter("startDate", "startDate", Date.class));
+		obsBetweenStartDateAndEndDate.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		return obsBetweenStartDateAndEndDate;
+	}
+
 
 	public static SqlCohortDefinition getPatientsWithCodedObservationsBetweenStartDateAndEndDate(String name, Concept conceptQuestion,Concept conceptAnswer) {
 		SqlCohortDefinition obsBetweenStartDateAndEndDate = new SqlCohortDefinition();

@@ -3842,6 +3842,10 @@
 		<defaultValue>POST CARDIAC SURGERY VISIT</defaultValue>
 		<description>Encounter type name of POST CARDIAC SURGERY VISIT</description>
 	</globalProperty>
-
+	<globalProperty>
+		<property>reports.urinaryAlbumin</property>
+		<defaultValue>3cd49d88-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>A concept for URINARY ALBUMIN</description>
+	</globalProperty>
 
 </module>

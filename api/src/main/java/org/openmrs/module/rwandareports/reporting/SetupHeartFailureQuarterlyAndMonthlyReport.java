@@ -1641,7 +1641,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 		//==============================================================
-		//
+		// D3: Of patients currently enrolled, % Lost to follow up
 		//==============================================================
 
 		CompositionCohortDefinition currentlyInProgramButLost= new CompositionCohortDefinition();

@@ -1190,7 +1190,40 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		
 		dsd.addColumn("E1D", "total patients seen in the last year", new Mapped(patientsSeenInOneYearCountIndicator,
 		        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
+
+		//========================================================================================
+		//  Active patients with no exit in Reporting periode
+		//=======================================================================================
+
+		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByStartDateEndDate("patientWithAnyReasonForExitingFromCare",exitReasonFromCare,1);
+
+
+
+		CompositionCohortDefinition activePatientWithNoExitBeforeQuarterStart = new CompositionCohortDefinition();
+		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("startDate", "startDate", Date.class));
+		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("endDate", "endDate", Date.class));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("1",new Mapped<CohortDefinition>(patientsInPatientDiedState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("2",new Mapped<CohortDefinition>(NCDRelatedDeath, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("3",new Mapped<CohortDefinition>(obsPatientDiedReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("4",new Mapped<CohortDefinition>(patientWithAnyReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("startDate=${startDate-9m},endDate=${endDate-3m}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("5",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m}")));
+		activePatientWithNoExitBeforeQuarterStart.setCompositionString("5 AND (NOT (1 OR 2 OR 3 OR 4))");
+
+
+		CohortIndicator activePatientIndicator = Indicators.newCountIndicator("activePatientIndicator",
+				activePatientWithNoExitBeforeQuarterStart,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+
+
+		dsd.addColumn("Active", "Total # of Active patients : seen in the last 12 months", new Mapped(
+				activePatientIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
+
+
+
 		//=======================================================================
 		//E2: Of total patients with a visit in the last 12 months, % with no visit  in 28  or more weeks
 		// D2 Review: Of total active patients, % with no visit 6 months & <12 months past last visit date
@@ -1203,30 +1236,26 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		activeAndNotSeenIn6MonthsPatients.setName("activeAndNotSeenIn6MonthsPatients");
 		activeAndNotSeenIn6MonthsPatients.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		activeAndNotSeenIn6MonthsPatients.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		activeAndNotSeenIn6MonthsPatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		activeAndNotSeenIn6MonthsPatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+
 		activeAndNotSeenIn6MonthsPatients.getSearches().put(
-		    "1",
-		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m}")));
+				"1",
+				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m}")));
+		activeAndNotSeenIn6MonthsPatients.getSearches().put("2",new Mapped<CohortDefinition>(activePatientWithNoExitBeforeQuarterStart, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}")));
+
 		activeAndNotSeenIn6MonthsPatients.getSearches().put(
-		    "2",
-		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-3m}")));
-		activeAndNotSeenIn6MonthsPatients.setCompositionString("1 AND (NOT 2)");
-		
+				"3",
+				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-3m}")));
+		activeAndNotSeenIn6MonthsPatients.setCompositionString("1 AND 2 AND (NOT 3)");
+
 		CohortIndicator activeAndNotSeenIn6MonthsPatientsIndicator = Indicators.newCountIndicator(
-		    "activeAndNotSeenIn6MonthsPatientsIndicator",
-		    activeAndNotSeenIn6MonthsPatients,
-		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
-		
-		//========================================================
-		//        Adding columns to data set definition         //
-		//========================================================
-		dsd.addColumn(
-		    "D2N",
-		    "Of total active patients, % with no visit 6 months & <12 months past last visit date",
-		    new Mapped(activeAndNotSeenIn6MonthsPatientsIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
+				"activeAndNotSeenIn6MonthsPatientsIndicator",
+				activeAndNotSeenIn6MonthsPatients,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
+
 		//=======================================================================
 		//E3: Of total active patients with ‘severe persistent’ or ‘severe uncontrolled’ asthma classification at last visit, % with next scheduled RDV visit 14 weeks or more past last visit date 
 		//	D3 Review: Active asthma patients in the last quarter , disaggregated by level of severity
@@ -1557,36 +1586,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		    new Mapped(adultFemalePatientsTestedForpeakFlowGreaterThan400Indicator, ParameterizableUtil
 		            .createParameterMappings("endDate=${endDate}")), "");
 		
-	//========================================================================================
-	//  Active patients with no exit in Reporting periode
-	//=======================================================================================
-
-		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByStartDateEndDate("patientWithAnyReasonForExitingFromCare",exitReasonFromCare,1);
-
-
-
-		CompositionCohortDefinition activePatientWithNoExitBeforeQuarterStart = new CompositionCohortDefinition();
-		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("startDate", "startDate", Date.class));
-		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("endDate", "endDate", Date.class));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("1",new Mapped<CohortDefinition>(patientsInPatientDiedState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("2",new Mapped<CohortDefinition>(NCDRelatedDeath, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("3",new Mapped<CohortDefinition>(obsPatientDiedReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("4",new Mapped<CohortDefinition>(patientWithAnyReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("startDate=${startDate-9m},endDate=${endDate-3m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("5",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.setCompositionString("5 AND (NOT (1 OR 2 OR 3 OR 4))");
-
-
-		CohortIndicator activePatientIndicator = Indicators.newCountIndicator("activePatientIndicator",
-				activePatientWithNoExitBeforeQuarterStart,
-				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
-
-
-		dsd.addColumn("Active", "Total # of Active patients : seen in the last 12 months", new Mapped(
-				activePatientIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
-
-
 
 
 
