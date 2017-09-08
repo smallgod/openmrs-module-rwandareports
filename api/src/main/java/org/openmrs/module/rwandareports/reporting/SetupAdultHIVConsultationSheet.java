@@ -80,12 +80,16 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		reportDefinition.setName("HIV-Adult Consultation Sheet");
 		
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
-		
+
+		reportDefinition.addParameter(new Parameter("onDate", "On Date", Date.class));
+		//reportDefinition.getParameter("onDate").setRequired(false);
+
 		Properties stateProperties = new Properties();
 		stateProperties.setProperty("Program", hivProgram.getName());
 		stateProperties.setProperty("Workflow", Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.TREATMENT_GROUP_WORKFLOW));
 		
 		reportDefinition.addParameter(new Parameter("state", "Group", ProgramWorkflowState.class, stateProperties));
+		reportDefinition.getParameter("state").setRequired(false);
 		
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
@@ -102,13 +106,19 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();		
 		dataSetDefinition.setName(reportDefinition.getName() + " Data Set");
 		dataSetDefinition.addParameter(new Parameter("state", "State", ProgramWorkflowState.class));
-		
+		dataSetDefinition.getParameter("state").setRequired(false);
+		dataSetDefinition.addParameter(new Parameter("onDate", "On Date", Date.class));
+		dataSetDefinition.getParameter("onDate").setRequired(false);
+
 		//Add Filters
 		dataSetDefinition.addFilter(Cohorts.createInCurrentStateParameterized("in state", "states"),
 		    ParameterizableUtil.createParameterMappings("states=${state},onDate=${now}"));
 		
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("adultHIV: In Program", hivProgram),
 		    ParameterizableUtil.createParameterMappings("onDate=${now}"));
+
+		dataSetDefinition.addFilter(Cohorts.getPatientsWithVisitByDate("Patient with visit by date", flowsheetAdult),
+				ParameterizableUtil.createParameterMappings("onDate=${onDate}"));
 		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
@@ -181,6 +191,8 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		alert.addPatientDataToBeEvaluated(creatinineTest, new HashMap<String, Object>());
 		alert.setCalculator(new HIVAdultAlerts());
 		alert.addParameter(new Parameter("state", "State",Date.class));
+		alert.getParameter("state").setRequired(false);
+
 		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("state=${state}"));
 		
 		CustomCalculationBasedOnMultiplePatientDataDefinitions bmi = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
@@ -192,6 +204,8 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("state", "${state}");
+		mappings.put("onDate", "${onDate}");
+
 		
 		reportDefinition.addDataSetDefinition("dataSet", dataSetDefinition, mappings);
 	}

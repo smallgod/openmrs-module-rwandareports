@@ -414,9 +414,9 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 		ProgramEnrollmentCohortDefinition patientEnrolledInDMProgramByEndDate = Cohorts.createProgramEnrollmentEverByEndDate("Enrolled Ever In DM", DMProgram);
 
 		CompositionCohortDefinition patientCurrentEnrolledInDMAndSeenInSameQuarter=new CompositionCohortDefinition();
-		patientCurrentEnrolledInDMAndSeenInSameQuarter.setName("patientCurrentEnrolledInDMAndSeenInSameQuarter");
+		patientCurrentEnrolledInDMAndSeenInSameQuarter.setName("patientCurrentEnrolledInDMAndSeenInSameQuarter");/*
 		patientCurrentEnrolledInDMAndSeenInSameQuarter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientCurrentEnrolledInDMAndSeenInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientCurrentEnrolledInDMAndSeenInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));*/
 		patientCurrentEnrolledInDMAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
 		patientCurrentEnrolledInDMAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		patientCurrentEnrolledInDMAndSeenInSameQuarter.getSearches().put(
@@ -429,14 +429,15 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 				"3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 
-		patientCurrentEnrolledInDMAndSeenInSameQuarter.setCompositionString("(1 and (not 2)) and 3");
+		//patientCurrentEnrolledInDMAndSeenInSameQuarter.setCompositionString("(1 and (not 2)) and 3");
+		patientCurrentEnrolledInDMAndSeenInSameQuarter.setCompositionString("1 and (not 2)");
 
 
 
 
 		CohortIndicator patientCurrentEnrolledInDMAndSeenInSameQuarterIndicator = Indicators.newCountIndicator(
 				"patientCurrentEnrolledInDMAndSeenInSameQuarterIndicator", patientCurrentEnrolledInDMAndSeenInSameQuarter,
-				ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+				ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
 
 		dsd.addColumn(
 				"NewInQ",

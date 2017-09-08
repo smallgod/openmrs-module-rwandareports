@@ -39,13 +39,14 @@ public class HeartFailureAlerts implements CustomCalculation {
 				ObservationResult systolic = (ObservationResult)result;
 				
 				if(systolic.getValue() != null && systolic.getObs() != null && systolic.getObs().getValueNumeric() > 140)
-				uncontrolledAlert = true;
+					alerts.append("BP is above goal \n");
+				//uncontrolledAlert = true;
 			}
 			
 			if (result.getName().equals("diastolic")) {
 					ObservationResult diastolic = (ObservationResult)result;
 					
-					if(diastolic.getValue() != null && diastolic.getObs() != null && diastolic.getObs().getValueNumeric() > 90)
+					if((diastolic.getValue() != null && diastolic.getObs() != null && diastolic.getObs().getValueNumeric() > 90) || uncontrolledAlert==true)
 					{
 						if(alerts.length() > 0)
 						{

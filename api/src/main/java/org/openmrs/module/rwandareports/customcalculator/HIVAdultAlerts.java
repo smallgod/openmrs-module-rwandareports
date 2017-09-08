@@ -30,7 +30,7 @@ public class HIVAdultAlerts implements CustomCalculation{
 		
 		PatientAttributeResult alert = new PatientAttributeResult(null, null);
 		
-		ProgramWorkflowState state = (ProgramWorkflowState)context.getParameterValue("state");
+		//ProgramWorkflowState state = (ProgramWorkflowState)context.getParameterValue("state");
 		
 		StringBuffer alerts = new StringBuffer();
 		
@@ -48,12 +48,12 @@ public class HIVAdultAlerts implements CustomCalculation{
 				{
 					int decline = calculateDecline(cd4.getValue());
 					
-					if(decline > 50 && (state.toString().contains("GROUP") || state.toString().contains("FOLLOWING")))
+					/*if(decline > 50 && (state.toString().contains("GROUP") || state.toString().contains("FOLLOWING")))
 					{
 						alerts.append("CD4 decline(");
 						alerts.append(decline);
 						alerts.append(").\n");
-					}
+					}*/
 					
 					Obs lastCd4 = null;
 					
@@ -77,15 +77,15 @@ public class HIVAdultAlerts implements CustomCalculation{
 						{
 							alerts.append("Very late CD4(" + diff + " months ago).\n");
 						}
-						else if((diff > 6) && state.toString().contains("FOLLOWING"))
+						/*else if((diff > 6) && state.toString().contains("FOLLOWING"))
 						{
 							alerts.append("Late CD4(" + diff + " months ago).\n");
-						}
+						}*/
 						
-						if(state.toString().contains("FOLLOWING") && lastCd4.getValueNumeric() != null && lastCd4.getValueNumeric() < 500)
+						/*if(state.toString().contains("FOLLOWING") && lastCd4.getValueNumeric() != null && lastCd4.getValueNumeric() < 500)
 						{
 							alerts.append("Eligible for Treatment.\n");
-						}
+						}*/
 					}
 				}	
 			}
@@ -102,7 +102,7 @@ public class HIVAdultAlerts implements CustomCalculation{
 						lastviraload = viraload.getValue().get(viraload.getValue().size()-1);
 					}
 					
-					if(state.toString().contains("GROUP") && (lastviraload == null))
+					/*if(state.toString().contains("GROUP") && (lastviraload == null))
 					{
 						alerts.append("No VL recorded.\n");
 					}
@@ -126,11 +126,41 @@ public class HIVAdultAlerts implements CustomCalculation{
 					  }
 						}
 						catch(Exception e){}
+					}*/
+
+
+		// Edited block	 and remove state
+					if(lastviraload == null)
+					{
+						alerts.append("No VL recorded.\n");
 					}
+					else
+					{
+					 try{
+						Date dateVl = lastviraload.getObsDatetime();
+						Date date = Calendar.getInstance().getTime();
+
+						int diff = calculateMonthsDifference(date, dateVl);
+
+						if(diff > 12){
+							alerts.append("Late VL(" + diff + " months ago).\n");
+						}
+
+						if(lastviraload.getValueNumeric() != null && lastviraload.getValueNumeric() > 1000)
+						{
+							alerts.append("VL Failure "+lastviraload.getValueNumeric()+".\n");
+						}
+
+						}
+						catch(Exception e){}
+					}
+
+
+
 				}	
 			}
-			
-			
+
+			// End of Edited block	 and remove state
 
 			// start creatinine
 			

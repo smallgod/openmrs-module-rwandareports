@@ -802,13 +802,13 @@ public class Cohorts {
 		
 		return state;
 	}
-	
+
 	public static InStateCohortDefinition createInCurrentState(String name, List<ProgramWorkflowState> states) {
 		InStateCohortDefinition state = new InStateCohortDefinition();
 		state.setName(name);
 		state.setStates(states);
 		state.addParameter(new Parameter("onDate", "On Date", Date.class));
-		
+
 		return state;
 	}
 	
@@ -1462,7 +1462,23 @@ public class Cohorts {
 		return firstOrder;
 		
 	}
-	
+
+
+	public static SqlCohortDefinition getPatientsStartedRegimenBasedOnStartDateEndDate(String name, Concept concept) {
+		SqlCohortDefinition patientOnRegimen = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (select DISTINCT concept_id FROM concept_set where concept_set=");
+		query.append(concept.getId());
+		query.append(") and voided=0 and start_date >= :startDate and start_date <= :endDate");
+		patientOnRegimen.setQuery(query.toString());
+		patientOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientOnRegimen.setName(name);
+
+		return patientOnRegimen;
+	}
+
+
 	public static SqlCohortDefinition getPatientsWithObservationsBetweenStartDateAndEndDate(String name,
 	                                                                                        List<Concept> concepts) {
 		SqlCohortDefinition obsBetweenStartDateAndEndDate = new SqlCohortDefinition();
@@ -2309,6 +2325,17 @@ public class Cohorts {
 		patientsWithBMI.setQuery(query.toString());
 		patientsWithBMI.setName(name);
 		return patientsWithBMI;
+	}
+
+	public static SqlCohortDefinition getPatientsWithVisitByDate(String name, EncounterType encounterType) {
+		Concept returnVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+		SqlCohortDefinition VisitByDate = new SqlCohortDefinition();
+		StringBuilder query = new StringBuilder("select o.person_id from obs o,encounter e where e.encounter_type="+encounterType.getEncounterTypeId()+" and o.encounter_id=e.encounter_id and o.concept_id="+returnVisit.getConceptId()+" and o.value_datetime=:onDate and o.voided=0 and e.voided=0");
+		VisitByDate.setQuery(query.toString());
+		VisitByDate.setName(name);
+		VisitByDate.addParameter(new Parameter("onDate", "onDate", Date.class));
+
+		return VisitByDate;
 	}
 
 }

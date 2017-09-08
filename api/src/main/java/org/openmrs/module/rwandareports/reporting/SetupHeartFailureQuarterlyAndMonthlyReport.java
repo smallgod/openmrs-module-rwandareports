@@ -419,9 +419,9 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 
 
 		CompositionCohortDefinition patientEnrolledInHFPAndSeenInSameQuarter=new CompositionCohortDefinition();
-		patientEnrolledInHFPAndSeenInSameQuarter.setName("patientEnrolledInCRDPAndSeenInSameQuarter");
+		patientEnrolledInHFPAndSeenInSameQuarter.setName("patientEnrolledInCRDPAndSeenInSameQuarter");/*
 		patientEnrolledInHFPAndSeenInSameQuarter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientEnrolledInHFPAndSeenInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientEnrolledInHFPAndSeenInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));*/
 		patientEnrolledInHFPAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
 		patientEnrolledInHFPAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		patientEnrolledInHFPAndSeenInSameQuarter.getSearches().put(
@@ -432,19 +432,20 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 				"2",
 				new Mapped<CohortDefinition>(patientEnrolledInHFProgramByEndDate, ParameterizableUtil
 						.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore-3m}")));
-		patientEnrolledInHFPAndSeenInSameQuarter.getSearches().put(
+		/*patientEnrolledInHFPAndSeenInSameQuarter.getSearches().put(
 				"3",
 				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));*/
 
-		patientEnrolledInHFPAndSeenInSameQuarter.setCompositionString("(1 and (not 2)) and 3");
+		//patientEnrolledInHFPAndSeenInSameQuarter.setCompositionString("(1 and (not 2)) and 3");
+		patientEnrolledInHFPAndSeenInSameQuarter.setCompositionString("1 and (not 2)");
 
 
 
 		
 		CohortIndicator patientEnrolledInHFProgramQuarterIndicator = Indicators.newCountIndicator(
 		    "patientEnrolledInHFProgramQuarterIndicator", patientEnrolledInHFPAndSeenInSameQuarter,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
 		
 		dsd.addColumn(
 		    "A3Q",
@@ -743,7 +744,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 */
 		CohortIndicator patientEnrolledInHFProgramInLastTwoQuarterIndicator = Indicators.newCountIndicator(
 				"patientEnrolledInHFProgramQuarterIndicator", patientEnrolledInHFPAndSeenInSameQuarter,
-				ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-6m},enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${endDate-6m}"));
+				ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-6m},enrolledOnOrBefore=${endDate}"));
 
 
 
@@ -1027,20 +1028,20 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 			SqlCohortDefinition patientWithCurrentNYHAClass=Cohorts.getPatientsWithLastCodedObsEver("patientWithOtherDiagnosis", NYHACLASS, ca.getAnswerConcept());
 
 			CompositionCohortDefinition patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass=new CompositionCohortDefinition();
-			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.setName("patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass");
+			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.setName("patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass");/*
 			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));*/
 			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
 			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.getSearches().put("1",new Mapped<CohortDefinition>(patientWithCurrentNYHAClass,null));
-			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.getSearches().put("2",new Mapped<CohortDefinition>(patientEnrolledInHFPAndSeenInSameQuarter, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore},enrolledOnOrBefore=${enrolledOnOrBefore}")));
+			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.getSearches().put("2",new Mapped<CohortDefinition>(patientEnrolledInHFPAndSeenInSameQuarter, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore},enrolledOnOrBefore=${enrolledOnOrBefore}")));
 			patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass.setCompositionString("1 AND 2");
 
 
 
 			CohortIndicator patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClassIndicator = Indicators.newCountIndicator(
 					"patientEnrolledInHFProgramQuarterIndicator", patientEnrolledInHFPAndSeenInSameQuarterWithCurrentNYHAClass,
-					ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+					ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
 
 			dsd.addColumn(
 					conName,

@@ -408,30 +408,31 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 
 		ProgramEnrollmentCohortDefinition patientEnrolledInHypertensionProgramByEndDate = Cohorts.createProgramEnrollmentEverByEndDate("Enrolled Ever In hypertensionProgram", hypertensionProgram);
 
-		CompositionCohortDefinition patientCurrentEnrolledInHypertensionAndSeenInSameQuarter=new CompositionCohortDefinition();
-		patientCurrentEnrolledInHypertensionAndSeenInSameQuarter.setName("patientCurrentEnrolledInHypertensionAndSeenInSameQuarter");
-		patientCurrentEnrolledInHypertensionAndSeenInSameQuarter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientCurrentEnrolledInHypertensionAndSeenInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		patientCurrentEnrolledInHypertensionAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
-		patientCurrentEnrolledInHypertensionAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
-		patientCurrentEnrolledInHypertensionAndSeenInSameQuarter.getSearches().put(
+		CompositionCohortDefinition patientCurrentEnrolledInHypertensionInSameQuarter=new CompositionCohortDefinition();
+		patientCurrentEnrolledInHypertensionInSameQuarter.setName("patientCurrentEnrolledInHypertensionInSameQuarter");/*
+		patientCurrentEnrolledInHypertensionInSameQuarter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		patientCurrentEnrolledInHypertensionInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));*/
+		patientCurrentEnrolledInHypertensionInSameQuarter.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		patientCurrentEnrolledInHypertensionInSameQuarter.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
+		patientCurrentEnrolledInHypertensionInSameQuarter.getSearches().put(
 				"1",new Mapped<CohortDefinition>(patientEnrolledInDMProgram, ParameterizableUtil
 						.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore},enrolledOnOrAfter=${enrolledOnOrAfter}")));
-		patientCurrentEnrolledInHypertensionAndSeenInSameQuarter.getSearches().put(
+		patientCurrentEnrolledInHypertensionInSameQuarter.getSearches().put(
 				"2",new Mapped<CohortDefinition>(patientEnrolledInHypertensionProgramByEndDate, ParameterizableUtil
 						.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore-3m}")));
-		patientCurrentEnrolledInHypertensionAndSeenInSameQuarter.getSearches().put(
+		/*patientCurrentEnrolledInHypertensionInSameQuarter.getSearches().put(
 				"3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-
-		patientCurrentEnrolledInHypertensionAndSeenInSameQuarter.setCompositionString("(1 and (not 2)) and 3");
+*/
+		//patientCurrentEnrolledInHypertensionInSameQuarter.setCompositionString("(1 and (not 2)) and 3");
+		patientCurrentEnrolledInHypertensionInSameQuarter.setCompositionString("1 and (not 2)");
 
 
 
 
 		CohortIndicator patientCurrentEnrolledInDMAndSeenInSameQuarterIndicator = Indicators.newCountIndicator(
-				"patientCurrentEnrolledInDMAndSeenInSameQuarterIndicator", patientCurrentEnrolledInHypertensionAndSeenInSameQuarter,
-				ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+				"patientCurrentEnrolledInDMAndSeenInSameQuarterIndicator", patientCurrentEnrolledInHypertensionInSameQuarter,
+				ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
 
 		dsd.addColumn(
 				"NewInQ",
@@ -612,16 +613,16 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 
 
 		CompositionCohortDefinition newPatientWithUrinaryAlbuminInSameQuarter=new CompositionCohortDefinition();
-		newPatientWithUrinaryAlbuminInSameQuarter.setName("newPatientWithUrinaryAlbuminInSameQuarter");
+		newPatientWithUrinaryAlbuminInSameQuarter.setName("newPatientWithUrinaryAlbuminInSameQuarter");/*
 		newPatientWithUrinaryAlbuminInSameQuarter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		newPatientWithUrinaryAlbuminInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		newPatientWithUrinaryAlbuminInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));*/
 		newPatientWithUrinaryAlbuminInSameQuarter.addParameter(new Parameter("startDate", "startDate", Date.class));
 		newPatientWithUrinaryAlbuminInSameQuarter.addParameter(new Parameter("endDate", "endDate", Date.class));
 		newPatientWithUrinaryAlbuminInSameQuarter.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
 		newPatientWithUrinaryAlbuminInSameQuarter.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		newPatientWithUrinaryAlbuminInSameQuarter.getSearches().put(
-				"1",new Mapped<CohortDefinition>(patientCurrentEnrolledInHypertensionAndSeenInSameQuarter, ParameterizableUtil
-						.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore},onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+				"1",new Mapped<CohortDefinition>(patientCurrentEnrolledInHypertensionInSameQuarter, ParameterizableUtil
+						.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
 		newPatientWithUrinaryAlbuminInSameQuarter.getSearches().put(
 				"2",new Mapped<CohortDefinition>(patientWithurinaryAlbumin, ParameterizableUtil
 						.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
@@ -631,7 +632,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 
 		CohortIndicator newPatientWithUrinaryAlbuminInSameQuarterIndicator = Indicators.newCountIndicator(
 				"newPatientWithUrinaryAlbuminInSameQuarterIndicator", newPatientWithUrinaryAlbuminInSameQuarter,
-				ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate},startDate=${startDate},endDate=${endDate}"));
+				ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
 
 
 
@@ -678,15 +679,13 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 
 			CompositionCohortDefinition newPatientSystolicBPInSameQuarter=new CompositionCohortDefinition();
 			newPatientSystolicBPInSameQuarter.setName("newPatientSystolicBPInSameQuarter");
-			newPatientSystolicBPInSameQuarter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-			newPatientSystolicBPInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 			newPatientSystolicBPInSameQuarter.addParameter(new Parameter("startDate", "startDate", Date.class));
 			newPatientSystolicBPInSameQuarter.addParameter(new Parameter("endDate", "endDate", Date.class));
 			newPatientSystolicBPInSameQuarter.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
 			newPatientSystolicBPInSameQuarter.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 			newPatientSystolicBPInSameQuarter.getSearches().put(
-					"1",new Mapped<CohortDefinition>(patientCurrentEnrolledInHypertensionAndSeenInSameQuarter, ParameterizableUtil
-							.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore},onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+					"1",new Mapped<CohortDefinition>(patientCurrentEnrolledInHypertensionInSameQuarter, ParameterizableUtil
+							.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
 			newPatientSystolicBPInSameQuarter.getSearches().put(
 					"2",new Mapped<CohortDefinition>(patientWithLastSystolicOrDiastolic, ParameterizableUtil
 							.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
@@ -696,7 +695,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 
 			CohortIndicator newPatientSystolicBPInSameQuarterIndicator = Indicators.newCountIndicator(
 					"newPatientSystolicBPInSameQuarterIndicator", newPatientSystolicBPInSameQuarter,
-					ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate},startDate=${startDate},endDate=${endDate}"));
+					ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},startDate=${startDate},endDate=${endDate}"));
 
 
 

@@ -401,9 +401,9 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 
 
 		CompositionCohortDefinition patientEnrolledInCRDPAndSeenInSameQuarter=new CompositionCohortDefinition();
-		patientEnrolledInCRDPAndSeenInSameQuarter.setName("patientEnrolledInCRDPAndSeenInSameQuarter");
+		patientEnrolledInCRDPAndSeenInSameQuarter.setName("patientEnrolledInCRDPAndSeenInSameQuarter");/*
 		patientEnrolledInCRDPAndSeenInSameQuarter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientEnrolledInCRDPAndSeenInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientEnrolledInCRDPAndSeenInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));*/
 		patientEnrolledInCRDPAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
 		patientEnrolledInCRDPAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
 		patientEnrolledInCRDPAndSeenInSameQuarter.getSearches().put(
@@ -414,17 +414,18 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 				"2",
 				new Mapped<CohortDefinition>(patientEnrolledInCRDPByEndDate, ParameterizableUtil
 						.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore-3m}")));
-		patientEnrolledInCRDPAndSeenInSameQuarter.getSearches().put(
+		/*patientEnrolledInCRDPAndSeenInSameQuarter.getSearches().put(
 				"3",
 				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));*/
 
-		patientEnrolledInCRDPAndSeenInSameQuarter.setCompositionString("(1 and (not 2)) and 3");
+		//patientEnrolledInCRDPAndSeenInSameQuarter.setCompositionString("(1 and (not 2)) and 3");
+		patientEnrolledInCRDPAndSeenInSameQuarter.setCompositionString("1 and (not 2)");
 
 
 		CohortIndicator patientEnrolledInCRDPQuarterIndicator = Indicators.newCountIndicator(
 		    "patientEnrolledInCRDPQuarterIndicator", patientEnrolledInCRDPAndSeenInSameQuarter,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
 		CohortIndicator patientEnrolledInCRDPMonthOneIndicator = Indicators.newCountIndicator(
 		    "patientEnrolledInCRDPQuarterIndicator", patientEnrolledInCRDP,
 		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-1m+1d},enrolledOnOrBefore=${endDate}"));
@@ -479,7 +480,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		//=================================================
 		
 		dsd.addColumn("A3Q", "Total # of new patients enrolled in the last quarter", new Mapped(
-		        patientEnrolledInCRDPQuarterIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate}")),
+		        patientEnrolledInCRDPQuarterIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")),
 		    "");
 		dsd.addColumn("A3QM1", "Total # of new patients enrolled in the month one", new Mapped(
 		        patientEnrolledInCRDPMonthOneIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate}")),
