@@ -1062,6 +1062,12 @@
 			accompagnatuer</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.hbcpRelationship</property>
+		<defaultValue>16</defaultValue>
+		<description>The id,uuid or name of the Relationship that represents the
+			HBCP</description>
+	</globalProperty>
 
 
 	<globalProperty>
@@ -2502,6 +2508,13 @@
 		<defaultValue>57b07582-2b35-4656-8cb2-939bb09cc02c</defaultValue>
 		<description>The id of the form for the hypertension ddb</description>
 	</globalProperty>
+
+	<globalProperty>
+		<property>reports.hypertensionDDBformIds</property>
+		<defaultValue>57b07582-2b35-4656-8cb2-939bb09cc02c,1c3048fe-e01a-46d0-872e-dc080fe41c4c</defaultValue>
+		<description>The ddb ids of the forms for the hypertension. comma(,) separated</description>
+	</globalProperty>
+
 <globalProperty>
 		<property>reports.fluconazole</property>
 		<defaultValue>747</defaultValue>
@@ -3847,5 +3860,14 @@
 		<defaultValue>3cd49d88-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>A concept for URINARY ALBUMIN</description>
 	</globalProperty>
+
+	<globalProperty>
+		<property>reports.hypertensionDDBAndRendezvousForms</property>
+		<defaultValue>57b07582-2b35-4656-8cb2-939bb09cc02c,c6276c2d-b17e-45e3-87ff-2efd341b1e20,1df78f57-990d-46a7-aa9b-9a992d32ea57</defaultValue>
+		<description>form ids or uuids of hypertension DDB, NCD followup form And Rendezvous Forms. Please separate them by using a comma(,)  </description>
+	</globalProperty>
+
+
+
 
 </module>

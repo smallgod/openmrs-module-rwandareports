@@ -847,6 +847,9 @@ public class GlobalPropertiesManagement {
 	
 	//RelationshipTypes
 	public final static String ACCOMPAGNATUER_RELATIONSHIP = "reports.accompagnatuerRelationship";
+
+	public final static String HBCP_RELATIONSHIP = "reports.hbcpRelationship";
+
 	
 	public final static String MOTHER_RELATIONSHIP = "reports.pmtctMotherRelationship";
 	
@@ -878,9 +881,13 @@ public class GlobalPropertiesManagement {
 	public final static String ASTHMA_DDB = "reports.asthmaDDBformId";
 	
 	public final static String HYPERTENSION_DDB = "reports.hypertensionDDBformId";
+
+	public final static String HYPERTENSION_DDBs = "reports.hypertensionDDBformIds";
 	
 	public final static String HYPERTENSION_FLOW_VISIT = "reports.hypertensionFlowVisit";
-	
+
+	public final static String HYPERTENSION_DDB_FLOW_VISIT="reports.hypertensionDDBAndRendezvousForms";
+
 	public final static String HYPERTENSION_FLOW_ECHOCARDIOGRAPHIE_FORM = "reports.hypertensionFlowEchoFormId";
 		
 	public final static String HEART_FAILURE_DDB = "reports.heartFailureDDBformId";

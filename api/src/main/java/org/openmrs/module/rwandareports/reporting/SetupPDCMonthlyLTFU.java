@@ -26,13 +26,7 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAgeInMonths;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounter;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
 import org.openmrs.module.rwandareports.customcalculator.PDCAlerts;
 import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -152,9 +146,6 @@ public class SetupPDCMonthlyLTFU {
 		//aboveTwoYearsDataSetDefinition.addFilter(Cohorts.createAboveAgeCohort("aboveTwoYears",2,DurationUnit.YEARS), ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 		aboveTwoYearsDataSetDefinition.addFilter(twoYearsAndAbove, ParameterizableUtil.createParameterMappings("effectiveDate=${endDate}"));
 
-
-		addColumns(aboveTwoYearsDataSetDefinition);
-		
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("location", "${location}");
@@ -244,6 +235,15 @@ public class SetupPDCMonthlyLTFU {
 
 		RecentEncounterType lastEncounterTypes = RowPerPatientColumns.getRecentEncounterType("LastVisits",pdcEncounters,null, new LastEncounterFilter());
 		dataSetDefinition.addColumn(lastEncounterTypes, new HashMap<String, Object>());
+
+		/*DateDiff lateVisitInMonth = RowPerPatientColumns.getDifferenceSinceLastEncounter(
+				"MonthsSinceLastVisit", pdcEncounters, DateDiff.DateDiffType.MONTHS);
+*/
+
+
+		DateDiff monthsSinceLastVisit = RowPerPatientColumns.getDifferenceSinceLastEncounter("MonthsSinceLastVisit", pdcEncounters, DateDiff.DateDiffType.MONTHS);
+		monthsSinceLastVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		dataSetDefinition.addColumn(monthsSinceLastVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 
 
 		CustomCalculationBasedOnMultiplePatientDataDefinitions alert = new CustomCalculationBasedOnMultiplePatientDataDefinitions();

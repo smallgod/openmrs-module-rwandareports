@@ -30,26 +30,27 @@ public class HypertensionAlerts implements CustomCalculation {
 		
 		for (PatientDataResult result : results) {
 			
-			if (!patientHasHypertensionDDBForm(result))
-				alerts.append("no DDB \n");
+			if (!patientHasHypertensionDDBForm(result) && !alerts.toString().contains("no Enrollment form"))
+				alerts.append("no Enrollment form");
 			
-			boolean uncontrolledAlert = false;
-			if (result.getName().equals("systolic")) {
+			//boolean uncontrolledAlert = false;
+			if (result.getName().equals("systolic") && !alerts.toString().contains("Last BP was uncontrolled")) {
 				ObservationResult systolic = (ObservationResult)result;
 				
 				if(systolic.getValue() != null && systolic.getObs() != null && systolic.getObs().getValueNumeric() > 140)
 				{
 					if(alerts.length() > 0)
 					{
-						alerts.append(", ");
+						alerts.append(", \n");
 					}
 					alerts.append("Last BP was uncontrolled");
+					//uncontrolledAlert = true;
 				}
 				
-				uncontrolledAlert = true;
+				//uncontrolledAlert = true;
 			}
 			
-			if(!uncontrolledAlert)
+			if(!alerts.toString().contains("Last BP was uncontrolled"))
 			{
 				if (result.getName().equals("diastolic")) {
 					ObservationResult diastolic = (ObservationResult)result;
@@ -58,7 +59,7 @@ public class HypertensionAlerts implements CustomCalculation {
 					{
 						if(alerts.length() > 0)
 						{
-							alerts.append(", ");
+							alerts.append(", \n");
 						}
 						alerts.append("Last BP was uncontrolled");
 					}
@@ -108,9 +109,13 @@ public class HypertensionAlerts implements CustomCalculation {
 	
 	private boolean patientHasHypertensionDDBForm(PatientDataResult result) {
 		
-		Form form = gp.getForm(GlobalPropertiesManagement.HYPERTENSION_DDB);
+		List<Form> forms = gp.getFormList(GlobalPropertiesManagement.HYPERTENSION_DDBs);
 		Patient p = result.getPatientData().getPatient();
-		return RwandaReportsUtil.patientHasForm(p, form);
+		for (Form form:forms) {
+			if (RwandaReportsUtil.patientHasForm(p, form))
+			return true;
+		}
+		return  false;
 	}
 	
 	private int increaseBetweenTwoObs(List<Obs> obs)

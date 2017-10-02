@@ -9,10 +9,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Program;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
@@ -47,6 +44,8 @@ public class SetupHypertensionLateVisit {
     private Form hypertensionRDVForm;
     private Form hypertensionDDBForm;
     private Form followUpForm;
+
+	RelationshipType HBCP;
     
     private List<Form> hypertensionForms = new ArrayList<Form>();
 	
@@ -149,9 +148,12 @@ public class SetupHypertensionLateVisit {
         
         dataSetDefinition1.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName", 
         		new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
-		
-        
-        dataSetDefinition1.addParameter(new Parameter("location", "Location", Location.class));
+
+		dataSetDefinition1.addColumn(RowPerPatientColumns.getPatientRelationship("HBCP",HBCP.getRelationshipTypeId(),"A",null), new HashMap<String, Object>());
+
+
+
+		dataSetDefinition1.addParameter(new Parameter("location", "Location", Location.class));
         dataSetDefinition1.addParameter(new Parameter("endDate", "End Date", Date.class));
         
         Map<String, Object> mappings = new HashMap<String, Object>();
@@ -174,8 +176,12 @@ public class SetupHypertensionLateVisit {
         
         followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
         
-        hypertensionForms.add(hypertensionDDBForm);
-        hypertensionForms.add(hypertensionRDVForm);
-        hypertensionForms.add(followUpForm);
+       // hypertensionForms.add(hypertensionDDBForm);
+       // hypertensionForms.add(hypertensionRDVForm);
+        //hypertensionForms.add(followUpForm);
+
+		hypertensionForms=gp.getFormList(GlobalPropertiesManagement.HYPERTENSION_DDB_FLOW_VISIT);
+
+		HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 	}	
 }

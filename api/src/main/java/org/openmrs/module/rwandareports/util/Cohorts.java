@@ -1922,12 +1922,30 @@ public class Cohorts {
 		
 		return lateVisit;
 	}
+
+
+	public static SqlCohortDefinition createPatientsLateForVisit(EncounterType encounterType,int numberOfDaysAtleast) {
+
+		StringBuilder sql = new StringBuilder();
+		Concept nextVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+		sql.append("select groupedObs.person_id from (select * from (select o.person_id,o.concept_id,o.encounter_id,o.value_datetime from obs o, encounter e where o.voided=0 and e.voided=0 and o.concept_id="+nextVisit.getConceptId()+" and e.encounter_type="+encounterType.getEncounterTypeId()+" and o.encounter_id=e.encounter_id order by o.value_datetime desc) orderObs  group by orderObs.person_id) groupedObs where groupedObs.value_datetime < :endDate");
+		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
+		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		return lateVisit;
+	}
 	
 	
 	public static SqlCohortDefinition createPatientsLateForPDCVisit(EncounterType encounterType, int diff) {
 		Concept returnVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
 
 		StringBuilder query = new StringBuilder(
+				"select groupedEnc.patient_id " +
+						"from (select * from (SELECT * FROM encounter where encounter_type="+encounterType.getEncounterTypeId()+" and voided=0 order by encounter_datetime desc) orderEnc group by orderEnc.patient_id) groupedEnc " +
+						"where DATEDIFF(:endDate,groupedEnc.encounter_datetime)>");
+		query.append(diff);
+
+		/*StringBuilder query = new StringBuilder(
 				"select p.patient_id from patient p, obs o, encounter e where p.voided = 0 and o.obs_id = (select obs_id o2 from obs o2, encounter e2 where o2.voided = 0 and p.patient_id = o2.person_id and o2.concept_id = ");
 		query.append(returnVisit.getId());
 		query.append(" and o2.value_datetime is not null and o2.encounter_id = e2.encounter_id and e2.encounter_type = ");
@@ -1935,13 +1953,45 @@ public class Cohorts {
 		query.append(" order by o2.obs_datetime desc LIMIT 1) and e.encounter_id = (select encounter_id from encounter where encounter_type = ");
 		query.append(encounterType.getId());
 		query.append(" and patient_id = p.patient_id order by encounter_datetime desc LIMIT 1) and e.patient_id = o.person_id and p.patient_id = e.patient_id and o.value_datetime > e.encounter_datetime  and DATEDIFF(:endDate,lastObs.value_datetime)>"+diff);
-
+*/
 		SqlCohortDefinition lateVisit = new SqlCohortDefinition(query.toString());
 		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
 
 		return lateVisit;
 
 	}
+
+
+
+	public static SqlCohortDefinition getMissedVisitPDCPatients(EncounterType encounterType, int diff) {
+		Concept returnVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+
+		StringBuilder query = new StringBuilder(
+				"select groupedEnc.patient_id " +
+						"from (select * from (SELECT * FROM encounter where encounter_type="+encounterType.getEncounterTypeId()+" and voided=0 order by encounter_datetime desc) orderEnc group by orderEnc.patient_id) groupedEnc " +
+						"where DATEDIFF(:endDate,groupedEnc.encounter_datetime)>");
+		query.append(diff);
+
+
+
+		/*StringBuilder query = new StringBuilder(
+				"select p.patient_id from patient p, obs o, encounter e where p.voided = 0 and o.obs_id = (select obs_id o2 from obs o2, encounter e2 where o2.voided = 0 and p.patient_id = o2.person_id and o2.concept_id = ");
+		query.append(returnVisit.getId());
+		query.append(" and o2.value_datetime is not null and o2.encounter_id = e2.encounter_id and e2.encounter_type = ");
+		query.append(encounterType.getId());
+		query.append(" order by o2.obs_datetime desc LIMIT 1) and e.encounter_id = (select encounter_id from encounter where encounter_type = ");
+		query.append(encounterType.getId());
+		query.append(" and patient_id = p.patient_id order by encounter_datetime desc LIMIT 1) and e.patient_id = o.person_id and p.patient_id = e.patient_id and o.value_datetime > e.encounter_datetime  and DATEDIFF(:endDate,lastObs.value_datetime)>"+diff);
+*/
+		SqlCohortDefinition lateVisit = new SqlCohortDefinition(query.toString());
+		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		return lateVisit;
+
+	}
+
+
+
 	public static CompositionCohortDefinition createPatientsLateForVisit(List<Concept> concepts, List<Form> forms) {
 		
 		StringBuilder sql = new StringBuilder();

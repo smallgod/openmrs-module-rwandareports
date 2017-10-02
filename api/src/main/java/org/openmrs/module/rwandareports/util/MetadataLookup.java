@@ -327,6 +327,12 @@ public class MetadataLookup {
 			catch(Exception e) {}
 		}
 		if (rt == null) {
+			try {
+				rt =  Context.getPersonService().getRelationshipTypeByUuid(lookup);
+			}
+			catch(Exception e) {}
+		}
+		if (rt == null) {
 			throw new IllegalArgumentException("Unable to find RelationshipType using key: " + lookup);
 		}
 		return rt;

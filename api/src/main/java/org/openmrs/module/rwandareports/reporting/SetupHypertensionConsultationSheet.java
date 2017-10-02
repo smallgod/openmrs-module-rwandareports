@@ -7,11 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.openmrs.Concept;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Program;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
@@ -46,6 +42,8 @@ public class SetupHypertensionConsultationSheet {
 	
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
 	List<EncounterType> hypertensionEncounter;
+
+	RelationshipType HBCP;
 	
 	public void setup() throws Exception {
 		
@@ -135,8 +133,10 @@ public class SetupHypertensionConsultationSheet {
 			
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
-		
-		
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientRelationship("HBCP",HBCP.getRelationshipTypeId(),"A",null), new HashMap<String, Object>());
+
+
 		//AllObservationValues allSystolicBP = RowPerPatientColumns.getAllObservationValues("systolicLastTwo", systolicBP, null, new LastTwoObsFilter(),
 		//    null);
 		
@@ -172,10 +172,13 @@ public class SetupHypertensionConsultationSheet {
 		systolicBP = gp.getConcept(GlobalPropertiesManagement.SYSTOLIC_BLOOD_PRESSURE);
 		diastolicBP = gp.getConcept(GlobalPropertiesManagement.DIASTOLIC_BLOOD_PRESSURE);
 		
-		DDBAndRendezvousForms.add(rendevousForm);
-		DDBAndRendezvousForms.add(hypertensionDDBForm);
-		DDBAndRendezvousForms.add(followUpForm);
+		//DDBAndRendezvousForms.add(rendevousForm);
+		//DDBAndRendezvousForms.add(hypertensionDDBForm);
+		//DDBAndRendezvousForms.add(followUpForm);
+		DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.HYPERTENSION_DDB_FLOW_VISIT);
 		hypertensionEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER);
+
+		HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 		
 	}
 }
