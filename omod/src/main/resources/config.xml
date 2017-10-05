@@ -2257,8 +2257,8 @@
 
 	<globalProperty>
 		<property>reports.HeartFailureEncounterType</property>
-		<defaultValue>Heart Failure</defaultValue>
-		<description>Heart Failure encounter type id </description>
+		<defaultValue>Heart Failure,HF HTN CKD</defaultValue>
+		<description>Heart Failure,HTN,CKD encounter type ids or names </description>
 	</globalProperty>
 
 	<globalProperty>
@@ -2513,6 +2513,12 @@
 		<property>reports.hypertensionDDBformIds</property>
 		<defaultValue>57b07582-2b35-4656-8cb2-939bb09cc02c,1c3048fe-e01a-46d0-872e-dc080fe41c4c</defaultValue>
 		<description>The ddb ids of the forms for the hypertension. comma(,) separated</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.diabetesDDBformIds</property>
+		<defaultValue>83,272</defaultValue>
+		<description>The ddb ids of the forms for the diabetes. comma(,) separated</description>
 	</globalProperty>
 
 <globalProperty>
@@ -3863,11 +3869,38 @@
 
 	<globalProperty>
 		<property>reports.hypertensionDDBAndRendezvousForms</property>
-		<defaultValue>57b07582-2b35-4656-8cb2-939bb09cc02c,c6276c2d-b17e-45e3-87ff-2efd341b1e20,1df78f57-990d-46a7-aa9b-9a992d32ea57</defaultValue>
+		<defaultValue>57b07582-2b35-4656-8cb2-939bb09cc02c,c6276c2d-b17e-45e3-87ff-2efd341b1e20,1df78f57-990d-46a7-aa9b-9a992d32ea57,d9d135f9-7540-4b47-bf48-73c8441f58d1,1c3048fe-e01a-46d0-872e-dc080fe41c4c</defaultValue>
 		<description>form ids or uuids of hypertension DDB, NCD followup form And Rendezvous Forms. Please separate them by using a comma(,)  </description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.diabetesDDBAndRendezvousForms</property>
+		<defaultValue>83,129,1df78f57-990d-46a7-aa9b-9a992d32ea57</defaultValue>
+		<description>form ids or uuids of diabetes DDB, NCD followup form And Rendezvous Forms. Please separate them by using a comma(,)  </description>
+	</globalProperty>
 
+	<globalProperty>
+		<property>reports.AsthmaDDBAndRendezvousForms</property>
+		<defaultValue>85,1ba547f7-e955-4e90-869e-ae4a72430e57,1df78f57-990d-46a7-aa9b-9a992d32ea57,642be66d-d7c0-4552-9688-373c317a04cf,832d1420-bb75-4a2d-acf4-e6abe765adcf</defaultValue>
+		<description>form ids or uuids of Asthma DDB, NCD followup form And Rendezvous Forms. Please separate them by using a comma(,)  </description>
+	</globalProperty>
 
+	<globalProperty>
+		<property>reports.asthmaDDBformIds</property>
+		<defaultValue>642be66d-d7c0-4552-9688-373c317a04cf,85</defaultValue>
+		<description>The ddb ids of the forms for the Asthma. comma(,) separated</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.heartFailureDDBAndRendezvousForms</property>
+		<defaultValue>1df78f57-990d-46a7-aa9b-9a992d32ea57,c4302c96-94a6-4724-90cf-88cc29409aa5,08af7816-f8b1-4b57-a4e7-34f417b55d16,8ecf1ee0-2613-4047-9274-8af0f1c40a10,d9d135f9-7540-4b47-bf48-73c8441f58d1,ad08f2c3-4661-4e48-b424-bc1d5cc1bbea</defaultValue>
+		<description>form ids or uuids of Heart Failure DDB, NCD followup form And Rendezvous Forms. Please separate them by using a comma(,)  </description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.HFDDBformIds</property>
+		<defaultValue>8ecf1ee0-2613-4047-9274-8af0f1c40a10,87</defaultValue>
+		<description>The ddb ids of the forms for the Heart Failure. comma(,) separated</description>
+	</globalProperty>
 
 </module>

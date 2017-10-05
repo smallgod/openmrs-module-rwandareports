@@ -10,12 +10,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.Encounter;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
-import org.openmrs.ProgramWorkflowState;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculation;
 import org.openmrs.module.rowperpatientreports.patientdata.result.AllObservationValuesResult;
@@ -42,7 +38,7 @@ public class AsthmaClassificationAlerts implements CustomCalculation{
 		{
 			
 			if(!patientHasDiabetesDDBForm(result))
-				alerts.append("no DDB \n");
+				alerts.append("no Enrollment form \n");
 			
 			if(result.getName().equals("asthmaClassification"))
 			{
@@ -113,19 +109,22 @@ private String checkStepDown(List<Obs> obs)
 
 private boolean patientHasDiabetesDDBForm(PatientDataResult result){
 	try {
-		int formId = gp.getForm(gp.ASTHMA_DDB).getFormId();
+		//int formId = gp.getForm(gp.ASTHMA_DDB).getFormId();
+		List<Form> forms=gp.getFormList(GlobalPropertiesManagement.ASTHMA_DDBs);
 		Patient p = result.getPatientData().getPatient();
 		List<Encounter> patientEncounters =Context.getEncounterService().getEncountersByPatient(p);
 		
 	    for (Encounter encounter : patientEncounters) {
 			if (encounter != null && encounter.getForm() !=null) {
-				if(encounter.getForm().getFormId() == formId){	
-					return true;
-				} 				
+				for (Form f:forms) {
+					if (encounter.getForm().getFormId() == f.getFormId()) {
+						return true;
+					}
+				}
 			}
 		}
 	} catch (NumberFormatException e) {
-		 log.error("Could not parse value of "+ gp.ASTHMA_DDB+ "to integer");
+		 log.error("Could not parse value of "+ gp.ASTHMA_DDBs+ "to integer");
 	}
 		
 	return false;

@@ -43,7 +43,7 @@ public class SetupHypertensionConsultationSheet {
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
 	List<EncounterType> hypertensionEncounter;
 
-	RelationshipType HBCP;
+	private RelationshipType HBCP;
 	
 	public void setup() throws Exception {
 		

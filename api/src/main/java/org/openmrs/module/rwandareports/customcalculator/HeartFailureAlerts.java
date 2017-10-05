@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Form;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -38,7 +39,7 @@ public class HeartFailureAlerts implements CustomCalculation {
 			if (result.getName().equals("systolic")) {
 				ObservationResult systolic = (ObservationResult)result;
 				
-				if(systolic.getValue() != null && systolic.getObs() != null && systolic.getObs().getValueNumeric() > 140)
+				if(systolic.getValue() != null && systolic.getObs() != null && systolic.getObs().getValueNumeric() > 140 && !alerts.toString().contains("BP is above goal"))
 					alerts.append("BP is above goal \n");
 				//uncontrolledAlert = true;
 			}
@@ -46,7 +47,7 @@ public class HeartFailureAlerts implements CustomCalculation {
 			if (result.getName().equals("diastolic")) {
 					ObservationResult diastolic = (ObservationResult)result;
 					
-					if((diastolic.getValue() != null && diastolic.getObs() != null && diastolic.getObs().getValueNumeric() > 90) || uncontrolledAlert==true)
+					if((diastolic.getValue() != null && diastolic.getObs() != null && diastolic.getObs().getValueNumeric() > 90) && !alerts.toString().contains("BP is above goal"))
 					{
 						if(alerts.length() > 0)
 						{
@@ -63,14 +64,16 @@ public class HeartFailureAlerts implements CustomCalculation {
 			if (result.getName().equals("systolic")) {
 				ObservationResult systolic = (ObservationResult)result;
 				
-				if(systolic.getValue() != null && systolic.getObs() != null && systolic.getObs().getValueNumeric() < 90)
-				uncontrolledAlert = true;
+				if(systolic.getValue() != null && systolic.getObs() != null && systolic.getObs().getValueNumeric() < 90 && !alerts.toString().contains("BP is below goal"))
+				//uncontrolledAlert = true;
+
+					alerts.append("BP is below goal \n");
 			}
 			
 			if (result.getName().equals("diastolic")) {
 					ObservationResult diastolic = (ObservationResult)result;
 					
-					if(diastolic.getValue() != null && diastolic.getObs() != null && diastolic.getObs().getValueNumeric() < 60)
+					if(diastolic.getValue() != null && diastolic.getObs() != null && diastolic.getObs().getValueNumeric() < 60 && !alerts.toString().contains("BP is below goal"))
 					{
 						if(alerts.length() > 0)
 						{
@@ -141,7 +144,7 @@ public class HeartFailureAlerts implements CustomCalculation {
 				}
 			//just put this in here to make sure it is executed only once
 			if (patientHasHeartFailureDDBForm(result) == false) {
-				alerts.append("no DDB\n");
+				alerts.append("no Enrollment form \n");
 			}
 		  }
 			
@@ -153,19 +156,22 @@ public class HeartFailureAlerts implements CustomCalculation {
 	
 	private boolean patientHasHeartFailureDDBForm(PatientDataResult result){
 		try {
-			int formId = gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB).getFormId();
+			//int formId = gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB).getFormId();
+			List<Form> forms=gp.getFormList(GlobalPropertiesManagement.HF_DDBs);
 			Patient p = result.getPatientData().getPatient();
 			List<Encounter> patientEncounters =Context.getEncounterService().getEncountersByPatient(p);
 			
 		    for (Encounter encounter : patientEncounters) {
 				if (encounter != null && encounter.getForm() !=null) {
-					if(encounter.getForm().getFormId() == formId){	
-						return true;
-					} 				
+					for (Form f:forms) {
+						if (encounter.getForm().getFormId() == f.getFormId()) {
+							return true;
+						}
+					}
 				}
 			}
 		} catch (NumberFormatException e) {
-			 log.error("Could not parse value of "+ GlobalPropertiesManagement.HEARTFAILURE_DDB+ "to integer");
+			 log.error("Could not parse value of "+ GlobalPropertiesManagement.HF_DDBs+ "to integer");
 		}
 			
 		return false;

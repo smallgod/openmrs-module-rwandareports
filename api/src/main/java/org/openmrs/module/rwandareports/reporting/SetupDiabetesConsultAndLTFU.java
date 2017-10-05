@@ -9,10 +9,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Program;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
@@ -43,6 +40,8 @@ public class SetupDiabetesConsultAndLTFU {
 	//properties retrieved from global variables
 	private Program diabetesProgram;
 	private List<EncounterType> diabetesEncouters;
+
+	private RelationshipType HBCP;
 		
 	public void setup() throws Exception {
 		setupPrograms();
@@ -134,8 +133,11 @@ public class SetupDiabetesConsultAndLTFU {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(diabetesEncouters)),
 				new HashMap<String, Object>());
-		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Has accompagnateur", new AccompagnateurStatusFilter()), new HashMap<String, Object>());
-		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Has accompagnateur", new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientRelationship("HBCP",HBCP.getRelationshipTypeId(),"A",null), new HashMap<String, Object>());
+
+
 		//Calculation definitions
 				
 		CustomCalculationBasedOnMultiplePatientDataDefinitions alert = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
@@ -196,7 +198,10 @@ public class SetupDiabetesConsultAndLTFU {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true), new HashMap<String, Object>());
 						
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName", new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
-		
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientRelationship("HBCP",HBCP.getRelationshipTypeId(),"A",null), new HashMap<String, Object>());
+
+
 		DateDiff daysSinceLastVisit = RowPerPatientColumns.getDifferenceSinceLastEncounter("Days since last Visit", diabetesEncouters, DateDiffType.DAYS);
 			daysSinceLastVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
 		
@@ -212,11 +217,16 @@ public class SetupDiabetesConsultAndLTFU {
 
 
 	private void setupPrograms() {
-		diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.DIABETES_DDB_FORM)) ;
-		diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.DIABETES_RDV_FORM)) ;
-		diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM));
+		//diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.DIABETES_DDB_FORM)) ;
+		//diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.DIABETES_RDV_FORM)) ;
+		//diabetesRendezvousForms.add(gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM));
+
+		diabetesRendezvousForms=gp.getFormList(GlobalPropertiesManagement.DIABETES_DDB_FLOW_VISIT);
+
 		diabetesProgram = gp.getProgram(GlobalPropertiesManagement.DM_PROGRAM);
 		diabetesEncouters = gp.getEncounterTypeList(GlobalPropertiesManagement.DIABETES_VISIT);
+
+		HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 	}
 	
 	//Add common columns for the two datasets
@@ -233,6 +243,8 @@ public class SetupDiabetesConsultAndLTFU {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentCreatinine("RecentCreatinine", "@ddMMMyy"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentReturnVisitDate("nextVisit", "dd-MMM-yyyy", null), new HashMap<String, Object>());
+
+
 	}
 	
 }

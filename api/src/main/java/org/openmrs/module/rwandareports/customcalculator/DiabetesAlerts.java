@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
@@ -63,7 +64,7 @@ public class DiabetesAlerts implements CustomCalculation {
 				}
 				//just put this in here to make sure it is executed only once
 				if (patientHasDiabetesDDBForm(result) == false) {
-					alerts.append("no DDB\n");
+					alerts.append("no Enrollment form \n");
 				}
 			}				
 		}
@@ -74,19 +75,24 @@ public class DiabetesAlerts implements CustomCalculation {
 	
 	private boolean patientHasDiabetesDDBForm(PatientDataResult result){
 		try {
-			int formId = gp.getForm(GlobalPropertiesManagement.DIABETES_DDB_FORM).getFormId();
+
+			//int formId = gp.getForm(GlobalPropertiesManagement.DIABETES_DDB_FORM).getFormId();
+			List<Form> forms=gp.getFormList(GlobalPropertiesManagement.DIABETES_DDBs);
+
 			Patient p = result.getPatientData().getPatient();
 			List<Encounter> patientEncounters =Context.getEncounterService().getEncountersByPatient(p);
 			
 		    for (Encounter encounter : patientEncounters) {
 				if (encounter != null && encounter.getForm() !=null) {
-					if(encounter.getForm().getFormId() == formId){	
-						return true;
-					} 				
+					for (Form f:forms) {
+						if (encounter.getForm().getFormId() == f.getFormId()) {
+							return true;
+						}
+					}
 				}
 			}
 		} catch (NumberFormatException e) {
-			 log.error("Could not parse value of "+ GlobalPropertiesManagement.DIABETES_DDB_FORM+ "to integer");
+			 log.error("Could not parse value of "+ GlobalPropertiesManagement.DIABETES_DDBs+ "to integer");
 		}
 			
 		return false;

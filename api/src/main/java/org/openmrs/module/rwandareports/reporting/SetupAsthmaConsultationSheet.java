@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Program;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
@@ -41,7 +38,10 @@ public class SetupAsthmaConsultationSheet {
 	private Form rendevousForm;
 	private Form asthmaDDBForm;
 	private Form followUpForm;
-	
+
+	private RelationshipType HBCP;
+
+
 	//private Concept returnVisitDate;
 	
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
@@ -135,8 +135,10 @@ public class SetupAsthmaConsultationSheet {
 				new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
-		
-		
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientRelationship("HBCP",HBCP.getRelationshipTypeId(),"A",null), new HashMap<String, Object>());
+
+
 		AllObservationValues asthmaClassification = RowPerPatientColumns.getAllAsthmaClassificationValues("asthmaClassification", null, new LastTwoObsFilter(),
 		    null);
 		
@@ -163,9 +165,12 @@ public class SetupAsthmaConsultationSheet {
 		rendevousForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_RENDEVOUS_VISIT_FORM);
 		asthmaDDBForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
 		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
-		DDBAndRendezvousForms.add(rendevousForm);
-		DDBAndRendezvousForms.add(asthmaDDBForm);
-		DDBAndRendezvousForms.add(followUpForm);
+		DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.ASTHMA_DDB_RENDEVOUS_VISIT_FORMS);
+		//DDBAndRendezvousForms.add(rendevousForm);
+		//DDBAndRendezvousForms.add(asthmaDDBForm);
+		//DDBAndRendezvousForms.add(followUpForm);
+		HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
+
 	}
 	
 	/*

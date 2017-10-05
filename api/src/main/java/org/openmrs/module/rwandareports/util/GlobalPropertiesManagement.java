@@ -844,7 +844,9 @@ public class GlobalPropertiesManagement {
 	public final static String PDC_VISIT_FORM = "reports.pdcvisitForm";
 	
 	public final static String PDC_VISIT="reports.pdcEncounterType";
-	
+
+	public final static String ASTHMA_DDB_RENDEVOUS_VISIT_FORMS="reports.AsthmaDDBAndRendezvousForms";
+
 	//RelationshipTypes
 	public final static String ACCOMPAGNATUER_RELATIONSHIP = "reports.accompagnatuerRelationship";
 
@@ -887,6 +889,17 @@ public class GlobalPropertiesManagement {
 	public final static String HYPERTENSION_FLOW_VISIT = "reports.hypertensionFlowVisit";
 
 	public final static String HYPERTENSION_DDB_FLOW_VISIT="reports.hypertensionDDBAndRendezvousForms";
+
+	public final static String DIABETES_DDB_FLOW_VISIT="reports.diabetesDDBAndRendezvousForms";
+
+	public final static String DIABETES_DDBs = "reports.diabetesDDBformIds";
+
+	public final static String ASTHMA_DDBs = "reports.asthmaDDBformIds";
+
+	public final static String HF_DDBs = "reports.HFDDBformIds";
+
+	public final static String HEARTFAILURE_DDB_RDV_FORMS="reports.heartFailureDDBAndRendezvousForms";
+
 
 	public final static String HYPERTENSION_FLOW_ECHOCARDIOGRAPHIE_FORM = "reports.hypertensionFlowEchoFormId";
 		

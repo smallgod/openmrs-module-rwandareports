@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Program;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
@@ -43,8 +40,9 @@ public class SetupHeartFailureConsultSheet {
 	private Form followUpForm;
 	private Form postOpRDV;
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
-	List<EncounterType> heartFailureEncounter;
-	
+	private List<EncounterType> heartFailureEncounter;
+	private RelationshipType HBCP;
+
 	public void setup() throws Exception {
 		
 		setupProperties();
@@ -140,7 +138,10 @@ public class SetupHeartFailureConsultSheet {
 		dataSetDefinition.addColumn(serumCreatinine, new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
-		
+
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientRelationship("HBCP",HBCP.getRelationshipTypeId(),"A",null), new HashMap<String, Object>());
+
 		AllObservationValues twoLastweight = RowPerPatientColumns.getAllWeightValues("weightLastTwo", "@ddMMMyy",new LastTwoObsFilter(), new ObservationFilter());
 		dataSetDefinition.addColumn(twoLastweight, new HashMap<String, Object>());
 		
@@ -181,11 +182,15 @@ public class SetupHeartFailureConsultSheet {
 		heartFailureDDBForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB);
 		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
 		postOpRDV=gp.getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUERDV);
-		DDBAndRendezvousForms.add(rendevousForm);
-		DDBAndRendezvousForms.add(heartFailureDDBForm);
-		DDBAndRendezvousForms.add(followUpForm);
-		DDBAndRendezvousForms.add(postOpRDV);
+		DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.HEARTFAILURE_DDB_RDV_FORMS);
+		//DDBAndRendezvousForms.add(rendevousForm);
+		//DDBAndRendezvousForms.add(heartFailureDDBForm);
+		//DDBAndRendezvousForms.add(followUpForm);
+		//DDBAndRendezvousForms.add(postOpRDV);
+
 		heartFailureEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+
+		HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 		
 		
 	}
