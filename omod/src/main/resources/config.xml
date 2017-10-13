@@ -3903,4 +3903,28 @@
 		<description>The ddb ids of the forms for the Heart Failure. comma(,) separated</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.CKDprogram</property>
+		<defaultValue>24</defaultValue>
+		<description>The id of CKD program</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.CKDRDVForm</property>
+		<defaultValue>286</defaultValue>
+		<description>The CKD RDV form</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.CKDEnrollmentForm</property>
+		<defaultValue>270</defaultValue>
+		<description>The CKD enrollemt form</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.CKDEncounterType</property>
+		<defaultValue>48</defaultValue>
+		<description>The CKD Encounter type</description>
+	</globalProperty>
+
 </module>

@@ -1159,4 +1159,12 @@ public class GlobalPropertiesManagement {
 	public final static String ZSCORE_LESS_THAN_NEGATIVE_THREE= "reports.concept.zSccoreLessThanThree";
 
 
+	public final static String CKD_PROGRAM ="reports.CKDprogram";
+	public final static String CKD_RDV_FORM = "reports.CKDRDVForm";
+	public final static String CKD_ENROLLMENT_FORM = "reports.CKDEnrollmentForm";
+	public final static String CKD_ENCOUNTER_TYPE = "reports.CKDEncounterType";
+
+
+
+
 }

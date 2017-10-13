@@ -34,13 +34,17 @@ public class SetupHypertensionConsultationSheet {
 	private Program hypertensionProgram;
 	
 	private Form rendevousForm;
+
 	private Form hypertensionDDBForm;
+
 	private Form followUpForm;
 	
 	private Concept systolicBP;
+
 	private Concept diastolicBP;
 	
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
+
 	List<EncounterType> hypertensionEncounter;
 
 	private RelationshipType HBCP;
@@ -118,13 +122,13 @@ public class SetupHypertensionConsultationSheet {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("Id"), new HashMap<String, Object>());
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getGender("Sex"), new HashMap<String, Object>());		
 		
 		MostRecentObservation systolic = RowPerPatientColumns.getMostRecentSystolicPB("systolic", "dd-MMM-yy");
 		dataSetDefinition.addColumn(systolic, new HashMap<String, Object>());
-		
+
 		MostRecentObservation diastolic = RowPerPatientColumns.getMostRecentDiastolicPB("diastolic", "dd-MMM-yy");
 		dataSetDefinition.addColumn(diastolic, new HashMap<String, Object>());
 		
