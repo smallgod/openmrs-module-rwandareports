@@ -1928,7 +1928,8 @@ public class Cohorts {
 
 		StringBuilder sql = new StringBuilder();
 		Concept nextVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
-		sql.append("select groupedObs.person_id from (select * from (select o.person_id,o.concept_id,o.encounter_id,o.value_datetime from obs o, encounter e where o.voided=0 and e.voided=0 and o.concept_id="+nextVisit.getConceptId()+" and e.encounter_type="+encounterType.getEncounterTypeId()+" and o.encounter_id=e.encounter_id order by o.value_datetime desc) orderObs  group by orderObs.person_id) groupedObs where groupedObs.value_datetime < :endDate");
+		sql.append("select groupedObs.person_id from (select * from (select o.person_id,o.concept_id,o.encounter_id,o.value_datetime from obs o, encounter e where o.voided=0 and e.voided=0 and o.concept_id="+nextVisit.getConceptId()+" and e.encounter_type="+encounterType.getEncounterTypeId()+" and o.encounter_id=e.encounter_id order by o.value_datetime desc) orderObs  group by orderObs.person_id) groupedObs where groupedObs.value_datetime < :endDate and DATEDIFF(:endDate,groupedObs.value_datetime) > ");
+		sql.append(numberOfDaysAtleast);
 		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
 		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
 
