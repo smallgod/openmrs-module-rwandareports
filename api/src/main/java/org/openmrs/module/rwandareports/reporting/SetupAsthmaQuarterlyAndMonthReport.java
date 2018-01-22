@@ -564,12 +564,47 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 
 
 
-		CohortIndicator NCDRelatedDeathIndicator = Indicators.newCountIndicator(
-				"NCDRelatedDeathIndicator", NCDRelatedDeath,
+		SqlCohortDefinition patientsDied= Cohorts.getPatientsDiedByStartDateAndEndDate("patientsDied");
+
+
+		CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.setName("activePatientsInPatientDiedState");
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("endDate", "endDate", Date.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("startDate", "startDate", Date.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+				"1",
+				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m+1d}")));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+				"3",
+				new Mapped<CohortDefinition>(patientsDied, ParameterizableUtil
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND 3");
+
+
+
+
+		CohortIndicator activePatientsInPatientDiedStateOrNCDRelatedDeathIndicator = Indicators.newCountIndicator(
+				"NCDRelatedDeathIndicator", activePatientsInPatientDiedStateOrNCDRelatedDeath,
 				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		dsd.addColumn("A5QN", "% of deaths which are disease related", new Mapped(
-				NCDRelatedDeathIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+				activePatientsInPatientDiedStateOrNCDRelatedDeathIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CohortIndicator patientsSeenInYearIndicator = Indicators.newCountIndicator("patientsSeenIndicator", patientSeen,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-9m},onOrBefore=${endDate}"));
+
+		dsd.addColumn(
+				"ActiveY",
+				"Total active in Year patients",
+				new Mapped(patientsSeenInYearIndicator, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 
 
@@ -578,8 +613,8 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		//  Review: % of all active patients that are age < 16 years old
 		//==================================================================
 		
-		SqlCohortDefinition patientsUnderFifteenAtEnrollementDate = Cohorts.createUnder16AtEnrollmentCohort(
-				"patientsUnder15AtEnrollment", asthmaProgram);
+		SqlCohortDefinition patientsUnderSixteenAtEnrollementDate = Cohorts.createUnder16AtEnrollmentCohort(
+				"patientsUnderSixteenAtEnrollementDate", asthmaProgram);
 		
 		CompositionCohortDefinition patientsUnderFifteenComposition = new CompositionCohortDefinition();
 		patientsUnderFifteenComposition.setName("patientsUnderFifteenComposition");
@@ -591,7 +626,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 		patientsUnderFifteenComposition.getSearches().put("2",
-		    new Mapped<CohortDefinition>(patientsUnderFifteenAtEnrollementDate, null));
+		    new Mapped<CohortDefinition>(patientsUnderSixteenAtEnrollementDate, null));
 		patientsUnderFifteenComposition.setCompositionString("1 AND 2");
 		
 		CohortIndicator patientsUnderFifteenCountIndicator = Indicators.newCountIndicator(
@@ -1094,7 +1129,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		SqlCohortDefinition patientDiedOfNCDRelatedDeath= Cohorts.getPatientsWithOutcomeprogramEndReasons("patientDiedOfNCDRelatedDeath",NCDSpecificOutcomes,DeathOutcomeResons);
 		SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
 
-		CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
+		/*CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
 		activePatientsInPatientDiedStateOrNCDRelatedDeath.setName("activePatientsInPatientDiedState");
 		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
@@ -1143,7 +1178,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 			    new Mapped(activePatientsInPatientDiedStateInQuarterIndicator, ParameterizableUtil
 			            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 			
-		
+		*/
 		//=======================================================================
 		//E1: Of total active patients, % with documented hospitalization (in flowsheet) in the last quarter (exclude hospitalization on DDB)
 		//==================================================================

@@ -901,4 +901,15 @@ public class RwandaSetupReportsFormController {
 		new SetupCKDMissedvisitReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+	@RequestMapping("/module/rwandareports/register_MOH-HMISIndicatorreport")
+	public ModelAndView registerMOHHMISIndicatorreport() throws Exception {
+		new SetupHMISMOHReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_MOH-HMISIndicatorreport")
+	public ModelAndView removeMOHHMISIndicatorreport() throws Exception {
+		new SetupHMISMOHReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 }

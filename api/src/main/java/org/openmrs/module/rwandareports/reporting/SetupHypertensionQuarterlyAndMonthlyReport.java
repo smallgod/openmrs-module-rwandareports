@@ -49,12 +49,16 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 	private List<Program> hypertensionPrograms = new ArrayList<Program>();
 	
 	private EncounterType hypertensionEncounterType;
-	
+
+	private EncounterType HFHTNCKDEncounterType;
+
 	private List<EncounterType> patientsSeenEncounterTypes = new ArrayList<EncounterType>();
 	
 	private Form DDBform;
-	
+
 	private Form rendevousForm;
+
+	private Form HTNEnrollmentForm;
 
 	private List<Form> cardConsultForm = new ArrayList<Form>();
 
@@ -75,6 +79,8 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 	private Concept hydrochlorothiazide;
 	
 	private List<Form> DDBAndRendezvousForms = new ArrayList<Form>();
+
+	private List<Form> EnrollmentForms = new ArrayList<Form>();
 	
 	private List<Concept> hypertensionMedications = new ArrayList<Concept>();
 	
@@ -206,9 +212,10 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		SqlEncounterQuery patientVisitsToHypertensionClinic = new SqlEncounterQuery();
 		
 		patientVisitsToHypertensionClinic
-		        .setQuery("select encounter_id from encounter where encounter_type="
-		                + hypertensionEncounterType.getEncounterTypeId()
-		                + " and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id");
+		        .setQuery("select encounter_id from encounter where encounter_type in ("
+		                + hypertensionEncounterType.getEncounterTypeId()+","
+						+ HFHTNCKDEncounterType.getId()
+						+ ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id");
 		patientVisitsToHypertensionClinic.setName("patientVisitsToHypertensionClinic");
 		patientVisitsToHypertensionClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsToHypertensionClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -224,14 +231,26 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		//==============================================================
 		// C2: % of Patient visits in the last quarter with documented BP
 		//==============================================================
+
+		StringBuilder formIds=new StringBuilder();
+
+		int i = 0;
+		for (Form f : EnrollmentForms) {
+			if (i > 0) {
+				formIds.append(",");
+			}
+			formIds.append(f.getId());
+			i++;
+		}
+
+
 		SqlEncounterQuery patientVisitsWithDocumentedBP = new SqlEncounterQuery();
 		
 		patientVisitsWithDocumentedBP
 		.setQuery("select e.encounter_id from encounter e,obs o where (e.form_id="
 			+ rendevousForm.getFormId()
-			+ " or e.form_id="
-			+ DDBform.getFormId()
-			+ ") and o.encounter_id=e.encounter_id and o.concept_id="+systolicBP.getConceptId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 ");
+			+ " or e.form_id in ("+formIds+")"
+			+ " and o.encounter_id=e.encounter_id and o.concept_id="+systolicBP.getConceptId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 ");
 		patientVisitsWithDocumentedBP.setName("patientVisitsToHypertensionClinic");
 		patientVisitsWithDocumentedBP.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsWithDocumentedBP.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -281,9 +300,10 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		SqlEncounterQuery patientVisitsToHypertensionClinic = new SqlEncounterQuery();
 		
 		patientVisitsToHypertensionClinic
-		        .setQuery("select encounter_id from encounter where encounter_type="
-		                + hypertensionEncounterType.getEncounterTypeId()
-		                + " and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id");
+		        .setQuery("select encounter_id from encounter where encounter_type in ("
+		                + hypertensionEncounterType.getEncounterTypeId()+","
+						+ HFHTNCKDEncounterType.getId()
+						+ ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id");
 		patientVisitsToHypertensionClinic.setName("patientVisitsToHypertensionClinic");
 		patientVisitsToHypertensionClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsToHypertensionClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -547,16 +567,37 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 //=================================================================================
 //Numerator
 
-		CohortIndicator NCDRelatedDeathIndicator = Indicators.newCountIndicator(
-				"NCDRelatedDeathIndicator", NCDRelatedDeath,
+		SqlCohortDefinition patientsDied= Cohorts.getPatientsDiedByStartDateAndEndDate("patientsDied");
+
+
+		CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.setName("activePatientsInPatientDiedState");
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("endDate", "endDate", Date.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("startDate", "startDate", Date.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+				"1",
+				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m+1d}")));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+				"3",
+				new Mapped<CohortDefinition>(patientsDied, ParameterizableUtil
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND 3");
+
+
+		CohortIndicator activePatientsInPatientDiedStateOrNCDRelatedDeathIndicator = Indicators.newCountIndicator(
+				"NCDRelatedDeathIndicator", activePatientsInPatientDiedStateOrNCDRelatedDeath,
 				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		dsd.addColumn("A7N", "% of deaths which are disease related", new Mapped(
-				NCDRelatedDeathIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+				activePatientsInPatientDiedStateOrNCDRelatedDeathIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 //Denominator
 
-		SqlCohortDefinition patientDiedOfNCDRelatedDeath= Cohorts.getPatientsWithOutcomeprogramEndReasons("patientDiedOfNCDRelatedDeath",NCDSpecificOutcomes,DeathOutcomeResons);
+		/*SqlCohortDefinition patientDiedOfNCDRelatedDeath= Cohorts.getPatientsWithOutcomeprogramEndReasons("patientDiedOfNCDRelatedDeath",NCDSpecificOutcomes,DeathOutcomeResons);
 
 
 		CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
@@ -601,7 +642,16 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 				"Total active patients, number who Died in quarter",
 				new Mapped(activePatientsInPatientDiedStateInQuarterIndicator, ParameterizableUtil
 						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+*/
 
+		CohortIndicator patientsSeenInYearIndicator = Indicators.newCountIndicator("patientsSeenIndicator", patientSeen,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-9m},onOrBefore=${endDate}"));
+
+		dsd.addColumn(
+				"ActiveY",
+				"Total active in Year patients",
+				new Mapped(patientsSeenInYearIndicator, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 
 
@@ -1233,11 +1283,11 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		
 		SqlCohortDefinition patientsWithSystolicBPGreaterThanOrEqualTo140 = Cohorts
 		        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-		            "patientsWithSystolicBPGreaterThanOrEqualTo140", DDBform, systolicBP, 140);
+		            "patientsWithSystolicBPGreaterThanOrEqualTo140", EnrollmentForms, systolicBP, 140);
 		
 		SqlCohortDefinition patientsWithSystolicBPGreaterThanOrEqualTo160 = Cohorts
 		        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-		            "patientsWithSystolicBPGreaterThanOrEqualTo160", DDBform, systolicBP, 160); //we use 160 because the comparator in the query uses >= 
+		            "patientsWithSystolicBPGreaterThanOrEqualTo160", EnrollmentForms, systolicBP, 160); //we use 160 because the comparator in the query uses >=
 		
 		CompositionCohortDefinition patientsEnrolledInTheLastMonthWithSystolicBPBetween140And159 = new CompositionCohortDefinition();
 		patientsEnrolledInTheLastMonthWithSystolicBPBetween140And159
@@ -1272,7 +1322,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		//===============================================================================================
 		SqlCohortDefinition patientsWithSystolicBPGreaterThanOrEqualTo180 = Cohorts
 		        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-		            "patientsWithSystolicBPGreaterThanOrEqualTo180", DDBform, systolicBP, 180);
+		            "patientsWithSystolicBPGreaterThanOrEqualTo180", EnrollmentForms, systolicBP, 180);
 		
 		CompositionCohortDefinition patientsEnrolledInTheLastMonthWithSystolicBPBetween160And179 = new CompositionCohortDefinition();
 		patientsEnrolledInTheLastMonthWithSystolicBPBetween160And179
@@ -1461,7 +1511,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		// B8: Of the new patients enrolled in the last quarter, % with smoking status documented 
 		//=======================================================
 		SqlCohortDefinition patientsWithSmokingHistory = Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate(
-		    "patientsWithSmokingHistory", DDBform, smokingHistory);
+		    "patientsWithSmokingHistory", EnrollmentForms, smokingHistory);
 		
 		CompositionCohortDefinition patientsEnrolledWithSmokingHistory = new CompositionCohortDefinition();
 		patientsEnrolledWithSmokingHistory.setName("patientsEnrolledWithSmokingHistory");
@@ -1582,7 +1632,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 			//=======================================================
 			SqlCohortDefinition patientsWithStageIIIHTN = Cohorts
 	        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-	            "patientsWithSystolicBPGreaterThanOrEqualTo160",DDBform, systolicBP, 180);
+	            "patientsWithSystolicBPGreaterThanOrEqualTo160",EnrollmentForms, systolicBP, 180);
 			
 			CompositionCohortDefinition patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180 = new CompositionCohortDefinition();
 			patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180
@@ -1783,9 +1833,10 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 			            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 			
 			SqlCohortDefinition patientswithRDV6WeeksOrMorePastLastVisitDate  = new SqlCohortDefinition();
-			patientswithRDV6WeeksOrMorePastLastVisitDate.setQuery("select last_rdv.person_id from (select person_id, value_datetime, obs_datetime, datediff(value_datetime,obs_datetime) from obs o, encounter e where o.encounter_id=e.encounter_id and e.encounter_type="
-					+ hypertensionEncounterType.getId()
-					+ " and o.concept_id="
+			patientswithRDV6WeeksOrMorePastLastVisitDate.setQuery("select last_rdv.person_id from (select person_id, value_datetime, obs_datetime, datediff(value_datetime,obs_datetime) from obs o, encounter e where o.encounter_id=e.encounter_id and e.encounter_type in ("
+					+ hypertensionEncounterType.getId()+","
+					+ HFHTNCKDEncounterType.getId()
+					+ ") and o.concept_id="
 					+ returnVisitDate.getConceptId()
 					+ " and datediff(o.value_datetime, o.obs_datetime) > 42 order by o.value_datetime desc) as last_rdv group by last_rdv.person_id");
 			patientswithRDV6WeeksOrMorePastLastVisitDate.setName("patientswithRDV6WeeksOrMorePastLastVisitDate");
@@ -1817,7 +1868,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 			//=======================================================================		
 			SqlCohortDefinition patientsWithDiastolicBPGreaterThanOrEqualTo90 = Cohorts
 	        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-	            "patientsWithDiastolicBPGreaterThanOrEqualTo90", DDBform, diastolicBP, 90);
+	            "patientsWithDiastolicBPGreaterThanOrEqualTo90", EnrollmentForms, diastolicBP, 90);
 			
 			CompositionCohortDefinition activewithBPLessThan140To90 = new CompositionCohortDefinition();
 			activewithBPLessThan140To90.setName("activewithBPLessThan140To90");
@@ -1859,15 +1910,31 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		//=======================================================
 		// A2: Total # of patients seen in the last month
 		//=======================================================
-		
+
+
+		StringBuilder formIds=new StringBuilder();
+
+		int i = 0;
+		for (Form f : EnrollmentForms) {
+			if (i > 0) {
+				formIds.append(",");
+			}
+			formIds.append(f.getId());
+			i++;
+		}
+
+
+
+
 		SqlCohortDefinition patientsWithHypertensionVisit = new SqlCohortDefinition();
-		patientsWithHypertensionVisit.setQuery("select distinct patient_id from encounter where encounter_type="
+		patientsWithHypertensionVisit.setQuery("select distinct patient_id from encounter where encounter_type in ("
 		        + hypertensionEncounterType.getId()
-		        + " and (form_id="
+				+","
+				+ HFHTNCKDEncounterType.getId()
+		        + ") and (form_id="
 		        + rendevousForm.getFormId()
-	            + " or form_id="
-	            + DDBform.getFormId()
-		        + ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0");
+	            + " or form_id in ("+formIds+")"
+		        + " and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0");
 		patientsWithHypertensionVisit.setName("patientsWithHypertensionVisit");
 		patientsWithHypertensionVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientsWithHypertensionVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1904,7 +1971,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		
 		SqlCohortDefinition patientsWithSystolicBPGreaterThanOrEqualTo180 = Cohorts
 		        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-		            "patientsWithSystolicBPGreaterThanOrEqualTo180", DDBform, systolicBP, 180);
+		            "patientsWithSystolicBPGreaterThanOrEqualTo180", EnrollmentForms, systolicBP, 180);
 		
 		CompositionCohortDefinition patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180 = new CompositionCohortDefinition();
 		patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180
@@ -1937,7 +2004,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		
 		SqlCohortDefinition patientsWithSystolicBPGreaterThanOrEqualTo160 = Cohorts
 		        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-		            "patientsWithSystolicBPGreaterThanOrEqualTo160",DDBform, systolicBP, 160);
+		            "patientsWithSystolicBPGreaterThanOrEqualTo160",EnrollmentForms, systolicBP, 160);
 		
 		CompositionCohortDefinition patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160 = new CompositionCohortDefinition();
 		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160
@@ -2002,7 +2069,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		
 		SqlCohortDefinition patientsWithStageIIIHTN = Cohorts
         .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-            "patientsWithSystolicBPGreaterThanOrEqualTo160",DDBform, systolicBP, 180);
+            "patientsWithSystolicBPGreaterThanOrEqualTo160",EnrollmentForms, systolicBP, 180);
 		
 		CompositionCohortDefinition patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180 = new CompositionCohortDefinition();
 		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180
@@ -2080,7 +2147,18 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		DDBAndRendezvousForms.add(rendevousForm);
 		
 		DDBAndRendezvousForms.add(DDBform);
-		
+
+
+
+		HTNEnrollmentForm=gp.getForm(GlobalPropertiesManagement.HTN_ENROLL_FORM);
+
+		EnrollmentForms.add(DDBform);
+		EnrollmentForms.add(HTNEnrollmentForm);
+
+		DDBAndRendezvousForms.add(HTNEnrollmentForm);
+
+
+
 		onOrAfterOnOrBefore.add("onOrAfter");
 		
 		onOrAfterOnOrBefore.add("onOrBefore");
@@ -2136,6 +2214,14 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		HIVStatus=gp.getConcept(GlobalPropertiesManagement.HIV_STATUS);
 
 		cardConsultForm.add(gp.getForm(GlobalPropertiesManagement.CARDIOLOGY_CONSULT_FORM));
+
+		HFHTNCKDEncounterType=gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+
+		HTNEnrollmentForm=gp.getForm(GlobalPropertiesManagement.HTN_ENROLL_FORM);
+
+		EnrollmentForms.add(DDBform);
+		EnrollmentForms.add(HTNEnrollmentForm);
+
 
 	}
 }

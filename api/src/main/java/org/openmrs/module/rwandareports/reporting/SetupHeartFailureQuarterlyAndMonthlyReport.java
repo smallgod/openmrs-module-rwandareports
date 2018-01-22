@@ -54,6 +54,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
 	private EncounterType heartFailureEncounterType;
 
+	private EncounterType HFHTNCKDEncounterType;
+
 	private List<EncounterType> heartFailureEncounterTypes=new ArrayList<EncounterType>();;
 
 	private EncounterType postOpVisit;
@@ -63,6 +65,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	List<Concept> DeathOutcomeResons=new  ArrayList<Concept>();
 	
 	private Form heartFailureDDBform;
+
+	private Form HFEnrollmentForm;
 	
 	private Form postoperatoireCardiaqueRDV;
 	
@@ -131,6 +135,10 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	private Concept hypertensiveDisease;
 	private Concept congenitalHeartDisease;
 
+	private Concept postOperativeValveType;
+
+	private Concept NCDSurgeryTypeNonCoced;
+
 
 
 	private Concept NCDSpecificOutcomes;
@@ -142,6 +150,8 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	private Concept patientDiedConcept;
 
 	private Concept HIVStatus;
+
+
 	
 	
 	public void setup() throws Exception {
@@ -224,9 +234,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		SqlEncounterQuery patientVisitsToHFClinic = new SqlEncounterQuery();
 		
-		patientVisitsToHFClinic.setQuery("select e.encounter_id from encounter e where e.encounter_type="
+		patientVisitsToHFClinic.setQuery("select e.encounter_id from encounter e where (e.encounter_type="
 		        + heartFailureEncounterType.getEncounterTypeId()
-		        + " and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0");
+				+" or e.encounter_type="
+				+HFHTNCKDEncounterType.getEncounterTypeId()
+		        + ") and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0");
 		patientVisitsToHFClinic.setName("patientVisitsToHFClinic");
 		patientVisitsToHFClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsToHFClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -244,9 +256,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		SqlEncounterQuery patientVisitsWithDocumentedBP = new SqlEncounterQuery();
 		
 		patientVisitsWithDocumentedBP
-		        .setQuery("select e.encounter_id from encounter e,obs o where o.encounter_id=e.encounter_id and e.encounter_type="
+		        .setQuery("select e.encounter_id from encounter e,obs o where o.encounter_id=e.encounter_id and (e.encounter_type="
 		                + heartFailureEncounterType.getEncounterTypeId()
-		                + " and o.concept_id="
+						+" or e.encounter_type="
+						+HFHTNCKDEncounterType.getEncounterTypeId()
+						+ ") and o.concept_id="
 		                + systolicBP.getConceptId()
 		                + " and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 ");
 		patientVisitsWithDocumentedBP.setName("patientVisitsToHypertensionClinic");
@@ -319,9 +333,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
         SqlEncounterQuery patientVisitsToHFClinic = new SqlEncounterQuery();
 		
-		patientVisitsToHFClinic.setQuery("select e.encounter_id from encounter e where e.encounter_type="
-		        + heartFailureEncounterType.getEncounterTypeId()
-		        + " and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 group by e.encounter_datetime, e.patient_id");
+		patientVisitsToHFClinic.setQuery("select e.encounter_id from encounter e where (e.encounter_type="
+				+ heartFailureEncounterType.getEncounterTypeId()
+				+" or e.encounter_type="
+				+HFHTNCKDEncounterType.getEncounterTypeId()
+				+ ") and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 group by e.encounter_datetime, e.patient_id");
 		patientVisitsToHFClinic.setName("patientVisitsToHFClinic");
 		patientVisitsToHFClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsToHFClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -340,6 +356,9 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		EncounterCohortDefinition patientSeen = Cohorts.createEncounterParameterizedByDate("Patients seen",
 				onOrAfterOnOrBefore, heartFailureEncounterTypes);
 
+
+		CohortIndicator patientsSeenInYearIndicator = Indicators.newCountIndicator("patientsSeenIndicator", patientSeen,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-9m},onOrBefore=${endDate}"));
 
 		SqlCohortDefinition programOutcomeNCDRelatedDeath=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("NCDRelatedDeath",NCDSpecificOutcomes,NCDRelatedDeathOutcomes);
 
@@ -578,7 +597,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 
 
 		//=================================================================================
-		//  A8: % of deaths which are disease related
+		//  A8: % of all patients who were seen in the last year who died in the reporting period
 		//=================================================================================
 //Numerator
 
@@ -586,12 +605,13 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 				"NCDRelatedDeathIndicator", NCDRelatedDeath,
 				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
-		dsd.addColumn("A8QN", "% of deaths which are disease related", new Mapped(
+		/*dsd.addColumn("A8QN", "% of deaths which are disease related", new Mapped(
 				NCDRelatedDeathIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-
+*/
 //Denominator
 
-		SqlCohortDefinition patientDiedOfNCDRelatedDeath= Cohorts.getPatientsWithOutcomeprogramEndReasons("patientDiedOfNCDRelatedDeath",NCDSpecificOutcomes,DeathOutcomeResons);
+		//SqlCohortDefinition patientDiedOfNCDRelatedDeath= Cohorts.getPatientsWithOutcomeprogramEndReasons("patientDiedOfNCDRelatedDeath",NCDSpecificOutcomes,DeathOutcomeResons);
+		SqlCohortDefinition patientsDied= Cohorts.getPatientsDiedByStartDateAndEndDate("patientsDied");
 
 
 		CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
@@ -604,25 +624,32 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 				"1",
 				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m+1d}")));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+		/*activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
 				"2",
 				new Mapped<CohortDefinition>(patientsInPatientDiedState, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));*/
 		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
 				"3",
-				new Mapped<CohortDefinition>(patientDiedOfNCDRelatedDeath, ParameterizableUtil
+				new Mapped<CohortDefinition>(patientsDied, ParameterizableUtil
 						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+		/*activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+				"3",
+				new Mapped<CohortDefinition>(patientDiedOfNCDRelatedDeath, ParameterizableUtil
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));*/
+
+		/*activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
 				"4",
 				new Mapped<CohortDefinition>(obsPatientDiedReasonForExitingFromCare, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));*/
+		/*activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
 				"5",
 				new Mapped<CohortDefinition>(NCDRelatedDeath, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));*/
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND 3");
 
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
+
+		//activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
 		//activePatientsInPatientDiedState.setCompositionString("2 OR 3 OR 4");
 
 		CohortIndicator activePatientsInPatientDiedStateInQuarterIndicator = Indicators
@@ -632,15 +659,15 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 						ParameterizableUtil
 								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
-		//========================================================
-		//        Adding columns to data set definition         //
-		//========================================================
+
+		dsd.addColumn("A8QN", "% of deaths which are disease related", new Mapped(
+				activePatientsInPatientDiedStateInQuarterIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 
 		dsd.addColumn(
-				"DiedQ",
-				"Total active patients, number who Died in quarter",
-				new Mapped(activePatientsInPatientDiedStateInQuarterIndicator, ParameterizableUtil
+				"ActiveY",
+				"Total active in Year patients",
+				new Mapped(patientsSeenInYearIndicator, ParameterizableUtil
 						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 
@@ -994,6 +1021,9 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 
 		SqlCohortDefinition patientWithNYHAClass=Cohorts.getPatientsWithObsinLastFormSubmitted("patientWithNYHAClass", NYHACLASS, heartFailureEncounterType);
 
+		SqlCohortDefinition patientWithNYHAClass2=Cohorts.getPatientsWithObsinLastFormSubmitted("patientWithNYHAClass2", NYHACLASS, HFHTNCKDEncounterType);
+
+
 		CompositionCohortDefinition patientActiveWithoutNYHAClass = new CompositionCohortDefinition();
 		patientActiveWithoutNYHAClass.setName("patientActiveWithcongenitalDiagnosis");
 		patientActiveWithoutNYHAClass.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
@@ -1001,9 +1031,10 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		patientActiveWithoutNYHAClass.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientActiveWithoutNYHAClass.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientActiveWithoutNYHAClass.getSearches().put("1",new Mapped<CohortDefinition>(patientWithNYHAClass, null));
-		patientActiveWithoutNYHAClass.getSearches().put("2",new Mapped<CohortDefinition>(activePatientWithNoExitBeforeQuarterStart, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},startDate=${startDate},endDate=${endDate}")));
+		patientActiveWithoutNYHAClass.getSearches().put("2",new Mapped<CohortDefinition>(patientWithNYHAClass2, null));
+		patientActiveWithoutNYHAClass.getSearches().put("3",new Mapped<CohortDefinition>(activePatientWithNoExitBeforeQuarterStart, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},startDate=${startDate},endDate=${endDate}")));
 
-		patientActiveWithoutNYHAClass.setCompositionString("2 AND (NOT 1)");
+		patientActiveWithoutNYHAClass.setCompositionString("3 AND (NOT (1 or 2))");
 		//patientActiveWithoutNYHAClass.setCompositionString("1 AND (NOT 2)");
 
 		CohortIndicator patientActiveWithoutNYHAClassIndicator = Indicators.newCountIndicator(
@@ -1308,6 +1339,9 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 
 
 
+		SqlCohortDefinition patientWithPostOperativeSurgeryOrValveType=Cohorts.getPatientsWithObsGreaterThanNtimesByStartDateEndDate("patientWithPostOperativeSurgeryOrValveType",postOperativeValveType,1);
+		SqlCohortDefinition PatientWithNCDSurgeryTypeNonCoded =Cohorts.getPatientsWithObsGreaterThanNtimesByStartDateEndDate("PatientWithNCDSurgeryTypeNonCoded",NCDSurgeryTypeNonCoced,1);
+
 
 
 		InStateCohortDefinition patientWithPostOpState=Cohorts.createInProgramStateParameterizableByDate("patientWithPostOpStartDate", postOperative,"onOrBefore");
@@ -1325,7 +1359,12 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m}")));
 		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("4", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
 		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("5", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m}")));
-		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 4) AND (NOT (3 OR 5))");
+		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("6", new Mapped<CohortDefinition>(patientWithPostOperativeSurgeryOrValveType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("7", new Mapped<CohortDefinition>(PatientWithNCDSurgeryTypeNonCoded, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+		//patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 4) AND (NOT (3 OR 5))");
+		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.setCompositionString("(1 AND (2 OR 4) AND (NOT (3 OR 5))) or (1 and (6 or 7))");
+
 
 
 
@@ -1357,7 +1396,10 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("1",new Mapped<CohortDefinition>(patientEverEnrolledInHFProgram, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
 		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("2", new Mapped<CohortDefinition>(patientWithPostOpState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
 		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
-		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3)");
+		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("4", new Mapped<CohortDefinition>(patientWithPostOperativeSurgeryOrValveType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("5", new Mapped<CohortDefinition>(PatientWithNCDSurgeryTypeNonCoded, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
+		//patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3)");
 
 
 
@@ -1387,7 +1429,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		patientActiveEverReceivedCardiacSurgery.getSearches().put("1",new Mapped<CohortDefinition>(activePatientWithNoExitBeforeQuarterStart, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},startDate=${startDate},endDate=${endDate}")));
 		patientActiveEverReceivedCardiacSurgery.getSearches().put("2", new Mapped<CohortDefinition>(patientWithPostOpState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
 		patientActiveEverReceivedCardiacSurgery.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
-		patientActiveEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3)");
+		patientActiveEverReceivedCardiacSurgery.getSearches().put("4", new Mapped<CohortDefinition>(patientWithPostOperativeSurgeryOrValveType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientActiveEverReceivedCardiacSurgery.getSearches().put("5", new Mapped<CohortDefinition>(PatientWithNCDSurgeryTypeNonCoded, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientActiveEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
+
+		//patientActiveEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3)");
 
 
 
@@ -1416,8 +1462,10 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("1",new Mapped<CohortDefinition>(activePatientWithNoExitBeforeQuarterStart, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},startDate=${startDate},endDate=${endDate}")));
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("2", new Mapped<CohortDefinition>(patientWithPostOpState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("5", new Mapped<CohortDefinition>(patientWithPostOperativeSurgeryOrValveType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("6", new Mapped<CohortDefinition>(PatientWithNCDSurgeryTypeNonCoded, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("4",new Mapped<CohortDefinition>(patientOnWarfarinOnEndDate,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		patientActiveEverReceivedCardiacSurgeryOnwarfarin.setCompositionString("1 AND (2 OR 3) AND 4");
+		patientActiveEverReceivedCardiacSurgeryOnwarfarin.setCompositionString("1 AND (2 OR 3 OR 5 OR 6) AND 4");
 
 
 
@@ -1678,19 +1726,21 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		
 		SqlCohortDefinition patientsWithBPInHFLastEncounter=Cohorts.getPatientsWithObservationAtLastVisit("patientsWithBPInHFLastEncounter", systolicBP, heartFailureEncounterType);
-		
-		
-		
+		SqlCohortDefinition patientsWithBPInHFLastEncounter2=Cohorts.getPatientsWithObservationAtLastVisit("patientsWithBPInHFLastEncounter", systolicBP, HFHTNCKDEncounterType);
+
+
+
 		CompositionCohortDefinition patientSeenWithBPInHFLastEncounter = new CompositionCohortDefinition();
 		patientSeenWithBPInHFLastEncounter.setName("patientSeenWithBPInHFLastEncounter");
 		patientSeenWithBPInHFLastEncounter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		patientSeenWithBPInHFLastEncounter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 			
 		patientSeenWithBPInHFLastEncounter.getSearches().put("1",new Mapped<CohortDefinition>(patientsWithBPInHFLastEncounter,null));
-		
-		patientSeenWithBPInHFLastEncounter.getSearches().put("2",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		patientSeenWithBPInHFLastEncounter.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithBPInHFLastEncounter2,null));
+
+		patientSeenWithBPInHFLastEncounter.getSearches().put("3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 	            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
-		patientSeenWithBPInHFLastEncounter.setCompositionString("1 AND 2");	
+		patientSeenWithBPInHFLastEncounter.setCompositionString("(1 or 2) AND 3");
 		
 		
 		CohortIndicator patientSeenWithBPInHFLastEncounterIndicator = Indicators.newCountIndicator("patientSeenWithBPInHFLastEncounterIndicator", patientSeenWithBPInHFLastEncounter,
@@ -1791,18 +1841,20 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		
 		SqlCohortDefinition patientsOnCarvedilolOrAtenololAtLastVisit=Cohorts.getPatientsOnRegimenAtLastVisit("patientsOnCarvedilolOrAtenololAtLastVisit", carvedilolAndAtenolol, heartFailureEncounterType);
-		
-		
+		SqlCohortDefinition patientsOnCarvedilolOrAtenololAtLastVisit2=Cohorts.getPatientsOnRegimenAtLastVisit("patientsOnCarvedilolOrAtenololAtLastVisit", carvedilolAndAtenolol, HFHTNCKDEncounterType);
+
+
 		CompositionCohortDefinition patientSeenOnCarvedilolOrAtenololAtLastVisit = new CompositionCohortDefinition();
 		patientSeenOnCarvedilolOrAtenololAtLastVisit.setName("patientSeenOnCarvedilolOrAtenololAtLastVisit");
 		patientSeenOnCarvedilolOrAtenololAtLastVisit.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		patientSeenOnCarvedilolOrAtenololAtLastVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 			
 		patientSeenOnCarvedilolOrAtenololAtLastVisit.getSearches().put("1",new Mapped<CohortDefinition>(patientsOnCarvedilolOrAtenololAtLastVisit, null));
-		
-		patientSeenOnCarvedilolOrAtenololAtLastVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		patientSeenOnCarvedilolOrAtenololAtLastVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientsOnCarvedilolOrAtenololAtLastVisit2, null));
+
+		patientSeenOnCarvedilolOrAtenololAtLastVisit.getSearches().put("3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 	            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
-		patientSeenOnCarvedilolOrAtenololAtLastVisit.setCompositionString("1 AND 2");	
+		patientSeenOnCarvedilolOrAtenololAtLastVisit.setCompositionString("(1 or 2) AND 3");
 		
 		CohortIndicator patientSeenOnCarvedilolOrAtenololAtLastVisitIndicator = Indicators.newCountIndicator("patientSeenOnCarvedilolOrAtenololAtLastVisitIndicator", patientSeenOnCarvedilolOrAtenololAtLastVisit, ParameterizableUtil
 	            .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
@@ -1817,17 +1869,19 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		//========================================================
 		
 		SqlCohortDefinition patientsOnLisinoprilOrCaptoprilAtLastVisit=Cohorts.getPatientsOnRegimenAtLastVisit("patientsOnLisinoprilOrCaptoprilAtLastVisit", lisinoprilAndCaptopril, heartFailureEncounterType);
-		
+		SqlCohortDefinition patientsOnLisinoprilOrCaptoprilAtLastVisit2=Cohorts.getPatientsOnRegimenAtLastVisit("patientsOnLisinoprilOrCaptoprilAtLastVisit", lisinoprilAndCaptopril, HFHTNCKDEncounterType);
+
 		CompositionCohortDefinition patientSeenOnLisinoprilOrCaptoprilAtLastVisit = new CompositionCohortDefinition();
 		patientSeenOnLisinoprilOrCaptoprilAtLastVisit.setName("patientSeenOnLisinoprilOrCaptoprilAtLastVisit");
 		patientSeenOnLisinoprilOrCaptoprilAtLastVisit.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		patientSeenOnLisinoprilOrCaptoprilAtLastVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 			
 		patientSeenOnLisinoprilOrCaptoprilAtLastVisit.getSearches().put("1",new Mapped<CohortDefinition>(patientsOnLisinoprilOrCaptoprilAtLastVisit, null));
-		
-		patientSeenOnLisinoprilOrCaptoprilAtLastVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		patientSeenOnLisinoprilOrCaptoprilAtLastVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientsOnLisinoprilOrCaptoprilAtLastVisit2, null));
+
+		patientSeenOnLisinoprilOrCaptoprilAtLastVisit.getSearches().put("3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 	            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
-		patientSeenOnLisinoprilOrCaptoprilAtLastVisit.setCompositionString("1 AND 2");
+		patientSeenOnLisinoprilOrCaptoprilAtLastVisit.setCompositionString("(1 or 2) AND 3");
 		
 		
 		CohortIndicator patientSeenOnLisinoprilOrCaptoprilAtLastVisitIndicator = Indicators.newCountIndicator("patientSeenOnLisinoprilOrCaptoprilAtLastVisitIndicator", patientSeenOnLisinoprilOrCaptoprilAtLastVisit,ParameterizableUtil
@@ -1842,17 +1896,20 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		//========================================================
 		
 		SqlCohortDefinition patientsOnFurosemideAtLastVisit=Cohorts.getPatientsOnRegimenAtLastVisit("patientsOnFurosemideAtLastVisit", furosemide, heartFailureEncounterType);
-		
+		SqlCohortDefinition patientsOnFurosemideAtLastVisit2=Cohorts.getPatientsOnRegimenAtLastVisit("patientsOnFurosemideAtLastVisit", furosemide, HFHTNCKDEncounterType);
+
 		CompositionCohortDefinition patientSeenOnFurosemideAtLastVisit = new CompositionCohortDefinition();
 		patientSeenOnFurosemideAtLastVisit.setName("patientSeenOnFurosemideAtLastVisit");
 		patientSeenOnFurosemideAtLastVisit.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		patientSeenOnFurosemideAtLastVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 			
 		patientSeenOnFurosemideAtLastVisit.getSearches().put("1",new Mapped<CohortDefinition>(patientsOnFurosemideAtLastVisit, null));
-		
-		patientSeenOnFurosemideAtLastVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		patientSeenOnFurosemideAtLastVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientsOnFurosemideAtLastVisit2, null));
+
+
+		patientSeenOnFurosemideAtLastVisit.getSearches().put("3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 	            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
-		patientSeenOnFurosemideAtLastVisit.setCompositionString("1 AND 2");
+		patientSeenOnFurosemideAtLastVisit.setCompositionString("(1 or 2) AND 3");
 		
 		
 		CohortIndicator patientSeenOnFurosemideAtLastVisitIndicator = Indicators.newCountIndicator("patientSeenOnFurosemideAtLastVisitIndicator", patientSeenOnFurosemideAtLastVisit,ParameterizableUtil
@@ -1868,17 +1925,19 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		//========================================================
 		
 		SqlCohortDefinition patientsOnAldactoneAtLastVisit=Cohorts.getPatientsOnRegimenAtLastVisit("patientsOnAldactoneAtLastVisit", aldactone, heartFailureEncounterType);
-		
+		SqlCohortDefinition patientsOnAldactoneAtLastVisit2=Cohorts.getPatientsOnRegimenAtLastVisit("patientsOnAldactoneAtLastVisit", aldactone, HFHTNCKDEncounterType);
+
 		CompositionCohortDefinition patientSeenOnAldactoneAtLastVisit = new CompositionCohortDefinition();
 		patientSeenOnAldactoneAtLastVisit.setName("patientSeenOnAldactoneAtLastVisit");
 		patientSeenOnAldactoneAtLastVisit.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		patientSeenOnAldactoneAtLastVisit.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 			
 		patientSeenOnAldactoneAtLastVisit.getSearches().put("1",new Mapped<CohortDefinition>(patientsOnAldactoneAtLastVisit, null));
-		
-		patientSeenOnAldactoneAtLastVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
+		patientSeenOnAldactoneAtLastVisit.getSearches().put("2",new Mapped<CohortDefinition>(patientsOnAldactoneAtLastVisit2, null));
+
+		patientSeenOnAldactoneAtLastVisit.getSearches().put("3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 	            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
-		patientSeenOnAldactoneAtLastVisit.setCompositionString("1 AND 2");
+		patientSeenOnAldactoneAtLastVisit.setCompositionString("(1 or 2) AND 3");
 		
 		
 		CohortIndicator patientsOnAldactoneAtLastVisitIndicator = Indicators.newCountIndicator("patientsOnAldactoneAtLastVisitIndicator", patientSeenOnAldactoneAtLastVisit,ParameterizableUtil
@@ -2217,7 +2276,10 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		SqlCohortDefinition patientsWithNYHAClassIV = Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate(
 		    "patientsWithpatientsWithNYHAClassIV", heartFailureDDBform, NYHACLASS, NYHACLASS4);
-		
+
+		SqlCohortDefinition patientsWithNYHAClassIV2 = Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate(
+				"patientsWithpatientsWithNYHAClassIV", HFEnrollmentForm, NYHACLASS, NYHACLASS4);
+
 		CompositionCohortDefinition patientsEnrolledAndWithNYHAClassIV = new CompositionCohortDefinition();
 		patientsEnrolledAndWithNYHAClassIV.setName("patientsEnrolledAndWithNYHAClassIV");
 		patientsEnrolledAndWithNYHAClassIV.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
@@ -2230,10 +2292,14 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    new Mapped<CohortDefinition>(patientsWithNYHAClassIV, ParameterizableUtil
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		patientsEnrolledAndWithNYHAClassIV.getSearches().put(
-		    "2",
+				"2",
+				new Mapped<CohortDefinition>(patientsWithNYHAClassIV2, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		patientsEnrolledAndWithNYHAClassIV.getSearches().put(
+		    "3",
 		    new Mapped<CohortDefinition>(enrolledInHFProgram, ParameterizableUtil
 		            .createParameterMappings("enrolledOnOrAfter=${onOrAfter},enrolledOnOrBefore=${onOrBefore}")));
-		patientsEnrolledAndWithNYHAClassIV.setCompositionString("1 AND 2");
+		patientsEnrolledAndWithNYHAClassIV.setCompositionString("(1 or 2) AND 3");
 		
 		CohortIndicator patientsEnrolledAndWithNYHAClassIVIndicator = Indicators
 		        .newCountIndicator(
@@ -2700,6 +2766,19 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		postOpVisit=gp.getEncounterType(GlobalPropertiesManagement.POST_CARDIAC_SURGERY_VISIT);
 
 		heartFailureEncounterTypes.add(postOpVisit);
+
+		heartFailureEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE));
+
+		HFHTNCKDEncounterType=gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+
+		HFEnrollmentForm=gp.getForm(GlobalPropertiesManagement.HF_ENROLL_FORM);
+
+
+		postOperativeValveType=gp.getConcept(GlobalPropertiesManagement.POST_OPERATIVE_VALVE_TYPE);
+
+		NCDSurgeryTypeNonCoced=gp.getConcept(GlobalPropertiesManagement.NCD_SURGERY_TYPE_NON_CODED);
+
+
 	}
 	
 }

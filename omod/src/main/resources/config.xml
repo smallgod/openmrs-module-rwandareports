@@ -19,7 +19,7 @@
         <require_module>org.openmrs.module.reporting</require_module>
 		<require_module>org.openmrs.module.rowperpatientreports</require_module>
 		<require_module>org.openmrs.module.reportingobjectgroup</require_module>
-		<require_module>org.openmrs.module.heightweighttracker</require_module>
+		<!--<require_module>org.openmrs.module.heightweighttracker</require_module>-->
 		<require_module>org.openmrs.module.orderextension</require_module>
 	</require_modules>
 
@@ -3925,6 +3925,43 @@
 		<property>reports.CKDEncounterType</property>
 		<defaultValue>48</defaultValue>
 		<description>The CKD Encounter type</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.HFHTNCKDEncounterType</property>
+		<defaultValue>48</defaultValue>
+		<description>The CKD Encounter type</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.HFENROLLformId</property>
+		<defaultValue>8ecf1ee0-2613-4047-9274-8af0f1c40a10</defaultValue>
+		<description>The HF Enrollment form id</description>
+	</globalProperty>
+
+
+	<globalProperty>
+	<property>reports.postOperativeValveType</property>
+	<defaultValue>6a7cff67-c32f-4d41-b793-a1f94fd1200d</defaultValue>
+		<description>concept id for  Post operative surgery or valve type </description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.NCDSurgeryTypeNonCoced</property>
+		<defaultValue>b4ebf8d1-615e-40a9-adeb-416bab132d21</defaultValue>
+		<description>concept id for NCD Surgery Type,non coded</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.DMENROLLformId</property>
+		<defaultValue>21d24bf3-36ce-4c3c-b4ce-4033930ba390</defaultValue>
+		<description>The DM Enrollment form id</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.HTNENROLLformId</property>
+		<defaultValue>1c3048fe-e01a-46d0-872e-dc080fe41c4c</defaultValue>
+		<description>The DM Enrollment form id</description>
 	</globalProperty>
 
 </module>

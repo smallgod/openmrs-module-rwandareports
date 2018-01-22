@@ -1067,6 +1067,32 @@ public class Cohorts {
 		query.addParameter(new Parameter("endDate", "endDate", Date.class));
 		return query;
 	}
+
+	public static SqlCohortDefinition getPatientsWithObservationInFormBetweenStartAndEndDate(String name, List<Form> forms,
+																							 Concept concept) {
+
+		int i=0;
+		StringBuilder formIds=new StringBuilder();
+		for (Form f:forms) {
+			if (i == 0) {
+				formIds.append(f.getFormId());
+			} else {
+				formIds.append(",");
+				formIds.append(f.getFormId());
+			}
+			i++;
+		}
+
+		SqlCohortDefinition query = new SqlCohortDefinition(
+				"select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id in ("+formIds+")"
+						+ " and o.concept_id="
+						+ concept.getId()
+						+ " and o.voided=0 and e.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL or o.value_datetime is NOT NULL or o.value_boolean is NOT NULL)");
+		query.setName(name);
+		query.addParameter(new Parameter("startDate", "startDate", Date.class));
+		query.addParameter(new Parameter("endDate", "endDate", Date.class));
+		return query;
+	}
 	
 	public static SqlCohortDefinition getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(String name,
 	                                                                                                                        Form form,
@@ -1081,6 +1107,34 @@ public class Cohorts {
 		query.addParameter(new Parameter("endDate", "endDate", Date.class));
 		return query;
 	}
+
+
+	public static SqlCohortDefinition getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(String name,
+																															List<Form> forms,
+																															Concept concept,
+																															int obsValue) {
+
+		StringBuilder formIds=new StringBuilder();
+
+			int i = 0;
+			for (Form f : forms) {
+				if (i > 0) {
+					formIds.append(",");
+				}
+				formIds.append(f.getId());
+				i++;
+			}
+
+
+			SqlCohortDefinition query = new SqlCohortDefinition(
+					"select distinct o.person_id from encounter e, obs o where e.encounter_id=o.encounter_id and e.form_id in (" + formIds + ")"
+							+ " and o.concept_id=" + concept.getId() + " and o.value_numeric >=" + obsValue
+							+ " and o.voided=0 and e.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+			query.setName(name);
+			query.addParameter(new Parameter("startDate", "startDate", Date.class));
+			query.addParameter(new Parameter("endDate", "endDate", Date.class));
+			return query;
+		}
 	
 	public static SqlCohortDefinition getPatientWithStructuredDistrict(String name, String districtname) {
 		SqlCohortDefinition query = new SqlCohortDefinition(
@@ -1330,6 +1384,33 @@ public class Cohorts {
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		getNewPatientsWithObservation.setCompositionString("1 AND 2");
 		
+		return getNewPatientsWithObservation;
+	}
+
+	public static CompositionCohortDefinition getNewPatientsWithObservationAtIntakeBetweenStartAndEndDate(String name,
+																										  Program program,
+																										  List<Form> forms,
+																										  Concept concept) {
+		SqlCohortDefinition glucoseAtIntake = Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("atIntake",
+				forms, concept);
+
+		CompositionCohortDefinition patientEnrolledInProgram = Cohorts.createEnrolledInProgramDuringPeriod(
+				"EnrolledInProgram", program);
+
+		CompositionCohortDefinition getNewPatientsWithObservation = new CompositionCohortDefinition();
+		getNewPatientsWithObservation.setName(name);
+		getNewPatientsWithObservation.addParameter(new Parameter("startDate", "startDate", Date.class));
+		getNewPatientsWithObservation.addParameter(new Parameter("endDate", "endDate", Date.class));
+		getNewPatientsWithObservation.getSearches().put(
+				"1",
+				new Mapped<CohortDefinition>(patientEnrolledInProgram, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		getNewPatientsWithObservation.getSearches().put(
+				"2",
+				new Mapped<CohortDefinition>(glucoseAtIntake, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		getNewPatientsWithObservation.setCompositionString("1 AND 2");
+
 		return getNewPatientsWithObservation;
 	}
 	
@@ -2387,6 +2468,15 @@ public class Cohorts {
 		VisitByDate.addParameter(new Parameter("onDate", "onDate", Date.class));
 
 		return VisitByDate;
+	}
+	public static SqlCohortDefinition getPatientsDiedByStartDateAndEndDate(String name) {
+		SqlCohortDefinition diedPatient = new SqlCohortDefinition();
+		StringBuilder query = new StringBuilder("select ps.person_id from person ps,patient pt where ps.person_id=pt.patient_id and ps.dead=1 and ps.death_date> :onOrAfter and ps.death_date< :onOrBefore and ps.voided=0");
+		diedPatient.setQuery(query.toString());
+		diedPatient.setName(name);
+		diedPatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		diedPatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		return diedPatient;
 	}
 
 }

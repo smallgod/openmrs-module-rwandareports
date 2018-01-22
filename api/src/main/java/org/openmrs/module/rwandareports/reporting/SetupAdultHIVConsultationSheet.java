@@ -52,7 +52,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
-		
+
 		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "AdultHIVConsultationSheetV2.xls",
 		    "AdultHIVConsultationSheet.xls_", null);
 		
@@ -87,13 +87,13 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		Properties stateProperties = new Properties();
 		stateProperties.setProperty("Program", hivProgram.getName());
 		stateProperties.setProperty("Workflow", Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.TREATMENT_GROUP_WORKFLOW));
-		
+
 		reportDefinition.addParameter(new Parameter("state", "Group", ProgramWorkflowState.class, stateProperties));
 		reportDefinition.getParameter("state").setRequired(false);
 		
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
-		
+
 		createDataSetDefinition(reportDefinition);
 		
 		Helper.saveReportDefinition(reportDefinition);

@@ -1162,9 +1162,17 @@ public class GlobalPropertiesManagement {
 	public final static String CKD_PROGRAM ="reports.CKDprogram";
 	public final static String CKD_RDV_FORM = "reports.CKDRDVForm";
 	public final static String CKD_ENROLLMENT_FORM = "reports.CKDEnrollmentForm";
-	public final static String CKD_ENCOUNTER_TYPE = "reports.CKDEncounterType";
+	public final static String CKD_ENCOUNTER_TYPE = "reports.HFHTNCKDEncounterType";
+	public final static String HF_HTN_CKD_ENCOUNTER_TYPE = "reports.HFHTNCKDEncounterType";
+	public final static String HF_ENROLL_FORM = "reports.HFENROLLformId";
 
 
+	public final static String POST_OPERATIVE_VALVE_TYPE = "reports.postOperativeValveType";
 
+	public final static String NCD_SURGERY_TYPE_NON_CODED = "reports.NCDSurgeryTypeNonCoced";
+
+	public final static String DM_ENROLL_FORM = "reports.DMENROLLformId";
+
+	public final static String HTN_ENROLL_FORM = "reports.HTNENROLLformId";
 
 }

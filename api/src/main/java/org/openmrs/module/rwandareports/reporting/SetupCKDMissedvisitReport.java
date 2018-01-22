@@ -106,7 +106,7 @@ public class SetupCKDMissedvisitReport {
         //                 Columns of report settings
         //==================================================================
 
-        MultiplePatientDataDefinitions imbType = RowPerPatientColumns.getIMBId("IMB ID");
+        MultiplePatientDataDefinitions imbType = RowPerPatientColumns.getAnyId("PC Id");
         dataSetDefinition1.addColumn(imbType, new HashMap<String, Object>());
 
         PatientProperty givenName = RowPerPatientColumns.getFirstNameColumn("familyName");
