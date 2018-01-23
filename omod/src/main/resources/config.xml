@@ -3964,4 +3964,11 @@
 		<description>The DM Enrollment form id</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.asthmaENROLLformId</property>
+		<defaultValue>642be66d-d7c0-4552-9688-373c317a04cf</defaultValue>
+		<description>The Asthma Enrollment form id</description>
+	</globalProperty>
+
+
 </module>
