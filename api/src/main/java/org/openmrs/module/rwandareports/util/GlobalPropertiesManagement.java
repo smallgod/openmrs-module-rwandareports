@@ -1175,4 +1175,6 @@ public class GlobalPropertiesManagement {
 
 	public final static String HTN_ENROLL_FORM = "reports.HTNENROLLformId";
 
+	public final static String ASTHMA_ENROLLMENT_FORM = "reports.asthmaENROLLformId";
+
 }
