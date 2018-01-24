@@ -497,7 +497,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 //===============================================
 
 
-		AgeCohortDefinition under16=Cohorts.createUnderAgeCohort("under16",16);
+		AgeCohortDefinition under16=Cohorts.createUnderAgeCohort("under16",15);
 
 		CompositionCohortDefinition activePatientUnder16 = new CompositionCohortDefinition();
 		activePatientUnder16.setName("activePatientUnder16");
@@ -2216,6 +2216,9 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		cardConsultForm.add(gp.getForm(GlobalPropertiesManagement.CARDIOLOGY_CONSULT_FORM));
 
 		HFHTNCKDEncounterType=gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+
+		patientsSeenEncounterTypes.add(HFHTNCKDEncounterType);
+
 
 		HTNEnrollmentForm=gp.getForm(GlobalPropertiesManagement.HTN_ENROLL_FORM);
 

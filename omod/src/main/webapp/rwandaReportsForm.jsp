@@ -304,7 +304,7 @@ $(document).ready(function(){
 </tr>
 <tr>
 <tr>
-<td rowspan="16" class="tabletd">NCD Reports</td>
+<td rowspan="17" class="tabletd">NCD Reports</td>
 <td>NCD-Diabetes Indicator Report</td>
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_DiabetesQuarterlyAndMonthReport.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -399,6 +399,12 @@ $(document).ready(function(){
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CKDMissedVisitReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CKDMissedVisitReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>NCD-CKD Indicator Report</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CKDIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CKDIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
 <td rowspan="15" class="tabletd">Oncology</td>
