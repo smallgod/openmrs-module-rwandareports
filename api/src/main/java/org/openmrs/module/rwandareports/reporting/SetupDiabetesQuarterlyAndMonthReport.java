@@ -124,6 +124,9 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 
 	private Concept unknownCauseDeathOutcomes;
 	private Concept otherCauseOfDeathOutcomes;
+	private Concept NCDLostToFolloUpOutCome;
+
+	StringBuilder deathAndLostToFollowUpOutcomeString=new StringBuilder();
 
 	private Concept urinaryAlbumin;
 
@@ -779,6 +782,45 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 				"Total active patients, number who Died in quarter",
 				new Mapped(activePatientsInPatientDiedStateInQuarterIndicator, ParameterizableUtil
 						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// A11
+
+		SqlCohortDefinition patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomes=new SqlCohortDefinition();
+		patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomes.setName("patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomes");
+		patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomes.setQuery("select patient_id from patient_program where program_id="+DMProgram.getProgramId()+" and date_completed>= :onOrAfter and date_completed<= :onOrBefore and voided=0 and outcome_concept_id not in ("+deathAndLostToFollowUpOutcomeString.toString()+")");
+		patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomes.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomes.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+
+		SqlCohortDefinition patientWhoCompletedProgram=new SqlCohortDefinition();
+		patientWhoCompletedProgram.setName("patientWhoCompletedProgram");
+		patientWhoCompletedProgram.setQuery("select patient_id from patient_program where program_id="+DMProgram.getProgramId()+" and date_completed>= :onOrAfter and date_completed<= :onOrBefore and voided=0");
+		patientWhoCompletedProgram.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		patientWhoCompletedProgram.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+
+
+
+
+		CohortIndicator patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomesIndicator = Indicators.newCountIndicator("patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomesIndicator", patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomes,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		dsd.addColumn(
+				"A11N",
+				"patient Who Completed Program Without Death And Lost To Followup Outcomes",
+				new Mapped(patientWhoCompletedProgramWithoutDeathAndLostToFollowupOutcomesIndicator, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+		CohortIndicator patientWhoCompletedProgramIndicator = Indicators.newCountIndicator("patientWhoCompletedProgramIndicator", patientWhoCompletedProgram,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		dsd.addColumn(
+				"A11D",
+				"patient Who Completed Program ",
+				new Mapped(patientWhoCompletedProgramIndicator, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
 
 
 
@@ -2315,6 +2357,15 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 		DeathOutcomeResons.add(otherCauseOfDeathOutcomes);
 
 		urinaryAlbumin=gp.getConcept(GlobalPropertiesManagement.URINARY_ALBUMIN);
+		NCDLostToFolloUpOutCome =gp.getConcept(GlobalPropertiesManagement.LOST_TO_FOLLOWUP_OUTCOME);
+		deathAndLostToFollowUpOutcomeString.append(NCDRelatedDeathOutcomes.getConceptId());
+		deathAndLostToFollowUpOutcomeString.append(",");
+		deathAndLostToFollowUpOutcomeString.append(unknownCauseDeathOutcomes.getConceptId());
+		deathAndLostToFollowUpOutcomeString.append(",");
+		deathAndLostToFollowUpOutcomeString.append(otherCauseOfDeathOutcomes.getConceptId());
+		deathAndLostToFollowUpOutcomeString.append(",");
+		deathAndLostToFollowUpOutcomeString.append(NCDLostToFolloUpOutCome.getConceptId());
+
 
 	}
 }

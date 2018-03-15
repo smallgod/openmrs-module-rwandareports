@@ -782,6 +782,8 @@ public class GlobalPropertiesManagement {
 	public static final String NCD_RELATED_DEATH_OUTCOMES = "reports.NCDRelatedDeathOutcomes";
 	public static final String UNKNOWN_CAUSE_OF_DEATH_OUTCOMES = "reports.unknownCauseDeathOutcomes";
 	public static final String OTHER_CAUSE_OF_DEATH_OUTCOMES = "reports.otherCauseOfDeathOutcomes";
+	public static final String LOST_TO_FOLLOWUP_OUTCOME = "reports.LostToFolloUp";
+
 
 
 	//Encounters

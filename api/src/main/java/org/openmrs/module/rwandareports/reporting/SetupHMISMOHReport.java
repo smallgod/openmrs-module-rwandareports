@@ -32,7 +32,11 @@ import java.util.Set;
 public class SetupHMISMOHReport {
 
 
-    Program p= Context.getProgramWorkflowService().getProgram(2);
+    Program hivProgram= Context.getProgramWorkflowService().getProgram(2);
+    Program pmtctProgram= Context.getProgramWorkflowService().getProgram(1);
+
+    Program ancProgram= Context.getProgramWorkflowService().getProgram(25);
+
 
     EncounterType transferInEncType=Context.getEncounterService().getEncounterType("HIV TRANSFER IN");
     EncounterType HIVVisitEncType=Context.getEncounterService().getEncounterType("HIV VISIT");
@@ -95,7 +99,7 @@ public class SetupHMISMOHReport {
 
 
         SqlCohortDefinition locationAndProgram = new SqlCohortDefinition();
-        locationAndProgram.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat,patient_program pp where p.patient_id = pa.person_id and p.patient_id = pp.patient_id and pp.program_id="+p.getProgramId()+" and pat.name ='Health Center' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and pa.value = :location");
+        locationAndProgram.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat,patient_program pp where p.patient_id = pa.person_id and p.patient_id = pp.patient_id and pp.program_id in ("+hivProgram.getProgramId()+","+pmtctProgram.getProgramId()+","+ancProgram.getProgramId()+") and pat.name ='Health Center' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and pa.value = :location");
         locationAndProgram.setName("Location and program cohort def");
         locationAndProgram.addParameter(new Parameter("location", "location", Location.class));
 
@@ -134,7 +138,7 @@ public class SetupHMISMOHReport {
         //====================================================
 
         //================================================================================
-       //  A01: Total number of male patients newly enrolled in HIV Care and Treatment between 0 and 4 years
+        //  A01: Total number of male patients newly enrolled in HIV Care and Treatment between 0 and 4 years
         //====================================================================================
 
 //Male patient
@@ -156,7 +160,7 @@ public class SetupHMISMOHReport {
 
         ProgramEnrollmentCohortDefinition newlyEnrolledInHIV=new ProgramEnrollmentCohortDefinition();
         newlyEnrolledInHIV.setName("newlyEnrolledInHIV");
-        newlyEnrolledInHIV.addProgram(p);
+        newlyEnrolledInHIV.addProgram(hivProgram);
         newlyEnrolledInHIV.addParameter(new Parameter("enrolledOnOrAfter","enrolledOnOrAfter",Date.class));
         newlyEnrolledInHIV.addParameter(new Parameter("enrolledOnOrBefore","enrolledOnOrBefore",Date.class));
 
@@ -469,7 +473,7 @@ public class SetupHMISMOHReport {
 
 
         SqlCohortDefinition patientWithPositiveTBScreening=new SqlCohortDefinition();
-         patientWithPositiveTBScreening.setQuery("select person_id from obs where concept_id="+tbScreening.getConceptId()+" and value_coded="+answer.getConceptId()+" and voided=0 and obs_datetime>= :onOrAfter and obs_datetime<= :onOrBefore");
+        patientWithPositiveTBScreening.setQuery("select person_id from obs where concept_id="+tbScreening.getConceptId()+" and value_coded="+answer.getConceptId()+" and voided=0 and obs_datetime>= :onOrAfter and obs_datetime<= :onOrBefore");
         patientWithPositiveTBScreening.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
         patientWithPositiveTBScreening.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
 
@@ -508,7 +512,7 @@ public class SetupHMISMOHReport {
 
 
         InStateCohortDefinition onART=new InStateCohortDefinition();
-        onART.addState(p.getWorkflowByName("TREATMENT STATUS").getState(onAntiretroviral));
+        onART.addState(hivProgram.getWorkflowByName("TREATMENT STATUS").getState(onAntiretroviral));
         onART.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
         onART.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
 
@@ -785,7 +789,7 @@ public class SetupHMISMOHReport {
 
         PatientStateCohortDefinition patientInitiatedART=new PatientStateCohortDefinition();
         patientInitiatedART.setName("patientInitiatedART");
-        patientInitiatedART.addState(p.getWorkflowByName("TREATMENT STATUS").getState(onAntiretroviral));
+        patientInitiatedART.addState(hivProgram.getWorkflowByName("TREATMENT STATUS").getState(onAntiretroviral));
         patientInitiatedART.addParameter(new Parameter("startedOnOrAfter", "startedOnOrAfter", Date.class));
         patientInitiatedART.addParameter(new Parameter("startedOnOrBefore", "startedOnOrBefore", Date.class));
 
@@ -1568,7 +1572,7 @@ public class SetupHMISMOHReport {
                 maleUnstablePatientsBelow15YearsOn1stLineRegimen, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},effectiveDate=${endDate}"));
 
 
-         dsd.addColumn("B45","Number of male pediatric ( < 15 years ) patients unstable on 1st line regimen",new Mapped(maleUnstablePatientsBelow15YearsOn1stLineRegimenIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+        dsd.addColumn("B45","Number of male pediatric ( < 15 years ) patients unstable on 1st line regimen",new Mapped(maleUnstablePatientsBelow15YearsOn1stLineRegimenIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
 
 
 
@@ -1929,7 +1933,7 @@ public class SetupHMISMOHReport {
 
         PatientStateCohortDefinition diedPatientsInThisMonth=new PatientStateCohortDefinition();
         diedPatientsInThisMonth.setName("diedPatientsInThisMonth");
-        diedPatientsInThisMonth.addState(p.getWorkflowByName("TREATMENT STATUS").getState(patientDied));
+        diedPatientsInThisMonth.addState(hivProgram.getWorkflowByName("TREATMENT STATUS").getState(patientDied));
         diedPatientsInThisMonth.addParameter(new Parameter("startedOnOrAfter", "startedOnOrAfter", Date.class));
         diedPatientsInThisMonth.addParameter(new Parameter("startedOnOrBefore", "startedOnOrBefore", Date.class));
 
@@ -1966,7 +1970,7 @@ public class SetupHMISMOHReport {
 
 
         InStateCohortDefinition defaultePatientState=new InStateCohortDefinition();
-        defaultePatientState.addState(p.getWorkflowByName("TREATMENT STATUS").getState(patientDefaulted));
+        defaultePatientState.addState(hivProgram.getWorkflowByName("TREATMENT STATUS").getState(patientDefaulted));
         defaultePatientState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
         defaultePatientState.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 
@@ -1998,7 +2002,7 @@ public class SetupHMISMOHReport {
 
         PatientStateCohortDefinition transferOutPatientsInThisMonth=new PatientStateCohortDefinition();
         transferOutPatientsInThisMonth.setName("transferOutPatientsInThisMonth");
-        transferOutPatientsInThisMonth.addState(p.getWorkflowByName("TREATMENT STATUS").getState(transferedOut));
+        transferOutPatientsInThisMonth.addState(hivProgram.getWorkflowByName("TREATMENT STATUS").getState(transferedOut));
         transferOutPatientsInThisMonth.addParameter(new Parameter("startedOnOrAfter", "startedOnOrAfter", Date.class));
         transferOutPatientsInThisMonth.addParameter(new Parameter("startedOnOrBefore", "startedOnOrBefore", Date.class));
 
@@ -2008,14 +2012,122 @@ public class SetupHMISMOHReport {
 
         dsd.addColumn("B65","Total number of patients under ART transferred out this month",new Mapped(transferOutPatientsInThisMonthIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
 
-//===============================================
-// B66 Total number of patients under ART transferred in this month
-//===============================================
+        //===============================================
+        // B66 Total number of patients under ART transferred in this month
+        //===============================================
         CohortIndicator patientsWithTransferInEncounterIndicator= Indicators.newCohortIndicator("patientsWithTransferInEncounterIndicator",
                 patientsWithTransferInEncounter, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 
         dsd.addColumn("B66","Total number of patients under ART transferred in this month ",new Mapped(patientsWithTransferInEncounterIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+        //===============================================
+        // C. STI Data Elements
+        //===============================================
+
+        //===============================================
+        // C1 Total number of patients under ART transferred in this month
+        //===============================================
+
+        //===============================================
+        // C2 Total number of patients under ART transferred in this month
+        //===============================================
+
+        //===============================================
+        // C3 Total number of patients under ART transferred in this month
+        //===============================================
+
+        //=============================================
+        //   D. Antenatal Data Elements
+        //=============================================
+
+        //===============================================
+        // D1 Number of women with unknown HIV status presenting for first antenatal care consultation
+        //===============================================
+        SqlCohortDefinition patientWithANCConsultation = new SqlCohortDefinition();
+        patientWithANCConsultation.setQuery("select grouped.patient_id from (select ordered.patient_id,ordered.encounter_datetime from (select * from encounter e WHERE form_id =72 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped where grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore");
+        //patientWithANCConsultation.setQuery("select grouped.patient_id from (select ordered.patient_id,ordered.encounter_datetime from (select * from encounter e WHERE form_id =72 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped where grouped.encounter_datetime >= '2018-02-01' and grouped.encounter_datetime <= '2018-02-09'");
+        patientWithANCConsultation.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientWithANCConsultation.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        SqlCohortDefinition patientWithANCConsultationWithHIVStatus = new SqlCohortDefinition();
+        patientWithANCConsultationWithHIVStatus.setQuery("select  grouped.patient_id from (select * from (select * from encounter e WHERE form_id =72 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=1621 and grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore");
+        //patientWithANCConsultationWithHIVStatus.setQuery("select  grouped.patient_id from (select * from (select * from encounter e WHERE form_id =72 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=1621 and grouped.encounter_datetime >= '2018-02-01' and grouped.encounter_datetime <= '2018-02-09'");
+        patientWithANCConsultationWithHIVStatus.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientWithANCConsultationWithHIVStatus.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+
+        CompositionCohortDefinition patientWithANCConsultationWithUnknownHIVStatus=new CompositionCohortDefinition();
+        patientWithANCConsultationWithUnknownHIVStatus.setName("patientWithANCConsultationWithUnknownHIVStatus");
+        //patientWithANCConsultationWithUnknownHIVStatus.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+        patientWithANCConsultationWithUnknownHIVStatus.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientWithANCConsultationWithUnknownHIVStatus.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        //patientWithANCConsultationWithUnknownHIVStatus.getSearches().put("1",new Mapped<CohortDefinition>(patientBelowOnYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+        //patientWithANCConsultationWithUnknownHIVStatus.getSearches().put("2",new Mapped<CohortDefinition>(males, null));
+        patientWithANCConsultationWithUnknownHIVStatus.getSearches().put("1",new Mapped<CohortDefinition>(patientWithANCConsultation, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientWithANCConsultationWithUnknownHIVStatus.getSearches().put("2",new Mapped<CohortDefinition>(patientWithANCConsultationWithHIVStatus, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientWithANCConsultationWithUnknownHIVStatus.setCompositionString("1 and (not 2)");
+
+        CohortIndicator patientWithANCConsultationWithUnknownHIVStatusIndicator= Indicators.newCohortIndicator("patientWithANCConsultationWithUnknownHIVStatusIndicator",
+                patientWithANCConsultationWithUnknownHIVStatus, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("D01"," Number of women with unknown HIV status presenting for first antenatal care consultation",new Mapped(patientWithANCConsultationWithUnknownHIVStatusIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+        //===============================================
+        // D02 Number of known HIV positive pregnant women presenting for first antenatal care consultation
+        //===============================================
+
+        SqlCohortDefinition patientWithHIVPositiveFirstANCConsultation = new SqlCohortDefinition();
+        patientWithHIVPositiveFirstANCConsultation.setQuery("select  grouped.patient_id from (select * from (select * from encounter e WHERE form_id =74 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=2169 and o.value_coded=703 and grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore");
+        //patientWithHIVPositiveFirstANCConsultation.setQuery("select grouped.patient_id from (select * from (select * from encounter e WHERE form_id =74 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=2169 and o.value_coded=703 and grouped.encounter_datetime >= '2018-02-01' and grouped.encounter_datetime <= '2018-02-09'");
+        patientWithHIVPositiveFirstANCConsultation.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientWithHIVPositiveFirstANCConsultation.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        CohortIndicator patientWithHIVPositiveFirstANCConsultationIndicator= Indicators.newCohortIndicator("patientWithHIVPositiveFirstANCConsultationIndicator",
+                patientWithHIVPositiveFirstANCConsultation, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("D02","Number of known HIV positive pregnant women presenting for first antenatal care consultation",new Mapped(patientWithHIVPositiveFirstANCConsultationIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+        //===============================================
+        // D03 Number of pregnant women with unknown HIV status tested for HIV
+        //===============================================
+
+        SqlCohortDefinition patientWithANCConsultationTestedForHIV = new SqlCohortDefinition();
+        //patientWithANCConsultationWithHIVStatus.setQuery("select  grouped.patient_id from (select * from (select * from encounter e WHERE form_id =72 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=1621 and grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore");
+        patientWithANCConsultationTestedForHIV.setQuery("select grouped.patient_id from (select * from (select * from encounter e WHERE form_id in (72,74) and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=1621 and grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore");
+        patientWithANCConsultationTestedForHIV.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientWithANCConsultationTestedForHIV.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        CompositionCohortDefinition patientWithANCConsultationTestedForHIVWithUnknownHIVStatus=new CompositionCohortDefinition();
+        patientWithANCConsultationTestedForHIVWithUnknownHIVStatus.setName("patientWithANCConsultationTestedForHIVWithUnknownHIVStatus");
+        //patientWithANCConsultationWithUnknownHIVStatus.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+        patientWithANCConsultationTestedForHIVWithUnknownHIVStatus.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientWithANCConsultationTestedForHIVWithUnknownHIVStatus.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        //patientWithANCConsultationWithUnknownHIVStatus.getSearches().put("1",new Mapped<CohortDefinition>(patientBelowOnYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+        //patientWithANCConsultationWithUnknownHIVStatus.getSearches().put("2",new Mapped<CohortDefinition>(males, null));
+        patientWithANCConsultationTestedForHIVWithUnknownHIVStatus.getSearches().put("1",new Mapped<CohortDefinition>(patientWithANCConsultationTestedForHIV, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientWithANCConsultationTestedForHIVWithUnknownHIVStatus.getSearches().put("2",new Mapped<CohortDefinition>(patientWithANCConsultationWithHIVStatus, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientWithANCConsultationTestedForHIVWithUnknownHIVStatus.setCompositionString("1 and (not 2)");
+
+        CohortIndicator patientWithANCConsultationTestedForHIVWithUnknownHIVStatusIndicator= Indicators.newCohortIndicator("patientWithANCConsultationTestedForHIVWithUnknownHIVStatusIndicator",
+                patientWithANCConsultationTestedForHIVWithUnknownHIVStatus, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("D03","Number of pregnant women with unknown HIV status tested for HIV",new Mapped(patientWithANCConsultationTestedForHIVWithUnknownHIVStatusIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+        //===============================================
+        // D04 Number of HIV positive women who received their results
+        //===============================================
+
+        SqlCohortDefinition patientWithHIVPositiveReceivedResults = new SqlCohortDefinition();
+        patientWithHIVPositiveReceivedResults.setQuery("select  grouped.patient_id from (select * from (select * from encounter e WHERE form_id =74 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=2169 and o.value_coded=703 and grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore");
+        //patientWithHIVPositiveFirstANCConsultation.setQuery("select grouped.patient_id from (select * from (select * from encounter e WHERE form_id =74 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=2169 and o.value_coded=703 and grouped.encounter_datetime >= '2018-02-01' and grouped.encounter_datetime <= '2018-02-09'");
+        patientWithHIVPositiveReceivedResults.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientWithHIVPositiveReceivedResults.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        CohortIndicator patientWithHIVPositiveReceivedResultsIndicator= Indicators.newCohortIndicator("patientWithHIVPositiveReceivedResultsIndicator",
+                patientWithHIVPositiveReceivedResults, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("D04","Number of HIV positive women who received their results",new Mapped(patientWithHIVPositiveReceivedResultsIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
 
 
         return  dsd;
@@ -2059,7 +2171,7 @@ public class SetupHMISMOHReport {
     }
     private InStateCohortDefinition patientInRegimenStatus(Concept state){
         InStateCohortDefinition inState=new InStateCohortDefinition();
-        inState.addState(p.getWorkflowByName("REGIMEN STATUS").getState(state));
+        inState.addState(hivProgram.getWorkflowByName("REGIMEN STATUS").getState(state));
         inState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
         inState.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         return inState;
@@ -2067,7 +2179,7 @@ public class SetupHMISMOHReport {
 
     private InStateCohortDefinition patientInModel(Concept state){
         InStateCohortDefinition inState=new InStateCohortDefinition();
-        inState.addState(p.getWorkflowByName("Model").getState(state));
+        inState.addState(hivProgram.getWorkflowByName("Model").getState(state));
         inState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
         inState.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         return inState;

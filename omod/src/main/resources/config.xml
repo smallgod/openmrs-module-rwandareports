@@ -3970,5 +3970,12 @@
 		<description>The Asthma Enrollment form id</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.LostToFolloUp</property>
+		<defaultValue>3ceb0ed8-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>LOST TO FOLLOWUP concept id</description>
+	</globalProperty>
+
+	reports.ncdLostToFolloUpOutcome
 
 </module>
