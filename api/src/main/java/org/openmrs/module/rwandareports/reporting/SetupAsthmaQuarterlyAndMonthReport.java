@@ -137,6 +137,11 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 	private Form Enrollmentform;
 	private List<Form> DDBandEnrollmentforms = new ArrayList<Form>();
 
+	private Form asthmaVisitForm;
+
+	private List<Form> asthmaVisitForms = new ArrayList<Form>();
+
+
 
 
 
@@ -145,18 +150,11 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		setUpProperties();
 		
 		//Monthly report set-up
-		ReportDefinition monthlyRd = new ReportDefinition();
-		monthlyRd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		monthlyRd.addParameter(new Parameter("endDate", "End Date", Date.class));
+
 		
 		Properties properties = new Properties();
 		properties.setProperty("hierarchyFields", "countyDistrict:District");
-		monthlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
-		
-		monthlyRd.setName("NCD-Asthma Indicator Report-Monthly");
-		
-		monthlyRd.addDataSetDefinition(createMonthlyLocationDataSet(),
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+
 		
 		// Quarterly Report Definition: Start
 		
@@ -177,23 +175,14 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		patientEnrolledInAsthmaProgram.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
 		patientEnrolledInAsthmaProgram.setPrograms(asthmaPrograms);
 		
-		monthlyRd.setBaseCohortDefinition(patientEnrolledInAsthmaProgram,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
+
 		
 		quarterlyRd.setBaseCohortDefinition(patientEnrolledInAsthmaProgram,
 		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
 		
-		Helper.saveReportDefinition(monthlyRd);
 		Helper.saveReportDefinition(quarterlyRd);
 		
-		ReportDesign monthlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
-		    "Asthma_Indicator_Monthly_Report.xls", "Asthma Indicator Monthly Report (Excel)", null);
-		Properties monthlyProps = new Properties();
-		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set");
-		monthlyProps.put("sortWeight","5000");
-		monthlyDesign.setProperties(monthlyProps);
-		Helper.saveReportDesign(monthlyDesign);
-		
+
 		ReportDesign quarterlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
 		    "Asthma_Indicator_Quarterly_Report.xls", "Asthma Indicator Quarterly Report (Excel)", null);
 		Properties quarterlyProps = new Properties();
@@ -207,63 +196,15 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Asthma Indicator Monthly Report (Excel)".equals(rd.getName())
-			        || "Asthma Indicator Quarterly Report (Excel)".equals(rd.getName())) {
+			if ("Asthma Indicator Quarterly Report (Excel)".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
 		Helper.purgeReportDefinition("NCD-Asthma Indicator Report-Quarterly");
-		Helper.purgeReportDefinition("NCD-Asthma Indicator Report-Monthly");
 		
 	}
 	
-	// Create Monthly Location Data set
-	public LocationHierachyIndicatorDataSetDefinition createMonthlyLocationDataSet() {
-		
-		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
-		        createMonthlyEncounterBaseDataSet());
-		ldsd.addBaseDefinition(createMonthlyBaseDataSet());
-		ldsd.setName("Encounter Monthly Data Set");
-		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
-		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
-		
-		return ldsd;
-	}
-	
-	private EncounterIndicatorDataSetDefinition createMonthlyEncounterBaseDataSet() {
-		
-		EncounterIndicatorDataSetDefinition eidsd = new EncounterIndicatorDataSetDefinition();
-		
-		eidsd.setName("eidsd");
-		eidsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		eidsd.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
-		createMonthlyIndicators(eidsd);
-		return eidsd;
-	}
-	
-	private void createMonthlyIndicators(EncounterIndicatorDataSetDefinition dsd) {
-		
-		SqlEncounterQuery patientVisitsToAsthmaClinic = new SqlEncounterQuery();
-		
-		patientVisitsToAsthmaClinic
-		.
-		setQuery("select encounter_id from encounter where encounter_type="
-				+ asthmaEncounterType.getEncounterTypeId()
-				+ " and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id");
-		patientVisitsToAsthmaClinic.setName("patientVisitsToAsthmaClinic");
-		patientVisitsToAsthmaClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientVisitsToAsthmaClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
-		EncounterIndicator patientVisitsToAsthmaClinicMonthIndicator = new EncounterIndicator();
-		patientVisitsToAsthmaClinicMonthIndicator.setName("patientVisitsToAsthmaClinicMonthIndicator");
-		patientVisitsToAsthmaClinicMonthIndicator.setEncounterQuery(new Mapped<EncounterQuery>(patientVisitsToAsthmaClinic,
-		        ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
-		
-		dsd.addColumn(patientVisitsToAsthmaClinicMonthIndicator);
-		
-	}
+
 	
 	//Create Quarterly Encounter Data set
 	
@@ -313,18 +254,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		
 		dsd.addColumn(patientVisitsToAsthmaClinicQuarterlyIndicator);
 		
-	}
-	
-	// create monthly cohort Data set
-	
-	private CohortIndicatorDataSetDefinition createMonthlyBaseDataSet() {
-		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
-		dsd.setName("Monthly Cohort Data Set");
-		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
-		createMonthlyIndicators(dsd);
-		return dsd;
 	}
 	
 	// create quarterly cohort Data set
@@ -462,25 +391,15 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 
 		//Cohorts.createProgramCompletedByEndDate("Completed CRDP by EndDate",asthmaProgram);
 
-
-		CompositionCohortDefinition currentlyInProgramAndNotCompleted= new CompositionCohortDefinition();
+		SqlCohortDefinition currentlyInProgramAndNotCompleted=new SqlCohortDefinition();
 		currentlyInProgramAndNotCompleted.setName("currentlyInProgramAndNotCompleted");
-		currentlyInProgramAndNotCompleted.addParameter(new Parameter("onDate", "onDate", Date.class));
-		currentlyInProgramAndNotCompleted.addParameter(new Parameter("completedOnOrBefore", "completedOnOrBefore", Date.class));
-		currentlyInProgramAndNotCompleted.getSearches().put(
-				"1",
-				new Mapped<CohortDefinition>(inAsthmaProgramByEndDate, ParameterizableUtil
-						.createParameterMappings("onDate=${onDate}")));
-		currentlyInProgramAndNotCompleted.getSearches().put(
-				"2",
-				new Mapped<CohortDefinition>(completedInAsthamProgramByEndDate, ParameterizableUtil
-						.createParameterMappings("completedOnOrBefore=${completedOnOrBefore}")));
-		currentlyInProgramAndNotCompleted.setCompositionString("1 and (not 2)");
-		//currentlyInProgramAndNotCompleted.setCompositionString("2");
+		currentlyInProgramAndNotCompleted.setQuery("select patient_id from patient_program where voided=0 and program_id="+asthmaProgram.getProgramId()+" and (date_completed> :endDate or date_completed is null) and date_enrolled<= :endDate");
+		currentlyInProgramAndNotCompleted.addParameter(new Parameter("endDate", "endDate", Date.class));
+
 
 		CohortIndicator currentlyInProgramAndNotCompletedIndicator=Indicators.newCountIndicator(
 				"currentlyInProgramAndNotCompletedIndicator", currentlyInProgramAndNotCompleted,
-				ParameterizableUtil.createParameterMappings("onDate=${endDate},completedOnOrBefore=${startDate-1d}"));
+				ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 
 		//=================================================
 		//     Adding columns to data set definition     //
@@ -936,133 +855,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		dsd.addColumn("B5DNew", "new patients enrolled in report period", new Mapped(patientsWithObsGreaterThan1timeByStartDateEndDateCompositionIndicator,
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
-/*
-
-		
-		//==============================================================
-		// C1: Of total patients with a visit in the last quarter, % who had inhaler teaching in the last 6 months
-		//==============================================================
-		
-		SqlCohortDefinition patientsWithBasicInhalerTrainingProvidedObsAnswer = Cohorts
-		        .getPatientsWithObservationInFormBetweenStartAndEndDate("patientsWithBasicInhalerTrainingProvidedObsAnswer",
-		            DDBforms, properInhalerTechnique, basicInhalerTrainingProvided);
-		
-		CompositionCohortDefinition patientsSeenWithBasicInhalerTrainingProvidedObsAnswer = new CompositionCohortDefinition();
-		patientsSeenWithBasicInhalerTrainingProvidedObsAnswer
-		        .setName("patientsSeenAndWithBasicInhalerTrainingProvidedObsAnswer");
-		patientsSeenWithBasicInhalerTrainingProvidedObsAnswer.addParameter(new Parameter("onOrAfter", "onOrAfter",
-		        Date.class));
-		patientsSeenWithBasicInhalerTrainingProvidedObsAnswer.addParameter(new Parameter("onOrBefore", "onOrBefore",
-		        Date.class));
-		patientsSeenWithBasicInhalerTrainingProvidedObsAnswer.addParameter(new Parameter("endDate", "endDate", Date.class));
-		patientsSeenWithBasicInhalerTrainingProvidedObsAnswer.addParameter(new Parameter("startDate", "startDate",
-		        Date.class));
-		patientsSeenWithBasicInhalerTrainingProvidedObsAnswer.getSearches().put(
-		    "1",
-		    new Mapped<CohortDefinition>(patientsWithBasicInhalerTrainingProvidedObsAnswer, ParameterizableUtil
-		            .createParameterMappings("endDate=${endDate},startDate=${startDate-3m}")));
-		patientsSeenWithBasicInhalerTrainingProvidedObsAnswer.getSearches().put(
-		    "2",
-		    new Mapped<CohortDefinition>(patientsSeenComposition, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		patientsSeenWithBasicInhalerTrainingProvidedObsAnswer.setCompositionString("1 AND 2");
-		
-		CohortIndicator patientsWithBasicInhalerTrainingProvidedObsAnswerIndicator = Indicators
-		        .newCountIndicator(
-		            "patientsWithBasicInhalerTrainingProvidedObsAnswerIndicator",
-		            patientsSeenWithBasicInhalerTrainingProvidedObsAnswer,
-		            ParameterizableUtil
-		                    .createParameterMappings("endDate=${endDate},startDate=${startDate-3m+1d},onOrBefore=${endDate},onOrAfter=${startDate}"));
-		
-		//=================================================
-		//     Adding columns to data set definition     //
-		//=================================================
-		
-		dsd.addColumn(
-		    "C1",
-		    "Patients With Basic Inhaler Training Provided",
-		    new Mapped(patientsWithBasicInhalerTrainingProvidedObsAnswerIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		//==============================================================
-		// C2: Of total patients with a visit in the last quarter, % who had peak flow checked in the last 6 months
-		//==============================================================
-		
-		NumericObsCohortDefinition patientsWithPeakFlowAfterSalbutamol = Cohorts.createNumericObsCohortDefinition(
-		    "patientsWithPeakFlowAfterSalbutamol", onOrAfterOnOrBefore, peakFlowAfterSalbutamol, 0, null, TimeModifier.ANY);
-		
-		CompositionCohortDefinition patientsSeenWithPeakFlowAfterSalbutamol = new CompositionCohortDefinition();
-		patientsSeenWithPeakFlowAfterSalbutamol.setName("patientsSeenWithPeakFlowAfterSalbutamol");
-		patientsSeenWithPeakFlowAfterSalbutamol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		patientsSeenWithPeakFlowAfterSalbutamol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		patientsSeenWithPeakFlowAfterSalbutamol.getSearches().put(
-		    "1",
-		    new Mapped<CohortDefinition>(patientsWithPeakFlowAfterSalbutamol, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-3m}")));
-		patientsSeenWithPeakFlowAfterSalbutamol.getSearches().put(
-		    "2",
-		    new Mapped<CohortDefinition>(patientsSeenComposition, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		patientsSeenWithPeakFlowAfterSalbutamol.setCompositionString("1 AND 2");
-		
-		CohortIndicator patientsSeenWithPeakFlowAfterSalbutamolIndicator = Indicators.newCountIndicator(
-		    "patientsSeenWithPeakFlowAfterSalbutamolIndicator", patientsSeenWithPeakFlowAfterSalbutamol,
-		    ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${endDate-3m+1d}"));
-		
-		//=================================================
-		//     Adding columns to data set definition     //
-		//=================================================
-		
-		dsd.addColumn(
-		    "C2",
-		    "Patients With peak flow checked in the last 6 months",
-		    new Mapped(patientsSeenWithPeakFlowAfterSalbutamolIndicator, ParameterizableUtil
-		            .createParameterMappings("endDate=${endDate}")), "");
-		*/
-
-		/*//=======================================================
-		// D1: Of total patients seen in the last month, % with no asthma/COPD-related regimen documented ever (asthma meds: salbutamol, beclomethasone, prednisolone, aminophyilline)
-		//=======================================================
-		
-		SqlCohortDefinition patientsWithAsthmaVisit = new SqlCohortDefinition();
-		patientsWithAsthmaVisit.setQuery("select distinct patient_id from encounter where encounter_type="
-		        + asthmaEncounterType.getId()
-		        + " and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0");
-		patientsWithAsthmaVisit.setName("patientsWithAsthmaVisit");
-		patientsWithAsthmaVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientsWithAsthmaVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
-		SqlCohortDefinition patientsHaveDrugOrdersInAsthmaMedication = Cohorts.getPatientsEverNotOnRegimen(
-		    "patientsHaveDrugOrdersInAsthmaMedication", asthmasMedications);
-		
-		CompositionCohortDefinition patientsWithAsthmaVisitAndEverNotOnRegimen = new CompositionCohortDefinition();
-		patientsWithAsthmaVisitAndEverNotOnRegimen.setName("patientsWithAsthmaVisitAndEverNotOnRegimen");
-		patientsWithAsthmaVisitAndEverNotOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientsWithAsthmaVisitAndEverNotOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
-		patientsWithAsthmaVisitAndEverNotOnRegimen.addSearch("1", patientsWithAsthmaVisit,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		patientsWithAsthmaVisitAndEverNotOnRegimen.addSearch("2", patientsHaveDrugOrdersInAsthmaMedication, null);
-		patientsWithAsthmaVisitAndEverNotOnRegimen.setCompositionString("1 AND (NOT 2)");
-		
-		CohortIndicator patientsWithAsthmaVisitIndicator = Indicators.newCountIndicator("patientsWithAsthmaVisitIndicator",
-		    patientsWithAsthmaVisit,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		CohortIndicator patientsWithAsthmaVisitAndEverNotOnRegimenIndicator = Indicators.newCountIndicator(
-		    "patientsEverNotOnRegimenIndicator", patientsWithAsthmaVisitAndEverNotOnRegimen,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		//========================================================
-		//        Adding columns to data set definition         //
-		//========================================================
-		dsd.addColumn(
-		    "D1N",
-		    "patients with no asthma/COPD-related regimen documented ever (asthma meds: salbutamol, beclomethasone, prednisolone, aminophyilline)",
-		    new Mapped(patientsWithAsthmaVisitAndEverNotOnRegimenIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		dsd.addColumn("D1D", "Of total patients seen in report period", new Mapped(patientsWithAsthmaVisitIndicator,
-		        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		*/
 
 
 		//=======================================================
@@ -1181,63 +973,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		SqlCohortDefinition patientDiedOfNCDRelatedDeath= Cohorts.getPatientsWithOutcomeprogramEndReasons("patientDiedOfNCDRelatedDeath",NCDSpecificOutcomes,DeathOutcomeResons);
 		SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
 
-		/*CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.setName("activePatientsInPatientDiedState");
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("endDate", "endDate", Date.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("startDate", "startDate", Date.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-		    "1",
-		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m+1d}")));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-		    "2",
-		    new Mapped<CohortDefinition>(patientsInPatientDiedState, ParameterizableUtil
-		            .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-				"3",
-				new Mapped<CohortDefinition>(patientDiedOfNCDRelatedDeath, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
 
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-				"4",
-				new Mapped<CohortDefinition>(obsPatientDiedReasonForExitingFromCare, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-				"5",
-				new Mapped<CohortDefinition>(NCDRelatedDeath, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
-		//activePatientsInPatientDiedState.setCompositionString("2 OR 3 OR 4");
-
-		CohortIndicator activePatientsInPatientDiedStateInQuarterIndicator = Indicators
-        .newCountIndicator(
-            "activePatientsInPatientDiedStateInQuarterIndicator",
-            activePatientsInPatientDiedStateOrNCDRelatedDeath,
-            ParameterizableUtil
-                    .createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
-
-		//========================================================
-		//        Adding columns to data set definition         //
-		//========================================================
-		
-		
-		dsd.addColumn(
-			    "E1DiedN",
-			    "Total active patients, number who Died in quarter",
-			    new Mapped(activePatientsInPatientDiedStateInQuarterIndicator, ParameterizableUtil
-			            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-			
-		*/
-		//=======================================================================
-		//E1: Of total active patients, % with documented hospitalization (in flowsheet) in the last quarter (exclude hospitalization on DDB)
-		//==================================================================
-		
-		/*SqlCohortDefinition patientHospitalized = Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate(
-		    "patientHospitalized", asthmaEncounterType, hospitalAdmissionDate);
-*/
 		SqlCohortDefinition patientHospitalized =Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("patientHospitalized",diagnosisWhileHospitalized,asthmaExacerbation);
 		
 		CompositionCohortDefinition activeAndHospitalizedPatients = new CompositionCohortDefinition();
@@ -1283,7 +1019,11 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		//  Active patients with no exit in Reporting periode
 		//=======================================================================================
 
-		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByStartDateEndDate("patientWithAnyReasonForExitingFromCare",exitReasonFromCare,1);
+
+
+
+
+		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByEndDate("patientWithAnyReasonForExitingFromCare", exitReasonFromCare, 1);
 
 
 
@@ -1292,12 +1032,10 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("startDate", "startDate", Date.class));
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("endDate", "endDate", Date.class));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("1",new Mapped<CohortDefinition>(patientsInPatientDiedState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("2",new Mapped<CohortDefinition>(NCDRelatedDeath, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("3",new Mapped<CohortDefinition>(obsPatientDiedReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("4",new Mapped<CohortDefinition>(patientWithAnyReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("startDate=${startDate-9m},endDate=${endDate-3m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("5",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.setCompositionString("5 AND (NOT (1 OR 2 OR 3 OR 4))");
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("1",new Mapped<CohortDefinition>(currentlyInProgramAndNotCompleted, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("2",new Mapped<CohortDefinition>(patientWithAnyReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${endDate-12m}")));
+		activePatientWithNoExitBeforeQuarterStart.setCompositionString("1 and 3 and (not 2)");
 
 
 		CohortIndicator activePatientIndicator = Indicators.newCountIndicator("activePatientIndicator",
@@ -1438,7 +1176,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		//
 		//=============================================
 
-		SqlCohortDefinition patientWithAsthmaClassificationInLastFormSubmitted =Cohorts.getPatientsWithObsinLastFormSubmitted("mildPersistentAsthma", asthmaclassification, rendevousForm);
+		SqlCohortDefinition patientWithAsthmaClassificationInLastFormSubmitted =Cohorts.getPatientsWithObsinLastFormSubmitted("mildPersistentAsthma", asthmaclassification, asthmaVisitForms);
 
 		CompositionCohortDefinition activePatientWithAsthmaClassificationInLastFormSubmitted = new CompositionCohortDefinition();
 		activePatientWithAsthmaClassificationInLastFormSubmitted.setName("activePatientWithAsthmaClassificationInLastFormSubmitted");
@@ -1469,29 +1207,24 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 
 		CompositionCohortDefinition currentlyInProgramAndNotCompletedAndNotSeen= new CompositionCohortDefinition();
 		currentlyInProgramAndNotCompletedAndNotSeen.setName("currentlyInProgramAndNotCompletedAndNotSeen");
-		currentlyInProgramAndNotCompletedAndNotSeen.addParameter(new Parameter("onDate", "onDate", Date.class));
-		currentlyInProgramAndNotCompletedAndNotSeen.addParameter(new Parameter("completedOnOrBefore", "completedOnOrBefore", Date.class));
+		currentlyInProgramAndNotCompletedAndNotSeen.addParameter(new Parameter("endDate", "endDate", Date.class));
 		currentlyInProgramAndNotCompletedAndNotSeen.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		currentlyInProgramAndNotCompletedAndNotSeen.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 
 		currentlyInProgramAndNotCompletedAndNotSeen.getSearches().put(
 				"1",
-				new Mapped<CohortDefinition>(inAsthmaProgramByEndDate, ParameterizableUtil
-						.createParameterMappings("onDate=${onDate}")));
+				new Mapped<CohortDefinition>(currentlyInProgramAndNotCompleted, ParameterizableUtil
+						.createParameterMappings("endDate=${endDate}")));
 		currentlyInProgramAndNotCompletedAndNotSeen.getSearches().put(
 				"2",
-				new Mapped<CohortDefinition>(completedInAsthamProgramByEndDate, ParameterizableUtil
-						.createParameterMappings("completedOnOrBefore=${completedOnOrBefore}")));
-		currentlyInProgramAndNotCompletedAndNotSeen.getSearches().put(
-				"3",
 				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 						.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
 
-		currentlyInProgramAndNotCompletedAndNotSeen.setCompositionString("1 and (not 2) and (not 3)");
+		currentlyInProgramAndNotCompletedAndNotSeen.setCompositionString("1 and (not 2)");
 
 		CohortIndicator currentlyInProgramAndNotCompletedAndNotSeenIndicator=Indicators.newCountIndicator(
 				"currentlyInProgramAndNotCompletedAndNotSeenIndicator", currentlyInProgramAndNotCompletedAndNotSeen,
-				ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m},onOrBefore=${endDate},onDate=${endDate},completedOnOrBefore=${endDate}"));
+				ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m},onOrBefore=${endDate},endDate=${endDate}"));
 
 
 		dsd.addColumn(
@@ -1676,131 +1409,11 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		    "Of adult female patients (age ≥15 years old) who had peak flow Greater Than 400 tested in the last quarter",
 		    new Mapped(adultFemalePatientsTestedForpeakFlowGreaterThan400Indicator, ParameterizableUtil
 		            .createParameterMappings("endDate=${endDate}")), "");
-		
-
 
 
 	}
 	
-	private void createMonthlyIndicators(CohortIndicatorDataSetDefinition dsd) {
-		//=======================================================
-		// B3: Of the new patients enrolled in the last month, % with documented peak flow taken both before and after salbutamol at intake
-		//=======================================================
-		
-		ProgramEnrollmentCohortDefinition enrolledInAthmaProgram = Cohorts
-		        .createProgramEnrollmentParameterizedByStartEndDate("enrolledInAthmaProgram", asthmaProgram);
-		
-		//SqlCohortDefinition patientsWithBothPeakFlowInSameDDBForm=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("patientsWithBothPeakFlowInSameDDBForm", DDBforms, peacFlowConcepts);
-		
-		SqlCohortDefinition patientsWithBothPeakFlowInSameDDBForm = Cohorts
-		        .getPatientsWithTwoObservationsBothInFormBetweenStartAndEndDate("patientsWithBothPeakFlowInSameDDBForm",
-						DDBandEnrollmentforms, peakFlowAfterSalbutamol, peakFlowBeforeSalbutamol);
 
-		
-		CompositionCohortDefinition patientsWithBothPeakFlowInSameDDBFormComposition = new CompositionCohortDefinition();
-		patientsWithBothPeakFlowInSameDDBFormComposition.setName("patientsWithBothPeakFlowInSameDDBFormComposition");
-		patientsWithBothPeakFlowInSameDDBFormComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientsWithBothPeakFlowInSameDDBFormComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
-		patientsWithBothPeakFlowInSameDDBFormComposition.getSearches().put(
-		    "1",
-		    new Mapped<CohortDefinition>(enrolledInAthmaProgram, ParameterizableUtil
-		            .createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}")));
-		patientsWithBothPeakFlowInSameDDBFormComposition.getSearches().put("2", new Mapped<CohortDefinition>(patientsWithBothPeakFlowInSameDDBForm, 
-				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		patientsWithBothPeakFlowInSameDDBFormComposition.setCompositionString("1 AND 2");
-		
-		CohortIndicator enrolledInAthmaProgramIndicator = Indicators.newCountIndicator("enrolledInAthmaProgramIndicator",
-		    enrolledInAthmaProgram,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
-		
-		CohortIndicator patientsWithBothPeakFlowInSameDDBFormIndicator = Indicators.newCountIndicator(
-		    "patientsWithBothPeakFlowInSameDDBFormIndicator", patientsWithBothPeakFlowInSameDDBFormComposition,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		//=======================================================
-		// B4: Of the new patients enrolled in the last month, % with smoking status documented at intake
-		//=======================================================
-		
-		SqlCohortDefinition patientsWithSmokingHistory = Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate(
-		    "patientsWithSmokingHistory", DDBandEnrollmentforms, smokingHistory);
-		
-		CompositionCohortDefinition patientsWithSmokingHistoryComposition = new CompositionCohortDefinition();
-		patientsWithSmokingHistoryComposition.setName("patientsWithBothPeakFlowInSameDDBFormComposition");
-		patientsWithSmokingHistoryComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientsWithSmokingHistoryComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
-		patientsWithSmokingHistoryComposition.getSearches().put(
-		    "1",
-		    new Mapped<CohortDefinition>(enrolledInAthmaProgram, ParameterizableUtil
-		            .createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}")));
-		patientsWithSmokingHistoryComposition.getSearches().put("2", new Mapped<CohortDefinition>(patientsWithSmokingHistory, 
-				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		patientsWithSmokingHistoryComposition.setCompositionString("1 AND 2");
-		
-		CohortIndicator patientsWithSmokingHistoryIndicator = Indicators.newCountIndicator(
-		    "patientsWithSmokingHistoryIndicator", patientsWithSmokingHistoryComposition,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		//=======================================================
-		// D1: Of total patients seen in the last month, % with no asthma/COPD-related regimen documented ever (asthma meds: salbutamol, beclomethasone, prednisolone, aminophyilline)
-		//=======================================================
-		
-		SqlCohortDefinition patientsWithAsthmaVisit = new SqlCohortDefinition();
-		patientsWithAsthmaVisit.setQuery("select distinct patient_id from encounter where encounter_type="
-		        + asthmaEncounterType.getId()
-		        + " and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0");
-		patientsWithAsthmaVisit.setName("patientsWithAsthmaVisit");
-		patientsWithAsthmaVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientsWithAsthmaVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
-		SqlCohortDefinition patientsHaveDrugOrdersInAsthmaMedication = Cohorts.getPatientsEverNotOnRegimen(
-		    "patientsHaveDrugOrdersInAsthmaMedication", asthmasMedications);
-		
-		CompositionCohortDefinition patientsWithAsthmaVisitAndEverNotOnRegimen = new CompositionCohortDefinition();
-		patientsWithAsthmaVisitAndEverNotOnRegimen.setName("patientsWithAsthmaVisitAndEverNotOnRegimen");
-		patientsWithAsthmaVisitAndEverNotOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientsWithAsthmaVisitAndEverNotOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
-		patientsWithAsthmaVisitAndEverNotOnRegimen.addSearch("1", patientsWithAsthmaVisit,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		patientsWithAsthmaVisitAndEverNotOnRegimen.addSearch("2", patientsHaveDrugOrdersInAsthmaMedication, null);
-		patientsWithAsthmaVisitAndEverNotOnRegimen.setCompositionString("1 AND (NOT 2)");
-		
-		CohortIndicator patientsWithAsthmaVisitIndicator = Indicators.newCountIndicator("patientsWithAsthmaVisitIndicator",
-		    patientsWithAsthmaVisit,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		CohortIndicator patientsWithAsthmaVisitAndEverNotOnRegimenIndicator = Indicators.newCountIndicator(
-		    "patientsEverNotOnRegimenIndicator", patientsWithAsthmaVisitAndEverNotOnRegimen,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		//========================================================
-		//        Adding columns to data set definition         //
-		//========================================================
-		
-		dsd.addColumn(
-		    "B3N",
-		    "patients with documented peak flow taken both before and after salbutamol at intake",
-		    new Mapped(patientsWithBothPeakFlowInSameDDBFormIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		dsd.addColumn("B3D", "new patients enrolled in report period", new Mapped(enrolledInAthmaProgramIndicator,
-		        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		dsd.addColumn(
-		    "B4N",
-		    "patients with smoking status documented at intake",
-		    new Mapped(patientsWithSmokingHistoryIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		dsd.addColumn(
-		    "D1N",
-		    "patients with no asthma/COPD-related regimen documented ever (asthma meds: salbutamol, beclomethasone, prednisolone, aminophyilline)",
-		    new Mapped(patientsWithAsthmaVisitAndEverNotOnRegimenIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		dsd.addColumn("D1D", "Of total patients seen in report period", new Mapped(patientsWithAsthmaVisitIndicator,
-		        ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-	}
 	
 	private void setUpProperties() {
 		asthmaProgram = gp.getProgram(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_PROGRAM);
@@ -1809,13 +1422,22 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		DDBform = gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
 		Enrollmentform=gp.getForm(GlobalPropertiesManagement.ASTHMA_ENROLLMENT_FORM);
 		rendevousForm = gp.getForm(GlobalPropertiesManagement.ASTHMA_RENDEVOUS_VISIT_FORM);
-		
+		asthmaVisitForm = gp.getForm(GlobalPropertiesManagement.ASTHMA_VISIT_FORM);
+
+
 		DDBforms.add(DDBform);
 		DDBforms.add(rendevousForm);
 		DDBforms.add(Enrollmentform);
 
 		DDBandEnrollmentforms.add(DDBform);
 		DDBandEnrollmentforms.add(Enrollmentform);
+
+		asthmaVisitForms.add(DDBform);
+		asthmaVisitForms.add(Enrollmentform);
+		asthmaVisitForms.add(rendevousForm);
+		asthmaVisitForms.add(asthmaVisitForm);
+
+
 
 		patientsSeenEncounterTypes.add(asthmaEncounterType);
 		
@@ -1899,7 +1521,13 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		moderatePersistentAsthma=gp.getConcept(GlobalPropertiesManagement.MODERATE_PERSISTENT_ASTHMA);
 		mildPersistentAsthma=gp.getConcept(GlobalPropertiesManagement.MILD_PERSISTENT_ASTHMA);
 
-
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.DIABETES_VISIT));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.POST_CARDIAC_SURGERY_VISIT));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.ASTHMA_VISIT));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE));
 
 	}
 }

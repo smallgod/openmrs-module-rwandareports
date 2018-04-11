@@ -814,6 +814,7 @@ public class GlobalPropertiesManagement {
 	public final static String ASTHMA_VISIT="reports.AsthmaEncounterType";
 	
 	public final static String ASTHMA_RENDEVOUS_VISIT_FORM="reports.AsthmaRendevousVisitForm";
+	public final static String ASTHMA_VISIT_FORM="reports.AsthmaVisitForm";
 	
 	public final static String EXPOSED_INFANT_ENCOUNTER="report.exposed_infantencounter";
 	
@@ -902,6 +903,7 @@ public class GlobalPropertiesManagement {
 
 	public final static String HEARTFAILURE_DDB_RDV_FORMS="reports.heartFailureDDBAndRendezvousForms";
 
+	public final static String HEARTFAILURE_NHYA_FORMS="reports.heartFailureNHYAForms";
 
 	public final static String HYPERTENSION_FLOW_ECHOCARDIOGRAPHIE_FORM = "reports.hypertensionFlowEchoFormId";
 		
@@ -1164,7 +1166,7 @@ public class GlobalPropertiesManagement {
 	public final static String CKD_PROGRAM ="reports.CKDprogram";
 	public final static String CKD_RDV_FORM = "reports.CKDRDVForm";
 	public final static String CKD_ENROLLMENT_FORM = "reports.CKDEnrollmentForm";
-	public final static String CKD_ENCOUNTER_TYPE = "reports.HFHTNCKDEncounterType";
+	public final static String CKD_ENCOUNTER_TYPE = "reports.CKDEncounterType";
 	public final static String HF_HTN_CKD_ENCOUNTER_TYPE = "reports.HFHTNCKDEncounterType";
 	public final static String HF_ENROLL_FORM = "reports.HFENROLLformId";
 

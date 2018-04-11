@@ -2478,9 +2478,42 @@ public class Cohorts {
 		return patientWithObsNtimes;
 	}
 
+	public static SqlCohortDefinition getPatientsWithObsGreaterThanNtimesByEndDate(String name, Concept concept, int times) {
+		SqlCohortDefinition patientWithObsNtimes = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select groupobs.person_id from (select person_id,count(person_id) as times from obs where concept_id= ");
+		query.append(concept.getId());
+		query.append(" and voided=0 and obs_datetime<= :endDate group by person_id) as groupobs where groupobs.times>=");
+		query.append(times);
+		patientWithObsNtimes.setQuery(query.toString());
+		patientWithObsNtimes.setName(name);
+		patientWithObsNtimes.addParameter(new Parameter("endDate", "endDate", Date.class));
+		return patientWithObsNtimes;
+	}
+
 	public static SqlCohortDefinition getPatientsWithObsinLastFormSubmitted(String name, Concept concept, Form form) {
 		SqlCohortDefinition patientsWithObsinLastFormSubmitted = new SqlCohortDefinition();
 		StringBuilder query = new StringBuilder("select encg.patient_id from (select * from (select * from encounter where form_id="+form.getFormId()+" and voided=0 order by encounter_datetime desc) enc group by enc.patient_id) encg, (select * from obs where concept_id="+concept.getConceptId()+" and voided=0) o where encg.encounter_id=o.encounter_id");
+		patientsWithObsinLastFormSubmitted.setQuery(query.toString());
+		patientsWithObsinLastFormSubmitted.setName(name);
+		return patientsWithObsinLastFormSubmitted;
+	}
+	public static SqlCohortDefinition getPatientsWithObsinLastFormSubmitted(String name, Concept concept, List<Form> forms) {
+		SqlCohortDefinition patientsWithObsinLastFormSubmitted = new SqlCohortDefinition();
+
+		int i=0;
+		StringBuilder formIds=new StringBuilder();
+		for (Form f:forms) {
+			if (i == 0) {
+				formIds.append(f.getFormId());
+			} else {
+				formIds.append(",");
+				formIds.append(f.getFormId());
+			}
+			i++;
+		}
+
+		StringBuilder query = new StringBuilder("select encg.patient_id from (select * from (select * from encounter where form_id in ("+formIds+") and voided=0 order by encounter_datetime desc) enc group by enc.patient_id) encg, (select * from obs where concept_id="+concept.getConceptId()+" and voided=0) o where encg.encounter_id=o.encounter_id");
 		patientsWithObsinLastFormSubmitted.setQuery(query.toString());
 		patientsWithObsinLastFormSubmitted.setName(name);
 		return patientsWithObsinLastFormSubmitted;

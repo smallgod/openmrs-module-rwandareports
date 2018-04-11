@@ -111,18 +111,11 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		setUpProperties();
 		
 		//Monthly report set-up
-		ReportDefinition monthlyRd = new ReportDefinition();
-		monthlyRd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		monthlyRd.addParameter(new Parameter("endDate", "End Date", Date.class));
+
 		
 		Properties properties = new Properties();
 		properties.setProperty("hierarchyFields", "countyDistrict:District");
-		monthlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
-		
-		monthlyRd.setName("NCD-Hypertension Indicator Report-Monthly");
-		
-		monthlyRd.addDataSetDefinition(createMonthlyLocationDataSet(),
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+
 		
 		// Quarterly Report Definition: Start
 		
@@ -144,22 +137,15 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		        Date.class));
 		patientEnrolledInHypertensionProgram.setPrograms(hypertensionPrograms);
 		
-		monthlyRd.setBaseCohortDefinition(patientEnrolledInHypertensionProgram,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
+
 		
 		quarterlyRd.setBaseCohortDefinition(patientEnrolledInHypertensionProgram,
 		    ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
 		
-		Helper.saveReportDefinition(monthlyRd);
+
 		Helper.saveReportDefinition(quarterlyRd);
 		
-		ReportDesign monthlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
-		    "Hypertension_Monthly_Indicator_Report.xls", "Hypertension Monthly Indicator Report (Excel)", null);
-		Properties monthlyProps = new Properties();
-		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set");
-		monthlyProps.put("sortWeight","5000");
-		monthlyDesign.setProperties(monthlyProps);
-		Helper.saveReportDesign(monthlyDesign);
+
 		
 		ReportDesign quarterlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
 		    "Hypertension_Indicator_Quarterly_Report.xls", "Hypertension Quarterly Indicator Report (Excel)", null);
@@ -174,99 +160,15 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Hypertension Monthly Indicator Report (Excel)".equals(rd.getName())
-			        || "Hypertension Quarterly Indicator Report (Excel)".equals(rd.getName())) {
+			if ("Hypertension Quarterly Indicator Report (Excel)".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
 		Helper.purgeReportDefinition("NCD-Hypertension Indicator Report-Quarterly");
-		Helper.purgeReportDefinition("NCD-Hypertension Indicator Report-Monthly");
-		
+
 	}
 	
-	// Create Monthly Location Data set
-	public LocationHierachyIndicatorDataSetDefinition createMonthlyLocationDataSet() {
-		
-		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
-		        createMonthlyEncounterBaseDataSet());
-		ldsd.addBaseDefinition(createMonthlyBaseDataSet());
-		ldsd.setName("Encounter Monthly Data Set");
-		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
-		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
-		
-		return ldsd;
-	}
-	
-	private EncounterIndicatorDataSetDefinition createMonthlyEncounterBaseDataSet() {
-		
-		EncounterIndicatorDataSetDefinition encounterIndicatorDataSetDefinition = new EncounterIndicatorDataSetDefinition();
-		
-		encounterIndicatorDataSetDefinition.setName("encounterIndicatorDataSetDefinition");
-		encounterIndicatorDataSetDefinition.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		encounterIndicatorDataSetDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
-		createMonthlyIndicators(encounterIndicatorDataSetDefinition);
-		return encounterIndicatorDataSetDefinition;
-	}
-	
-	private void createMonthlyIndicators(EncounterIndicatorDataSetDefinition dsd) {
-		
-		SqlEncounterQuery patientVisitsToHypertensionClinic = new SqlEncounterQuery();
-		
-		patientVisitsToHypertensionClinic
-		        .setQuery("select encounter_id from encounter where encounter_type in ("
-		                + hypertensionEncounterType.getEncounterTypeId()+","
-						+ HFHTNCKDEncounterType.getId()
-						+ ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id");
-		patientVisitsToHypertensionClinic.setName("patientVisitsToHypertensionClinic");
-		patientVisitsToHypertensionClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientVisitsToHypertensionClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
-		EncounterIndicator patientVisitsToHypertensionClinicMonthlyIndicator = new EncounterIndicator();
-		patientVisitsToHypertensionClinicMonthlyIndicator.setName("patientVisitsToHypertensionClinicMonthlyIndicator");
-		patientVisitsToHypertensionClinicMonthlyIndicator.setEncounterQuery(new Mapped<EncounterQuery>(
-		        patientVisitsToHypertensionClinic, ParameterizableUtil
-		                .createParameterMappings("endDate=${endDate},startDate=${startDate}")));
-		
-		dsd.addColumn(patientVisitsToHypertensionClinicMonthlyIndicator);
-		
-		//==============================================================
-		// C2: % of Patient visits in the last quarter with documented BP
-		//==============================================================
 
-		StringBuilder formIds=new StringBuilder();
-
-		int i = 0;
-		for (Form f : EnrollmentForms) {
-			if (i > 0) {
-				formIds.append(",");
-			}
-			formIds.append(f.getId());
-			i++;
-		}
-
-
-		SqlEncounterQuery patientVisitsWithDocumentedBP = new SqlEncounterQuery();
-		
-		patientVisitsWithDocumentedBP
-		.setQuery("select e.encounter_id from encounter e,obs o where (e.form_id="
-			+ rendevousForm.getFormId()
-			+ " or e.form_id in ("+formIds+")"
-			+ " and o.encounter_id=e.encounter_id and o.concept_id="+systolicBP.getConceptId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 ");
-		patientVisitsWithDocumentedBP.setName("patientVisitsToHypertensionClinic");
-		patientVisitsWithDocumentedBP.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientVisitsWithDocumentedBP.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
-		EncounterIndicator patientVisitsWithDocumentedBPIndicator = new EncounterIndicator();
-		patientVisitsWithDocumentedBPIndicator.setName("patientVisitsWithDocumentedBPIndicator");
-		patientVisitsWithDocumentedBPIndicator.setEncounterQuery(new Mapped<EncounterQuery>(
-				patientVisitsWithDocumentedBP, ParameterizableUtil
-				.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
-		
-		dsd.addColumn(patientVisitsWithDocumentedBPIndicator);
-		
-	}
 	
 	//Create Quarterly Encounter Data set
 	
@@ -318,42 +220,8 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		                .createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 		
 		dsd.addColumn(patientVisitsToHypertensionClinicQuarterlyIndicator);
+
 		
-		/*//==============================================================
-		// C2: % of Patient visits in the last quarter with documented BP
-		//==============================================================
-		SqlEncounterQuery patientVisitsWithDocumentedBP = new SqlEncounterQuery();
-		
-		patientVisitsWithDocumentedBP
-		.setQuery("select e.encounter_id from encounter e,obs o where (e.form_id="
-			+ rendevousForm.getFormId()
-			+ " or e.form_id="
-			+ DDBform.getFormId()
-			+ ") and o.encounter_id=e.encounter_id and o.concept_id="+systolicBP.getConceptId()+" and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 ");
-		patientVisitsWithDocumentedBP.setName("patientVisitsToHypertensionClinic");
-		patientVisitsWithDocumentedBP.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientVisitsWithDocumentedBP.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
-		EncounterIndicator patientVisitsWithDocumentedBPIndicator = new EncounterIndicator();
-		patientVisitsWithDocumentedBPIndicator.setName("patientVisitsWithDocumentedBPIndicator");
-		patientVisitsWithDocumentedBPIndicator.setEncounterQuery(new Mapped<EncounterQuery>(
-				patientVisitsWithDocumentedBP, ParameterizableUtil
-				.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
-		
-		dsd.addColumn(patientVisitsWithDocumentedBPIndicator);*/
-		
-	}
-	
-	// create monthly cohort Data set
-	
-	private CohortIndicatorDataSetDefinition createMonthlyBaseDataSet() {
-		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
-		dsd.setName("Monthly Cohort Data Set");
-		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
-		createMonthlyIndicators(dsd);
-		return dsd;
 	}
 	
 	// create quarterly cohort Data set
@@ -379,6 +247,15 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		//  Active patients with no exit in Reporting periode
 		//=======================================================================================
 
+
+		SqlCohortDefinition currentlyInProgramAndNotCompleted=new SqlCohortDefinition();
+		currentlyInProgramAndNotCompleted.setName("currentlyInProgramAndNotCompleted");
+		currentlyInProgramAndNotCompleted.setQuery("select patient_id from patient_program where voided=0 and program_id="+hypertensionProgram.getProgramId()+" and (date_completed> :endDate or date_completed is null) and date_enrolled<= :endDate");
+		currentlyInProgramAndNotCompleted.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+
+
+
 		SqlCohortDefinition programOutcomeNCDRelatedDeath=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("NCDRelatedDeath",NCDSpecificOutcomes,NCDRelatedDeathOutcomes);
 
 		SqlCohortDefinition obsNCDRelatedDeath=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsNCDRelatedDeath",NCDSpecificOutcomes,NCDRelatedDeathOutcomes);
@@ -396,7 +273,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		SqlCohortDefinition patientsInPatientDiedState = Cohorts
 				.createPatientsInStateNotPredatingProgramEnrolment(diedState);
 
-		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByStartDateEndDate("patientWithAnyReasonForExitingFromCare",exitReasonFromCare,1);
+		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByEndDate("patientWithAnyReasonForExitingFromCare",exitReasonFromCare,1);
 		SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
 
 		CompositionCohortDefinition activePatientWithNoExitBeforeQuarterStart = new CompositionCohortDefinition();
@@ -404,12 +281,10 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("startDate", "startDate", Date.class));
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("endDate", "endDate", Date.class));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("1",new Mapped<CohortDefinition>(patientsInPatientDiedState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("2",new Mapped<CohortDefinition>(NCDRelatedDeath, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("3",new Mapped<CohortDefinition>(obsPatientDiedReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("4",new Mapped<CohortDefinition>(patientWithAnyReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("startDate=${startDate-9m},endDate=${endDate-3m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("5",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.setCompositionString("5 AND (NOT (1 OR 2 OR 3 OR 4))");
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("1",new Mapped<CohortDefinition>(currentlyInProgramAndNotCompleted, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("2",new Mapped<CohortDefinition>(patientWithAnyReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore+1d},onOrAfter=${endDate-12m}")));
+		activePatientWithNoExitBeforeQuarterStart.setCompositionString("1 and 3 and (not 2)");
 
 
 		CohortIndicator activePatientIndicator = Indicators.newCountIndicator("activePatientIndicator",
@@ -472,7 +347,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		ProgramEnrollmentCohortDefinition completedInHypertensionProgramByEndDate=Cohorts.createProgramCompletedByEndDate("Completed hypertensionProgram by EndDate",hypertensionProgram);
 
 
-		CompositionCohortDefinition currentlyInProgramAndNotCompleted= new CompositionCohortDefinition();
+		/*CompositionCohortDefinition currentlyInProgramAndNotCompleted= new CompositionCohortDefinition();
 		currentlyInProgramAndNotCompleted.setName("currentlyInProgramAndNotCompleted");
 		currentlyInProgramAndNotCompleted.addParameter(new Parameter("onDate", "onDate", Date.class));
 		currentlyInProgramAndNotCompleted.addParameter(new Parameter("completedOnOrBefore", "completedOnOrBefore", Date.class));
@@ -484,11 +359,11 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 				"2",
 				new Mapped<CohortDefinition>(completedInHypertensionProgramByEndDate, ParameterizableUtil
 						.createParameterMappings("completedOnOrBefore=${completedOnOrBefore}")));
-		currentlyInProgramAndNotCompleted.setCompositionString("1 and (not 2)");
+		currentlyInProgramAndNotCompleted.setCompositionString("1 and (not 2)");*/
 
 		CohortIndicator currentlyInProgramAndNotCompletedIndicator=Indicators.newCountIndicator(
 				"currentlyInProgramAndNotCompletedIndicator", currentlyInProgramAndNotCompleted,
-				ParameterizableUtil.createParameterMappings("onDate=${endDate},completedOnOrBefore=${endDate}"));
+				ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 
 		dsd.addColumn(
 				"CurEnrol",
@@ -598,54 +473,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		dsd.addColumn("A7N", "% of deaths which are disease related", new Mapped(
 				activePatientsInPatientDiedStateOrNCDRelatedDeathIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
-//Denominator
 
-		/*SqlCohortDefinition patientDiedOfNCDRelatedDeath= Cohorts.getPatientsWithOutcomeprogramEndReasons("patientDiedOfNCDRelatedDeath",NCDSpecificOutcomes,DeathOutcomeResons);
-
-
-		CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.setName("activePatientsInPatientDiedState");
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("endDate", "endDate", Date.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("startDate", "startDate", Date.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-				"1",
-				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m+1d}")));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-				"2",
-				new Mapped<CohortDefinition>(patientsInPatientDiedState, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-				"3",
-				new Mapped<CohortDefinition>(patientDiedOfNCDRelatedDeath, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-				"4",
-				new Mapped<CohortDefinition>(obsPatientDiedReasonForExitingFromCare, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
-				"5",
-				new Mapped<CohortDefinition>(NCDRelatedDeath, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
-
-		CohortIndicator activePatientsInPatientDiedStateInQuarterIndicator = Indicators
-				.newCountIndicator(
-						"activePatientsInPatientDiedStateInQuarterIndicator",
-						activePatientsInPatientDiedStateOrNCDRelatedDeath,
-						ParameterizableUtil
-								.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
-
-		dsd.addColumn(
-				"DiedQ",
-				"Total active patients, number who Died in quarter",
-				new Mapped(activePatientsInPatientDiedStateInQuarterIndicator, ParameterizableUtil
-						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-*/
 
 		CohortIndicator patientsSeenInYearIndicator = Indicators.newCountIndicator("patientsSeenIndicator", patientSeen,
 				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate-9m},onOrBefore=${endDate}"));
@@ -826,7 +654,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		activePatientsWhoHadCrChecked.getSearches().put(
 				"2",
 				new Mapped<CohortDefinition>(patientWithCreatinineChecked, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m+1d}")));
+						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrBefore-12m}")));
 
 		activePatientsWhoHadCrChecked.setCompositionString("1 AND 2");
 
@@ -1039,7 +867,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 
 
 		//==============================================================
-		// C3: Of patients currently enrolled, % Lost to follow up
+		// C4: Of patients currently enrolled, % Lost to follow up
 		//==============================================================
 
 		CompositionCohortDefinition currentlyInProgramButLost= new CompositionCohortDefinition();
@@ -1050,13 +878,13 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		currentlyInProgramButLost.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		currentlyInProgramButLost.addParameter(new Parameter("startDate", "startDate", Date.class));
 		currentlyInProgramButLost.addParameter(new Parameter("endDate", "endDate", Date.class));
-		currentlyInProgramButLost.getSearches().put("1",new Mapped<CohortDefinition>(currentlyInProgramAndNotCompleted, ParameterizableUtil.createParameterMappings("completedOnOrBefore=${completedOnOrBefore},onDate=${onDate}")));
+		currentlyInProgramButLost.getSearches().put("1",new Mapped<CohortDefinition>(currentlyInProgramAndNotCompleted, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
 		currentlyInProgramButLost.getSearches().put("2",new Mapped<CohortDefinition>(activePatientWithNoExitBeforeQuarterStart, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},startDate=${startDate},endDate=${endDate}")));
 		currentlyInProgramButLost.setCompositionString("1 and (not 2)");
 
 		CohortIndicator currentlyInProgramButLostIndicator=Indicators.newCountIndicator(
 				"currentlyInProgramButLostIndicator", currentlyInProgramButLost,
-				ParameterizableUtil.createParameterMappings("onDate=${endDate},completedOnOrBefore=${endDate},startDate=${startDate},endDate=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
+				ParameterizableUtil.createParameterMappings("endDate=${endDate}startDate=${startDate},endDate=${endDate},onOrBefore=${endDate},onOrAfter=${startDate}"));
 
 		dsd.addColumn(
 				"Lost",
@@ -1947,232 +1775,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 					.createParameterMappings("endDate=${endDate}")), "");
 
 	}
-	
-	private void createMonthlyIndicators(CohortIndicatorDataSetDefinition dsd) {
-		
-		//=======================================================
-		// A2: Total # of patients seen in the last month
-		//=======================================================
 
-
-		StringBuilder formIds=new StringBuilder();
-
-		int i = 0;
-		for (Form f : EnrollmentForms) {
-			if (i > 0) {
-				formIds.append(",");
-			}
-			formIds.append(f.getId());
-			i++;
-		}
-
-
-
-
-		SqlCohortDefinition patientsWithHypertensionVisit = new SqlCohortDefinition();
-		patientsWithHypertensionVisit.setQuery("select distinct patient_id from encounter where encounter_type in ("
-		        + hypertensionEncounterType.getId()
-				+","
-				+ HFHTNCKDEncounterType.getId()
-		        + ") and (form_id="
-		        + rendevousForm.getFormId()
-	            + " or form_id in ("+formIds+")"
-		        + " and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0");
-		patientsWithHypertensionVisit.setName("patientsWithHypertensionVisit");
-		patientsWithHypertensionVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
-		patientsWithHypertensionVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
-		CohortIndicator patientsWithHypertensionVisitIndicator = Indicators.newCountIndicator(
-		    "patientsWithHypertensionVisitIndicator", patientsWithHypertensionVisit,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		dsd.addColumn(
-		    "A2",
-		    "Total # of patients seen in the last month",
-		    new Mapped(patientsWithHypertensionVisitIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		//=======================================================
-		// A3: Total # of new patients enrolled in the last month
-		//=======================================================
-		ProgramEnrollmentCohortDefinition enrolledInHypertensionProgram = Cohorts
-		        .createProgramEnrollmentParameterizedByStartEndDate("enrolledInHypertensionProgram", hypertensionProgram);
-		
-		CohortIndicator enrolledInHypertensionProgramIndicator = Indicators.newCountIndicator(
-		    "enrolledInHypertensionProgramIndicator", enrolledInHypertensionProgram,
-		    ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
-		
-		dsd.addColumn(
-		    "A3",
-		    "Total # of new patients enrolled in the last month",
-		    new Mapped(enrolledInHypertensionProgramIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		//=======================================================
-		// B5: Of the new patients enrolled in the last month, % with Stage III HTN at intake (systolic BP ≥180) 
-		//=======================================================
-		
-		SqlCohortDefinition patientsWithSystolicBPGreaterThanOrEqualTo180 = Cohorts
-		        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-		            "patientsWithSystolicBPGreaterThanOrEqualTo180", EnrollmentForms, systolicBP, 180);
-		
-		CompositionCohortDefinition patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180 = new CompositionCohortDefinition();
-		patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180
-		        .setName("patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180");
-		patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180.addParameter(new Parameter("startDate",
-		        "startDate", Date.class));
-		patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180.addParameter(new Parameter("endDate", "endDate",
-		        Date.class));
-		patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180.addSearch("1",
-		    patientsWithSystolicBPGreaterThanOrEqualTo180,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180.addSearch("2", enrolledInHypertensionProgram,
-		    null);
-		patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180.setCompositionString("1 AND 2");
-		
-		CohortIndicator patientsWithSystolicBPGreaterThanOrEqualTo180Indicator = Indicators.newCountIndicator(
-		    "patientsWithSystolicBPGreaterThanOrEqualTo180Indicator",
-		    patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo180,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		dsd.addColumn(
-		    "B5",
-		    "Total # of new patients enrolled in the last month with Stage III HTN at intake (systolic BP ≥180) ",
-		    new Mapped(patientsWithSystolicBPGreaterThanOrEqualTo180Indicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		//=======================================================
-		// D1: Of total patients seen in the last month with Stage II-III HTN, % with no HTN-related regimen documented ever
-		//=======================================================
-		
-		SqlCohortDefinition patientsWithSystolicBPGreaterThanOrEqualTo160 = Cohorts
-		        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-		            "patientsWithSystolicBPGreaterThanOrEqualTo160",EnrollmentForms, systolicBP, 160);
-		
-		CompositionCohortDefinition patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160 = new CompositionCohortDefinition();
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160
-		        .setName("patientsEnrolledInTheLastMonthWithSystolicBPGreaterThanOrEqualTo160");
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160.addParameter(new Parameter("startDate",
-		        "startDate", Date.class));
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160.addParameter(new Parameter("endDate", "endDate",
-		        Date.class));
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160.addSearch("1", patientsWithHypertensionVisit,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160.addSearch("2",
-		    patientsWithSystolicBPGreaterThanOrEqualTo160,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160.setCompositionString("1 AND 2");
-		
-		CohortIndicator patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160Indicator = Indicators
-		        .newCountIndicator("patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160Indicator",
-		            patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160,
-		            ParameterizableUtil.createParameterMappings("startDate=${endDate-1m+1d},endDate=${endDate}"));
-		
-		dsd.addColumn(
-		    "D1D",
-		    "Total patients seen in the last month with Stage II-III HTN",
-		    new Mapped(patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160Indicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		SqlCohortDefinition patientOnRegimen = Cohorts.getPatientsEverNotOnRegimen("patientsOnRegime",
-		    hypertensionMedications);
-		
-		CompositionCohortDefinition patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen = new CompositionCohortDefinition();
-		patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen
-		        .setName("patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen");
-		patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen.addParameter(new Parameter("onOrAfter", "onOrAfter",
-		        Date.class));
-		patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen.addParameter(new Parameter("onOrBefore", "onOrBefore",
-		        Date.class));
-		patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen.getSearches().put(
-		    "1",
-		    new Mapped<CohortDefinition>(patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo160,
-		            ParameterizableUtil.createParameterMappings("endDate=${onOrBefore},startDate=${onOrAfter}")));
-		patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen.getSearches().put(
-		    "2",
-		    new Mapped<CohortDefinition>(patientOnRegimen, null));
-		patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen.setCompositionString("1 AND (NOT 2)");
-		
-		CohortIndicator patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimenIndicator = Indicators.newCountIndicator(
-		    "patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimenIndicator",
-		    patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen,
-		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-1m+1d},onOrBefore=${endDate}"));
-		
-		dsd.addColumn(
-		    "D1N",
-		    "Total patients seen in the last month with Stage II-III HTN with no HTN-related regimen documented ever",
-		    new Mapped(patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimenIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		//=======================================================
-		// D2: Of total patients seen in the last month with Stage III HTN, % on 2 or more antihypertensives
-		//=======================================================
-		
-		SqlCohortDefinition patientsWithStageIIIHTN = Cohorts
-        .getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo(
-            "patientsWithSystolicBPGreaterThanOrEqualTo160",EnrollmentForms, systolicBP, 180);
-		
-		CompositionCohortDefinition patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180 = new CompositionCohortDefinition();
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180
-		        .setName("patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180");
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180.addParameter(new Parameter("startDate",
-		        "startDate", Date.class));
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180.addParameter(new Parameter("endDate", "endDate",
-		        Date.class));
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180.addSearch("1", patientsWithHypertensionVisit,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180.addSearch("2",
-				patientsWithStageIIIHTN,
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		
-		patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180.setCompositionString("1 AND 2");
-		
-		CohortIndicator patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180Indicator = Indicators
-		        .newCountIndicator("patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180",
-		            patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180,
-		            ParameterizableUtil.createParameterMappings("startDate=${endDate-1m+1d},endDate=${endDate}"));
-		
-		dsd.addColumn(
-		    "D2D",
-		    "Total patients seen in the last month with Stage III HTN",
-		    new Mapped(patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180Indicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-		SqlCohortDefinition patientOn2OrMoreAntihypertensives = Cohorts.getPatientsOnNOrMoreCurrentRegimenBasedOnEndDate(
-		    "patientsOnRegime", hypertensionMedications, 2);
-		
-		CompositionCohortDefinition patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimen = new CompositionCohortDefinition();
-		patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimen
-		        .setName("patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimen");
-		patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimen.addParameter(new Parameter("onOrAfter", "onOrAfter",
-		        Date.class));
-		patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimen.addParameter(new Parameter("onOrBefore",
-		        "onOrBefore", Date.class));
-		patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimen.getSearches().put(
-		    "1",
-		    new Mapped<CohortDefinition>(patientsWithHypertensionVisitAndSystolicBPGreaterThanOrEqualTo180,
-		            ParameterizableUtil.createParameterMappings("startDate=${onOrAfter},endDate=${onOrBefore}")));
-		patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimen.getSearches().put(
-		    "2",
-		    new Mapped<CohortDefinition>(patientOn2OrMoreAntihypertensives, ParameterizableUtil
-		            .createParameterMappings("endDate=${onOrBefore}")));
-		patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimen.setCompositionString("1 AND 2");
-		
-		CohortIndicator patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimenIndicator = Indicators
-		        .newCountIndicator("patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimenIndicator",
-		            patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimen,
-		            ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-1m+1d},onOrBefore=${endDate}"));
-		
-		dsd.addColumn(
-		    "D2N",
-		    "Of total patients seen in the last month with Stage III HTN, % on 2 or more antihypertensives",
-		    new Mapped(patientsWithHypertensionVisitAndOnMoreThan2HypertensionRegimenIndicator, ParameterizableUtil
-		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-		
-	}
 	
 	private void setUpProperties() {
 		hypertensionProgram = gp.getProgram(GlobalPropertiesManagement.HYPERTENSION_PROGRAM);
@@ -2277,7 +1880,13 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		deathAndLostToFollowUpOutcomeString.append(",");
 		deathAndLostToFollowUpOutcomeString.append(NCDLostToFolloUpOutCome.getConceptId());
 
-
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.DIABETES_VISIT));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.POST_CARDIAC_SURGERY_VISIT));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.ASTHMA_VISIT));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE));
 
 	}
 }

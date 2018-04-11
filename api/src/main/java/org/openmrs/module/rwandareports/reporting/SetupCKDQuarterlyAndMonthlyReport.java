@@ -189,7 +189,7 @@ public class SetupCKDQuarterlyAndMonthlyReport {
 		patientVisitsToCKDClinic
 		        .setQuery("select encounter_id from encounter where encounter_type in ("
 						+ CKDEncounterType.getEncounterTypeId() + ","
-						+ HFHTNCKDEncounterType.getId()
+						+ HFHTNCKDEncounterType.getEncounterTypeId()
 						+ ") and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id");
 		patientVisitsToCKDClinic.setName("patientVisitsToCKDClinic");
 		patientVisitsToCKDClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
@@ -229,6 +229,12 @@ public class SetupCKDQuarterlyAndMonthlyReport {
 		//  Active patients with no exit in Reporting periode
 		//=======================================================================================
 
+		SqlCohortDefinition currentlyInProgramAndNotCompleted=new SqlCohortDefinition();
+		currentlyInProgramAndNotCompleted.setName("currentlyInProgramAndNotCompleted");
+		currentlyInProgramAndNotCompleted.setQuery("select patient_id from patient_program where voided=0 and program_id="+CKDProgram.getProgramId()+" and (date_completed> :endDate or date_completed is null) and date_enrolled<= :endDate");
+		currentlyInProgramAndNotCompleted.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+
 		SqlCohortDefinition programOutcomeNCDRelatedDeath=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("NCDRelatedDeath",NCDSpecificOutcomes,NCDRelatedDeathOutcomes);
 
 		SqlCohortDefinition obsNCDRelatedDeath=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsNCDRelatedDeath",NCDSpecificOutcomes,NCDRelatedDeathOutcomes);
@@ -243,23 +249,20 @@ public class SetupCKDQuarterlyAndMonthlyReport {
 		NCDRelatedDeath.getSearches().put("2",new Mapped<CohortDefinition>(obsNCDRelatedDeath, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
 		NCDRelatedDeath.setCompositionString("1 OR 2");
 
-		SqlCohortDefinition patientsInPatientDiedState = Cohorts
-				.createPatientsInStateNotPredatingProgramEnrolment(diedState);
+		//SqlCohortDefinition patientsInPatientDiedState = Cohorts.createPatientsInStateNotPredatingProgramEnrolment(diedState);
 
-		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByStartDateEndDate("patientWithAnyReasonForExitingFromCare",exitReasonFromCare,1);
-		SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
+		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByEndDate("patientWithAnyReasonForExitingFromCare", exitReasonFromCare, 1);
+		//SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
 
 		CompositionCohortDefinition activePatientWithNoExitBeforeQuarterStart = new CompositionCohortDefinition();
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("startDate", "startDate", Date.class));
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("endDate", "endDate", Date.class));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("1",new Mapped<CohortDefinition>(patientsInPatientDiedState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("2",new Mapped<CohortDefinition>(NCDRelatedDeath, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("3",new Mapped<CohortDefinition>(obsPatientDiedReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("4",new Mapped<CohortDefinition>(patientWithAnyReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("startDate=${startDate-9m},endDate=${endDate-3m}")));
-		activePatientWithNoExitBeforeQuarterStart.getSearches().put("5",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter-9m}")));
-		activePatientWithNoExitBeforeQuarterStart.setCompositionString("5 AND (NOT (1 OR 2 OR 3 OR 4))");
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("1",new Mapped<CohortDefinition>(currentlyInProgramAndNotCompleted, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("2",new Mapped<CohortDefinition>(patientWithAnyReasonForExitingFromCare, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+		activePatientWithNoExitBeforeQuarterStart.getSearches().put("3",new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${endDate-12m}")));
+		activePatientWithNoExitBeforeQuarterStart.setCompositionString("1 and 3 and (not 2)");
 
 
 		CohortIndicator activePatientIndicator = Indicators.newCountIndicator("activePatientIndicator",
@@ -322,23 +325,11 @@ public class SetupCKDQuarterlyAndMonthlyReport {
 		ProgramEnrollmentCohortDefinition completedInCKDProgramByEndDate=Cohorts.createProgramCompletedByEndDate("Completed CKDProgram by EndDate",CKDProgram);
 
 
-		CompositionCohortDefinition currentlyInProgramAndNotCompleted= new CompositionCohortDefinition();
-		currentlyInProgramAndNotCompleted.setName("currentlyInProgramAndNotCompleted");
-		currentlyInProgramAndNotCompleted.addParameter(new Parameter("onDate", "onDate", Date.class));
-		currentlyInProgramAndNotCompleted.addParameter(new Parameter("completedOnOrBefore", "completedOnOrBefore", Date.class));
-		currentlyInProgramAndNotCompleted.getSearches().put(
-				"1",
-				new Mapped<CohortDefinition>(inCKDProgramByEndDate, ParameterizableUtil
-						.createParameterMappings("onDate=${onDate}")));
-		currentlyInProgramAndNotCompleted.getSearches().put(
-				"2",
-				new Mapped<CohortDefinition>(completedInCKDProgramByEndDate, ParameterizableUtil
-						.createParameterMappings("completedOnOrBefore=${completedOnOrBefore}")));
-		currentlyInProgramAndNotCompleted.setCompositionString("1 and (not 2)");
+
 
 		CohortIndicator currentlyInProgramAndNotCompletedIndicator=Indicators.newCountIndicator(
 				"currentlyInProgramAndNotCompletedIndicator", currentlyInProgramAndNotCompleted,
-				ParameterizableUtil.createParameterMappings("onDate=${endDate},completedOnOrBefore=${endDate}"));
+				ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 
 		dsd.addColumn(
 				"CurEnrol",
@@ -436,7 +427,7 @@ public class SetupCKDQuarterlyAndMonthlyReport {
 		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
 				"3",
 				new Mapped<CohortDefinition>(patientsDied, ParameterizableUtil
-						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+						.createParameterMappings("onOrBefore=${onOrBefore+1d},onOrAfter=${onOrAfter}")));
 
 		activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND 3");
 
@@ -618,6 +609,16 @@ int i=1;
 		deathAndLostToFollowUpOutcomeString.append(otherCauseOfDeathOutcomes.getConceptId());
 		deathAndLostToFollowUpOutcomeString.append(",");
 		deathAndLostToFollowUpOutcomeString.append(NCDLostToFolloUpOutCome.getConceptId());
+
+
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.DIABETES_VISIT));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.POST_CARDIAC_SURGERY_VISIT));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.ASTHMA_VISIT));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE));
+		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE));
+
 
 
 

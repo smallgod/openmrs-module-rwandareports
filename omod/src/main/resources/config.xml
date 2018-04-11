@@ -2450,6 +2450,13 @@
 		<description>Astma visit, Rendevous form id or uuid or name
 		</description>
 	</globalProperty>
+
+	<globalProperty>
+		<property>reports.AsthmaVisitForm</property>
+		<defaultValue>832d1420-bb75-4a2d-acf4-e6abe765adcf</defaultValue>
+		<description>Astma visit form id or uuid or name
+		</description>
+	</globalProperty>
 	<!-- end Asthma consult sheet & asthma monthly quaterly indicator report -->
 
 
@@ -3875,7 +3882,7 @@
 
 	<globalProperty>
 		<property>reports.diabetesDDBAndRendezvousForms</property>
-		<defaultValue>83,129,1df78f57-990d-46a7-aa9b-9a992d32ea57</defaultValue>
+		<defaultValue>83,129,1df78f57-990d-46a7-aa9b-9a992d32ea57,ec4e4184-c44b-416e-bf9a-c871822e156b,21d24bf3-36ce-4c3c-b4ce-4033930ba390</defaultValue>
 		<description>form ids or uuids of diabetes DDB, NCD followup form And Rendezvous Forms. Please separate them by using a comma(,)  </description>
 	</globalProperty>
 
@@ -3895,6 +3902,12 @@
 		<property>reports.heartFailureDDBAndRendezvousForms</property>
 		<defaultValue>1df78f57-990d-46a7-aa9b-9a992d32ea57,c4302c96-94a6-4724-90cf-88cc29409aa5,08af7816-f8b1-4b57-a4e7-34f417b55d16,8ecf1ee0-2613-4047-9274-8af0f1c40a10,d9d135f9-7540-4b47-bf48-73c8441f58d1,ad08f2c3-4661-4e48-b424-bc1d5cc1bbea</defaultValue>
 		<description>form ids or uuids of Heart Failure DDB, NCD followup form And Rendezvous Forms. Please separate them by using a comma(,)  </description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.heartFailureNHYAForms</property>
+		<defaultValue>c4302c96-94a6-4724-90cf-88cc29409aa5,08af7816-f8b1-4b57-a4e7-34f417b55d16,8ecf1ee0-2613-4047-9274-8af0f1c40a10,d9d135f9-7540-4b47-bf48-73c8441f58d1,ad08f2c3-4661-4e48-b424-bc1d5cc1bbea</defaultValue>
+		<description>form ids or uuids of Heart Failure forms to correct NHYA information. Please separate them by using a comma(,)  </description>
 	</globalProperty>
 
 	<globalProperty>
@@ -3923,7 +3936,7 @@
 
 	<globalProperty>
 		<property>reports.CKDEncounterType</property>
-		<defaultValue>48</defaultValue>
+		<defaultValue>47</defaultValue>
 		<description>The CKD Encounter type</description>
 	</globalProperty>
 
