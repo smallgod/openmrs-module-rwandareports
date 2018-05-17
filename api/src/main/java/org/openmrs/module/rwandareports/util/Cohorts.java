@@ -1558,6 +1558,19 @@ public class Cohorts {
 		
 		return patientOnRegimen;
 	}
+	public static SqlCohortDefinition getPatientsWithLabOrdersBasedOnStartDateEndDate(String name, Concept concept) {
+		SqlCohortDefinition patientWithLabOrders = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
+		query.append(concept.getId());
+		query.append(") and voided=0 and start_date >= :startDate and discontinued=0 and start_date <= :endDate");
+		patientWithLabOrders.setQuery(query.toString());
+		patientWithLabOrders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientWithLabOrders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientWithLabOrders.setName(name);
+
+		return patientWithLabOrders;
+	}
 	
 	public static SqlCohortDefinition getPatientsWithObservationAtLastVisit(String name, Concept concept,
 	                                                                        EncounterType encounterType) {

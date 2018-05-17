@@ -34,6 +34,8 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
+import javax.swing.plaf.synth.SynthDesktopIconUI;
+
 public class SetupAdultHIVConsultationSheet implements SetupReport {
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
@@ -82,7 +84,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 
 		reportDefinition.addParameter(new Parameter("onDate", "On Date", Date.class));
-		//reportDefinition.getParameter("onDate").setRequired(false);
+		reportDefinition.getParameter("onDate").setRequired(false);
 
 		Properties stateProperties = new Properties();
 		stateProperties.setProperty("Program", hivProgram.getName());
@@ -95,7 +97,7 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
 
 		createDataSetDefinition(reportDefinition);
-		
+
 		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
@@ -116,10 +118,12 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("adultHIV: In Program", hivProgram),
 		    ParameterizableUtil.createParameterMappings("onDate=${now}"));
+		// this is an example
+		if(dataSetDefinition.getParameter("onDate") !=null) {
+			dataSetDefinition.addFilter(Cohorts.getPatientsWithVisitByDate("Patient with visit by date", flowsheetAdult),
+			ParameterizableUtil.createParameterMappings("onDate=${onDate}"));
+		}
 
-		dataSetDefinition.addFilter(Cohorts.getPatientsWithVisitByDate("Patient with visit by date", flowsheetAdult),
-				ParameterizableUtil.createParameterMappings("onDate=${onDate}"));
-		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 		
