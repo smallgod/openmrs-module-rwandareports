@@ -34,7 +34,6 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-import javax.swing.plaf.synth.SynthDesktopIconUI;
 
 public class SetupAdultHIVConsultationSheet implements SetupReport {
 	
