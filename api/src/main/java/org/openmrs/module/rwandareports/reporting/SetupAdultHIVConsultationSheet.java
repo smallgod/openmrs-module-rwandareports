@@ -118,10 +118,10 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("adultHIV: In Program", hivProgram),
 		    ParameterizableUtil.createParameterMappings("onDate=${now}"));
 
-//		if(dataSetDefinition.getParameter("onDate") !=null) {
+
 			dataSetDefinition.addFilter(Cohorts.getPatientsWithVisitDateGivenOrNot("Patient with visit by date", flowsheetAdult),
 			ParameterizableUtil.createParameterMappings("onDate=${onDate}"));
-//		}
+
 
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
