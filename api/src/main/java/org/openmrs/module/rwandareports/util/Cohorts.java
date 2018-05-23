@@ -1558,6 +1558,19 @@ public class Cohorts {
 		
 		return patientOnRegimen;
 	}
+	public static SqlCohortDefinition getPatientsWithLabOrdersBasedOnStartDateEndDate(String name, Concept concept) {
+		SqlCohortDefinition patientWithLabOrders = new SqlCohortDefinition();
+
+		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
+		query.append(concept.getId());
+		query.append(") and voided=0 and start_date >= :startDate and discontinued=0 and start_date <= :endDate");
+		patientWithLabOrders.setQuery(query.toString());
+		patientWithLabOrders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientWithLabOrders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientWithLabOrders.setName(name);
+
+		return patientWithLabOrders;
+	}
 	
 	public static SqlCohortDefinition getPatientsWithObservationAtLastVisit(String name, Concept concept,
 	                                                                        EncounterType encounterType) {
@@ -2542,7 +2555,15 @@ public class Cohorts {
 		VisitByDate.setQuery(query.toString());
 		VisitByDate.setName(name);
 		VisitByDate.addParameter(new Parameter("onDate", "onDate", Date.class));
-
+		return VisitByDate;
+	}
+	public static SqlCohortDefinition getPatientsWithVisitDateGivenOrNot(String name, EncounterType encounterType) {
+		Concept returnVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+		SqlCohortDefinition VisitByDate = new SqlCohortDefinition();
+		StringBuilder query = new StringBuilder("select o.person_id from obs o,encounter e where e.encounter_type="+encounterType.getEncounterTypeId()+" and o.encounter_id=e.encounter_id and o.concept_id="+returnVisit.getConceptId()+" and (:onDate is null or o.value_datetime=:onDate) and o.voided=0 and e.voided=0");
+		VisitByDate.setQuery(query.toString());
+		VisitByDate.setName(name);
+		VisitByDate.addParameter(new Parameter("onDate", "onDate", Date.class));
 		return VisitByDate;
 	}
 	public static SqlCohortDefinition getPatientsDiedByStartDateAndEndDate(String name) {
