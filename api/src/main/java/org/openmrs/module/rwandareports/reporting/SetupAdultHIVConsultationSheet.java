@@ -118,11 +118,11 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("adultHIV: In Program", hivProgram),
 		    ParameterizableUtil.createParameterMappings("onDate=${now}"));
-		// this is an example
-		if(dataSetDefinition.getParameter("onDate") !=null) {
-			dataSetDefinition.addFilter(Cohorts.getPatientsWithVisitByDate("Patient with visit by date", flowsheetAdult),
+
+//		if(dataSetDefinition.getParameter("onDate") !=null) {
+			dataSetDefinition.addFilter(Cohorts.getPatientsWithVisitDateGivenOrNot("Patient with visit by date", flowsheetAdult),
 			ParameterizableUtil.createParameterMappings("onDate=${onDate}"));
-		}
+//		}
 
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
@@ -146,11 +146,9 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentCreatinine("RecentCreatinine", "@ddMMMyy"),
 			    new HashMap<String, Object>());
-			
-		
-		
+
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentViralLoad("ViralLoad", "@ddMMMyy"),
-		    new HashMap<String, Object>());
+				new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
 		

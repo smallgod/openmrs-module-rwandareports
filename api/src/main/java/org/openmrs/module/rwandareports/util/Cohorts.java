@@ -2555,7 +2555,15 @@ public class Cohorts {
 		VisitByDate.setQuery(query.toString());
 		VisitByDate.setName(name);
 		VisitByDate.addParameter(new Parameter("onDate", "onDate", Date.class));
-
+		return VisitByDate;
+	}
+	public static SqlCohortDefinition getPatientsWithVisitDateGivenOrNot(String name, EncounterType encounterType) {
+		Concept returnVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+		SqlCohortDefinition VisitByDate = new SqlCohortDefinition();
+		StringBuilder query = new StringBuilder("select o.person_id from obs o,encounter e where e.encounter_type="+encounterType.getEncounterTypeId()+" and o.encounter_id=e.encounter_id and o.concept_id="+returnVisit.getConceptId()+" and (:onDate is null or o.value_datetime=:onDate) and o.voided=0 and e.voided=0");
+		VisitByDate.setQuery(query.toString());
+		VisitByDate.setName(name);
+		VisitByDate.addParameter(new Parameter("onDate", "onDate", Date.class));
 		return VisitByDate;
 	}
 	public static SqlCohortDefinition getPatientsDiedByStartDateAndEndDate(String name) {
