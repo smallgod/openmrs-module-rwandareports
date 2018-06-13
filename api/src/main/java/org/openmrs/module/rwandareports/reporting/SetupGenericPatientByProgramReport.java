@@ -16,14 +16,9 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.EnrolledInProgram;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAddress;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
+import org.openmrs.module.rwandareports.filter.DateFormatFilter;
+import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
@@ -99,36 +94,40 @@ public class SetupGenericPatientByProgramReport {
 		PatientProperty gender = RowPerPatientColumns.getGender("Sex");
 		dataSetDefinition.addColumn(gender, new HashMap<String, Object>());
 		
-		DateOfBirthShowingEstimation birthdate = RowPerPatientColumns.getDateOfBirth("Birth date","dd/MM/yyyy", "dd/MM/yyyy");
-		dataSetDefinition.addColumn(birthdate, new HashMap<String, Object>());		
+		DateOfBirthShowingEstimation birthdatewithtilde = RowPerPatientColumns.getDateOfBirth("Birth date (Approximated?)","yyyy/MM/dd", "yyyy/MM/dd");
+		dataSetDefinition.addColumn(birthdatewithtilde, new HashMap<String, Object>());
+
+		DateOfBirth birthdate = Cohorts.getDateOfBirthWithoutTilde("Birth date (Analysis)", "yyyy/MM/dd");
+		dataSetDefinition.addColumn(birthdate, new HashMap<String, Object>());
 		
 		PatientRelationship accompagnateur = RowPerPatientColumns.getAccompRelationship("Accompagnateur");
 		accompagnateur.setName("Accompagnateur");
 		dataSetDefinition.addColumn(accompagnateur, new HashMap<String, Object>());	
 		
-		MostRecentObservation socioEcoAssiAlreadyReceived = RowPerPatientColumns.getMostRecent("Socio-Economic Assistance Already Received", Context.getConceptService().getConceptByUuid("3ce169b4-26fe-102b-80cb-0017a47871b2"), "dd/MM/yyyy");
+		MostRecentObservation socioEcoAssiAlreadyReceived = RowPerPatientColumns.getMostRecent("Socio-Economic Assistance Already Received", Context.getConceptService().getConceptByUuid("3ce169b4-26fe-102b-80cb-0017a47871b2"), "yyyy/MM/dd");
 		dataSetDefinition.addColumn(socioEcoAssiAlreadyReceived, new HashMap<String, Object>());	
 		
-		MostRecentObservation socioEcoAssiRecommended = RowPerPatientColumns.getMostRecent("Socio-Economic Assistance Recommended", Context.getConceptService().getConceptByUuid("3ce16b30-26fe-102b-80cb-0017a47871b2"), "dd/MM/yyyy");
+		MostRecentObservation socioEcoAssiRecommended = RowPerPatientColumns.getMostRecent("Socio-Economic Assistance Recommended", Context.getConceptService().getConceptByUuid("3ce16b30-26fe-102b-80cb-0017a47871b2"), "yyyy/MM/dd");
 		dataSetDefinition.addColumn(socioEcoAssiRecommended, new HashMap<String, Object>());	
 		
-		MostRecentObservation exitingCareReason = RowPerPatientColumns.getMostRecent("Reason for exiting care", Context.getConceptService().getConceptByUuid("3cde5ef4-26fe-102b-80cb-0017a47871b2"), "dd/MM/yyyy");
+		MostRecentObservation exitingCareReason = RowPerPatientColumns.getMostRecent("Reason for exiting care", Context.getConceptService().getConceptByUuid("3cde5ef4-26fe-102b-80cb-0017a47871b2"), "yyyy/MM/dd");
 		dataSetDefinition.addColumn(exitingCareReason, new HashMap<String, Object>());	
 		
-		MostRecentObservation hivStatus = RowPerPatientColumns.getMostRecent("Hiv Status", Context.getConceptService().getConceptByUuid("aec6ad18-f4dd-4cfa-b68d-3d7bb6ea908e"), "dd/MM/yyyy");
+		MostRecentObservation hivStatus = RowPerPatientColumns.getMostRecent("Hiv Status", Context.getConceptService().getConceptByUuid("aec6ad18-f4dd-4cfa-b68d-3d7bb6ea908e"),"yyyy/MM/dd");
 		dataSetDefinition.addColumn(hivStatus, new HashMap<String, Object>());	
 		
-		MostRecentObservation mutuelleLevel = RowPerPatientColumns.getMostRecent("Mutuelle Level", Context.getConceptService().getConceptByUuid("a9191adf-c999-422d-94e0-14de5f076127"), "dd/MM/yyyy");
+		MostRecentObservation mutuelleLevel = RowPerPatientColumns.getMostRecent("Mutuelle Level", Context.getConceptService().getConceptByUuid("a9191adf-c999-422d-94e0-14de5f076127"),"yyyy/MM/dd");
 		dataSetDefinition.addColumn(mutuelleLevel, new HashMap<String, Object>());	
 		
-		MostRecentObservation insuranceType = RowPerPatientColumns.getMostRecent("Insurance Type", Context.getConceptService().getConceptByUuid("8da67e73-776c-43f6-9758-79d1f6786db3"), "dd/MM/yyyy");
-		dataSetDefinition.addColumn(insuranceType, new HashMap<String, Object>());	
-		
+		MostRecentObservation insuranceType = RowPerPatientColumns.getMostRecent("Insurance Type", Context.getConceptService().getConceptByUuid("8da67e73-776c-43f6-9758-79d1f6786db3"),"yyyy/MM/dd");
+		dataSetDefinition.addColumn(insuranceType, new HashMap<String, Object>());
+
+
 		List<Program> programs=Context.getProgramWorkflowService().getAllPrograms();
 			for (Program program : programs) {
-				EnrolledInProgram patientEnrollementDate=RowPerPatientColumns.getPatientProgramInfo(program.getName()+" EnrollmentDate", program, "EnrollmentDate", null);
-				EnrolledInProgram patientCompletedDate=RowPerPatientColumns.getPatientProgramInfo(program.getName()+" ExitDate", program, "ExitDate", null);
-				EnrolledInProgram patientOutcome=RowPerPatientColumns.getPatientProgramInfo(program.getName()+" OutCome", program, "OutCome", null);
+				EnrolledInProgram patientEnrollementDate=RowPerPatientColumns.getPatientProgramInfo(program.getName()+"EnrollmentDate", program, "EnrollmentDate",null,"yyyy/MM/dd");
+				EnrolledInProgram patientCompletedDate=RowPerPatientColumns.getPatientProgramInfo(program.getName()+" ExitDate", program, "ExitDate", null,"yyyy/MM/dd");
+				EnrolledInProgram patientOutcome=RowPerPatientColumns.getPatientProgramInfo(program.getName()+" OutCome", program, "OutCome", null,null);
 				
 				dataSetDefinition.addColumn(patientEnrollementDate, new HashMap<String, Object>());	
 				dataSetDefinition.addColumn(patientCompletedDate, new HashMap<String, Object>());

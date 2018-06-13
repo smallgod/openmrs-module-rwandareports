@@ -36,6 +36,8 @@ import org.openmrs.module.reporting.common.SetComparator;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirth;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
 import org.openmrs.module.rwandareports.definition.DrugsActiveCohortDefinition;
 import org.openmrs.module.rwandareports.definition.PatientCohortDefinition;
 
@@ -2574,6 +2576,16 @@ public class Cohorts {
 		diedPatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		diedPatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		return diedPatient;
+	}
+	public static DateOfBirth getDateOfBirthWithoutTilde(String name,String dateFormat) {
+		DateOfBirth birthdate = new DateOfBirth();
+		birthdate.setName(name);
+
+		if (dateFormat != null) {
+			birthdate.setDateFormat(dateFormat);
+		}
+
+		return birthdate;
 	}
 
 }
