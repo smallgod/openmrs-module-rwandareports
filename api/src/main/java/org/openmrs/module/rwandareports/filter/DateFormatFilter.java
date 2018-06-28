@@ -32,11 +32,15 @@ public class DateFormatFilter implements ResultFilter {
 				} catch(ParseException e1)
 				{
 					try{
-						SimpleDateFormat sdf2 = new SimpleDateFormat("dd MMMMM yyyy");
-						resultDate = sdf2.parse(result);
-					} catch(ParseException e2)
-					{
-						e2.printStackTrace();
+						SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
+						resultDate = sdf1.parse(result);
+					} catch(ParseException e2) {
+						try {
+							SimpleDateFormat sdf2 = new SimpleDateFormat("dd MMMMM yyyy");
+							resultDate = sdf2.parse(result);
+						} catch (ParseException e3) {
+							e3.printStackTrace();
+						}
 					}
 				}
 			}

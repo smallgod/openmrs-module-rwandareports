@@ -1948,13 +1948,27 @@ public class RowPerPatientColumns {
 		return address;
 	}
 	
+	public static EnrolledInProgram getPatientProgramInfo(String name,Program program,String valueType,ResultFilter filter,String dateFormat){
+		EnrolledInProgram patientEnrollementDate=new EnrolledInProgram();
+		patientEnrollementDate.setName(name);
+		patientEnrollementDate.setValueType(valueType);
+		patientEnrollementDate.setProgram(program);
+		if(dateFormat != null) {
+			patientEnrollementDate.setDateFormat(dateFormat);
+		}
+		if(filter!=null){
+		patientEnrollementDate.setFilter(filter);
+		}
+		return patientEnrollementDate;
+	}
 	public static EnrolledInProgram getPatientProgramInfo(String name,Program program,String valueType,ResultFilter filter){
 		EnrolledInProgram patientEnrollementDate=new EnrolledInProgram();
 		patientEnrollementDate.setName(name);
 		patientEnrollementDate.setValueType(valueType);
 		patientEnrollementDate.setProgram(program);
+
 		if(filter!=null){
-		patientEnrollementDate.setFilter(filter);
+			patientEnrollementDate.setFilter(filter);
 		}
 		return patientEnrollementDate;
 	}
