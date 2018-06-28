@@ -1,9 +1,6 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import org.openmrs.Concept;
-import org.openmrs.EncounterType;
-import org.openmrs.Location;
-import org.openmrs.Program;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.*;
 import org.openmrs.module.reporting.common.DurationUnit;
@@ -79,6 +76,32 @@ public class SetupHMISMOHReport {
     private Concept partnerDisclose =Context.getConceptService().getConceptByUuid("3ce0c734-26fe-102b-80cb-0017a47871b2");
 
     private Concept yes =Context.getConceptService().getConceptByUuid("3cd6f600-26fe-102b-80cb-0017a47871b2");
+
+    Concept prophylaxisForMotherInPMTCT=Context.getConceptService().getConceptByUuid("3ce1bd24-26fe-102b-80cb-0017a47871b2");
+    Concept expectedDueDate=Context.getConceptService().getConceptByUuid("ea6a744d-846c-4e29-bc89-30404853c4f9");
+    Concept birthLocationType=Context.getConceptService().getConceptByUuid("78f156b9-12f6-431a-bd74-d3ad3b146a4e");
+    Concept hospital=Context.getConceptService().getConceptByUuid("3ce0d472-26fe-102b-80cb-0017a47871b2");
+    Concept healthCenter=Context.getConceptService().getConceptByUuid("7e327a1a-c1df-4712-ab5d-e05dc0dac35d");
+    Concept house=Context.getConceptService().getConceptByUuid("4d7f36bb-84d3-4915-95cc-951811c3cd4a");
+    private Concept resultOFHIVConfirmatoryTest =Context.getConceptService().getConceptByUuid("e3e9b82e-4c0e-4bb6-a93f-c9fceafac607");
+
+    Concept antiretroviralMonoTherapyDuringPregnancy=Context.getConceptService().getConceptByUuid("3ce1c328-26fe-102b-80cb-0017a47871b2");
+
+    private Form ANCDeliveryReportForm=Context.getFormService().getFormByUuid("a8bb98ad-443c-43c9-bbc0-1bc8cf7da6ff");
+
+    private Concept antiretroviralTripleTherapyAtBirth =Context.getConceptService().getConceptByUuid("ce1c49a-26fe-102b-80cb-0017a47871b2");
+    private Concept nevirapineSingleDoseAfterBirth =Context.getConceptService().getConceptByUuid("3ce1ba2c-26fe-102b-80cb-0017a47871b2");
+
+
+    private Concept exposedInfantState =Context.getConceptService().getConceptByUuid("2f0c165f-5cd2-4750-bdb2-24f579c99653");
+
+    private Concept HIVTestType =Context.getConceptService().getConceptByUuid("3cdec790-26fe-102b-80cb-0017a47871b2");
+
+    private Concept PCR =Context.getConceptService().getConceptByUuid("3cdbdf94-26fe-102b-80cb-0017a47871b2");
+
+    private Concept cotrimo =Context.getConceptService().getConceptByUuid("3cd51772-26fe-102b-80cb-0017a47871b2");
+
+    private Form VCTCounselingAndTesting=Context.getFormService().getFormByUuid("9ec8c6ce-a67c-4203-b5b5-cdf9739b536e");
 
 
 
@@ -2319,24 +2342,426 @@ public class SetupHMISMOHReport {
 
 
 
-        /*
-
         //===============================================
-        // D07 Number of HIV positive women who received their results
+        // D13 Number of discordant couples
         //===============================================
 
-        SqlCohortDefinition patientWithHIVPositiveReceivedResults = new SqlCohortDefinition();
-        patientWithHIVPositiveReceivedResults.setQuery("select  grouped.patient_id from (select * from (select * from encounter e WHERE form_id =74 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=2169 and o.value_coded=703 and grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore");
+        DateObsCohortDefinition patientsWithPartnerDisclose=new DateObsCohortDefinition();
+        patientsWithPartnerDisclose.setName("patientsWithPartnerDisclose");
+        patientsWithPartnerDisclose.setQuestion(partnerDisclose);
+        patientsWithPartnerDisclose.addEncounterType(ANCEncounterType);
+        patientsWithPartnerDisclose.setTimeModifier(TimeModifier.LAST);
+        patientsWithPartnerDisclose.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientsWithPartnerDisclose.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        CohortIndicator patientsWithPartnerDisclosetIndicator= Indicators.newCohortIndicator("patientsWithPartnerDiscloseIndicator",
+                patientsWithPartnerDisclose, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("D13","Number of discordant couples",new Mapped(patientsWithPartnerDisclosetIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+
+        //===============================================
+        // D14 Number of partners tested HIV positive     OK
+        //===============================================
+
+        SqlCohortDefinition partinersWithHIVPositiveReceivedResults = new SqlCohortDefinition();
+        partinersWithHIVPositiveReceivedResults.setQuery("select  grouped.patient_id from (select * from (select * from encounter e WHERE form_id =74 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=13320 and o.value_coded=703 and grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore");
         //patientWithHIVPositiveFirstANCConsultation.setQuery("select grouped.patient_id from (select * from (select * from encounter e WHERE form_id =74 and voided=0 order by e.encounter_datetime asc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id=2169 and o.value_coded=703 and grouped.encounter_datetime >= '2018-02-01' and grouped.encounter_datetime <= '2018-02-09'");
-        patientWithHIVPositiveReceivedResults.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
-        patientWithHIVPositiveReceivedResults.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+        partinersWithHIVPositiveReceivedResults.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        partinersWithHIVPositiveReceivedResults.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
 
-        CohortIndicator patientWithHIVPositiveReceivedResultsIndicator= Indicators.newCohortIndicator("patientWithHIVPositiveReceivedResultsIndicator",
-                patientWithHIVPositiveReceivedResults, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+        CohortIndicator partinersWithHIVPositiveReceivedResultsIndicator= Indicators.newCohortIndicator("partinersWithHIVPositiveReceivedResultsIndicator",
+                partinersWithHIVPositiveReceivedResults, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
-        dsd.addColumn("D07","Number of HIV positive women who received their results",new Mapped(patientWithHIVPositiveReceivedResultsIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+        dsd.addColumn("D14","Number of partners tested HIV positive who received their results",new Mapped(partinersWithHIVPositiveReceivedResultsIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+        //===============================================
+        // D15 Number of HIV positive pregnant women starting Cotrimoxazole this month         (cfr form 74)  accide folique???
+        //===============================================
+
+        //===============================================
+        // D17 Number of pregnant women who received therapeutic or nutritional supplementation this month
+        //===============================================
+        //===============================================
+        // D18 Number of lactating mothers who received therapeutic or nutritional supplementation this month
+        //===============================================
+
+        //===============================================
+        // E: Maternity Data Elements
+        //===============================================
+        //===============================================
+        // E01 Number of expected deliveries at the facility this month
+        //===============================================
+
+        DateObsCohortDefinition patientWithApproximateDateOfDeliveriesAtFacilityThisMonth=new DateObsCohortDefinition();
+        patientWithApproximateDateOfDeliveriesAtFacilityThisMonth.setName("patientWithApproximateDateOfDeliveriesAtFacilityThisMonth");
+        patientWithApproximateDateOfDeliveriesAtFacilityThisMonth.setQuestion(expectedDueDate);
+        patientWithApproximateDateOfDeliveriesAtFacilityThisMonth.addEncounterType(ANCEncounterType);
+        patientWithApproximateDateOfDeliveriesAtFacilityThisMonth.setTimeModifier(TimeModifier.LAST);
+        patientWithApproximateDateOfDeliveriesAtFacilityThisMonth.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientWithApproximateDateOfDeliveriesAtFacilityThisMonth.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        CohortIndicator patientWithApproximateDateOfDeliveriesAtFacilityThisMonthIndicator= Indicators.newCohortIndicator("patientWithApproximateDateOfDeliveriesAtFacilityThisMonthIndicator",
+                patientWithApproximateDateOfDeliveriesAtFacilityThisMonth, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("E01","Number of expected deliveries at the facility this month",new Mapped(patientWithApproximateDateOfDeliveriesAtFacilityThisMonthIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+/*
+        //===============================================
+        // E02 Number of deliveries occurring at the facility this month
+        //===============================================
+
+        DateObsCohortDefinition numberOfDeliveriesOccuringAtHealthFacilityThisMonth=new DateObsCohortDefinition();
+        numberOfDeliveriesOccuringAtHealthFacilityThisMonth.setName("numberOfDeliveriesOccuringAtHealthFacilityThisMonth");
+        numberOfDeliveriesOccuringAtHealthFacilityThisMonth.setQuestion(typeOfDelivery);
+        //numberOfDeliveriesOccuringAtHealthFacilityThisMonth.addEncounterType(ANCEncounterType);
+        numberOfDeliveriesOccuringAtHealthFacilityThisMonth.setTimeModifier(TimeModifier.LAST);
+        numberOfDeliveriesOccuringAtHealthFacilityThisMonth.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        numberOfDeliveriesOccuringAtHealthFacilityThisMonth.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        CohortIndicator numberOfDeliveriesOccuringAtHealthFacilityThisMonthIndicator= Indicators.newCohortIndicator("numberOfDeliveriesOccuringAtHealthFacilityThisMonthIndicator",
+                numberOfDeliveriesOccuringAtHealthFacilityThisMonth, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("E02","Number of deliveries occurring at the facility this month",new Mapped(numberOfDeliveriesOccuringAtHealthFacilityThisMonthIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
 
 */
+        //===============================================
+        // E03 Number of expected deliveries among HIV positive women
+        //===============================================
+
+        CodedObsCohortDefinition patientWithResultsOfHIVPositiveObs=new CodedObsCohortDefinition();
+        patientWithResultsOfHIVPositiveObs.setName("PatientWithHIVPositiveObs");
+        patientWithResultsOfHIVPositiveObs.setQuestion(resultOfHIVTest);
+        patientWithResultsOfHIVPositiveObs.addValue(positive);
+        patientWithResultsOfHIVPositiveObs.setOperator(SetComparator.IN);
+        patientWithResultsOfHIVPositiveObs.setTimeModifier(TimeModifier.LAST);
+
+        CodedObsCohortDefinition patientWithPositiveResultsOfHIVConfirmatoryTestObs=new CodedObsCohortDefinition();
+        patientWithPositiveResultsOfHIVConfirmatoryTestObs.setName("patientWithPositiveResultsOfHIVConfirmatoryTestObs");
+        patientWithPositiveResultsOfHIVConfirmatoryTestObs.setQuestion(resultOFHIVConfirmatoryTest);
+        patientWithPositiveResultsOfHIVConfirmatoryTestObs.addValue(positive);
+        patientWithPositiveResultsOfHIVConfirmatoryTestObs.setOperator(SetComparator.IN);
+        patientWithPositiveResultsOfHIVConfirmatoryTestObs.setTimeModifier(TimeModifier.LAST);
+
+        CompositionCohortDefinition patientWithPositiveResultsOfHIVAndConfirmatoryObs=new CompositionCohortDefinition();
+        patientWithPositiveResultsOfHIVAndConfirmatoryObs.setName("patientWithPositiveResultsOfHIVAndConfirmatoryObs");
+        patientWithPositiveResultsOfHIVAndConfirmatoryObs.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientWithPositiveResultsOfHIVAndConfirmatoryObs.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        patientWithPositiveResultsOfHIVAndConfirmatoryObs.getSearches().put("1",new Mapped<CohortDefinition>(patientWithHIVPositiveObs, null));
+        patientWithPositiveResultsOfHIVAndConfirmatoryObs.getSearches().put("2",new Mapped<CohortDefinition>(patientWithPositiveResultsOfHIVConfirmatoryTestObs, null));
+        patientWithPositiveResultsOfHIVAndConfirmatoryObs.getSearches().put("3",new Mapped<CohortDefinition>(patientWithApproximateDateOfDeliveriesAtFacilityThisMonth, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+
+        patientWithPositiveResultsOfHIVAndConfirmatoryObs.setCompositionString("(1 OR 2) AND 3");
+
+        CohortIndicator patientWithPositiveResultsOfHIVAndConfirmatoryObsIndicator= Indicators.newCohortIndicator("patientWithPositiveResultsOfHIVAndConfirmatoryObsIndicator",
+                patientWithPositiveResultsOfHIVAndConfirmatoryObs, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("E03","Number of expected deliveries among HIV positive women",new Mapped(patientWithPositiveResultsOfHIVAndConfirmatoryObsIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+
+        //===============================================
+        // E04 Number of HIV positive women giving birth at the facility
+        //===============================================
+
+        CodedObsCohortDefinition womenGivingBirthAtHospital=new CodedObsCohortDefinition();
+        womenGivingBirthAtHospital.setName("womenGivingBirthAtHospital");
+        womenGivingBirthAtHospital.setQuestion(birthLocationType);
+        womenGivingBirthAtHospital.addValue(hospital);
+        womenGivingBirthAtHospital.setOperator(SetComparator.IN);
+        womenGivingBirthAtHospital.setTimeModifier(TimeModifier.LAST);
+        womenGivingBirthAtHospital.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        womenGivingBirthAtHospital.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+
+        CodedObsCohortDefinition womenGivingBirthAtHealthCenter=new CodedObsCohortDefinition();
+        womenGivingBirthAtHealthCenter.setName("womenGivingBirthAtHealthCenter");
+        womenGivingBirthAtHealthCenter.setQuestion(birthLocationType);
+        womenGivingBirthAtHealthCenter.addValue(healthCenter);
+        womenGivingBirthAtHealthCenter.setOperator(SetComparator.IN);
+        womenGivingBirthAtHealthCenter.setTimeModifier(TimeModifier.LAST);
+        womenGivingBirthAtHealthCenter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        womenGivingBirthAtHealthCenter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+
+        CompositionCohortDefinition patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs=new CompositionCohortDefinition();
+        patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs.setName("patientWithPositiveResultsOfHIVAndConfirmatoryObs");
+        patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs.getSearches().put("1",new Mapped<CohortDefinition>(patientWithHIVPositiveObs, null));
+        patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs.getSearches().put("2",new Mapped<CohortDefinition>(patientWithPositiveResultsOfHIVConfirmatoryTestObs, null));
+        patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs.getSearches().put("3",new Mapped<CohortDefinition>(womenGivingBirthAtHospital, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs.getSearches().put("4",new Mapped<CohortDefinition>(womenGivingBirthAtHealthCenter, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+
+        patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs.setCompositionString("((1 or 2) AND (3 OR 4)");
+
+        CohortIndicator ppatientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObsIndicator= Indicators.newCohortIndicator("patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObsIndicator",
+                patientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObs, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("E04","Number of HIV positive women giving birth at the facility",new Mapped(ppatientWithPositiveResultsOfHIVGivingBirthAtHealthFacilitiesObsIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+        //===============================================
+        // E05 Number of reported HIV positive women giving birth at home
+        //===============================================
+
+        CodedObsCohortDefinition womenGivingBirthAtHomeObs=new CodedObsCohortDefinition();
+        womenGivingBirthAtHomeObs.setName("womenGivingBirthAtHomeObs");
+        womenGivingBirthAtHomeObs.setQuestion(birthLocationType);
+        womenGivingBirthAtHomeObs.addValue(house);
+        womenGivingBirthAtHomeObs.setOperator(SetComparator.IN);
+        womenGivingBirthAtHomeObs.setTimeModifier(TimeModifier.LAST);
+        womenGivingBirthAtHomeObs.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        womenGivingBirthAtHomeObs.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+
+        CompositionCohortDefinition patientWithPositiveResultsOfHIVGivingBirthAtHomeObs=new CompositionCohortDefinition();
+        patientWithPositiveResultsOfHIVGivingBirthAtHomeObs.setName("patientWithPositiveResultsOfHIVAndConfirmatoryObs");
+        patientWithPositiveResultsOfHIVGivingBirthAtHomeObs.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientWithPositiveResultsOfHIVGivingBirthAtHomeObs.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        patientWithPositiveResultsOfHIVGivingBirthAtHomeObs.getSearches().put("1",new Mapped<CohortDefinition>(patientWithHIVPositiveObs, null));
+        patientWithPositiveResultsOfHIVGivingBirthAtHomeObs.getSearches().put("2",new Mapped<CohortDefinition>(patientWithPositiveResultsOfHIVConfirmatoryTestObs, null));
+        patientWithPositiveResultsOfHIVGivingBirthAtHomeObs.getSearches().put("3",new Mapped<CohortDefinition>(womenGivingBirthAtHomeObs, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientWithPositiveResultsOfHIVGivingBirthAtHomeObs.setCompositionString("(1 or 2) AND 3");
+
+        CohortIndicator patientWithPositiveResultsOfHIVGivingBirthAtHomeObsIndicator= Indicators.newCohortIndicator("patientWithPositiveResultsOfHIVGivingBirthAtHomeObsIndicator",
+                patientWithPositiveResultsOfHIVGivingBirthAtHomeObs, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("E05","Number of reported HIV positive women giving birth at home",new Mapped(patientWithPositiveResultsOfHIVGivingBirthAtHomeObsIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+        //===============================================
+        // E06 Number of HIV negative women in discordant couple who received single dose of tripletherapy as prophylaxis during labor
+        //===============================================
+
+        CodedObsCohortDefinition patientWithLastHIVNegativeObs=new CodedObsCohortDefinition();
+        patientWithLastHIVNegativeObs.setName("PatientWithHIVPositiveObs");
+        patientWithLastHIVNegativeObs.setQuestion(resultOfHIVTest);
+        patientWithLastHIVNegativeObs.addValue(negative);
+        patientWithLastHIVNegativeObs.addEncounterType(ANCEncounterType);
+        patientWithLastHIVNegativeObs.setOperator(SetComparator.IN);
+        patientWithLastHIVNegativeObs.setTimeModifier(TimeModifier.LAST);
+
+        CodedObsCohortDefinition patientWithDisclosePartneAnyTime=new CodedObsCohortDefinition();
+        patientWithDisclosePartneAnyTime.setName("patientWithDisclosePartneAnyTime");
+        patientWithDisclosePartneAnyTime.setQuestion(partnerDisclose);
+        patientWithDisclosePartneAnyTime.addValue(yes);
+        patientWithDisclosePartneAnyTime.setOperator(SetComparator.IN);
+        patientWithDisclosePartneAnyTime.setTimeModifier(TimeModifier.LAST);
+
+        CodedObsCohortDefinition patientwithProphylaxisForMotherInPMTCTProgramObs=new CodedObsCohortDefinition();
+        patientwithProphylaxisForMotherInPMTCTProgramObs.setName("patientwithProphylaxisForMotherInPMTCTProgramObs");
+        patientwithProphylaxisForMotherInPMTCTProgramObs.setQuestion(prophylaxisForMotherInPMTCT);
+        patientwithProphylaxisForMotherInPMTCTProgramObs.addValue(antiretroviralMonoTherapyDuringPregnancy);
+        patientwithProphylaxisForMotherInPMTCTProgramObs.setOperator(SetComparator.IN);
+        patientwithProphylaxisForMotherInPMTCTProgramObs.setTimeModifier(TimeModifier.LAST);
+        patientwithProphylaxisForMotherInPMTCTProgramObs.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientwithProphylaxisForMotherInPMTCTProgramObs.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        CompositionCohortDefinition HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxis=new CompositionCohortDefinition();
+        HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxis.setName("patientWithHIVNegativeAndPartnesHIVPositive");
+        HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxis.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxis.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxis.getSearches().put("1",new Mapped<CohortDefinition>(patientWithLastHIVNegativeObs,null));
+        HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxis.getSearches().put("2",new Mapped<CohortDefinition>(patientsWithPartnerDisclose, null));
+        HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxis.getSearches().put("3",new Mapped<CohortDefinition>(patientwithProphylaxisForMotherInPMTCTProgramObs, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxis.setCompositionString("1 and 2 and 3");
+
+        CohortIndicator HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxisIndicator= Indicators.newCohortIndicator("HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxisIndicator",
+                HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxis, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("E06","Number of HIV negative women in discordant couple who received single dose of tripletherapy as prophylaxis during labor",new Mapped(HIVNegativewomenReceivingSingleDoseNVPBirthAsProphylaxisIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+
+        //===============================================
+        // E08 Number of women with unknown HIV status tested for HIV during labor
+        //===============================================
+
+
+        CodedObsCohortDefinition patientWithAnyHIVNegativeObs=new CodedObsCohortDefinition();
+        patientWithAnyHIVNegativeObs.setName("patientWithAnyHIVNegativeObs");
+        patientWithAnyHIVNegativeObs.setQuestion(resultOfHIVTest);
+        patientWithAnyHIVNegativeObs.addValue(negative);
+        patientWithAnyHIVNegativeObs.addEncounterType(ANCEncounterType);
+        patientWithAnyHIVNegativeObs.setOperator(SetComparator.IN);
+        patientWithAnyHIVNegativeObs.setTimeModifier(TimeModifier.LAST);
+        patientWithAnyHIVNegativeObs.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        CodedObsCohortDefinition patientWithAnyHIVPositiveObs=new CodedObsCohortDefinition();
+        patientWithAnyHIVPositiveObs.setName("patientWithAnyHIVPositiveObs");
+        patientWithAnyHIVPositiveObs.setQuestion(resultOfHIVTest);
+        patientWithAnyHIVPositiveObs.addValue(positive);
+        patientWithAnyHIVPositiveObs.addEncounterType(ANCEncounterType);
+        patientWithAnyHIVPositiveObs.setOperator(SetComparator.IN);
+        patientWithAnyHIVPositiveObs.setTimeModifier(TimeModifier.LAST);
+        patientWithAnyHIVPositiveObs.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        SqlCohortDefinition patientWithANCConsultationTestedForHIVDuringLabor = new SqlCohortDefinition();
+        patientWithANCConsultationTestedForHIVDuringLabor.setQuery("select grouped.patient_id from (select * from (select * from encounter e WHERE form_id="+ANCDeliveryReportForm.getFormId()+" and voided=0 order by e.encounter_datetime desc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id="+resultOfHIVTest.getConceptId()+" and grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore and o.voided=0");
+        patientWithANCConsultationTestedForHIVDuringLabor.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientWithANCConsultationTestedForHIVDuringLabor.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+
+        CompositionCohortDefinition patientWithUnknownHIVStatusAndTestedDuringLabor=new CompositionCohortDefinition();
+        patientWithUnknownHIVStatusAndTestedDuringLabor.setName("patientWithUnknownHIVStatusAndTestedDuringLabor");
+        patientWithUnknownHIVStatusAndTestedDuringLabor.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientWithUnknownHIVStatusAndTestedDuringLabor.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        patientWithUnknownHIVStatusAndTestedDuringLabor.getSearches().put("1",new Mapped<CohortDefinition>(patientWithAnyHIVNegativeObs,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-1m}")));
+        patientWithUnknownHIVStatusAndTestedDuringLabor.getSearches().put("2",new Mapped<CohortDefinition>(patientWithAnyHIVPositiveObs, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-1m}")));
+        patientWithUnknownHIVStatusAndTestedDuringLabor.getSearches().put("3",new Mapped<CohortDefinition>(patientWithANCConsultationTestedForHIVDuringLabor, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientWithUnknownHIVStatusAndTestedDuringLabor.setCompositionString(" 3 and (not (1 or 2))");
+
+
+        CohortIndicator patientWithUnknownHIVStatusAndTestedDuringLaborIndicator= Indicators.newCohortIndicator("patientWithANCConsultationTestedForHIVWithUnknownHIVStatusDuringLaborIndicator",
+                patientWithUnknownHIVStatusAndTestedDuringLabor, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("E08","Number of women with unknown HIV status tested for HIV during labor",new Mapped(patientWithUnknownHIVStatusAndTestedDuringLaborIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+//=================================================
+//  E09: Number of women with unknown HIV status tested HIV positive during labor
+//====================================================
+
+        SqlCohortDefinition patientWithANCConsultationTestedPositiveForHIVDuringLabor = new SqlCohortDefinition();
+        patientWithANCConsultationTestedPositiveForHIVDuringLabor.setQuery("select grouped.patient_id from (select * from (select * from encounter e WHERE form_id="+ANCDeliveryReportForm.getFormId()+" and voided=0 order by e.encounter_datetime desc) ordered group by ordered.patient_id) grouped, obs o where grouped.encounter_id=o.encounter_id and o.concept_id="+resultOfHIVTest.getConceptId()+"  and o.value_coded="+positive+" and grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore and o.voided=0");
+        patientWithANCConsultationTestedPositiveForHIVDuringLabor.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientWithANCConsultationTestedPositiveForHIVDuringLabor.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+
+        CompositionCohortDefinition patientWithUnknownHIVStatusAndTestedPositiveDuringLabor=new CompositionCohortDefinition();
+        patientWithUnknownHIVStatusAndTestedPositiveDuringLabor.setName("patientWithHIVNegativeAndPartnesHIVPositive");
+        patientWithUnknownHIVStatusAndTestedPositiveDuringLabor.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientWithUnknownHIVStatusAndTestedPositiveDuringLabor.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        patientWithUnknownHIVStatusAndTestedPositiveDuringLabor.getSearches().put("1",new Mapped<CohortDefinition>(patientWithAnyHIVNegativeObs,ParameterizableUtil.createParameterMappings("onOrBefore=${onOrAfter-1d}")));
+        patientWithUnknownHIVStatusAndTestedPositiveDuringLabor.getSearches().put("2",new Mapped<CohortDefinition>(patientWithAnyHIVPositiveObs, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrAfter-1d}")));
+        patientWithUnknownHIVStatusAndTestedPositiveDuringLabor.getSearches().put("3",new Mapped<CohortDefinition>(patientWithANCConsultationTestedForHIVDuringLabor, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientWithUnknownHIVStatusAndTestedPositiveDuringLabor.setCompositionString(" 3 and (not (1 or 2))");
+
+
+        CohortIndicator patientWithUnknownHIVStatusAndTestedPositiveDuringLaborIndicator= Indicators.newCohortIndicator("patientWithANCConsultationTestedForHIVWithUnknownHIVStatusDuringLaborIndicator",
+                patientWithUnknownHIVStatusAndTestedDuringLabor, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("E09","Number of women with unknown HIV status tested HIV positive during labor",new Mapped(patientWithUnknownHIVStatusAndTestedPositiveDuringLaborIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+
+
+        //=====================================================
+        // c. HIV Exposed Infant Follow-up
+        //====================================================
+
+
+
+        //=====================================================
+        // C02. Number of infants born from HIV positive mothers who are 6 weeks of age this month
+        //====================================================
+
+
+        SqlCohortDefinition patientsWhoAre6Weeks=new SqlCohortDefinition();
+        patientsWhoAre6Weeks.setName("patientsWhoAre6Weeks");
+        patientsWhoAre6Weeks.setQuery("select person_id from person where DATEDIFF(:onOrAfter,birthdate)<42 and DATEDIFF(:onOrBefore,birthdate)>=42 and voided=0");
+        patientsWhoAre6Weeks.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientsWhoAre6Weeks.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+
+        InStateCohortDefinition patientsInExposedInfantState=new InStateCohortDefinition();
+        patientsInExposedInfantState.addState(pmtctProgram.getWorkflowByName("PMTCT STATUS").getState(exposedInfantState));
+        patientsInExposedInfantState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientsInExposedInfantState.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+
+
+        CompositionCohortDefinition patientsWhoAre6WeeksInExposedInfantState=new CompositionCohortDefinition();
+        patientsWhoAre6WeeksInExposedInfantState.setName("patientsWhoAre6WeeksInExposedInfantState");
+        patientsWhoAre6WeeksInExposedInfantState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientsWhoAre6WeeksInExposedInfantState.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        patientsWhoAre6WeeksInExposedInfantState.getSearches().put("1",new Mapped<CohortDefinition>(patientsWhoAre6Weeks,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientsWhoAre6WeeksInExposedInfantState.getSearches().put("2",new Mapped<CohortDefinition>(patientsInExposedInfantState, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientsWhoAre6WeeksInExposedInfantState.setCompositionString(" 1 and 2");
+
+
+        CohortIndicator patientsWhoAre6WeeksInExposedInfantStateIndicator= Indicators.newCohortIndicator("patientsWhoAre6WeeksInExposedInfantStateIndicator",
+                patientsWhoAre6WeeksInExposedInfantState, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("C02","Number of infants born from HIV positive mothers who are 6 weeks of age this month",new Mapped(patientsWhoAre6WeeksInExposedInfantStateIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+
+
+
+        //=====================================================
+        // C01. Number of infants born to HIV positive mothers tested at 6 weeks with PCR
+        //====================================================
+
+        SqlCohortDefinition patientsWhoAre6WeeksAndTestedPCRAt6Weeks=new SqlCohortDefinition();
+        patientsWhoAre6WeeksAndTestedPCRAt6Weeks.setName("patientsWhoAre6WeeksAndTestedPCRAt6Weeks");
+        patientsWhoAre6WeeksAndTestedPCRAt6Weeks.setQuery("select p.person_id from person p,obs o where DATEDIFF(:onOrAfter,p.birthdate)<42 and DATEDIFF(:onOrBefore,p.birthdate)>=42 and p.voided=0 and p.person_id=o.person_id and DATEDIFF(o.obs_datetime,p.birthdate)>=42 and DATEDIFF(o.obs_datetime,p.birthdate)<49 and o.concept_id="+HIVTestType.getConceptId()+" and o.value_coded="+PCR.getConceptId()+" and o.voided");
+        patientsWhoAre6WeeksAndTestedPCRAt6Weeks.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientsWhoAre6WeeksAndTestedPCRAt6Weeks.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+
+
+        CompositionCohortDefinition patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantState=new CompositionCohortDefinition();
+        patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantState.setName("patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantState");
+        patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantState.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantState.getSearches().put("1",new Mapped<CohortDefinition>(patientsWhoAre6WeeksAndTestedPCRAt6Weeks,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantState.getSearches().put("2",new Mapped<CohortDefinition>(patientsInExposedInfantState, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantState.setCompositionString(" 1 and 2");
+
+
+        CohortIndicator patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantStateIndicator= Indicators.newCohortIndicator("patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantStateIndicator",
+                patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantState, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("C01","Number of infants born to HIV positive mothers tested at 6 weeks with PCR",new Mapped(patientsWhoAre6WeeksAndTestedPCRAt6WeeksInExposedInfantStateIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+
+
+
+        //=====================================================
+        // C03. Number of Infants born from HIV positive mothers starting Cotrimoxazole Prophylaxis at 6 weeks
+        //====================================================
+
+        SqlCohortDefinition patientsWhoStartedCotrimoAt6Weeks=new SqlCohortDefinition();
+        patientsWhoStartedCotrimoAt6Weeks.setName("patientsWhoStartedCotrimoAt6Weeks");
+        patientsWhoStartedCotrimoAt6Weeks.setQuery("select p.person_id from person p,orders o where DATEDIFF(:onOrAfter,p.birthdate)<42 and DATEDIFF(:onOrBefore,p.birthdate)>=42 and p.voided=0 and p.person_id=o.patient_id and DATEDIFF(o.start_date,p.birthdate)>=42 and DATEDIFF(o.start_date,p.birthdate)<49 and o.concept_id="+cotrimo.getConceptId()+" and o.voided");
+        patientsWhoStartedCotrimoAt6Weeks.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientsWhoStartedCotrimoAt6Weeks.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+
+
+        CompositionCohortDefinition patientsWhoStartedCotrimoAt6WeeksInExposedInfantState=new CompositionCohortDefinition();
+        patientsWhoStartedCotrimoAt6WeeksInExposedInfantState.setName("patientsWhoStartedCotrimoAt6WeeksInExposedInfantState");
+        patientsWhoStartedCotrimoAt6WeeksInExposedInfantState.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientsWhoStartedCotrimoAt6WeeksInExposedInfantState.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        patientsWhoStartedCotrimoAt6WeeksInExposedInfantState.getSearches().put("1",new Mapped<CohortDefinition>(patientsWhoStartedCotrimoAt6Weeks,ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientsWhoStartedCotrimoAt6WeeksInExposedInfantState.getSearches().put("2",new Mapped<CohortDefinition>(patientsInExposedInfantState, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientsWhoStartedCotrimoAt6WeeksInExposedInfantState.setCompositionString(" 1 and 2");
+
+
+        CohortIndicator patientsWhoStartedCotrimoAt6WeeksInExposedInfantStateIndicator= Indicators.newCohortIndicator("patientsWhoStartedCotrimoAt6WeeksInExposedInfantStateIndicator",
+                patientsWhoStartedCotrimoAt6WeeksInExposedInfantState, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+        dsd.addColumn("C03","Number of Infants born from HIV positive mothers starting Cotrimoxazole Prophylaxis at 6 weeks",new Mapped(patientsWhoStartedCotrimoAt6WeeksInExposedInfantStateIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
+
+        //==============================
+        // F. VCT Data Elements
+        //==============================
+
+        //=====================================================
+        //  F01: Number of female clients (age <15 years) counseled and tested for HIV
+        //=======================================================
+
+
+        SqlCohortDefinition patientCounseledAndTestedForHIV = new SqlCohortDefinition();
+        patientCounseledAndTestedForHIV.setName("patientCounseledAndTestedForHIV");
+        patientCounseledAndTestedForHIV.setQuery("select grouped.patient_id from (select * from (select * from encounter e WHERE form_id="+VCTCounselingAndTesting.getFormId()+" and voided=0 order by e.encounter_datetime desc) ordered group by ordered.patient_id) grouped where  grouped.encounter_datetime >= :onOrAfter and grouped.encounter_datetime <= :onOrBefore");
+        patientCounseledAndTestedForHIV.addParameter(new Parameter("onOrAfter","onOrAfter",Date.class));
+        patientCounseledAndTestedForHIV.addParameter(new Parameter("onOrBefore","onOrBefore",Date.class));
+
+        CompositionCohortDefinition patientCounseledAndTestedForHIVBelow15Years=new CompositionCohortDefinition();
+        patientCounseledAndTestedForHIVBelow15Years.setName("patientCounseledAndTestedForHIVBelow15Years");
+        patientCounseledAndTestedForHIVBelow15Years.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+        patientCounseledAndTestedForHIVBelow15Years.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        patientCounseledAndTestedForHIVBelow15Years.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        patientCounseledAndTestedForHIVBelow15Years.getSearches().put("1",new Mapped<CohortDefinition>(patientBelow15Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+        patientCounseledAndTestedForHIVBelow15Years.getSearches().put("2",new Mapped<CohortDefinition>(patientCounseledAndTestedForHIV, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
+        patientCounseledAndTestedForHIVBelow15Years.setCompositionString("1 and 2");
+
+        CohortIndicator patientCounseledAndTestedForHIVBelow15YearsIndicator= Indicators.newCohortIndicator("patientCounseledAndTestedForHIVBelow15YearsIndicator",
+                patientCounseledAndTestedForHIVBelow15Years, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate},effectiveDate=${endDate}"));
+
+
+        dsd.addColumn("F01","Number of female clients (age <15 years) counseled and tested for HIV",new Mapped(patientCounseledAndTestedForHIVBelow15YearsIndicator,ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")),"");
+
 
 
         return  dsd;

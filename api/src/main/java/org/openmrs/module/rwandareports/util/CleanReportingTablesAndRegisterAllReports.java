@@ -24,63 +24,7 @@ import org.openmrs.module.reporting.report.ReportRequest.Status;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.service.ReportService;
-import org.openmrs.module.rwandareports.reporting.SetupAdultHIVConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupAdultLateVisitAndCD4Report;
-import org.openmrs.module.rwandareports.reporting.SetupAsthmaConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupAsthmaLateVisit;
-import org.openmrs.module.rwandareports.reporting.SetupAsthmaQuarterlyAndMonthReport;
-import org.openmrs.module.rwandareports.reporting.SetupCROWNReports;
-import org.openmrs.module.rwandareports.reporting.SetupChemotherapyDailyExpectedPatientList;
-import org.openmrs.module.rwandareports.reporting.SetupChemotherapyExpectedPatientList;
-import org.openmrs.module.rwandareports.reporting.SetupCombinedHFCSPConsultationReport;
-import org.openmrs.module.rwandareports.reporting.SetupDataEntryDelayReport;
-import org.openmrs.module.rwandareports.reporting.SetupDataQualityIndicatorReport;
-import org.openmrs.module.rwandareports.reporting.SetupDiabetesConsultAndLTFU;
-import org.openmrs.module.rwandareports.reporting.SetupDiabetesQuarterlyAndMonthReport;
-import org.openmrs.module.rwandareports.reporting.SetupEligibleForViralLoadReport;
-import org.openmrs.module.rwandareports.reporting.SetupEpilepsyConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupEpilepsyLateVisit;
-import org.openmrs.module.rwandareports.reporting.SetupExposedClinicInfantMonthly;
-import org.openmrs.module.rwandareports.reporting.SetupHIVResearchDataQualitySheet;
-import org.openmrs.module.rwandareports.reporting.SetupHIVResearchExtractionSheet;
-import org.openmrs.module.rwandareports.reporting.SetupHMISRwandaReportBySite;
-import org.openmrs.module.rwandareports.reporting.SetupHeartFailureConsultSheet;
-import org.openmrs.module.rwandareports.reporting.SetupHeartFailureLateVisit;
-import org.openmrs.module.rwandareports.reporting.SetupHeartFailureQuarterlyAndMonthlyReport;
-import org.openmrs.module.rwandareports.reporting.SetupHypertensionConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupHypertensionLateVisit;
-import org.openmrs.module.rwandareports.reporting.SetupHypertensionQuarterlyAndMonthlyReport;
-import org.openmrs.module.rwandareports.reporting.SetupIDProgramQuarterlyIndicatorReport;
-import org.openmrs.module.rwandareports.reporting.SetupMissedChemotherapyPatientList;
-import org.openmrs.module.rwandareports.reporting.SetupMissingCD4Report;
-import org.openmrs.module.rwandareports.reporting.SetupMonthlyCD4DeclineReport;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyDailyDrugList;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyExternalBiopsyContactList;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyInpatientClinicMissedVisit;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientAppointmentList;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicMissedVisit;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientClinicPatientList;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientExpectedPatientList;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyQuarterlyIndicatorReport;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyTestPatientList;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyTreatmentAdministrationPlan;
-import org.openmrs.module.rwandareports.reporting.SetupPDCIndicatorReport;
-import org.openmrs.module.rwandareports.reporting.SetupPDCMissedVisits;
-import org.openmrs.module.rwandareports.reporting.SetupPDCMonthlyAlert;
-import org.openmrs.module.rwandareports.reporting.SetupPDCMonthlyLTFU;
-import org.openmrs.module.rwandareports.reporting.SetupPDCWeeklyAlert;
-import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMotherMonthlyReport;
-import org.openmrs.module.rwandareports.reporting.SetupPMTCTFoodDistributionReport;
-import org.openmrs.module.rwandareports.reporting.SetupPMTCTFormCompletionSheet;
-import org.openmrs.module.rwandareports.reporting.SetupPMTCTFormulaDistributionReport;
-import org.openmrs.module.rwandareports.reporting.SetupPMTCTPregnancyConsultationReport;
-import org.openmrs.module.rwandareports.reporting.SetupPMTCTPregnancyMonthlyReport;
-import org.openmrs.module.rwandareports.reporting.SetupPediHIVConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupPediatricLateVisitAndCD4Report;
-import org.openmrs.module.rwandareports.reporting.SetupQuarterlyCrossSiteIndicatorByDistrictReport;
-import org.openmrs.module.rwandareports.reporting.SetupQuarterlyViralLoadReport;
-import org.openmrs.module.rwandareports.reporting.SetupRwandaPrimaryCareReport;
-import org.openmrs.module.rwandareports.reporting.SetupTBConsultationSheet;
+import org.openmrs.module.rwandareports.reporting.*;
 
 /**
  *
@@ -185,6 +129,9 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupHeartFailureConsultSheet().setup();
 			new SetupHeartFailureLateVisit().setup();
 			new SetupHeartFailureQuarterlyAndMonthlyReport();
+
+			new SetupCKDQuarterlyAndMonthlyReport();
+			new SetupCKDMissedvisitReport();
     }
 	public static void registerCentralReports() throws Exception {
 			new SetupHIVResearchDataQualitySheet().setup();
