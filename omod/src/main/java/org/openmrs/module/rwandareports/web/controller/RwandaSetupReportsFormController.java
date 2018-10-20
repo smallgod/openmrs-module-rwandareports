@@ -923,4 +923,26 @@ public class RwandaSetupReportsFormController {
 		new SetupHMISMOHReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+	@RequestMapping("/module/rwandareports/register_MentalHealthConsultationreport")
+	public ModelAndView registerMentalHealthConsultationreport() throws Exception {
+		new SetupMentalHealthConsultationSheet().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_MentalHealthConsultationreport")
+	public ModelAndView removeMentalHealthConsultationreport() throws Exception {
+		new SetupMentalHealthConsultationSheet().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_MentalHealthLateVisit")
+	public ModelAndView registerMentalHealthLateVisit() throws Exception {
+		new SetupMentalHealthLateVisit().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_MentalHealthLateVisit")
+	public ModelAndView removeMentalHealthLateVisit() throws Exception {
+		new SetupMentalHealthLateVisit().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 }

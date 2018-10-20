@@ -2061,6 +2061,44 @@ public class Cohorts {
 		
 		return lateVisit;
 	}
+	public static SqlCohortDefinition createPatientsLateForVisitINDifferentEncounterTypes(List<Form> forms,List<EncounterType> encounterType) {
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("select o.person_id from obs o, (select * from (select * from encounter where form_id in (");
+
+		boolean first = true;
+		for (Form f : forms) {
+			if (!first) {
+				sql.append(",");
+			}
+
+			sql.append(f.getFormId());
+			first = false;
+		}
+
+		sql.append(") and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_encounters, (select * from (select * from encounter where encounter_type in (");
+
+		boolean sec = true;
+		for (EncounterType enc : encounterType) {
+			if (!sec) {
+				sql.append(",");
+			}
+
+			sql.append(enc.getEncounterTypeId());
+			sec = false;
+		}
+		sql.append(") and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where last_encounters.encounter_id=o.encounter_id and last_encounters.encounter_datetime<o.value_datetime and o.voided=0 and o.concept_id=");
+
+		Concept nextVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+		sql.append(nextVisit.getConceptId());
+
+		sql.append(" and DATEDIFF(:endDate,o.value_datetime)>6 and (not last_Visit.encounter_datetime > o.value_datetime) and last_Visit.patient_id=o.person_id");
+
+		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
+		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		return lateVisit;
+	}
 
 
 	public static SqlCohortDefinition createPatientsLateForVisit(EncounterType encounterType,int numberOfDaysAtleast) {

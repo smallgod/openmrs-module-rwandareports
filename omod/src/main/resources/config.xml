@@ -1104,6 +1104,13 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.mentalhealthdiagnosiconcept</property>
+		<defaultValue>932199c7-a59e-491c-bb5a-cf82f2fdcd85</defaultValue>
+		<description>The uuid of the Mental health diagnosis concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
 		<property>reports.pmtctDiscordantCoupleWorkflowState</property>
 		<defaultValue>Discordant Couple</defaultValue>
 		<description>The workflow state representing a discordant couple
@@ -1453,6 +1460,15 @@
 		<defaultValue>Chronic respiratory disease program</defaultValue>
 		<description>
 			The name of the Chronic respiratory disease program to be
+			used
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.mentalhealthprogram</property>
+		<defaultValue>Mental Health</defaultValue>
+		<description>
+			The name of the Mental Health program to be
 			used
 		</description>
 	</globalProperty>
@@ -2290,7 +2306,14 @@
 		<defaultValue>Non Clinical Oncology</defaultValue>
 		<description>Non Clinical Oncology encounter type id </description>
 	</globalProperty>
-	
+
+	<globalProperty>
+		<property>reports.NonClinicalEncounterType</property>
+		<defaultValue>Non clinical encounter</defaultValue>
+		<description>Non clinical encounter encounter type name </description>
+	</globalProperty>
+
+
 	<globalProperty>
 		<property>reports.TypeOfReferrencingToClinicOrHospital</property>
 		<defaultValue>c3e1d8d4-3040-49dd-ad66-c0928d912941</defaultValue>
@@ -2302,8 +2325,14 @@
 		<property>reports.AsthmaEncounterType</property>
 		<defaultValue>41</defaultValue>
 		<description>Astma encounter type id </description>
-	</globalProperty> 
-	
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.mentalHealthEncounterType</property>
+		<defaultValue>Mental Health visit</defaultValue>
+		<description>Mental health encounter type name </description>
+	</globalProperty>
+
 	<globalProperty>
 		<property>reports.pdcEncounterType</property>
 		<defaultValue>46</defaultValue>
@@ -2448,6 +2477,20 @@
 		<property>reports.AsthmaRendevousVisitForm</property>
 		<defaultValue>1ba547f7-e955-4e90-869e-ae4a72430e57</defaultValue>
 		<description>Astma visit, Rendevous form id or uuid or name
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.mentalHealthNextVisitForms</property>
+		<defaultValue>1cda6620-6c2a-4ab6-8f55-4b53a782b5ff,8e43fa83-8892-4b52-9dd7-4af953661289,1dae19e4-7a80-4fad-821e-c3728f11ac76,dac034ee-a701-46cd-85de-d1e6d29e3ea3</defaultValue>
+		<description>Mental Health Pharmacotherapy,Psychotherapy_approach,missed visit and initial encounter forms uuid
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MHMissedVisitForm</property>
+		<defaultValue>dac034ee-a701-46cd-85de-d1e6d29e3ea3</defaultValue>
+		<description>Mental Health missed visit encounter forms uuid
 		</description>
 	</globalProperty>
 
@@ -3987,6 +4030,18 @@
 		<property>reports.LostToFolloUp</property>
 		<defaultValue>3ceb0ed8-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>LOST TO FOLLOWUP concept id</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.NewSymptom</property>
+		<defaultValue>0a30ddc8-d56e-464a-ae22-24fdd25afaaa</defaultValue>
+		<description>New Symptom's uuid</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.OldSymptom</property>
+		<defaultValue>b3a57875-70f2-4365-a8ac-bdbcfe90a7b3</defaultValue>
+		<description>Old Symptom's uuid</description>
 	</globalProperty>
 
 	reports.ncdLostToFolloUpOutcome

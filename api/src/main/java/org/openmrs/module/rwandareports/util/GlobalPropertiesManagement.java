@@ -172,6 +172,10 @@ public class GlobalPropertiesManagement {
 	public final static String EXTERNAL_HIV_PROGRAM = "reports.externalHivProgram";
 	
 	public final static String PDC_PROGRAM = "reports.pdcProgram";
+
+	public final static String MENTAL_HEALTH_PROGRAM = "reports.mentalhealthprogram";
+
+	public final static String NON_CLINICAL_ENCOUNTER = "reports.NonClinicalEncounterType";
 	
 	//ProgramWorkflow
 	public final static String TREATMENT_STATUS_WORKFLOW = "reports.hivworkflowstatus";
@@ -825,7 +829,7 @@ public class GlobalPropertiesManagement {
 	public final static String OUTPATIENT_ONCOLOGY_ENCOUNTER = "reports.OutpatientOncologyEncounterType";
 	
 	public final static String NON_CLINICAL_ONCOLOGY_ENCOUNTER="reports.NonClinicalOncologyEncounterType";
-	
+
 	public final static String EPILEPSY_VISIT = "reports.EpilepsyEncounterType";
 	
 	public final static String INPATIENT_ONCOLOGY_ENCOUNTER = "reports.InpatientOncologyEncounterType";
@@ -849,6 +853,14 @@ public class GlobalPropertiesManagement {
 	public final static String PDC_VISIT="reports.pdcEncounterType";
 
 	public final static String ASTHMA_DDB_RENDEVOUS_VISIT_FORMS="reports.AsthmaDDBAndRendezvousForms";
+
+	public final static String MENTAL_HEALTH_VISIT="reports.mentalHealthEncounterType";
+
+	public final static String MENTAL_HEALTH_INITIAL_ENCOUNTER_AND_RENDERZVOUS_VISIT_FORM="reports.mentalHealthInitialEncountAndRendevousVisitForms";
+
+	public final static String MENTAL_HEALTH_MISSED_VISIT_FORM="reports.MHMissedVisitForm";
+
+
 
 	//RelationshipTypes
 	public final static String ACCOMPAGNATUER_RELATIONSHIP = "reports.accompagnatuerRelationship";
@@ -1062,7 +1074,14 @@ public class GlobalPropertiesManagement {
 	public final static String HIV_TEST = "reports.hivTestConcept";
 	
 	public final static String HEMOGLOBIN = "reports.hemoglobin";
-	
+
+	public final static String MENTAL_HEALTH_DIAGNOSIS_CONCEPT = "reports.mentalhealthdiagnosiconcept";
+
+	public final static String New_Symptom = "reports.NewSymptom";
+
+	public final static String OLD_SYMPTOM = "reports.OldSymptom";
+
+
 	//Group constructs  
 	public final static String CHILD_SEROLOGY_CONSTRUCT = "reports.childSerologyConcept";
 
@@ -1180,5 +1199,7 @@ public class GlobalPropertiesManagement {
 	public final static String HTN_ENROLL_FORM = "reports.HTNENROLLformId";
 
 	public final static String ASTHMA_ENROLLMENT_FORM = "reports.asthmaENROLLformId";
+
+
 
 }
