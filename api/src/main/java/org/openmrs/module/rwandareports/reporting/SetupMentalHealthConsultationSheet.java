@@ -29,16 +29,26 @@ public class SetupMentalHealthConsultationSheet {
 
     private Program MentalHealth;
     EncounterType MentalHealthEncounter;
+    private EncounterType nonClinicalEncounter;
+    List<EncounterType> MHRelatedNextVisitEncTypes = new ArrayList<EncounterType>();
     List<EncounterType> mentalHealthEncounterTypeList;
-    List<Form> InitialAndRoutineEncounters;
+    private Form mentalHealthMissedVisitForm;
+
+    private List<Form> InitialAndRoutineEncounters = new ArrayList<Form>();
+    private List<Form> MHNextVisitForms = new ArrayList<Form>();
     private RelationshipType HBCP;
+
 
     private Concept mentalHealthDiagnosis;
     private Concept OldSymptoms;
     private Concept NewSymptoms;
+    private Concept currentMedicalDiagnosis;
+    private Concept accompPhoneNumberConcept;
+    private ProgramWorkflow PrimaryDiagnosisMHWorkflow;
 
 
-//    private Form followUpForm;
+
+    //    private Form followUpForm;
     public void setup() throws Exception {
 
         setupProperties();
@@ -93,7 +103,7 @@ public class SetupMentalHealthConsultationSheet {
         //Add filters
         dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+MentalHealth.getName(), MentalHealth), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 
-        dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(InitialAndRoutineEncounters), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
+        dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(MHNextVisitForms), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
 
         //dataSetDefinition.addFilter(getMondayToSundayPatientReturnVisit(), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 
@@ -121,12 +131,15 @@ public class SetupMentalHealthConsultationSheet {
 
 //        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentPeakFlow("Last peak flow", "dd-MMM-yyyy"), new HashMap<String, Object>());
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("Diagnoses",mentalHealthDiagnosis,null,null,null ), new HashMap<String, Object>());
+        dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("Diagnoses", MentalHealth, PrimaryDiagnosisMHWorkflow, false, null), new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(mentalHealthEncounterTypeList)),
                 new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
+
+        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("AccompPhoneNumber",accompPhoneNumberConcept,null,null,null ), new HashMap<String, Object>());
+
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentPatientPhoneNumber("patientPhone", "dd-MMM-yyyy"), new HashMap<String, Object>());
 
@@ -136,9 +149,9 @@ public class SetupMentalHealthConsultationSheet {
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getObsAtLastEncounter("OldSymptoms", OldSymptoms, MentalHealthEncounter), new HashMap<String, Object>());
 
-
-
         dataSetDefinition.addColumn(RowPerPatientColumns.getPatientRelationship("HBCP",HBCP.getRelationshipTypeId(),"A",null), new HashMap<String, Object>());
+
+        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("CurrentMedicalDiagnosis",currentMedicalDiagnosis,null,null,null ), new HashMap<String, Object>());
 
 
 //        AllObservationValues asthmaClassification = RowPerPatientColumns.getAllAsthmaClassificationValues("asthmaClassification", null, new LastTwoObsFilter(),
@@ -168,14 +181,27 @@ public class SetupMentalHealthConsultationSheet {
         MentalHealthEncounter = gp.getEncounterType(GlobalPropertiesManagement.MENTAL_HEALTH_VISIT);
         mentalHealthEncounterTypeList = gp.getEncounterTypeList(GlobalPropertiesManagement.MENTAL_HEALTH_VISIT);
         mentalHealthDiagnosis = gp.getConcept(GlobalPropertiesManagement.MENTAL_HEALTH_DIAGNOSIS_CONCEPT);
+        currentMedicalDiagnosis = gp.getConcept(GlobalPropertiesManagement.CURRENT_MEDICAL_DIAGNOSIS_CONCEPT);
         NewSymptoms = gp.getConcept(GlobalPropertiesManagement.New_Symptom);
         OldSymptoms = gp.getConcept(GlobalPropertiesManagement.OLD_SYMPTOM);
+        accompPhoneNumberConcept = gp.getConcept(GlobalPropertiesManagement.ACCOMPAGNATEUR_PHONE_NUMBER_CONCEPT);
+
+
+
+        nonClinicalEncounter = gp.getEncounterType(GlobalPropertiesManagement.NON_CLINICAL_ENCOUNTER);
+        MHRelatedNextVisitEncTypes.add(nonClinicalEncounter);
+        MHRelatedNextVisitEncTypes.add(MentalHealthEncounter);
+
+        mentalHealthMissedVisitForm= gp.getForm(GlobalPropertiesManagement.MENTAL_HEALTH_MISSED_VISIT_FORM);
 
         InitialAndRoutineEncounters=gp.getFormList(GlobalPropertiesManagement.MENTAL_HEALTH_INITIAL_ENCOUNTER_AND_RENDERZVOUS_VISIT_FORM);
-//        //DDBAndRendezvousForms.add(rendevousForm);
-//        //DDBAndRendezvousForms.add(asthmaDDBForm);
-//        //DDBAndRendezvousForms.add(followUpForm);
+        MHNextVisitForms = gp.getFormList(GlobalPropertiesManagement.MENTAL_HEALTH_INITIAL_ENCOUNTER_AND_RENDERZVOUS_VISIT_FORM);
+        MHNextVisitForms.add(mentalHealthMissedVisitForm);
+
         HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
+
+        PrimaryDiagnosisMHWorkflow = gp.getProgramWorkflow(GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
+
 
 
     }

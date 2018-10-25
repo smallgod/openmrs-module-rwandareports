@@ -945,4 +945,16 @@ public class RwandaSetupReportsFormController {
 		new SetupMentalHealthLateVisit().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+
+	@RequestMapping("/module/rwandareports/register_MentalHealthIndicatorReport")
+	public ModelAndView registerMentalHealthIndicatorReport() throws Exception {
+		new SetupMentalHealthIndicatorReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_MentalHealthIndicatorReport")
+	public ModelAndView removeMentalHealthIndicatorReport() throws Exception {
+		new SetupMentalHealthIndicatorReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 }

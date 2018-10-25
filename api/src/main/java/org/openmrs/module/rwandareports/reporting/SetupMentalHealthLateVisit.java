@@ -38,11 +38,15 @@ public class SetupMentalHealthLateVisit {
     private Concept OldSymptoms;
     private Concept NewSymptoms;
     private Concept mentalHealthDiagnosis;
+    private Concept currentMedicalDiagnosis;
+    private Concept accompPhoneNumberConcept;
+
 
     private EncounterType MentalHealthEncounter;
     private EncounterType nonClinicalEncounter;
     List<EncounterType> mentalHealthEncounterTypeList;
     List<EncounterType> MHRelatedNextVisitEncTypes = new ArrayList<EncounterType>();
+    private ProgramWorkflow PrimaryDiagnosisMHWorkflow;
 
 
 //    private Form asthmaRDVForm;
@@ -161,16 +165,22 @@ public class SetupMentalHealthLateVisit {
         dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName",
                 new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
 
+        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("AccompPhoneNumber",accompPhoneNumberConcept,null,null,null ), new HashMap<String, Object>());
+
+
         dataSetDefinition.addColumn(RowPerPatientColumns.getPatientRelationship("HBCP", HBCP.getRelationshipTypeId(), "A", null), new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getObsAtLastEncounter("NewSymptoms", NewSymptoms, MentalHealthEncounter), new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getObsAtLastEncounter("OldSymptoms", OldSymptoms, MentalHealthEncounter), new HashMap<String, Object>());
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("Diagnoses",mentalHealthDiagnosis,null,null,null ), new HashMap<String, Object>());
+        dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("Diagnoses", MentalHealth, PrimaryDiagnosisMHWorkflow, false, null), new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(mentalHealthEncounterTypeList)),
                 new HashMap<String, Object>());
+
+        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("CurrentMedicalDiagnosis",currentMedicalDiagnosis,null,null,null ), new HashMap<String, Object>());
+
 
         dataSetDefinition.addParameter(new Parameter("location", "Location", Location.class));
         dataSetDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
@@ -195,6 +205,10 @@ public class SetupMentalHealthLateVisit {
 
         NewSymptoms = gp.getConcept(GlobalPropertiesManagement.New_Symptom);
         OldSymptoms = gp.getConcept(GlobalPropertiesManagement.OLD_SYMPTOM);
+        currentMedicalDiagnosis = gp.getConcept(GlobalPropertiesManagement.CURRENT_MEDICAL_DIAGNOSIS_CONCEPT);
+        accompPhoneNumberConcept = gp.getConcept(GlobalPropertiesManagement.ACCOMPAGNATEUR_PHONE_NUMBER_CONCEPT);
+
+
         mentalHealthEncounterTypeList = gp.getEncounterTypeList(GlobalPropertiesManagement.MENTAL_HEALTH_VISIT);
         mentalHealthDiagnosis = gp.getConcept(GlobalPropertiesManagement.MENTAL_HEALTH_DIAGNOSIS_CONCEPT);
 
@@ -202,10 +216,6 @@ public class SetupMentalHealthLateVisit {
         MHRelatedNextVisitEncTypes.add(nonClinicalEncounter);
         MHRelatedNextVisitEncTypes.add(MentalHealthEncounter);
 
-
-//        asthmaRDVForm = gp.getForm(GlobalPropertiesManagement.ASTHMA_RENDEVOUS_VISIT_FORM);
-
-//        asthmaDDBForm = gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
 
         mentalHealthMissedVisitForm= gp.getForm(GlobalPropertiesManagement.MENTAL_HEALTH_MISSED_VISIT_FORM);
 
@@ -216,9 +226,9 @@ public class SetupMentalHealthLateVisit {
 
         HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 
-		/*
-		SqlCohortDefinition latevisit=new SqlCohortDefinition("select o.person_id from obs o, (select * from (select * from encounter where form_id in ("+asthmaDDBFormId+","+asthmaRDVFormId+") and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_encounters, (select * from (select * from encounter where encounter_type="+MentalHealthEncounter.getEncounterTypeId()+" and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_asthmaVisit where last_encounters.encounter_id=o.encounter_id and last_encounters.encounter_datetime<o.value_datetime and o.voided=0 and o.concept_id="+nextVisitConcept.getConceptId()+" and DATEDIFF(:endDate,o.value_datetime)>7 and (not last_asthmaVisit.encounter_datetime > o.value_datetime) and last_asthmaVisit.patient_id=o.person_id ");
-		      latevisit.addParameter(new Parameter("endDate","endDate",Date.class));
-		 */
+        PrimaryDiagnosisMHWorkflow = gp.getProgramWorkflow(GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
+
+
+
     }
 }

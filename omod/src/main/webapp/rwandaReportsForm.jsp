@@ -575,7 +575,7 @@ $(document).ready(function(){
 <td>-</td>
 </tr>
 <tr>
-<td rowspan="2" class="tabletd"> Mental Health reports </td>
+<td rowspan="3" class="tabletd"> Mental Health reports </td>
 <td> Mental Health Consultation sheet</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_MentalHealthConsultationreport.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -586,6 +586,12 @@ $(document).ready(function(){
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_MentalHealthLateVisit.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_MentalHealthLateVisit.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td> Mental Health Indicator report</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_MentalHealthIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_MentalHealthIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 
 

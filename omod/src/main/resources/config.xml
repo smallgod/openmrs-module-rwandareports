@@ -1111,9 +1111,107 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.Currentmedicaldiagnosisconcept</property>
+		<defaultValue>36ce05b5-430a-4afc-ac2f-266e1b949957</defaultValue>
+		<description>The uuid of the Current medical diagnosis concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MentalHealthexitreasonsoncept</property>
+		<defaultValue>f90ac49f-2f68-46c3-a3ab-86eab56c90ea</defaultValue>
+		<description>The uuid of the Mental health exit reason concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.ACCOMPAGNATEURPHONENUMBERCONCEPT</property>
+		<defaultValue>5c9cb4a0-7b67-4c00-a926-ff7eaa8f0089</defaultValue>
+		<description>The uuid of the ACCOMPAGNATEUR PHONE NUMBER concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
 		<property>reports.pmtctDiscordantCoupleWorkflowState</property>
 		<defaultValue>Discordant Couple</defaultValue>
 		<description>The workflow state representing a discordant couple
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.PrimaryDiagnosisMHWorkflow</property>
+		<defaultValue>e001dafe-1073-4a23-8664-f8e4d378599a</defaultValue>
+		<description>The workflow representing Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.SomatoformDisorderTroubleSomatoformMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>2a21b803-3e6d-468b-b624-b243db43ce17</defaultValue>
+		<description>The workflowstate representing Somatoform Disorder or Trouble Somatoform for Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.EPILEPSYMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>86b55cea-8233-445f-873b-c8f7080c4d09</defaultValue>
+		<description>The workflowstate representing EPILEPSY for Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.BipolarDisorderMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>a14dc218-1813-4784-9c21-f77d6befa08f</defaultValue>
+		<description>The workflowstate representing Bipolar Disorder for Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.DepressionDueToOtherMedicalConditionMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>0e6f94bd-2e8f-4e8a-847c-3e254d51f5ce</defaultValue>
+		<description>The workflowstate representing Depression due to other medical condition for Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.DepressionWithPsychoticFeaturesMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>05bc5288-e7fc-4d58-a2b1-f237f9aed20f</defaultValue>
+		<description>The workflowstate representing Depression with Psychotic Features for Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.DepressionUnspecifiedMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>080d3066-81bd-419f-9d00-0b29a8e81435</defaultValue>
+		<description>The workflowstate representing Depression unspecified for Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MajorDepressiveDisorderMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>34141cd7-ae4a-4236-abdf-d5d90af45e23</defaultValue>
+		<description>The workflowstate representing Major Depressive Disorder for Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.PSYCHOSISMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>b6d7aeb9-6627-4c68-9546-f65f7b1e04af</defaultValue>
+		<description>The workflowstate representing PSYCHOSIS for Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.PsychosisDueToOtherMedicalConditionMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>77bc2c19-9b0f-4c18-843b-fc9528056dba</defaultValue>
+		<description>The workflowstate representing Psychosis due to other medical condition for Primary diagnosis
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.SCHIZOPHRENIAMHPrimarydiagnosisWorkflowState</property>
+		<defaultValue>6a32e996-7d83-464b-8e7f-3cfb013c77de</defaultValue>
+		<description>The workflowstate representing SCHIZOPHRENIA for Primary diagnosis
 		</description>
 	</globalProperty>
 
