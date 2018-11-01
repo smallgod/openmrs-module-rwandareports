@@ -55,7 +55,7 @@ $(document).ready(function(){
 });
 </script>
 <div id="msg"></div>
-<h2>Register Reports for IMB Rwanda</h2>
+<h2>Register Reports for Rwanda</h2>
 
 <br />
 <br />
@@ -304,7 +304,7 @@ $(document).ready(function(){
 </tr>
 <tr>
 <tr>
-<td rowspan="17" class="tabletd">NCD Reports</td>
+<td rowspan="18" class="tabletd">NCD Reports</td>
 <td>NCD-Diabetes Indicator Report</td>
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_DiabetesQuarterlyAndMonthReport.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -393,6 +393,12 @@ $(document).ready(function(){
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_heartFailureQuarterlyAndMonthlyReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_heartFailureQuarterlyAndMonthlyReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>NCD-CKD Consulation sheet</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CKDConsultSheetReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CKDConsultSheetReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
 <td>NCD-CKD Late Visit</td>

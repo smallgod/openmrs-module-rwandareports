@@ -37,7 +37,7 @@ public class SetupHeartFailureConsultSheet {
 	private Program heartFailureProgram;
 	private Form rendevousForm;
 	private Form heartFailureDDBForm;
-	private Form followUpForm;
+	//private Form followUpForm;
 	private Form postOpRDV;
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
 	private List<EncounterType> heartFailureEncounter;
@@ -180,8 +180,8 @@ public class SetupHeartFailureConsultSheet {
 		heartFailureProgram = gp.getProgram(GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
 		rendevousForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_FLOW_VISIT);
 		heartFailureDDBForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB);
-		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
-		postOpRDV=gp.getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUERDV);
+		//followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
+		//postOpRDV=gp.getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUERDV);
 		DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.HEARTFAILURE_DDB_RDV_FORMS);
 		//DDBAndRendezvousForms.add(rendevousForm);
 		//DDBAndRendezvousForms.add(heartFailureDDBForm);

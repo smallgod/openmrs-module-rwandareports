@@ -174,7 +174,7 @@ public class SetupHypertensionLateVisit {
 
         hypertensionDDBForm = gp.getForm(GlobalPropertiesManagement.HYPERTENSION_DDB);
         
-        followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
+        //followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
         
        // hypertensionForms.add(hypertensionDDBForm);
        // hypertensionForms.add(hypertensionRDVForm);

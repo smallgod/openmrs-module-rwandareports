@@ -83,8 +83,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 	
 	private Concept prednisolone;
 	
-	private Concept locOfHosp;
-	
 	private Concept severePersistentAsthma;
 	
 	private Concept severeUncontrolledAsthma;
@@ -92,10 +90,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 	private Concept asthmaclassification;
 	
 	private Concept returnVisitDate;
-	
-	private Concept basicInhalerTrainingProvided;
-	
-	private Concept properInhalerTechnique;
 	
 	private List<Form> DDBforms = new ArrayList<Form>();
 	
@@ -105,7 +99,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 	
 	private List<Concept> asthmasMedicationsWithoutSalbutamol = new ArrayList<Concept>();
 	
-	private ProgramWorkflowState patientDied;
 
 	private Concept NCDSpecificOutcomes;
 	private Concept NCDRelatedDeathOutcomes;
@@ -116,7 +109,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 	StringBuilder deathAndLostToFollowUpOutcomeString=new StringBuilder();
 
 	private Concept exitReasonFromCare;
-	private Concept patientDiedConcept;
 
 	private Concept HIVStatus;
 
@@ -968,11 +960,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		//=======================================================================
 		//E1Died: Of total active patients, % of patients died.
 		//==================================================================
-		
-		SqlCohortDefinition patientsInPatientDiedState = Cohorts.createPatientsInStateNotPredatingProgramEnrolment(patientDied);
-		SqlCohortDefinition patientDiedOfNCDRelatedDeath= Cohorts.getPatientsWithOutcomeprogramEndReasons("patientDiedOfNCDRelatedDeath",NCDSpecificOutcomes,DeathOutcomeResons);
-		SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
-
 
 		SqlCohortDefinition patientHospitalized =Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("patientHospitalized",diagnosisWhileHospitalized,asthmaExacerbation);
 		
@@ -1458,15 +1445,11 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		
 		prednisolone = gp.getConcept(GlobalPropertiesManagement.PREDNISOLONE_DRUG);
 		
-		basicInhalerTrainingProvided = gp.getConcept(GlobalPropertiesManagement.BASIC_INHALER_TRAINING_PROVIDED);
-		properInhalerTechnique = gp.getConcept(GlobalPropertiesManagement.PROPER_INHALER_TECHNIQUE);
-		
+
 		asthmasMedications = gp.getConceptsByConceptSet(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_DISEASE_TREATMENT_DRUGS);
 
 		asthmasMedicationsWithoutSalbutamol = new ArrayList<Concept>(asthmasMedications);
 		asthmasMedicationsWithoutSalbutamol.remove(salbutamol);
-
-		locOfHosp = gp.getConcept(GlobalPropertiesManagement.LOCATION_OF_HOSPITALIZATION);
 
 		severePersistentAsthma = gp.getConcept(GlobalPropertiesManagement.SEVERE_PERSISTENT_ASTHMA);
 		
@@ -1482,10 +1465,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		
 		returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
 		
-		patientDied = gp.getProgramWorkflowState(GlobalPropertiesManagement.PATIENT_DIED_STATE,
-			    GlobalPropertiesManagement.CRD_TREATMENT_WORKFLOW,
-			    GlobalPropertiesManagement.CHRONIC_RESPIRATORY_PROGRAM);
-
 		NCDSpecificOutcomes=gp.getConcept(GlobalPropertiesManagement.NCD_SPECIFIC_OUTCOMES);
 		NCDRelatedDeathOutcomes= gp.getConcept(GlobalPropertiesManagement.NCD_RELATED_DEATH_OUTCOMES);
 		unknownCauseDeathOutcomes =gp.getConcept(GlobalPropertiesManagement.UNKNOWN_CAUSE_OF_DEATH_OUTCOMES);
@@ -1508,7 +1487,6 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 
 
 		exitReasonFromCare=gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
-		patientDiedConcept=gp.getConcept(GlobalPropertiesManagement.PATIENT_DIED);
 		HIVStatus=gp.getConcept(GlobalPropertiesManagement.HIV_STATUS);
 		TBScreening=gp.getConcept(GlobalPropertiesManagement.TB_SCREENING_TEST);
 

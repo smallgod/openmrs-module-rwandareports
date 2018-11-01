@@ -33,7 +33,7 @@ public class SetupHypertensionConsultationSheet {
 	//properties retrieved from global variables
 	private Program hypertensionProgram;
 	
-	private Form rendevousForm;
+	/*private Form rendevousForm;
 
 	private Form hypertensionDDBForm;
 
@@ -42,7 +42,7 @@ public class SetupHypertensionConsultationSheet {
 	private Concept systolicBP;
 
 	private Concept diastolicBP;
-	
+	*/
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
 
 	List<EncounterType> hypertensionEncounter;
@@ -167,14 +167,14 @@ public class SetupHypertensionConsultationSheet {
 	private void setupProperties() {
 		hypertensionProgram = gp.getProgram(GlobalPropertiesManagement.HYPERTENSION_PROGRAM);
 		
-		rendevousForm=gp.getForm(GlobalPropertiesManagement.HYPERTENSION_FLOW_VISIT);
+		/*rendevousForm=gp.getForm(GlobalPropertiesManagement.HYPERTENSION_FLOW_VISIT);
 		
 		hypertensionDDBForm=gp.getForm(GlobalPropertiesManagement.HYPERTENSION_DDB);
 		
 		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
 		
 		systolicBP = gp.getConcept(GlobalPropertiesManagement.SYSTOLIC_BLOOD_PRESSURE);
-		diastolicBP = gp.getConcept(GlobalPropertiesManagement.DIASTOLIC_BLOOD_PRESSURE);
+		diastolicBP = gp.getConcept(GlobalPropertiesManagement.DIASTOLIC_BLOOD_PRESSURE);*/
 		
 		//DDBAndRendezvousForms.add(rendevousForm);
 		//DDBAndRendezvousForms.add(hypertensionDDBForm);

@@ -901,6 +901,17 @@ public class RwandaSetupReportsFormController {
 		new SetupCKDMissedvisitReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+	@RequestMapping("/module/rwandareports/register_CKDConsultSheetReport")
+	public ModelAndView registerCKDConsultSheetReport() throws Exception {
+		new SetupCKDConsultationSheetReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_CKDConsultSheetReport")
+	public ModelAndView removeCKDConsultSheetReport() throws Exception {
+		new SetupCKDConsultationSheetReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 	@RequestMapping("/module/rwandareports/register_CKDIndicatorReport")
 	public ModelAndView registerCKDIndicatorReport() throws Exception {
 		new SetupCKDQuarterlyAndMonthlyReport().setup();

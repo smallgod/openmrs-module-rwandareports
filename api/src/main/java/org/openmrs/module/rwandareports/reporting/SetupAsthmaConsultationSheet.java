@@ -164,7 +164,7 @@ public class SetupAsthmaConsultationSheet {
 		asthmaEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.ASTHMA_VISIT);
 		rendevousForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_RENDEVOUS_VISIT_FORM);
 		asthmaDDBForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
-		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
+		//followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
 		DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.ASTHMA_DDB_RENDEVOUS_VISIT_FORMS);
 		//DDBAndRendezvousForms.add(rendevousForm);
 		//DDBAndRendezvousForms.add(asthmaDDBForm);

@@ -176,12 +176,10 @@ public class SetupCKDMissedvisitReport {
 
         CKDEnrollmentForm = gp.getForm(GlobalPropertiesManagement.CKD_ENROLLMENT_FORM);
 
-        followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
 
 
          CKDForms.add(CKDEnrollmentForm);
          CKDForms.add(CKDRDVForm);
-        CKDForms.add(followUpForm);
 
        // CKDForms =gp.getFormList(GlobalPropertiesManagement.CKD_DDB_FLOW_VISIT);
 

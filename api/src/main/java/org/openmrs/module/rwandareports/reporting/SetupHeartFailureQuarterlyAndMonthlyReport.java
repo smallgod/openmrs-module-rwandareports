@@ -58,7 +58,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 
 	private List<EncounterType> patientsSeenEncounterTypes =new ArrayList<EncounterType>();;
 
-	private EncounterType postOpVisit;
+	//private EncounterType postOpVisit;
 
 	private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
 
@@ -69,19 +69,19 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	private Form HFEnrollmentForm;
 
 
-	private Form postoperatoireCardiaqueRDV;
+	//private Form postoperatoireCardiaqueRDV;
 	
 	private Form insuffisanceCardiaqueRDV;
 	
 	private List<Form> postoperatoireAndinsuffisanceRDV = new ArrayList<Form>();
 	
-	private Form postoperatoireCardiaqueHospitalisations;
+	//private Form postoperatoireCardiaqueHospitalisations;
 	
-	private Form insuffisanceCardiaqueHospitalisations;
+	//private Form insuffisanceCardiaqueHospitalisations;
+
+	//private List<Form> postoperatoireAndinsuffisanceHospitalisations = new ArrayList<Form>();
 	
-	private List<Form> postoperatoireAndinsuffisanceHospitalisations = new ArrayList<Form>();
-	
-	private List<Form> postoperatoire = new ArrayList<Form>();
+	//private List<Form> postoperatoire = new ArrayList<Form>();
 	
 	private List<Form> echoForms = new ArrayList<Form>();
 	
@@ -129,7 +129,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	
 	private ProgramWorkflowState postOperative;
 	
-	private ProgramWorkflowState patientDied;
+	//private ProgramWorkflowState patientDied;
 	
 	private Concept heartFailureDiagnosis;
 	private Concept cardiomyopathy;
@@ -153,7 +153,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 	StringBuilder deathAndLostToFollowUpOutcomeString=new StringBuilder();
 
 	private Concept exitReasonFromCare;
-	private Concept patientDiedConcept;
+	//private Concept patientDiedConcept;
 
 	private Concept HIVStatus;
 
@@ -304,9 +304,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		NCDRelatedDeath.getSearches().put("2",new Mapped<CohortDefinition>(obsNCDRelatedDeath, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
 		NCDRelatedDeath.setCompositionString("1 OR 2");
 
+/*
 
 		SqlCohortDefinition patientsInPatientDiedState = Cohorts
 				.createPatientsInStateNotPredatingProgramEnrolment(patientDied);
+*/
 
 		//========================================================================================
 		//  Active patients with no exit in Reporting periode
@@ -321,7 +323,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 
 
 		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByEndDate("patientWithAnyReasonForExitingFromCare", exitReasonFromCare, 1);
-		SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
+		//SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
 
 
 
@@ -1254,7 +1256,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 
 
 		InStateCohortDefinition patientWithPostOpState=Cohorts.createInProgramStateParameterizableByDate("patientWithPostOpStartDate", postOperative,"onOrBefore");
-		EncounterCohortDefinition patientWithPostOpVisit=Cohorts.createEncounterParameterizedByDate("patientWithPostOpVisit","onOrBefore",postOpVisit);
+		//EncounterCohortDefinition patientWithPostOpVisit=Cohorts.createEncounterParameterizedByDate("patientWithPostOpVisit","onOrBefore",postOpVisit);
 
 
 		CompositionCohortDefinition patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery = new CompositionCohortDefinition();
@@ -1266,13 +1268,14 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("1",new Mapped<CohortDefinition>(patientActiveWithcongenitalAndRheumaticDiagnosis, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},startDate=${startDate},endDate=${endDate}")));
 		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("2", new Mapped<CohortDefinition>(patientWithPostOpState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
 		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m}")));
-		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("4", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
-		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("5", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m}")));
+		//patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("4", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+		//patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("5", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore-3m}")));
 		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("6", new Mapped<CohortDefinition>(patientWithPostOperativeSurgeryOrValveType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.getSearches().put("7", new Mapped<CohortDefinition>(PatientWithNCDSurgeryTypeNonCoded, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 
 		//patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 4) AND (NOT (3 OR 5))");
-		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.setCompositionString("(1 AND (2 OR 4) AND (NOT (3 OR 5))) or (1 and (6 or 7))");
+		//patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.setCompositionString("(1 AND (2 OR 4) AND (NOT (3 OR 5))) or (1 and (6 or 7))");
+		patientActiveWithcongenitalAndRheumaticDiagnosisReceivedCardiacSurgery.setCompositionString("(1 AND (2 AND (NOT 3))) or (1 and (6 or 7))");
 
 
 
@@ -1304,10 +1307,12 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("1",new Mapped<CohortDefinition>(patientEverEnrolledInHFProgram, ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore}")));
 		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("2", new Mapped<CohortDefinition>(patientWithPostOpState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
-		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+		//patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
 		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("4", new Mapped<CohortDefinition>(patientWithPostOperativeSurgeryOrValveType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.getSearches().put("5", new Mapped<CohortDefinition>(PatientWithNCDSurgeryTypeNonCoded, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
+		//patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
+		patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 4 OR 5)");
+
 		//patientEverEnrolledWithcongenitalAndRheumaticDiagnosisEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3)");
 
 
@@ -1337,10 +1342,11 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		patientActiveEverReceivedCardiacSurgery.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientActiveEverReceivedCardiacSurgery.getSearches().put("1",new Mapped<CohortDefinition>(activePatientWithNoExitBeforeQuarterStart, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},startDate=${startDate},endDate=${endDate}")));
 		patientActiveEverReceivedCardiacSurgery.getSearches().put("2", new Mapped<CohortDefinition>(patientWithPostOpState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
-		patientActiveEverReceivedCardiacSurgery.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+		//patientActiveEverReceivedCardiacSurgery.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
 		patientActiveEverReceivedCardiacSurgery.getSearches().put("4", new Mapped<CohortDefinition>(patientWithPostOperativeSurgeryOrValveType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		patientActiveEverReceivedCardiacSurgery.getSearches().put("5", new Mapped<CohortDefinition>(PatientWithNCDSurgeryTypeNonCoded, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		patientActiveEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
+		//patientActiveEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
+		patientActiveEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 4 OR 5)");
 
 		//patientActiveEverReceivedCardiacSurgery.setCompositionString("1 AND (2 OR 3)");
 
@@ -1370,11 +1376,12 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("1",new Mapped<CohortDefinition>(activePatientWithNoExitBeforeQuarterStart, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter},startDate=${startDate},endDate=${endDate}")));
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("2", new Mapped<CohortDefinition>(patientWithPostOpState, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
-		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
+		//patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("3", new Mapped<CohortDefinition>(patientWithPostOpVisit, ParameterizableUtil.createParameterMappings("onOrBefore=${onOrBefore}")));
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("5", new Mapped<CohortDefinition>(patientWithPostOperativeSurgeryOrValveType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("6", new Mapped<CohortDefinition>(PatientWithNCDSurgeryTypeNonCoded, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		patientActiveEverReceivedCardiacSurgeryOnwarfarin.getSearches().put("4",new Mapped<CohortDefinition>(patientOnWarfarinOnEndDate,ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
-		patientActiveEverReceivedCardiacSurgeryOnwarfarin.setCompositionString("1 AND (2 OR 3 OR 5 OR 6) AND 4");
+		//patientActiveEverReceivedCardiacSurgeryOnwarfarin.setCompositionString("1 AND (2 OR 3 OR 5 OR 6) AND 4");
+		patientActiveEverReceivedCardiacSurgeryOnwarfarin.setCompositionString("1 AND (2 OR 5 OR 6) AND 4");
 
 
 
@@ -1853,7 +1860,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    new Mapped(patientActiveWihtNoVisitsInLast6MonthsIndicator, ParameterizableUtil
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 		
-		
+		/*
 		//=======================================================
 		// F1: Number of patients who died in review Quarter
 		//=======================================================
@@ -1899,9 +1906,9 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		        .createEncounterBasedOnForms("patientWithPostoperatoireAndinsuffisanceHospitalisations",
 		            onOrAfterOnOrBefore, postoperatoireAndinsuffisanceHospitalisations);
 		
-		/*EncounterCohortDefinition patientWithPostoperatoireHospitalisations = Cohorts.createEncounterBasedOnForms(
+		*//*EncounterCohortDefinition patientWithPostoperatoireHospitalisations = Cohorts.createEncounterBasedOnForms(
 		    "patientWithPostoperatoireAndinsuffisanceHospitalisations", onOrAfterOnOrBefore, postoperatoire);
-		*/
+		*//*
 		CompositionCohortDefinition patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations = new CompositionCohortDefinition();
 		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations
 		        .setName("patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations");
@@ -1917,10 +1924,10 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    "2",
 		    new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
 		            .createParameterMappings("onOrAfter=${onOrBefore-12m},onOrBefore=${onOrBefore}")));
-		/*patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.getSearches().put(
+		*//*patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.getSearches().put(
 		    "3",
 		    new Mapped<CohortDefinition>(patientWithPostoperatoireHospitalisations, ParameterizableUtil
-		            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));*/
+		            .createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));*//*
 		patientsSeenWithPostoperatoireAndinsuffisanceHospitalisations.setCompositionString("1 AND 2");
 		
 		CohortIndicator patientsSeenWithPostoperatoireAndinsuffisanceHospitalisationsIndicator = Indicators
@@ -1968,7 +1975,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		    new Mapped(activePatientsWithPostoperatoireOrInsuffisanceRDVIndicator, ParameterizableUtil
 		            .createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
-
+*/
 
 
 
@@ -2010,26 +2017,23 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		warfarin=gp.getConcept(GlobalPropertiesManagement.WARFARIN);
 		
-		postoperatoireCardiaqueRDV = gp.getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUERDV);
+		//postoperatoireCardiaqueRDV = gp.getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUERDV);
 		insuffisanceCardiaqueRDV = gp.getForm(GlobalPropertiesManagement.INSUFFISANCE_CARDIAQUE_RDV);
 		
-		postoperatoireAndinsuffisanceRDV.add(postoperatoireCardiaqueRDV);
+		//postoperatoireAndinsuffisanceRDV.add(postoperatoireCardiaqueRDV);
 		postoperatoireAndinsuffisanceRDV.add(insuffisanceCardiaqueRDV);
 		
-		postoperatoireCardiaqueHospitalisations = gp
-		        .getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUE_HOSPITALISATIONS);
-		insuffisanceCardiaqueHospitalisations = gp
-		        .getForm(GlobalPropertiesManagement.INSUFFISANCE_CARDIAQUE_HOSPITALISATIONS);
+		/*postoperatoireCardiaqueHospitalisations = gp
+		        .getForm(GlobalPropertiesManagement.POSTOPERATOIRE_CARDIAQUE_HOSPITALISATIONS);*/
+		//insuffisanceCardiaqueHospitalisations = gp.getForm(GlobalPropertiesManagement.INSUFFISANCE_CARDIAQUE_HOSPITALISATIONS);
 		
-		postoperatoire.add(postoperatoireCardiaqueHospitalisations);
+		/*postoperatoire.add(postoperatoireCardiaqueHospitalisations);*/
 		
-		postoperatoireAndinsuffisanceHospitalisations.add(postoperatoireCardiaqueHospitalisations);
-		postoperatoireAndinsuffisanceHospitalisations.add(insuffisanceCardiaqueHospitalisations);
+		//postoperatoireAndinsuffisanceHospitalisations.add(postoperatoireCardiaqueHospitalisations);
+		//postoperatoireAndinsuffisanceHospitalisations.add(insuffisanceCardiaqueHospitalisations);
 		postOperative = gp.getProgramWorkflowState(GlobalPropertiesManagement.POST_OPERATIVE_STATE,
 		    GlobalPropertiesManagement.SURGERY_STATUS_WORKFLOW, GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
-		patientDied = gp.getProgramWorkflowState(GlobalPropertiesManagement.HEART_FAILURE_PATIENT_DIED_STATE,
-		    GlobalPropertiesManagement.HEART_FAILURE_TREATMENT_STATUS_WORKFLOW,
-		    GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
+		//patientDied = gp.getProgramWorkflowState(GlobalPropertiesManagement.HEART_FAILURE_PATIENT_DIED_STATE,GlobalPropertiesManagement.HEART_FAILURE_TREATMENT_STATUS_WORKFLOW,GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
 		
 		notDone=gp.getConcept(GlobalPropertiesManagement.NOT_DONE);
 		
@@ -2045,7 +2049,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		echoForms.add(heartFailureDDBform);
 		echoForms.add(gp.getForm(GlobalPropertiesManagement.CARDIOLOGY_CONSULT_FORM));
-		echoForms.add(gp.getForm(GlobalPropertiesManagement.HYPERTENSION_FLOW_ECHOCARDIOGRAPHIE_FORM));
+		//echoForms.add(gp.getForm(GlobalPropertiesManagement.HYPERTENSION_FLOW_ECHOCARDIOGRAPHIE_FORM));
 		
 		cardConsultForm.add(gp.getForm(GlobalPropertiesManagement.CARDIOLOGY_CONSULT_FORM));
 		
@@ -2070,12 +2074,12 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		DeathOutcomeResons.add(otherCauseOfDeathOutcomes);
 
 		exitReasonFromCare=gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
-		patientDiedConcept=gp.getConcept(GlobalPropertiesManagement.PATIENT_DIED);
+		//patientDiedConcept=gp.getConcept(GlobalPropertiesManagement.PATIENT_DIED);
 		HIVStatus=gp.getConcept(GlobalPropertiesManagement.HIV_STATUS);
 
-		postOpVisit=gp.getEncounterType(GlobalPropertiesManagement.POST_CARDIAC_SURGERY_VISIT);
+		//postOpVisit=gp.getEncounterType(GlobalPropertiesManagement.POST_CARDIAC_SURGERY_VISIT);
 
-		patientsSeenEncounterTypes.add(postOpVisit);
+		//patientsSeenEncounterTypes.add(postOpVisit);
 
 		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE));
 
@@ -2099,7 +2103,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 
 		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.DIABETES_VISIT));
 		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
-		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.POST_CARDIAC_SURGERY_VISIT));
+		//patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.POST_CARDIAC_SURGERY_VISIT));
 		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER));
 		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.ASTHMA_VISIT));
 		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE));

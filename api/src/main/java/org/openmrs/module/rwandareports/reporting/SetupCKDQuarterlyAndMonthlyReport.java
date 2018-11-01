@@ -80,13 +80,11 @@ public class SetupCKDQuarterlyAndMonthlyReport {
 
 	private List<Form> EnrollmentForms = new ArrayList<Form>();
 
-	private ProgramWorkflowState diedState;
 
 	private Concept NCDSpecificOutcomes;
 	private Concept NCDRelatedDeathOutcomes;
 
 	private Concept exitReasonFromCare;
-	private Concept patientDiedConcept;
 
 	List<Concept> DeathOutcomeResons=new  ArrayList<Concept>();
 
@@ -249,10 +247,8 @@ public class SetupCKDQuarterlyAndMonthlyReport {
 		NCDRelatedDeath.getSearches().put("2",new Mapped<CohortDefinition>(obsNCDRelatedDeath, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
 		NCDRelatedDeath.setCompositionString("1 OR 2");
 
-		//SqlCohortDefinition patientsInPatientDiedState = Cohorts.createPatientsInStateNotPredatingProgramEnrolment(diedState);
 
 		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByEndDate("patientWithAnyReasonForExitingFromCare", exitReasonFromCare, 1);
-		//SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
 
 		CompositionCohortDefinition activePatientWithNoExitBeforeQuarterStart = new CompositionCohortDefinition();
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
@@ -578,18 +574,10 @@ int i=1;
 		
 		enrolledOnOrAfterOnOrBefore.add("enrolledOnOrBefore");
 		
-		diedState = CKDProgram.getWorkflowByName(
-				Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.TREATMENT_STATUS_WORKFLOW))
-				.getState(
-						Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.PATIENT_DIED_STATE));
-
-
-
 		NCDSpecificOutcomes=gp.getConcept(GlobalPropertiesManagement.NCD_SPECIFIC_OUTCOMES);
 		NCDRelatedDeathOutcomes= gp.getConcept(GlobalPropertiesManagement.NCD_RELATED_DEATH_OUTCOMES);
 
 		exitReasonFromCare=gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
-		patientDiedConcept=gp.getConcept(GlobalPropertiesManagement.PATIENT_DIED);
 
 		unknownCauseDeathOutcomes =gp.getConcept(GlobalPropertiesManagement.UNKNOWN_CAUSE_OF_DEATH_OUTCOMES);
 		otherCauseOfDeathOutcomes =gp.getConcept(GlobalPropertiesManagement.OTHER_CAUSE_OF_DEATH_OUTCOMES);

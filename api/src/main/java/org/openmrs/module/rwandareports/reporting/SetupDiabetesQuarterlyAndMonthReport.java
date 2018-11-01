@@ -46,8 +46,6 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 	
 	private int DMEncounterTypeId;
 	
-	private EncounterType DMEncounterType;
-	
 	private Form DDBform;
 
 	private Form DMEnrollmentForm;
@@ -63,8 +61,6 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 	private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
 	
 	private List<String> onOrBefOnOrAf = new ArrayList<String>();
-	
-	private Concept glucose;
 	
 	private Concept weight;
 	
@@ -94,17 +90,9 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 	
 	private List<Concept> lisinoprilCaptopril = new ArrayList<Concept>();
 	
-	private List<Concept> diabetesDrugConcepts = new ArrayList<Concept>();
-	
 	private Concept metformin;
 	
 	private Concept glibenclimide;
-	
-	private ProgramWorkflowState diedState;
-	
-	private Concept admitToHospital;
-	
-	private Concept locOfHosp;
 	
 	private List<Drug> onAceInhibitorsDrugs = new ArrayList<Drug>();
 	
@@ -118,7 +106,6 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 	private Concept NCDRelatedDeathOutcomes;
 
 	private Concept exitReasonFromCare;
-	private Concept patientDiedConcept;
 
 	List<Concept> DeathOutcomeResons=new  ArrayList<Concept>();
 
@@ -309,11 +296,8 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 		NCDRelatedDeath.getSearches().put("2",new Mapped<CohortDefinition>(obsNCDRelatedDeath, ParameterizableUtil.createParameterMappings("onOrAfter=${onOrAfter},onOrBefore=${onOrBefore}")));
 		NCDRelatedDeath.setCompositionString("1 OR 2");
 
-		SqlCohortDefinition patientsInPatientDiedState = Cohorts
-				.createPatientsInStateNotPredatingProgramEnrolment(diedState);
 
 		SqlCohortDefinition patientWithAnyReasonForExitingFromCare=Cohorts.getPatientsWithObsGreaterThanNtimesByEndDate("patientWithAnyReasonForExitingFromCare", exitReasonFromCare, 1);
-		//SqlCohortDefinition obsPatientDiedReasonForExitingFromCare=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("obsPatientDiedReasonForExitingFromCare",exitReasonFromCare,patientDiedConcept);
 
 		CompositionCohortDefinition activePatientWithNoExitBeforeQuarterStart = new CompositionCohortDefinition();
 		activePatientWithNoExitBeforeQuarterStart.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
@@ -1112,8 +1096,8 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 	private void setUpProperties() {
 		DMProgram = gp.getProgram(GlobalPropertiesManagement.DM_PROGRAM);
 		DMPrograms.add(DMProgram);
-		DMEncounterTypeId = Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
-		    GlobalPropertiesManagement.DIABETES_VISIT));
+		//DMEncounterTypeId = Integer.parseInt(Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.DIABETES_VISIT));
+		DMEncounterTypeId=(gp.getEncounterType(GlobalPropertiesManagement.DIABETES_VISIT)).getEncounterTypeId();
 		DDBform = gp.getForm(GlobalPropertiesManagement.DIABETES_DDB_FORM);
 		DiabetesFlowVisit = gp.getForm(GlobalPropertiesManagement.DIABETES_FLOW_VISIT);
 		DMEnrollmentForm=gp.getForm(GlobalPropertiesManagement.DM_ENROLL_FORM);
@@ -1124,9 +1108,6 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 
 		enrollForms.add(DDBform);
 		enrollForms.add(DMEnrollmentForm);
-
-		DMEncounterType = gp.getEncounterType(GlobalPropertiesManagement.DIABETES_VISIT);
-
 
 		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.DIABETES_VISIT));
 		patientsSeenEncounterTypes.add(gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
@@ -1139,7 +1120,6 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 
 		onOrAfterOnOrBefore.add("onOrAfter");
 		onOrAfterOnOrBefore.add("onOrBefore");
-		glucose = gp.getConcept(GlobalPropertiesManagement.GLUCOSE);
 		weight = gp.getConcept(GlobalPropertiesManagement.WEIGHT_CONCEPT);
 		height = gp.getConcept(GlobalPropertiesManagement.HEIGHT_CONCEPT);
 		diastolicBP = gp.getConcept(GlobalPropertiesManagement.DIASTOLIC_BLOOD_PRESSURE);
@@ -1171,30 +1151,20 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 		insulinConcepts.add(insulinLente);
 		insulinConcepts.add(insulinRapide);
 		
-		diabetesDrugConcepts = gp.getConceptsByConceptSet(GlobalPropertiesManagement.DIABETES_TREATMENT_DRUG_SET);
-		
+
 		metformin = gp.getConcept(GlobalPropertiesManagement.METFORMIN_DRUG);
 		glibenclimide = gp.getConcept(GlobalPropertiesManagement.GLIBENCLAMIDE_DRUG);
 		
 		metforminAndGlibenclimideConcepts.add(metformin);
 		metforminAndGlibenclimideConcepts.add(glibenclimide);
 		
-		//	diedState = DMProgram.getWorkflow(28).getState("PATIENT DIED");
-		
-		diedState = DMProgram.getWorkflowByName(
-		    Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.DIABETE_TREATMENT_WORKFLOW))
-		        .getState(
-		            Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.PATIENT_DIED_STATE));
-		
-		admitToHospital = gp.getConcept(GlobalPropertiesManagement.HOSPITAL_ADMITTANCE);
-		locOfHosp = gp.getConcept(GlobalPropertiesManagement.LOCATION_OF_HOSPITALIZATION);
 
 
+		
 		NCDSpecificOutcomes=gp.getConcept(GlobalPropertiesManagement.NCD_SPECIFIC_OUTCOMES);
 		NCDRelatedDeathOutcomes= gp.getConcept(GlobalPropertiesManagement.NCD_RELATED_DEATH_OUTCOMES);
 
 		exitReasonFromCare=gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
-		patientDiedConcept=gp.getConcept(GlobalPropertiesManagement.PATIENT_DIED);
 
 		unknownCauseDeathOutcomes =gp.getConcept(GlobalPropertiesManagement.UNKNOWN_CAUSE_OF_DEATH_OUTCOMES);
 		otherCauseOfDeathOutcomes =gp.getConcept(GlobalPropertiesManagement.OTHER_CAUSE_OF_DEATH_OUTCOMES);

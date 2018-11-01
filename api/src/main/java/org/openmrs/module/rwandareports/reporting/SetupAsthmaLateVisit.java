@@ -183,7 +183,7 @@ public class SetupAsthmaLateVisit {
 		
 		asthmaDDBForm = gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
 		
-		followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
+		//followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
 
 		asthmaForms=gp.getFormList(GlobalPropertiesManagement.ASTHMA_DDB_RENDEVOUS_VISIT_FORMS);
 		//asthmaForms.add(asthmaRDVForm);

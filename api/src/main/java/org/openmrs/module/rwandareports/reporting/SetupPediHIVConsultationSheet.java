@@ -78,12 +78,12 @@ public class SetupPediHIVConsultationSheet {
 		design2.setProperties(props2);
 		Helper.saveReportDesign(design2);
 		
-		ReportDesign design3 = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "BactrimSheet.xls", "Bactrim.xls_", null);
+		/*ReportDesign design3 = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "BactrimSheet.xls", "Bactrim.xls_", null);
 		Properties props3 = new Properties();
 		props3.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
 		props3.put("sortWeight","5000");
 		design3.setProperties(props3);
-		Helper.saveReportDesign(design3);
+		Helper.saveReportDesign(design3);*/
 	}
 	
 	public void delete() {
@@ -94,12 +94,12 @@ public class SetupPediHIVConsultationSheet {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		Helper.purgeReportDefinition("Pedi HIV Consultation Sheet");
+		Helper.purgeReportDefinition("HIV-Pedi Consultation Sheet");
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("Pedi HIV Consultation Sheet");
+		reportDefinition.setName("HIV-Pedi Consultation Sheet");
 		
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 		

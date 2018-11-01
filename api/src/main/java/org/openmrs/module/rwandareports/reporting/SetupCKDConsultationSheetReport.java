@@ -25,15 +25,10 @@ public class SetupCKDConsultationSheetReport {
     GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
     //properties retrieved from global variables
-    private Concept creatinine;
     private Program CKDProgram;
 
     private Form rendevousForm;
     private Form CKDEnrollmentForm;
-    private Form followUpForm;
-
-    private Concept systolicBP;
-    private Concept diastolicBP;
 
     private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
     private List<EncounterType> CKDEncounterType;
@@ -163,15 +158,10 @@ public class SetupCKDConsultationSheetReport {
 
         CKDEnrollmentForm =gp.getForm(GlobalPropertiesManagement.CKD_ENROLLMENT_FORM);
 
-        followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
-
-        systolicBP = gp.getConcept(GlobalPropertiesManagement.SYSTOLIC_BLOOD_PRESSURE);
-        diastolicBP = gp.getConcept(GlobalPropertiesManagement.DIASTOLIC_BLOOD_PRESSURE);
 
         DDBAndRendezvousForms.add(rendevousForm);
         DDBAndRendezvousForms.add(CKDEnrollmentForm);
-        DDBAndRendezvousForms.add(followUpForm);
-        
+
         //DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.CKD_DDB_FLOW_VISIT);
         CKDEncounterType = gp.getEncounterTypeList(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE);
 

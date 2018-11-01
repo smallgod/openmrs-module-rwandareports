@@ -86,7 +86,7 @@ public class SetupDiabetesConsultAndLTFU {
 
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("NCD-Diabetes Consultation Sheet");	
-		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));	
+		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
 			    ParameterizableUtil.createParameterMappings("location=${location}"));
