@@ -47,27 +47,29 @@ public class SetupMentalHealthIndicatorReport {
     private Concept MHExitReasons;
     private Concept LostToFolloUpOutCome;
 
-    private ProgramWorkflow PrimaryDiagnosisMHWorkflow;
+//    private Concept PrimaryDiagnosisConcept;
 
-    private ProgramWorkflowState SomatoformDisorderTroubleSomatoformMHPDWorkflowState;
-    private ProgramWorkflowState EPILEPSYMHPDWorkflowState;
-    private ProgramWorkflowState BipolarDisorderMHPDWorkflowState;
-    private ProgramWorkflowState DepressionDueToOtherMedicalConditionMHPDWorkflowState;
-    private ProgramWorkflowState DepressionWithPsychoticFeaturesMHPDWorkflowState;
-    private ProgramWorkflowState DepressionUnspecifiedMHPDWorkflowState;
-    private ProgramWorkflowState MajorDepressiveDisorderMHPDWorkflowState;
-    private ProgramWorkflowState PSYCHOSISMHPDWorkflowState;
-    private ProgramWorkflowState PsychosisDueToOtherMedicalConditionMHPDWorkflowState;
-    private ProgramWorkflowState SCHIZOPHRENIAMHPDWorkflowState;
+    private Concept SomatoformDisorderTroubleSomatoformMHPDWorkflowState;
+    private Concept EPILEPSYConcept;
+    private Concept BipolarDisorderConcept;
+    private Concept DepressionDueToOtherMedicalConditionConcept;
+    private Concept DepressionWithPsychoticFeaturesConcept;
+    private Concept DepressionUnspecifiedConcept;
+    private Concept MajorDepressiveDisorderConcept;
+    private Concept PSYCHOSISConcept;
+    private Concept PsychosisDueToOtherMedicalConditionConcept;
+    private Concept SCHIZOPHRENIAConcept;
+    private Concept MentalHealthDiagnosisStoppingReasonConcept;
+    private Concept mentalHealthDiagnosis;
 
 
-    private List<ProgramWorkflowState> SomatoformDisorderTroubleSomatoformMHWorkflowStateList =  new ArrayList<ProgramWorkflowState>() ;
-    private List<ProgramWorkflowState> EPILEPSYMHWorkflowStateList =  new ArrayList<ProgramWorkflowState>() ;
-    private List<ProgramWorkflowState> BipolarDisorderMHWorkflowStateList =  new ArrayList<ProgramWorkflowState>() ;
-    private List<ProgramWorkflowState> DepressionList =  new ArrayList<ProgramWorkflowState>() ;
-    private List<ProgramWorkflowState> PsychosisorSchizophreniaList =  new ArrayList<ProgramWorkflowState>() ;
+    private List<Concept> SomatoformDisorderTroubleSomatoformList =  new ArrayList<Concept>() ;
+    private List<Concept> EPILEPSYList =  new ArrayList<Concept>() ;
+    private List<Concept> BipolarDisorderList =  new ArrayList<Concept>() ;
+    private List<Concept> DepressionList =  new ArrayList<Concept>() ;
+    private List<Concept> PsychosisorSchizophreniaList =  new ArrayList<Concept>() ;
 
-    List<ProgramWorkflowState> BifferStateList =  new ArrayList<ProgramWorkflowState>() ;
+    private List<Concept> BifferStateList =  new ArrayList<Concept>() ;
 
 
     public void setup() throws Exception {
@@ -250,35 +252,6 @@ public class SetupMentalHealthIndicatorReport {
         dsd.addColumn("ActiveAtStartDate", "Total # of active at start date", new Mapped(activePatientQuarterIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${startDate}")), "");
 
-
-//        BifferStateList.add(SomatoformDisorderTroubleSomatoformMHPDWorkflowState);
-//        InStateCohortDefinition patientsInSDorTSState = Cohorts.createInCurrentState("Patient has SD or TS", BifferStateList);
-//
-//        CompositionCohortDefinition activePatientWithSDorTSStateComposition = new CompositionCohortDefinition();
-//        activePatientWithSDorTSStateComposition.setName("activePatientWithSDorTSStateComposition");
-//        activePatientWithSDorTSStateComposition.addParameter(new Parameter("onDate", "onDate", Date.class));
-//        activePatientWithSDorTSStateComposition.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-//        activePatientWithSDorTSStateComposition.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
-//        activePatientWithSDorTSStateComposition.getSearches().put(
-//                "1",
-//                new Mapped<CohortDefinition>(patientWithDDB, ParameterizableUtil
-//                        .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-//        activePatientWithSDorTSStateComposition.getSearches().put(
-//                "2",
-//                new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
-//                        .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-//        activePatientWithSDorTSStateComposition.getSearches().put(
-//                "3",
-//                new Mapped<CohortDefinition>(patientsInSDorTSState, ParameterizableUtil
-//                        .createParameterMappings("onDate=${onDate},onDate=${onDate}")));
-//        activePatientWithSDorTSStateComposition.setCompositionString("(1 OR 2) AND 3");
-//
-//        CohortIndicator activePatientWithSDorTSStateQuarterIndicator = Indicators.newCountIndicator("activePatientWithSDorTSStateQuarterIndicator",
-//                activePatientWithSDorTSStateComposition,
-//                ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate},onDate=${endDate}"));
-//        dsd.addColumn("activePatientWithSDorTSState", "Total # of active patient with SD or TS", new Mapped(activePatientWithSDorTSStateQuarterIndicator,
-//                ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-
         //=============================================
         // B1: Active Patient With  Depression  //
         //=============================================
@@ -288,34 +261,34 @@ public class SetupMentalHealthIndicatorReport {
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
 
         //============================================================================
-        // B1: Active Patient With  Somatoform Disorder or Trouble Somatoform        //
+        // B2: Active Patient With  Somatoform Disorder or Trouble Somatoform        //
         //============================================================================
 
-        CohortIndicator activePatientWithSDorTSStateIndicator = activeAndInstateInPeriod(SomatoformDisorderTroubleSomatoformMHWorkflowStateList,patientWithDDB,patientSeen);
+        CohortIndicator activePatientWithSDorTSStateIndicator = activeAndInstateInPeriod(SomatoformDisorderTroubleSomatoformList,patientWithDDB,patientSeen);
         dsd.addColumn("activePatientWithSDorTSState", "Total # of active patient with SD or TS", new Mapped(activePatientWithSDorTSStateIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-
-        //=====================================================
-        // B1: Active Patient With  Psychosis/Schizophrenia  //
-        //=====================================================
-
+//
+//        //=====================================================
+//        // B3: Active Patient With  Psychosis/Schizophrenia  //
+//        //=====================================================
+//
         CohortIndicator activePatientWithPsychosisorSchizophreniaStatesIndicator = activeAndInstateInPeriod(PsychosisorSchizophreniaList,patientWithDDB,patientSeen);
         dsd.addColumn("activePatientWithPsychosisorSchizophreniaStates", "Total # of active patient with Psychosis or Schizophrenia", new Mapped(activePatientWithPsychosisorSchizophreniaStatesIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-
-        //============================================================================
-        // B1: Active Patient With  EPILEPSY //
-        //============================================================================
-
-        CohortIndicator activePatientWithEpilepsyStateIndicator = activeAndInstateInPeriod(EPILEPSYMHWorkflowStateList,patientWithDDB,patientSeen);
+//
+//        //============================================================================
+//        // B4: Active Patient With  EPILEPSY //
+//        //============================================================================
+//
+        CohortIndicator activePatientWithEpilepsyStateIndicator = activeAndInstateInPeriod(EPILEPSYList,patientWithDDB,patientSeen);
         dsd.addColumn("activePatientWithEpilepsyState", "Total # of active patient with epilepsy", new Mapped(activePatientWithEpilepsyStateIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
-
-        //=============================================
-        // B1: Active Patient With  Bipolar Disorder //
-        //=============================================
-
-        CohortIndicator activePatientWithBipolarDisorderStateIndicator = activeAndInstateInPeriod(BipolarDisorderMHWorkflowStateList,patientWithDDB,patientSeen);
+//
+//        //=============================================
+//        // B5: Active Patient With  Bipolar Disorder //
+//        //=============================================
+//
+        CohortIndicator activePatientWithBipolarDisorderStateIndicator = activeAndInstateInPeriod(BipolarDisorderList,patientWithDDB,patientSeen);
         dsd.addColumn("activePatientWithBipolarDisorderState", "Total # of active patient with Bipolar Disorder", new Mapped(activePatientWithBipolarDisorderStateIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
 
@@ -393,81 +366,6 @@ public class SetupMentalHealthIndicatorReport {
         dsd.addColumn("patientEverEncountered", "Total # of ever Encountered patients", new Mapped(patientEverEncounteredQuarterIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
 
-        //=======================================================================
-        // A3: Total # of new patients enrolled in the last month/quarter
-        //==================================================================
-
-//        ProgramEnrollmentCohortDefinition patientEnrolledInCRDP = Cohorts.createProgramEnrollmentParameterizedByStartEndDate("Enrolled In CRDP",
-//                mentalhealthProgram);
-//
-//        ProgramEnrollmentCohortDefinition patientEnrolledInCRDPByEndDate = Cohorts.createProgramEnrollmentEverByEndDate("Enrolled In CRDP",
-//                mentalhealthProgram);
-//
-//
-//        CompositionCohortDefinition patientEnrolledInCRDPAndSeenInSameQuarter = new CompositionCohortDefinition();
-//        patientEnrolledInCRDPAndSeenInSameQuarter.setName("patientEnrolledInCRDPAndSeenInSameQuarter");/*
-//		patientEnrolledInCRDPAndSeenInSameQuarter.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-//		patientEnrolledInCRDPAndSeenInSameQuarter.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));*/
-//        patientEnrolledInCRDPAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
-//        patientEnrolledInCRDPAndSeenInSameQuarter.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
-//        patientEnrolledInCRDPAndSeenInSameQuarter.getSearches().put(
-//                "1",
-//                new Mapped<CohortDefinition>(patientEnrolledInCRDP, ParameterizableUtil
-//                        .createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore},enrolledOnOrAfter=${enrolledOnOrAfter}")));
-//        patientEnrolledInCRDPAndSeenInSameQuarter.getSearches().put(
-//                "2",
-//                new Mapped<CohortDefinition>(patientEnrolledInCRDPByEndDate, ParameterizableUtil
-//                        .createParameterMappings("enrolledOnOrBefore=${enrolledOnOrBefore-3m}")));
-//		/*patientEnrolledInCRDPAndSeenInSameQuarter.getSearches().put(
-//				"3",
-//				new Mapped<CohortDefinition>(patientSeen, ParameterizableUtil
-//						.createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));*/
-//
-//        //patientEnrolledInCRDPAndSeenInSameQuarter.setCompositionString("(1 and (not 2)) and 3");
-//        patientEnrolledInCRDPAndSeenInSameQuarter.setCompositionString("1 and (not 2)");
-//
-//
-//        CohortIndicator patientEnrolledInCRDPQuarterIndicator = Indicators.newCountIndicator(
-//                "patientEnrolledInCRDPQuarterIndicator", patientEnrolledInCRDPAndSeenInSameQuarter,
-//                ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate}"));
-//        CohortIndicator patientEnrolledInCRDPMonthOneIndicator = Indicators.newCountIndicator(
-//                "patientEnrolledInCRDPQuarterIndicator", patientEnrolledInCRDP,
-//                ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-1m+1d},enrolledOnOrBefore=${endDate}"));
-//        CohortIndicator patientEnrolledInCRDPMonthTwooIndicator = Indicators.newCountIndicator(
-//                "patientEnrolledInCRDPQuarterIndicator", patientEnrolledInCRDP,
-//                ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-2m+1d},enrolledOnOrBefore=${endDate-1m+1d}"));
-//        CohortIndicator patientEnrolledInCRDPMonthThreeIndicator = Indicators.newCountIndicator(
-//                "patientEnrolledInCRDPQuarterIndicator", patientEnrolledInCRDP,
-//                ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${endDate-3m+1d},enrolledOnOrBefore=${endDate-2m+1d}"));
-//
-//        // A3 Review March 2017 (it was A3Q but now it will be E1D/A3QReview )
-//
-//        //InProgramCohortDefinition inAsthmaProgramByEndDate=Cohorts.createInProgramParameterizableByDate("In CRDP by EndDate",asthmaProgram);
-//        SqlCohortDefinition inAsthmaProgramByEndDate = new SqlCohortDefinition();
-//        inAsthmaProgramByEndDate.setName("inAsthmaProgramByEndDate");
-//        inAsthmaProgramByEndDate.addParameter(new Parameter("onDate", "onDate", Date.class));
-//        inAsthmaProgramByEndDate.setQuery("select patient_id from patient_program where program_id=" + mentalhealthProgram.getProgramId() + " and voided=0 and date_enrolled<= :onDate");
-//
-//        //Cohorts.createInProgramParameterizableByDate("In CRDP by EndDate",asthmaProgram);
-//
-//        //ProgramEnrollmentCohortDefinition completedInAsthamProgramByEndDate=Cohorts.createProgramCompletedByEndDate("Completed CRDP by EndDate",asthmaProgram);
-//
-//        SqlCohortDefinition completedInAsthamProgramByEndDate = new SqlCohortDefinition();
-//        completedInAsthamProgramByEndDate.setName("completedInAsthamProgramByEndDate");
-//        completedInAsthamProgramByEndDate.addParameter(new Parameter("completedOnOrBefore", "completedOnOrBefore", Date.class));
-//        completedInAsthamProgramByEndDate.setQuery("select patient_id from patient_program where program_id=" + mentalhealthProgram.getProgramId() + " and voided=0 and date_completed<= :completedOnOrBefore and date_completed is not null");
-//
-//        //Cohorts.createProgramCompletedByEndDate("Completed CRDP by EndDate",asthmaProgram);
-//
-//        SqlCohortDefinition currentlyInProgramAndNotCompleted = new SqlCohortDefinition();
-//        currentlyInProgramAndNotCompleted.setName("currentlyInProgramAndNotCompleted");
-//        currentlyInProgramAndNotCompleted.setQuery("select patient_id from patient_program where voided=0 and program_id=" + mentalhealthProgram.getProgramId() + " and (date_completed> :endDate or date_completed is null) and date_enrolled<= :endDate");
-//        currentlyInProgramAndNotCompleted.addParameter(new Parameter("endDate", "endDate", Date.class));
-//
-//
-//        CohortIndicator currentlyInProgramAndNotCompletedIndicator = Indicators.newCountIndicator(
-//                "currentlyInProgramAndNotCompletedIndicator", currentlyInProgramAndNotCompleted,
-//                ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
     }
 
     private void setUpProperties() {
@@ -488,41 +386,39 @@ public class SetupMentalHealthIndicatorReport {
         MHExitReasons=gp.getConcept(GlobalPropertiesManagement.MENTAL_HEALTH_EXIT_REASONS_CONCEPT);
         LostToFolloUpOutCome =gp.getConcept(GlobalPropertiesManagement.LOST_TO_FOLLOWUP_OUTCOME);
 
-        PrimaryDiagnosisMHWorkflow = gp.getProgramWorkflow(GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
+//        PrimaryDiagnosisConcept = gp.getConcept(GlobalPropertiesManagement.Primary_Diagnosis_Concept);
 
-        SomatoformDisorderTroubleSomatoformMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.Somatoform_Disorder_or_Trouble_Somatoform_MHPDWorkflowState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
-        EPILEPSYMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.EPILEPSY_MHPDWorkflowState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
-        BipolarDisorderMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.Bipolar_Disorder_MHPDWorkflowState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
-        DepressionDueToOtherMedicalConditionMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.Depression_due_to_other_medical_condition_MHPDWorkflowState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
-        DepressionWithPsychoticFeaturesMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.Depression_with_Psychotic_Features_MHPDWorkflowState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
-        DepressionUnspecifiedMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.Depression_unspecified_MHPDWorkflowState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
-        MajorDepressiveDisorderMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.Major_Depressive_Disorder_MHPDWorkflowState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
-        PSYCHOSISMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.PSYCHOSIS_MHWorkflowPDState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
-        PsychosisDueToOtherMedicalConditionMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.Psychosis_due_to_other_medical_condition_MHPDWorkflowState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
-        SCHIZOPHRENIAMHPDWorkflowState = gp.getProgramWorkflowState(GlobalPropertiesManagement.SCHIZOPHRENIA_MHPDWorkflowState, GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
+        SomatoformDisorderTroubleSomatoformMHPDWorkflowState = gp.getConcept(GlobalPropertiesManagement.Somatoform_Disorder_or_Trouble_Somatoform_Concept);
+        EPILEPSYConcept = gp.getConcept(GlobalPropertiesManagement.EPILEPSY_Concept);
+        BipolarDisorderConcept = gp.getConcept(GlobalPropertiesManagement.Bipolar_Disorder_Concept);
+        DepressionDueToOtherMedicalConditionConcept = gp.getConcept(GlobalPropertiesManagement.Depression_due_to_other_medical_condition_Concept);
+        DepressionWithPsychoticFeaturesConcept = gp.getConcept(GlobalPropertiesManagement.Depression_with_Psychotic_Features_Concept);
+        DepressionUnspecifiedConcept = gp.getConcept(GlobalPropertiesManagement.Depression_unspecified_Concept);
+        MajorDepressiveDisorderConcept = gp.getConcept(GlobalPropertiesManagement.Major_Depressive_Disorder_Concept);
+        PSYCHOSISConcept = gp.getConcept(GlobalPropertiesManagement.PSYCHOSIS_Concept);
+        PsychosisDueToOtherMedicalConditionConcept = gp.getConcept(GlobalPropertiesManagement.Psychosis_due_to_other_medical_condition_Concept);
+        SCHIZOPHRENIAConcept = gp.getConcept(GlobalPropertiesManagement.SCHIZOPHRENIA_Concept);
 
-        SomatoformDisorderTroubleSomatoformMHWorkflowStateList.add(SomatoformDisorderTroubleSomatoformMHPDWorkflowState);
-        EPILEPSYMHWorkflowStateList.add(EPILEPSYMHPDWorkflowState);
-        BipolarDisorderMHWorkflowStateList.add(BipolarDisorderMHPDWorkflowState);
-        DepressionList.add(DepressionDueToOtherMedicalConditionMHPDWorkflowState);
-        DepressionList.add(DepressionWithPsychoticFeaturesMHPDWorkflowState);
-        DepressionList.add(DepressionUnspecifiedMHPDWorkflowState);
-        DepressionList.add(MajorDepressiveDisorderMHPDWorkflowState);
-        PsychosisorSchizophreniaList.add(PSYCHOSISMHPDWorkflowState);
-//        PsychosisorSchizophreniaList.add(PsychosisDueToOtherMedicalConditionMHPDWorkflowState);
-        PsychosisorSchizophreniaList.add(SCHIZOPHRENIAMHPDWorkflowState);
-
-
-
-
+        SomatoformDisorderTroubleSomatoformList.add(SomatoformDisorderTroubleSomatoformMHPDWorkflowState);
+        EPILEPSYList.add(EPILEPSYConcept);
+        BipolarDisorderList.add(BipolarDisorderConcept);
+        DepressionList.add(DepressionDueToOtherMedicalConditionConcept);
+        DepressionList.add(DepressionWithPsychoticFeaturesConcept);
+        DepressionList.add(DepressionUnspecifiedConcept);
+        DepressionList.add(MajorDepressiveDisorderConcept);
+        PsychosisorSchizophreniaList.add(PSYCHOSISConcept);
+        PsychosisorSchizophreniaList.add(PsychosisDueToOtherMedicalConditionConcept);
+        PsychosisorSchizophreniaList.add(SCHIZOPHRENIAConcept);
+        MentalHealthDiagnosisStoppingReasonConcept = gp.getConcept(GlobalPropertiesManagement.Mental_Health_Diagnosis_Stopping_Reason_Concept);
+        mentalHealthDiagnosis = gp.getConcept(GlobalPropertiesManagement.MENTAL_HEALTH_DIAGNOSIS_CONCEPT);
 
     }
 
-    private CohortIndicator activeAndInstateInPeriod(List<ProgramWorkflowState> states,EncounterCohortDefinition patientWithDDB,
+    private CohortIndicator activeAndInstateInPeriod(List<Concept> Diagnoses,EncounterCohortDefinition patientWithDDB,
                                                      EncounterCohortDefinition patientSeen ){
 
 
-        InStateCohortDefinition patientsInState = Cohorts.createInCurrentState("Patient has state", states);
+        SqlCohortDefinition patientsWithActiveDiagnosis = getPatientsWithDiagnosis("Patient has a diagnosis", mentalHealthDiagnosis,Diagnoses,MentalHealthDiagnosisStoppingReasonConcept);
 
         CompositionCohortDefinition activePatientWithStateComposition = new CompositionCohortDefinition();
         activePatientWithStateComposition.setName("activePatientWithStateComposition");
@@ -539,8 +435,8 @@ public class SetupMentalHealthIndicatorReport {
                         .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
         activePatientWithStateComposition.getSearches().put(
                 "3",
-                new Mapped<CohortDefinition>(patientsInState, ParameterizableUtil
-                        .createParameterMappings("onDate=${onDate},onDate=${onDate}")));
+                new Mapped<CohortDefinition>(patientsWithActiveDiagnosis, ParameterizableUtil
+                        .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
         activePatientWithStateComposition.setCompositionString("(1 OR 2) AND 3");
 
         CohortIndicator activePatientWithStateQuarterIndicator = Indicators.newCountIndicator("activePatientWithStateQuarterIndicator",
@@ -550,4 +446,34 @@ public class SetupMentalHealthIndicatorReport {
 
         return activePatientWithStateQuarterIndicator;
     }
+    public static SqlCohortDefinition getPatientsWithDiagnosis(String name, Concept conceptQuestion,List<Concept> conceptAnswerList,
+                                                               Concept stoppingReason) {
+        SqlCohortDefinition obsBetweenStartDateAndEndDate = new SqlCohortDefinition();
+
+        StringBuilder query = new StringBuilder("select distinct o.person_id from obs as o left join (select encounter_id from obs where concept_id= ");
+
+        query.append(stoppingReason.getConceptId());
+
+        query.append(" and voided=0 and obs_datetime>= :onOrAfter and obs_datetime<= :onOrBefore) as unwanted on unwanted.encounter_id = o.encounter_id where o.concept_id=");
+        query.append(conceptQuestion.getConceptId()+" and o.voided=0 and (o.encounter_id != unwanted.encounter_id or unwanted.encounter_id is null) and o.value_coded in (");
+
+        int i = 0;
+        for (Concept c : conceptAnswerList) {
+            if (i > 0) {
+                query.append(",");
+            }
+            query.append(c.getId());
+
+            i++;
+        }
+        query.append(") and o.obs_datetime>= :onOrAfter and o.obs_datetime<= :onOrBefore");
+
+        obsBetweenStartDateAndEndDate.setQuery(query.toString());
+        obsBetweenStartDateAndEndDate.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        obsBetweenStartDateAndEndDate.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+
+        return obsBetweenStartDateAndEndDate;
+    }
+
 }
+

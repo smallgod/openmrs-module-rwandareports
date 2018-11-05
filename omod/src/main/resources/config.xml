@@ -1139,79 +1139,93 @@
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.PrimaryDiagnosisMHWorkflow</property>
-		<defaultValue>e001dafe-1073-4a23-8664-f8e4d378599a</defaultValue>
-		<description>The workflow representing Primary diagnosis
+		<property>reports.PrimaryDiagnosisConcept</property>
+		<defaultValue>952b3fd4-b89e-4801-9b51-9b30bc83adce</defaultValue>
+		<description>The Primary diagnosis Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.SomatoformDisorderTroubleSomatoformMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>2a21b803-3e6d-468b-b624-b243db43ce17</defaultValue>
-		<description>The workflowstate representing Somatoform Disorder or Trouble Somatoform for Primary diagnosis
+		<property>reports.SomatoformDisorderTroubleSomatoformConcept</property>
+		<defaultValue>2547914e-08d2-4260-8682-cb1d1916515e</defaultValue>
+		<description>The Somatoform Disorder or Trouble Somatoform Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.EPILEPSYMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>86b55cea-8233-445f-873b-c8f7080c4d09</defaultValue>
-		<description>The workflowstate representing EPILEPSY for Primary diagnosis
+		<property>reports.EPILEPSYConcept</property>
+		<defaultValue>3cce0a90-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The EPILEPSY Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.BipolarDisorderMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>a14dc218-1813-4784-9c21-f77d6befa08f</defaultValue>
-		<description>The workflowstate representing Bipolar Disorder for Primary diagnosis
+		<property>reports.BipolarDisorderConcept</property>
+		<defaultValue>acaeb953-eecd-4a42-8752-59ecf560366a</defaultValue>
+		<description>The Bipolar Disorder Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.DepressionDueToOtherMedicalConditionMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>0e6f94bd-2e8f-4e8a-847c-3e254d51f5ce</defaultValue>
-		<description>The workflowstate representing Depression due to other medical condition for Primary diagnosis
+		<property>reports.DepressionDueToOtherMedicalConditionConcept</property>
+		<defaultValue>be8ceb74-03b7-4de4-915b-2cd34c3face7</defaultValue>
+		<description>The Depression due to other medical condition Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.DepressionWithPsychoticFeaturesMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>05bc5288-e7fc-4d58-a2b1-f237f9aed20f</defaultValue>
-		<description>The workflowstate representing Depression with Psychotic Features for Primary diagnosis
+		<property>reports.DepressionWithPsychoticFeaturesConcept</property>
+		<defaultValue>d436a853-8a20-4439-8ff8-979a1769a046</defaultValue>
+		<description>The Depression with Psychotic Features Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.DepressionUnspecifiedMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>080d3066-81bd-419f-9d00-0b29a8e81435</defaultValue>
-		<description>The workflowstate representing Depression unspecified for Primary diagnosis
+		<property>reports.DepressionUnspecifiedConcept</property>
+		<defaultValue>778a336c-9bc6-44ff-9700-10ac5a7e8bd5</defaultValue>
+		<description>The Depression unspecified Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.MajorDepressiveDisorderMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>34141cd7-ae4a-4236-abdf-d5d90af45e23</defaultValue>
-		<description>The workflowstate representing Major Depressive Disorder for Primary diagnosis
+		<property>reports.MajorDepressiveDisorderConcept</property>
+		<defaultValue>31b6053f-585c-4073-9b84-de2cffb0f0e6</defaultValue>
+		<description>The Major Depressive Disorder Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.PSYCHOSISMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>b6d7aeb9-6627-4c68-9546-f65f7b1e04af</defaultValue>
-		<description>The workflowstate representing PSYCHOSIS for Primary diagnosis
+		<property>reports.PSYCHOSISConcept</property>
+		<defaultValue>3ccea7fc-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The  PSYCHOSIS Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.PsychosisDueToOtherMedicalConditionMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>77bc2c19-9b0f-4c18-843b-fc9528056dba</defaultValue>
-		<description>The workflowstate representing Psychosis due to other medical condition for Primary diagnosis
+		<property>reports.PsychosisDueToOtherMedicalConditionConcept</property>
+		<defaultValue>2fd7581b-b4d2-48bb-8513-5b31589eaecb</defaultValue>
+		<description>The Psychosis due to other medical condition Concept
 		</description>
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.SCHIZOPHRENIAMHPrimarydiagnosisWorkflowState</property>
-		<defaultValue>6a32e996-7d83-464b-8e7f-3cfb013c77de</defaultValue>
-		<description>The workflowstate representing SCHIZOPHRENIA for Primary diagnosis
+		<property>reports.SCHIZOPHRENIAConcept</property>
+		<defaultValue>3cd134f4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The SCHIZOPHRENIA Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MentalHealthDiagnosisStoppingReasonConcept</property>
+		<defaultValue>f2d4789d-082c-447c-935d-6aa4ff211882</defaultValue>
+		<description>The Mental Health Diagnosis Stopping Reason Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MHDiagnosisForm</property>
+		<defaultValue>79cae8d0-c799-4cbb-b0f3-36c04731b4cf</defaultValue>
+		<description>The MH Diagnosis form
 		</description>
 	</globalProperty>
 

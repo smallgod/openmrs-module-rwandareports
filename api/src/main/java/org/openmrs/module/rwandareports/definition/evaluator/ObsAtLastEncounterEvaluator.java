@@ -56,6 +56,10 @@ public class ObsAtLastEncounterEvaluator implements RowPerPatientDataEvaluator {
                 }
             }
             par.setValue(ansObs);
+
+        }else{
+            List<Obs> emptyList = new ArrayList<Obs>();
+            par.setValue(emptyList);
         }
 
 

@@ -1988,12 +1988,22 @@ public class RowPerPatientColumns {
 		return patientEnrollementDate;
 	}
 	public static ObsAtLastEncounter getObsAtLastEncounter(String name,Concept concept,EncounterType encounterType) {
-		ObsAtLastEncounter obs = new ObsAtLastEncounter();
-		obs.setName(name);
-		obs.setConcept(concept);
-		obs.setEncounterType(encounterType);
+		ObsAtLastEncounter obsValues = new ObsAtLastEncounter();
+		obsValues.setName(name);
+		obsValues.setConcept(concept);
+		obsValues.setEncounterType(encounterType);
 
-		return obs;
+		return obsValues;
 	}
-	
+	public static AllObsValuesByRemovingUnwantedEncounters getAllObsValuesByRemovingUnwantedEncounters(String name,Concept concept1,Concept concept2,List<Form> forms){
+		AllObsValuesByRemovingUnwantedEncounters obsValues = new AllObsValuesByRemovingUnwantedEncounters();
+		obsValues.setName(name);
+		obsValues.setConceptOfWantedObs(concept1);
+		obsValues.setConceptOfUnWantedObs(concept2);
+		obsValues.setForms(forms);
+
+		return obsValues;
+	}
+
+
 }

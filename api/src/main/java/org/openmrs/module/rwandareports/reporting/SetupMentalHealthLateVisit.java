@@ -12,7 +12,6 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
-import org.openmrs.module.rwandareports.customcalculator.DaysLate;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
@@ -40,13 +39,18 @@ public class SetupMentalHealthLateVisit {
     private Concept mentalHealthDiagnosis;
     private Concept currentMedicalDiagnosis;
     private Concept accompPhoneNumberConcept;
+    private Concept PrimaryDiagnosisConcept;
+    private Concept MentalHealthDiagnosisStoppingReasonConcept;
+
+    private Form MHDiagnosisForm;
+    List<Form> MHDiagnosisformList = new ArrayList<Form>();
+
 
 
     private EncounterType MentalHealthEncounter;
     private EncounterType nonClinicalEncounter;
     List<EncounterType> mentalHealthEncounterTypeList;
     List<EncounterType> MHRelatedNextVisitEncTypes = new ArrayList<EncounterType>();
-    private ProgramWorkflow PrimaryDiagnosisMHWorkflow;
 
 
 //    private Form asthmaRDVForm;
@@ -174,7 +178,7 @@ public class SetupMentalHealthLateVisit {
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getObsAtLastEncounter("OldSymptoms", OldSymptoms, MentalHealthEncounter), new HashMap<String, Object>());
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("Diagnoses", MentalHealth, PrimaryDiagnosisMHWorkflow, false, null), new HashMap<String, Object>());
+        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObsValuesByRemovingUnwantedEncounters("Diagnoses", mentalHealthDiagnosis, MentalHealthDiagnosisStoppingReasonConcept, MHDiagnosisformList), new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(mentalHealthEncounterTypeList)),
                 new HashMap<String, Object>());
@@ -207,6 +211,8 @@ public class SetupMentalHealthLateVisit {
         OldSymptoms = gp.getConcept(GlobalPropertiesManagement.OLD_SYMPTOM);
         currentMedicalDiagnosis = gp.getConcept(GlobalPropertiesManagement.CURRENT_MEDICAL_DIAGNOSIS_CONCEPT);
         accompPhoneNumberConcept = gp.getConcept(GlobalPropertiesManagement.ACCOMPAGNATEUR_PHONE_NUMBER_CONCEPT);
+        MentalHealthDiagnosisStoppingReasonConcept = gp.getConcept(GlobalPropertiesManagement.Mental_Health_Diagnosis_Stopping_Reason_Concept);
+
 
 
         mentalHealthEncounterTypeList = gp.getEncounterTypeList(GlobalPropertiesManagement.MENTAL_HEALTH_VISIT);
@@ -226,7 +232,11 @@ public class SetupMentalHealthLateVisit {
 
         HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 
-        PrimaryDiagnosisMHWorkflow = gp.getProgramWorkflow(GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
+        PrimaryDiagnosisConcept = gp.getConcept(GlobalPropertiesManagement.Primary_Diagnosis_Concept);
+
+
+        MHDiagnosisForm = gp.getForm(GlobalPropertiesManagement.MH_Diagnosis_Form);
+        MHDiagnosisformList.add(MHDiagnosisForm);
 
 
 

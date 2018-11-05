@@ -864,31 +864,35 @@ public class GlobalPropertiesManagement {
 
 	public final static String ACCOMPAGNATEUR_PHONE_NUMBER_CONCEPT="reports.ACCOMPAGNATEURPHONENUMBERCONCEPT";
 
-	public final static String Primary_Diagnosis_MH_Workflow="reports.PrimaryDiagnosisMHWorkflow";
+	public final static String MENTAL_HEALTH_DIAGNOSIS_CONCEPT = "reports.mentalhealthdiagnosiconcept";
 
-	public final static String Somatoform_Disorder_or_Trouble_Somatoform_MHPDWorkflowState ="reports.SomatoformDisorderTroubleSomatoformMHPrimarydiagnosisWorkflowState";
+	public final static String MENTAL_HEALTH_EXIT_REASONS_CONCEPT = "reports.MentalHealthexitreasonsoncept";
 
-	public final static String EPILEPSY_MHPDWorkflowState ="reports.EPILEPSYMHPrimarydiagnosisWorkflowState";
+	public final static String Primary_Diagnosis_Concept ="reports.PrimaryDiagnosisConcept";
 
-	public final static String Bipolar_Disorder_MHPDWorkflowState ="reports.BipolarDisorderMHPrimarydiagnosisWorkflowState";
+	public final static String Somatoform_Disorder_or_Trouble_Somatoform_Concept ="reports.SomatoformDisorderTroubleSomatoformConcept";
 
-	public final static String Depression_due_to_other_medical_condition_MHPDWorkflowState ="reports.DepressionDueToOtherMedicalConditionMHPrimarydiagnosisWorkflowState";
+	public final static String EPILEPSY_Concept ="reports.EPILEPSYConcept";
 
-	public final static String Depression_with_Psychotic_Features_MHPDWorkflowState ="reports.DepressionWithPsychoticFeaturesMHPrimarydiagnosisWorkflowState";
+	public final static String Bipolar_Disorder_Concept ="reports.BipolarDisorderConcept";
 
-	public final static String Depression_unspecified_MHPDWorkflowState ="reports.DepressionUnspecifiedMHPrimarydiagnosisWorkflowState";
+	public final static String Depression_due_to_other_medical_condition_Concept ="reports.DepressionDueToOtherMedicalConditionConcept";
 
-	public final static String Major_Depressive_Disorder_MHPDWorkflowState ="reports.MajorDepressiveDisorderMHPrimarydiagnosisWorkflowState";
+	public final static String Depression_with_Psychotic_Features_Concept ="reports.DepressionWithPsychoticFeaturesConcept";
 
-	public final static String PSYCHOSIS_MHWorkflowPDState ="reports.PSYCHOSISMHPrimarydiagnosisWorkflowState";
+	public final static String Depression_unspecified_Concept ="reports.DepressionUnspecifiedConcept";
 
-	public final static String Psychosis_due_to_other_medical_condition_MHPDWorkflowState ="reports.PsychosisDueToOtherMedicalConditionMHPrimarydiagnosisWorkflowState";
+	public final static String Major_Depressive_Disorder_Concept ="reports.MajorDepressiveDisorderConcept";
 
-	public final static String SCHIZOPHRENIA_MHPDWorkflowState ="reports.SCHIZOPHRENIAMHPrimarydiagnosisWorkflowState";
+	public final static String PSYCHOSIS_Concept ="reports.PSYCHOSISConcept";
 
+	public final static String Psychosis_due_to_other_medical_condition_Concept ="reports.PsychosisDueToOtherMedicalConditionConcept";
 
+	public final static String SCHIZOPHRENIA_Concept ="reports.SCHIZOPHRENIAConcept";
 
+	public final static String MH_Diagnosis_Form ="reports.MHDiagnosisForm";
 
+	public final static String Mental_Health_Diagnosis_Stopping_Reason_Concept ="reports.MentalHealthDiagnosisStoppingReasonConcept";
 
 
 
@@ -1108,11 +1112,6 @@ public class GlobalPropertiesManagement {
 	public final static String HIV_TEST = "reports.hivTestConcept";
 	
 	public final static String HEMOGLOBIN = "reports.hemoglobin";
-
-	public final static String MENTAL_HEALTH_DIAGNOSIS_CONCEPT = "reports.mentalhealthdiagnosiconcept";
-
-	public final static String MENTAL_HEALTH_EXIT_REASONS_CONCEPT = "reports.MentalHealthexitreasonsoncept";
-
 
 	public final static String New_Symptom = "reports.NewSymptom";
 

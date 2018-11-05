@@ -9,12 +9,8 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
-import org.openmrs.module.rwandareports.customcalculator.AsthmaClassificationAlerts;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
-import org.openmrs.module.rwandareports.filter.LastTwoObsFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
@@ -44,11 +40,12 @@ public class SetupMentalHealthConsultationSheet {
     private Concept NewSymptoms;
     private Concept currentMedicalDiagnosis;
     private Concept accompPhoneNumberConcept;
-    private ProgramWorkflow PrimaryDiagnosisMHWorkflow;
+    private Concept PrimaryDiagnosisConcept;
+    private Concept MentalHealthDiagnosisStoppingReasonConcept;
 
+    private Form MHDiagnosisForm;
+    List<Form> MHDiagnosisformList = new ArrayList<Form>();
 
-
-    //    private Form followUpForm;
     public void setup() throws Exception {
 
         setupProperties();
@@ -105,8 +102,6 @@ public class SetupMentalHealthConsultationSheet {
 
         dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(MHNextVisitForms), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
 
-        //dataSetDefinition.addFilter(getMondayToSundayPatientReturnVisit(), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-
 
         DateFormatFilter dateFilter = new DateFormatFilter();
         dateFilter.setFinalDateFormat("dd-MMM-yyyy");
@@ -131,7 +126,7 @@ public class SetupMentalHealthConsultationSheet {
 
 //        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentPeakFlow("Last peak flow", "dd-MMM-yyyy"), new HashMap<String, Object>());
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("Diagnoses", MentalHealth, PrimaryDiagnosisMHWorkflow, false, null), new HashMap<String, Object>());
+        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObsValuesByRemovingUnwantedEncounters("Diagnoses", mentalHealthDiagnosis, MentalHealthDiagnosisStoppingReasonConcept, MHDiagnosisformList), new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(mentalHealthEncounterTypeList)),
                 new HashMap<String, Object>());
@@ -139,7 +134,6 @@ public class SetupMentalHealthConsultationSheet {
         dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("AccompPhoneNumber",accompPhoneNumberConcept,null,null,null ), new HashMap<String, Object>());
-
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentPatientPhoneNumber("patientPhone", "dd-MMM-yyyy"), new HashMap<String, Object>());
 
@@ -185,6 +179,7 @@ public class SetupMentalHealthConsultationSheet {
         NewSymptoms = gp.getConcept(GlobalPropertiesManagement.New_Symptom);
         OldSymptoms = gp.getConcept(GlobalPropertiesManagement.OLD_SYMPTOM);
         accompPhoneNumberConcept = gp.getConcept(GlobalPropertiesManagement.ACCOMPAGNATEUR_PHONE_NUMBER_CONCEPT);
+        MentalHealthDiagnosisStoppingReasonConcept = gp.getConcept(GlobalPropertiesManagement.Mental_Health_Diagnosis_Stopping_Reason_Concept);
 
 
 
@@ -200,7 +195,12 @@ public class SetupMentalHealthConsultationSheet {
 
         HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 
-        PrimaryDiagnosisMHWorkflow = gp.getProgramWorkflow(GlobalPropertiesManagement.Primary_Diagnosis_MH_Workflow, GlobalPropertiesManagement.MENTAL_HEALTH_PROGRAM);
+        PrimaryDiagnosisConcept = gp.getConcept(GlobalPropertiesManagement.Primary_Diagnosis_Concept);
+
+
+        MHDiagnosisForm = gp.getForm(GlobalPropertiesManagement.MH_Diagnosis_Form);
+        MHDiagnosisformList.add(MHDiagnosisForm);
+
 
 
 
