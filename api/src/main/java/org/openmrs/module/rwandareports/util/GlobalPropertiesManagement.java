@@ -172,6 +172,10 @@ public class GlobalPropertiesManagement {
 	public final static String EXTERNAL_HIV_PROGRAM = "reports.externalHivProgram";
 	
 	public final static String PDC_PROGRAM = "reports.pdcProgram";
+
+	public final static String MENTAL_HEALTH_PROGRAM = "reports.mentalhealthprogram";
+
+	public final static String NON_CLINICAL_ENCOUNTER = "reports.NonClinicalEncounterType";
 	
 	//ProgramWorkflow
 	public final static String TREATMENT_STATUS_WORKFLOW = "reports.hivworkflowstatus";
@@ -825,7 +829,7 @@ public class GlobalPropertiesManagement {
 	public final static String OUTPATIENT_ONCOLOGY_ENCOUNTER = "reports.OutpatientOncologyEncounterType";
 	
 	public final static String NON_CLINICAL_ONCOLOGY_ENCOUNTER="reports.NonClinicalOncologyEncounterType";
-	
+
 	public final static String EPILEPSY_VISIT = "reports.EpilepsyEncounterType";
 	
 	public final static String INPATIENT_ONCOLOGY_ENCOUNTER = "reports.InpatientOncologyEncounterType";
@@ -849,6 +853,52 @@ public class GlobalPropertiesManagement {
 	public final static String PDC_VISIT="reports.pdcEncounterType";
 
 	public final static String ASTHMA_DDB_RENDEVOUS_VISIT_FORMS="reports.AsthmaDDBAndRendezvousForms";
+
+	public final static String MENTAL_HEALTH_VISIT="reports.mentalHealthEncounterType";
+
+	public final static String MENTAL_HEALTH_INITIAL_ENCOUNTER_AND_RENDERZVOUS_VISIT_FORM="reports.mentalHealthInitialEncountAndRendevousVisitForms";
+
+	public final static String MENTAL_HEALTH_MISSED_VISIT_FORM="reports.MHMissedVisitForm";
+
+	public final static String CURRENT_MEDICAL_DIAGNOSIS_CONCEPT="reports.Currentmedicaldiagnosisconcept";
+
+	public final static String ACCOMPAGNATEUR_PHONE_NUMBER_CONCEPT="reports.ACCOMPAGNATEURPHONENUMBERCONCEPT";
+
+	public final static String MENTAL_HEALTH_DIAGNOSIS_CONCEPT = "reports.mentalhealthdiagnosiconcept";
+
+	public final static String MENTAL_HEALTH_EXIT_REASONS_CONCEPT = "reports.MentalHealthexitreasonsoncept";
+
+	public final static String Primary_Diagnosis_Concept ="reports.PrimaryDiagnosisConcept";
+
+	public final static String Somatoform_Disorder_or_Trouble_Somatoform_Concept ="reports.SomatoformDisorderTroubleSomatoformConcept";
+
+	public final static String EPILEPSY_Concept ="reports.EPILEPSYConcept";
+
+	public final static String Bipolar_Disorder_Concept ="reports.BipolarDisorderConcept";
+
+	public final static String Depression_due_to_other_medical_condition_Concept ="reports.DepressionDueToOtherMedicalConditionConcept";
+
+	public final static String Depression_with_Psychotic_Features_Concept ="reports.DepressionWithPsychoticFeaturesConcept";
+
+	public final static String Depression_unspecified_Concept ="reports.DepressionUnspecifiedConcept";
+
+	public final static String Major_Depressive_Disorder_Concept ="reports.MajorDepressiveDisorderConcept";
+
+	public final static String PSYCHOSIS_Concept ="reports.PSYCHOSISConcept";
+
+	public final static String Psychosis_due_to_other_medical_condition_Concept ="reports.PsychosisDueToOtherMedicalConditionConcept";
+
+	public final static String SCHIZOPHRENIA_Concept ="reports.SCHIZOPHRENIAConcept";
+
+	public final static String MH_Diagnosis_Form ="reports.MHDiagnosisForm";
+
+	public final static String Mental_Health_Diagnosis_Stopping_Reason_Concept ="reports.MentalHealthDiagnosisStoppingReasonConcept";
+
+
+
+
+
+
 
 	//RelationshipTypes
 	public final static String ACCOMPAGNATUER_RELATIONSHIP = "reports.accompagnatuerRelationship";
@@ -1062,7 +1112,12 @@ public class GlobalPropertiesManagement {
 	public final static String HIV_TEST = "reports.hivTestConcept";
 	
 	public final static String HEMOGLOBIN = "reports.hemoglobin";
-	
+
+	public final static String New_Symptom = "reports.NewSymptom";
+
+	public final static String OLD_SYMPTOM = "reports.OldSymptom";
+
+
 	//Group constructs  
 	public final static String CHILD_SEROLOGY_CONSTRUCT = "reports.childSerologyConcept";
 
@@ -1180,5 +1235,7 @@ public class GlobalPropertiesManagement {
 	public final static String HTN_ENROLL_FORM = "reports.HTNENROLLformId";
 
 	public final static String ASTHMA_ENROLLMENT_FORM = "reports.asthmaENROLLformId";
+
+
 
 }

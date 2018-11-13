@@ -72,17 +72,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPat
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatientMatchWithEncounter;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
 import org.openmrs.module.rwandareports.customcalculator.BooleanCalculation;
-import org.openmrs.module.rwandareports.definition.AllMotherObservationValues;
-import org.openmrs.module.rwandareports.definition.ArtSwitch;
-import org.openmrs.module.rwandareports.definition.ArtSwitchDate;
-import org.openmrs.module.rwandareports.definition.CurrentPatientDrugOrder;
-import org.openmrs.module.rwandareports.definition.CurrentPatientProgram;
-import org.openmrs.module.rwandareports.definition.DrugRegimenInformation;
-import org.openmrs.module.rwandareports.definition.EvaluateMotherDefinition;
-import org.openmrs.module.rwandareports.definition.HIVOutcome;
-import org.openmrs.module.rwandareports.definition.LastWeekMostRecentObservation;
-import org.openmrs.module.rwandareports.definition.RegimenDateInformation;
-import org.openmrs.module.rwandareports.definition.StartOfArt;
+import org.openmrs.module.rwandareports.definition.*;
 
 public class RowPerPatientColumns {
 
@@ -845,6 +835,16 @@ public class RowPerPatientColumns {
 				encounterType, resultFilter);
 	}
 
+	public static ObservationInMostRecentEncounterOfType getNextVisitMostRecentEncounterOfTheTypes(
+			String name,
+			List<EncounterType> encounterTypes,
+			ObservationInMostRecentEncounterOfType observationInMostRecentEncounterOfType,
+			ResultFilter resultFilter) {
+		return getObservationInMostRecentEncounterOfTheTypes(name,
+				gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),
+				encounterTypes, resultFilter);
+	}
+
 	public static PatientRelationship getAccompRelationship(String name) {
 		return getPatientRelationship(
 				name,
@@ -1016,6 +1016,21 @@ public class RowPerPatientColumns {
 		oe.setObservationConcept(concept);
 		List<EncounterType> encounterTypes = new ArrayList<EncounterType>();
 		encounterTypes.add(encounterType);
+		oe.setEncounterTypes(encounterTypes);
+
+		if (resultFilter != null) {
+
+			oe.setFilter(resultFilter);
+		}
+		return oe;
+	}
+	public static ObservationInMostRecentEncounterOfType getObservationInMostRecentEncounterOfTheTypes(
+			String name, Concept concept, List<EncounterType> encounterTypes,
+			ResultFilter resultFilter) {
+
+		ObservationInMostRecentEncounterOfType oe = new ObservationInMostRecentEncounterOfType();
+		oe.setName(name);
+		oe.setObservationConcept(concept);
 		oe.setEncounterTypes(encounterTypes);
 
 		if (resultFilter != null) {
@@ -1972,5 +1987,23 @@ public class RowPerPatientColumns {
 		}
 		return patientEnrollementDate;
 	}
-	
+	public static ObsAtLastEncounter getObsAtLastEncounter(String name,Concept concept,EncounterType encounterType) {
+		ObsAtLastEncounter obsValues = new ObsAtLastEncounter();
+		obsValues.setName(name);
+		obsValues.setConcept(concept);
+		obsValues.setEncounterType(encounterType);
+
+		return obsValues;
+	}
+	public static AllObsValuesByRemovingUnwantedEncounters getAllObsValuesByRemovingUnwantedEncounters(String name,Concept concept1,Concept concept2,List<Form> forms){
+		AllObsValuesByRemovingUnwantedEncounters obsValues = new AllObsValuesByRemovingUnwantedEncounters();
+		obsValues.setName(name);
+		obsValues.setConceptOfWantedObs(concept1);
+		obsValues.setConceptOfUnWantedObs(concept2);
+		obsValues.setForms(forms);
+
+		return obsValues;
+	}
+
+
 }

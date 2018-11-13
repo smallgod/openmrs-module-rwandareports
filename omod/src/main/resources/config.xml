@@ -1104,9 +1104,128 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.mentalhealthdiagnosiconcept</property>
+		<defaultValue>932199c7-a59e-491c-bb5a-cf82f2fdcd85</defaultValue>
+		<description>The uuid of the Mental health diagnosis concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.Currentmedicaldiagnosisconcept</property>
+		<defaultValue>36ce05b5-430a-4afc-ac2f-266e1b949957</defaultValue>
+		<description>The uuid of the Current medical diagnosis concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MentalHealthexitreasonsoncept</property>
+		<defaultValue>f90ac49f-2f68-46c3-a3ab-86eab56c90ea</defaultValue>
+		<description>The uuid of the Mental health exit reason concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.ACCOMPAGNATEURPHONENUMBERCONCEPT</property>
+		<defaultValue>5c9cb4a0-7b67-4c00-a926-ff7eaa8f0089</defaultValue>
+		<description>The uuid of the ACCOMPAGNATEUR PHONE NUMBER concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
 		<property>reports.pmtctDiscordantCoupleWorkflowState</property>
 		<defaultValue>Discordant Couple</defaultValue>
 		<description>The workflow state representing a discordant couple
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.PrimaryDiagnosisConcept</property>
+		<defaultValue>952b3fd4-b89e-4801-9b51-9b30bc83adce</defaultValue>
+		<description>The Primary diagnosis Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.SomatoformDisorderTroubleSomatoformConcept</property>
+		<defaultValue>2547914e-08d2-4260-8682-cb1d1916515e</defaultValue>
+		<description>The Somatoform Disorder or Trouble Somatoform Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.EPILEPSYConcept</property>
+		<defaultValue>3cce0a90-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The EPILEPSY Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.BipolarDisorderConcept</property>
+		<defaultValue>acaeb953-eecd-4a42-8752-59ecf560366a</defaultValue>
+		<description>The Bipolar Disorder Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.DepressionDueToOtherMedicalConditionConcept</property>
+		<defaultValue>be8ceb74-03b7-4de4-915b-2cd34c3face7</defaultValue>
+		<description>The Depression due to other medical condition Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.DepressionWithPsychoticFeaturesConcept</property>
+		<defaultValue>d436a853-8a20-4439-8ff8-979a1769a046</defaultValue>
+		<description>The Depression with Psychotic Features Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.DepressionUnspecifiedConcept</property>
+		<defaultValue>778a336c-9bc6-44ff-9700-10ac5a7e8bd5</defaultValue>
+		<description>The Depression unspecified Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MajorDepressiveDisorderConcept</property>
+		<defaultValue>31b6053f-585c-4073-9b84-de2cffb0f0e6</defaultValue>
+		<description>The Major Depressive Disorder Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.PSYCHOSISConcept</property>
+		<defaultValue>3ccea7fc-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The  PSYCHOSIS Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.PsychosisDueToOtherMedicalConditionConcept</property>
+		<defaultValue>2fd7581b-b4d2-48bb-8513-5b31589eaecb</defaultValue>
+		<description>The Psychosis due to other medical condition Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.SCHIZOPHRENIAConcept</property>
+		<defaultValue>3cd134f4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>The SCHIZOPHRENIA Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MentalHealthDiagnosisStoppingReasonConcept</property>
+		<defaultValue>f2d4789d-082c-447c-935d-6aa4ff211882</defaultValue>
+		<description>The Mental Health Diagnosis Stopping Reason Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MHDiagnosisForm</property>
+		<defaultValue>79cae8d0-c799-4cbb-b0f3-36c04731b4cf</defaultValue>
+		<description>The MH Diagnosis form
 		</description>
 	</globalProperty>
 
@@ -1453,6 +1572,15 @@
 		<defaultValue>Chronic respiratory disease program</defaultValue>
 		<description>
 			The name of the Chronic respiratory disease program to be
+			used
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.mentalhealthprogram</property>
+		<defaultValue>Mental Health</defaultValue>
+		<description>
+			The name of the Mental Health program to be
 			used
 		</description>
 	</globalProperty>
@@ -2290,7 +2418,14 @@
 		<defaultValue>Non Clinical Oncology</defaultValue>
 		<description>Non Clinical Oncology encounter type id </description>
 	</globalProperty>
-	
+
+	<globalProperty>
+		<property>reports.NonClinicalEncounterType</property>
+		<defaultValue>Non clinical encounter</defaultValue>
+		<description>Non clinical encounter encounter type name </description>
+	</globalProperty>
+
+
 	<globalProperty>
 		<property>reports.TypeOfReferrencingToClinicOrHospital</property>
 		<defaultValue>c3e1d8d4-3040-49dd-ad66-c0928d912941</defaultValue>
@@ -2302,8 +2437,14 @@
 		<property>reports.AsthmaEncounterType</property>
 		<defaultValue>41</defaultValue>
 		<description>Astma encounter type id </description>
-	</globalProperty> 
-	
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.mentalHealthEncounterType</property>
+		<defaultValue>Mental Health visit</defaultValue>
+		<description>Mental health encounter type name </description>
+	</globalProperty>
+
 	<globalProperty>
 		<property>reports.pdcEncounterType</property>
 		<defaultValue>46</defaultValue>
@@ -2448,6 +2589,20 @@
 		<property>reports.AsthmaRendevousVisitForm</property>
 		<defaultValue>1ba547f7-e955-4e90-869e-ae4a72430e57</defaultValue>
 		<description>Astma visit, Rendevous form id or uuid or name
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.mentalHealthNextVisitForms</property>
+		<defaultValue>1cda6620-6c2a-4ab6-8f55-4b53a782b5ff,8e43fa83-8892-4b52-9dd7-4af953661289,1dae19e4-7a80-4fad-821e-c3728f11ac76,dac034ee-a701-46cd-85de-d1e6d29e3ea3</defaultValue>
+		<description>Mental Health Pharmacotherapy,Psychotherapy_approach,missed visit and initial encounter forms uuid
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MHMissedVisitForm</property>
+		<defaultValue>dac034ee-a701-46cd-85de-d1e6d29e3ea3</defaultValue>
+		<description>Mental Health missed visit encounter forms uuid
 		</description>
 	</globalProperty>
 
@@ -3987,6 +4142,18 @@
 		<property>reports.LostToFolloUp</property>
 		<defaultValue>3ceb0ed8-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>LOST TO FOLLOWUP concept id</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.NewSymptom</property>
+		<defaultValue>0a30ddc8-d56e-464a-ae22-24fdd25afaaa</defaultValue>
+		<description>New Symptom's uuid</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.OldSymptom</property>
+		<defaultValue>b3a57875-70f2-4365-a8ac-bdbcfe90a7b3</defaultValue>
+		<description>Old Symptom's uuid</description>
 	</globalProperty>
 
 	reports.ncdLostToFolloUpOutcome

@@ -30,9 +30,9 @@ protected Log log = LogFactory.getLog(DaysLate.class);
 			{
 				ObservationResult nextVisit = (ObservationResult)result;
 				
-				if(nextVisit.getDateOfObservation() != null)
+				if(nextVisit.getDateOfObservation() != null && nextVisit.getValue() != null)
 				{
-	
+
 					long diff=0;
 					DateFormat dateformat = new SimpleDateFormat("dd/MM/yy");
 					
@@ -43,7 +43,7 @@ protected Log log = LogFactory.getLog(DaysLate.class);
 					} catch (ParseException e) {
 						log.error("Could not parse return visit date", e);
 						//just tell the user that the difference between dates is not available
-						sr.setValue("Not available");
+						sr.setValue("Not available"+nextVisit.getValue());
 						return sr;
 					}
 					Calendar nextVisitDate = Calendar.getInstance();
