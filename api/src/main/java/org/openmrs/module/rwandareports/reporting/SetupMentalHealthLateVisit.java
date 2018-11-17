@@ -225,9 +225,9 @@ public class SetupMentalHealthLateVisit {
 
         mentalHealthMissedVisitForm= gp.getForm(GlobalPropertiesManagement.MENTAL_HEALTH_MISSED_VISIT_FORM);
 
-        InitialAndRoutineEncounters =gp.getFormList(GlobalPropertiesManagement.MENTAL_HEALTH_INITIAL_ENCOUNTER_AND_RENDERZVOUS_VISIT_FORM);
+        InitialAndRoutineEncounters =gp.getFormList(GlobalPropertiesManagement.MENTAL_HEALTH_NEXT_VISIT_FORMS);
 
-        MHNextVisitForms = gp.getFormList(GlobalPropertiesManagement.MENTAL_HEALTH_INITIAL_ENCOUNTER_AND_RENDERZVOUS_VISIT_FORM);
+        MHNextVisitForms = gp.getFormList(GlobalPropertiesManagement.MENTAL_HEALTH_NEXT_VISIT_FORMS);
         MHNextVisitForms.add(mentalHealthMissedVisitForm);
 
         HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
