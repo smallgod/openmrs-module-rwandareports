@@ -381,7 +381,7 @@ public class SetupMentalHealthIndicatorReport {
         enrolledOnOrAfterOnOrBefore.add("enrolledOnOrAfter");
         enrolledOnOrAfterOnOrBefore.add("enrolledOnOrBefore");
 
-        InitialAndRoutineEncounters=gp.getFormList(GlobalPropertiesManagement.MENTAL_HEALTH_INITIAL_ENCOUNTER_AND_RENDERZVOUS_VISIT_FORM);
+        InitialAndRoutineEncounters=gp.getFormList(GlobalPropertiesManagement.MENTAL_HEALTH_NEXT_VISIT_FORMS);
 
         MHExitReasons=gp.getConcept(GlobalPropertiesManagement.MENTAL_HEALTH_EXIT_REASONS_CONCEPT);
         LostToFolloUpOutCome =gp.getConcept(GlobalPropertiesManagement.LOST_TO_FOLLOWUP_OUTCOME);
