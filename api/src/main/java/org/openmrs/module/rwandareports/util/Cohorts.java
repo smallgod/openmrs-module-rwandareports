@@ -647,7 +647,7 @@ public class Cohorts {
 		
 		List<Program> programs = new ArrayList<Program>();
 		programs.add(program);
-		
+
 		inProgram.setPrograms(programs);
 		
 		return inProgram;

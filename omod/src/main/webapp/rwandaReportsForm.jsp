@@ -600,6 +600,15 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_MentalHealthIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 
+<tr >
+<td class="tabletd"> Monthly Executive Dashboard Metrics Report </td>
+<td> Monthly Executive Dashboard Metrics Report </td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_MonthlyExecutiveDashboardMetricsReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_MonthlyExecutiveDashboardMetricsReport.form" onclick=msgrem(this)>Remove</a></td>
+
+</tr>
+
 
 
 </table>

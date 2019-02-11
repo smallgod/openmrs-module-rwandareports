@@ -45,9 +45,17 @@ public class SetupNCDLateVisitandLTFUReport {
 	// properties retrieved from global variables
 	private List<Program> diseases;
 	
-	private List<EncounterType> clinicalEncoutersExcLab;
+	private List<EncounterType> clinicalEncoutersExcLab = new ArrayList<EncounterType>();
 	
 	private Concept returnVisitDateConcept;
+
+	private EncounterType hypertesionEncounter;
+	private EncounterType heartFailureEncounter;
+	private EncounterType asthmaEncounter;
+	private EncounterType diabetesEncounter;
+	private EncounterType CKDEncounter;
+	private EncounterType epilepsyEncounter;
+	private EncounterType HFHTNCKDEncounter;
 	
 	public void setup() throws Exception {
 		setupPrograms();
@@ -57,7 +65,7 @@ public class SetupNCDLateVisitandLTFUReport {
 		Properties props = new Properties();
 		props.put(
 		    "repeatingSections",
-		    "sheet:1,row:13,dataset:LATE_VISITdataset0|sheet:1,row:15,dataset:LATE_VISITdataset1|sheet:1,row:17,dataset:LATE_VISITdataset2|sheet:1,row:19,dataset:LATE_VISITdataset3|sheet:1,row:21,dataset:LATE_VISITdataset4|sheet:2,row:13,dataset:LTFUdataset0|sheet:2,row:15,dataset:LTFUdataset1|sheet:2,row:17,dataset:LTFUdataset2|sheet:2,row:19,dataset:LTFUdataset3|sheet:2,row:21,dataset:LTFUdataset4");
+		    "sheet:1,row:13,dataset:LATE_VISITdataset0|sheet:1,row:17,dataset:LATE_VISITdataset1|sheet:1,row:21,dataset:LATE_VISITdataset2|sheet:1,row:25,dataset:LATE_VISITdataset3|sheet:1,row:29,dataset:LATE_VISITdataset4|sheet:2,row:13,dataset:LTFUdataset0|sheet:2,row:15,dataset:LTFUdataset1|sheet:2,row:17,dataset:LTFUdataset2|sheet:2,row:19,dataset:LTFUdataset3|sheet:2,row:21,dataset:LTFUdataset4");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		Helper.saveReportDesign(design);
@@ -96,19 +104,22 @@ public class SetupNCDLateVisitandLTFUReport {
 	
 	private void createDataSetDefinition(ReportDefinition reportDefinition, Program program, FilterType filterType,
 	                                     int datasetIndex) {
+
 		// Create new dataset definition
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
+
 		dataSetDefinition.setName(program.getName() + " Data Set");
 		dataSetDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		dataSetDefinition.addParameter(new Parameter("endDate", "enDate", Date.class));
-		
+
 		// Add Filters
-		if (filterType.equals(FilterType.LATE_VISIT))
+//		if (filterType.equals(FilterType.LATE_VISIT))
+
 			addLateVisitFilter(dataSetDefinition, program);
-		
-		if (filterType.equals(FilterType.LTFU))
-			addLTFUFilter(dataSetDefinition, program);
-		
+
+//		if (filterType.equals(FilterType.LTFU))
+//			addLTFUFilter(dataSetDefinition, program);
+
 		DateFormatFilter dateFilter = new DateFormatFilter();
 		dateFilter.setFinalDateFormat("yyyy/MM/dd");
 		
@@ -152,19 +163,20 @@ public class SetupNCDLateVisitandLTFUReport {
 		mappings.put("endDate", "${endDate}");
 		
 		reportDefinition.addDataSetDefinition(filterType + "dataset" + datasetIndex, dataSetDefinition, mappings);
+
 		
 	}
 	
 	private RowPerPatientDataSetDefinition addLateVisitFilter(RowPerPatientDataSetDefinition dataSetDefinition,
 	                                                          Program program) {
-		
+
 		// only patients who are not LTFU
 		EncounterCohortDefinition patientsWithClinicalEncountersWithoutLabTest = Cohorts.createEncounterParameterizedByDate(
 		    "patientsWithClinicalEncountersWithoutLabTest", "onOrAfter", clinicalEncoutersExcLab);
-		
+
 		dataSetDefinition.addFilter(patientsWithClinicalEncountersWithoutLabTest,
 		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m}"));
-		
+
 		// only patient enrolled in the current program
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate(program.getName() + "Cohort", program),
 			ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
@@ -195,7 +207,7 @@ public class SetupNCDLateVisitandLTFUReport {
 		
 		patientsWithoutClinicalEncounters
 		        .setCompositionString("patientsDueLastweek AND (NOT patientsWithClinicalEncountersLastWeek)");
-		
+
 		dataSetDefinition.addFilter(patientsWithoutClinicalEncounters,
 		    ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-7d},onOrBefore=${endDate}"));
 		return dataSetDefinition;
@@ -225,14 +237,37 @@ public class SetupNCDLateVisitandLTFUReport {
 	}
 	
 	private List<Program> setupPrograms() {
-		clinicalEncoutersExcLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES_EXC_LAB_TEST);
+//		clinicalEncoutersExcLab = gp.getEncounterTypeList(GlobalPropertiesManagement.CLINICAL_ENCOUNTER_TYPES_EXC_LAB_TEST);
 		returnVisitDateConcept = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+		hypertesionEncounter =  gp.getEncounterType(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER);
+		heartFailureEncounter =  gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+		asthmaEncounter =  gp.getEncounterType(GlobalPropertiesManagement.ASTHMA_VISIT);
+		diabetesEncounter =  gp.getEncounterType(GlobalPropertiesManagement.DIABETES_VISIT);
+		CKDEncounter =  gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE);
+		epilepsyEncounter =  gp.getEncounterType(GlobalPropertiesManagement.EPILEPSY_VISIT);
+		HFHTNCKDEncounter =  gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+
+
+
+
+		clinicalEncoutersExcLab.add(hypertesionEncounter);
+		clinicalEncoutersExcLab.add(heartFailureEncounter);
+		clinicalEncoutersExcLab.add(asthmaEncounter);
+		clinicalEncoutersExcLab.add(diabetesEncounter);
+		clinicalEncoutersExcLab.add(CKDEncounter);
+		clinicalEncoutersExcLab.add(epilepsyEncounter);
+		clinicalEncoutersExcLab.add(HFHTNCKDEncounter);
+
+
+
 		diseases = new ArrayList<Program>();
 		diseases.add(gp.getProgram(GlobalPropertiesManagement.DM_PROGRAM));
 		diseases.add(gp.getProgram(GlobalPropertiesManagement.CRD_PROGRAM));
 		diseases.add(gp.getProgram(GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME));
 		diseases.add(gp.getProgram(GlobalPropertiesManagement.HYPERTENSION_PROGRAM));
 		diseases.add(gp.getProgram(GlobalPropertiesManagement.EPILEPSY_PROGRAM));
+		diseases.add(gp.getProgram(GlobalPropertiesManagement.CKD_PROGRAM));
+
 		return diseases;
 	}
 	
