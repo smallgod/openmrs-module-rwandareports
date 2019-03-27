@@ -708,6 +708,12 @@ public class Cohorts {
 		inProgram.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		return inProgram;
 	}
+	public static InProgramCohortDefinition createInProgramParameterizableByStartEndDate(String name, List<Program> programs) {
+		InProgramCohortDefinition inProgram = createInProgram(name, programs);
+		inProgram.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		inProgram.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		return inProgram;
+	}
 	
 	public static ProgramEnrollmentCohortDefinition createProgramEnrollment(String name, Program program) {
 		

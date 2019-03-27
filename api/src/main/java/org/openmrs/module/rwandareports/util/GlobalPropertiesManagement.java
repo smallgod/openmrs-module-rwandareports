@@ -1117,6 +1117,19 @@ public class GlobalPropertiesManagement {
 
 	public final static String OLD_SYMPTOM = "reports.OldSymptom";
 
+	public final static String REFERRED_OUT_FOR_PALLIATIVE_SYSTEMIC_THERAPY = "reports.referredOutForPalliativeSystemicTherapy";
+
+	public final static String REFERRED_OUT_FOR_CURATIVE_CANCER_CARE = "reports.ReferredOutForCurativeCancerCare";
+
+	public final static String OTHERREASONFORREFERRAL = "reports.OtherReasonForReferral";
+
+	public final static String NOTCANCERNOBIOPSY = "reports.notCancerNoBiopsy";
+
+	public final static String PATIENTREFUSED = "reports.PATIENTREFUSED";
+
+
+
+
 
 	//Group constructs  
 	public final static String CHILD_SEROLOGY_CONSTRUCT = "reports.childSerologyConcept";
@@ -1163,7 +1176,7 @@ public class GlobalPropertiesManagement {
 	public final static String SOCIO_ECONOMIC_ASSISTANCE_RECOMENDED="reports.socioeconomicassistance";
 	public final static String NUTRITIONAL_AID="report.nutritionalaid";
 	public final static String TRASNFERED_OUT="report.patienttransferedOut";
-	public final static String PATIENT_DEFAULTED="report.patiendefaulted";
+	public final static String PATIENT_DEFAULTED="reports.patiendefaulted";
 	public final static String TRASNFERED_IN="report.patienttransferedIn";
 	public final static String WHOSTAGE="reports.whostage";
 	public final static String WHOSTAGE4PED="reports.whostage4p";
