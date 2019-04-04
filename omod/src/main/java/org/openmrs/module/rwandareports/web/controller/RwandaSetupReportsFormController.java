@@ -968,4 +968,18 @@ public class RwandaSetupReportsFormController {
 		new SetupMentalHealthIndicatorReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+
+
+
+	@RequestMapping("/module/rwandareports/register_HMISIndicatorMonthly")
+	public ModelAndView registerHMISIndicatorMonthlyIndicatorReport() throws Exception {
+		new SetupHMISIndicatorMonthlyReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_HMISIndicatorMonthlyReport")
+	public ModelAndView removeHMISIndicatorMonthlyReport() throws Exception {
+		new SetupHMISIndicatorMonthlyReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 }

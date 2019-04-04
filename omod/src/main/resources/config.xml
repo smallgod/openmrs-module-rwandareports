@@ -4156,6 +4156,31 @@
 		<description>Old Symptom's uuid</description>
 	</globalProperty>
 
-	reports.ncdLostToFolloUpOutcome
+	<globalProperty>
+		<property>reports.NCDEncounterTypeIds</property>
+		<defaultValue>23,27,29,31,32,48,49</defaultValue>
+		<description>NCD Encounter types ids</description>
+	</globalProperty>
+
+
+
+	<globalProperty>
+		<property>reports.NoneInsuranceID</property>
+		<defaultValue>28</defaultValue>
+		<description>Insurance ID for NONE insurance</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.hundrepercentInsuredInsuranceIDs</property>
+		<defaultValue>37,10,13,14,21,22,27,35</defaultValue>
+		<description>100% Insured Insurance IDs with coma (,) separator</description>
+	</globalProperty>
+
+
+	<globalProperty>
+		<property>reports.indigentsInsuranceIDs</property>
+		<defaultValue>36</defaultValue>
+		<description>Indigent Insurance IDs with coma (,) separator</description>
+	</globalProperty>
 
 </module>
