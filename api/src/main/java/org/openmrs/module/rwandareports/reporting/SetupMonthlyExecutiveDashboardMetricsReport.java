@@ -9,11 +9,14 @@ import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
+import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
+import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
+import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
@@ -65,6 +68,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
     private EncounterType CKDEncounter;
     private EncounterType epilepsyEncounter;
     private EncounterType HFHTNCKDEncounter;
+    private EncounterType POSTCARDIACSURGERYVISIT;
     private List<EncounterType> NCDEncouterTypes = new ArrayList<EncounterType>();
     private EncounterType pdcEncounterType;
     private List<EncounterType> hivencounterTypeIds = new ArrayList<EncounterType>();
@@ -98,7 +102,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         Properties properties = new Properties();
         properties.setProperty("hierarchyFields", "countyDistrict:District");
 
-        // Quarterly Report Definition: Start
+        // monthly Report Definition: Start
 
         ReportDefinition monthlyRd = new ReportDefinition();
         monthlyRd.addParameter(new Parameter("startDate", "Start Date", Date.class));
@@ -166,7 +170,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         eidsd.setName("eidsd");
         eidsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
         eidsd.addParameter(new Parameter("endDate", "End Date", Date.class));
-        //createMonthlyIndicators(eidsd);
+//        createMonthlyIndicators(eidsd);
         return eidsd;
     }
 
@@ -174,22 +178,24 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 //        //=======================================================================
 //        //  A1: Total # of patient visits to DM clinic in the last quarter
 //        //==================================================================
-//        SqlEncounterQuery patientVisitsToDMClinic = new SqlEncounterQuery();
+//        SqlEncounterQuery patientVisitsToClinic = new SqlEncounterQuery();
 //
-//        patientVisitsToDMClinic.setQuery("select e.encounter_id from encounter e where e.encounter_type in ("
+//        patientVisitsToClinic.setQuery("select e.encounter_id from encounter e where e.encounter_type in ("
 //                + EncounterTypesIds + ") and e.encounter_datetime>= :startDate and e.encounter_datetime<= :endDate and e.voided=0 group by encounter_datetime, patient_id");
-//        patientVisitsToDMClinic.setName("patientVisitsToDMClinic");
-//        patientVisitsToDMClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
-//        patientVisitsToDMClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
+//        patientVisitsToClinic.setName("patientVisitsClinic");
+//        patientVisitsToClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
+//        patientVisitsToClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
 //
-//        EncounterIndicator patientVisitsToDMClinicQuarterIndicator = new EncounterIndicator();
-//        patientVisitsToDMClinicQuarterIndicator.setName("patientVisitsToDMClinicQuarterIndicator");
-//        patientVisitsToDMClinicQuarterIndicator.setEncounterQuery(new Mapped<EncounterQuery>(patientVisitsToDMClinic,
+//        EncounterIndicator patientVisitsToClinicQuarterIndicator = new EncounterIndicator();
+//        patientVisitsToClinicQuarterIndicator.setName("patientVisitsToClinicQuarterIndicator");
+//        patientVisitsToClinicQuarterIndicator.setEncounterQuery(new Mapped<EncounterQuery>(patientVisitsToClinic,
 //                ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 //
-//        dsd.addColumn(patientVisitsToDMClinicQuarterIndicator);
+//        dsd.addColumn(patientVisitsToClinicQuarterIndicator);
 //
 //    }
+
+
 
     // create Monthly cohort Data set
     private CohortIndicatorDataSetDefinition createQuarterlyBaseDataSet() {
@@ -326,7 +332,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         OncologyPatientsReferred.setCompositionString("1");
 
         CohortIndicator patientsWithProgramReferredOutcomeMonthlyIndicator = Indicators.newCountIndicator("patientsWithProgramReferredOutcomeMonthlyIndicator",
-                OncologyPatientsReferred,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}}"));
+                OncologyPatientsReferred,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
         dsd.addColumn("oncologyPatientsReferred", "# of oncology Patients Referred", new Mapped(patientsWithProgramReferredOutcomeMonthlyIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
@@ -345,7 +351,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         femaleOncologyPatientsReferred.setCompositionString("1 AND 2");
 
         CohortIndicator femalepatientsWithProgramReferredOutcomeMonthlyIndicator = Indicators.newCountIndicator("femalepatientsWithProgramReferredOutcomeMonthlyIndicator",
-                femaleOncologyPatientsReferred,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}}"));
+                femaleOncologyPatientsReferred,ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
         dsd.addColumn("femaleoncologyPatientsReferred", "# of oncology female Patients Referred", new Mapped(femalepatientsWithProgramReferredOutcomeMonthlyIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
@@ -420,11 +426,11 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
                 "1",
                 new Mapped<CohortDefinition>(inNCDPrograms, ParameterizableUtil
 
-                        .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+                        .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrBefore}")));
         NCDActivePatientComposition.getSearches().put(
                 "2",
                 new Mapped<CohortDefinition>(NCDpatientSeen, ParameterizableUtil
-                        .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrBefore}")));
+                        .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
         NCDActivePatientComposition.setCompositionString("1 AND 2");
 
         CohortIndicator NCDActivePatientMonthlyIndicator = Indicators.newCountIndicator("NCDActivePatientMonthlyIndicator",
@@ -521,7 +527,12 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
                 "1",
                 new Mapped<CohortDefinition>(NCDpatientsSeen, ParameterizableUtil
                         .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-        NCDpatientsSeenComposition.setCompositionString("1");
+        NCDpatientsSeenComposition.getSearches().put(
+                "2",
+                new Mapped<CohortDefinition>(inNCDPrograms, ParameterizableUtil
+
+                        .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+        NCDpatientsSeenComposition.setCompositionString("1 AND 2");
 
         CohortIndicator NCDpatientsSeenMonthlyIndicator = Indicators.newCountIndicator("NCDpatientsSeenMonthlyIndicator",
                 NCDpatientsSeenComposition,
@@ -570,12 +581,12 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 
 
 
-        EncounterCohortDefinition AsthmapatientsSeenInPeriod = Cohorts.createEncounterParameterizedByDate("Asthma Patients seen",
-                onOrAfterOnOrBefore, asthmaEncounter);
+//        EncounterCohortDefinition AsthmapatientsSeenInPeriod = Cohorts.createEncounterParameterizedByDate("Asthma Patients seen",
+//                onOrAfterOnOrBefore, asthmaEncounter);
 
 
 
-        CompositionCohortDefinition AsthmaActivePatientsComposition = activePatientOfADisease(AsthmapatientsSeenInPeriod,inAsthmaProgram);
+        CompositionCohortDefinition AsthmaActivePatientsComposition = activePatientOfADisease(NCDpatientSeen,inAsthmaProgram);
         CohortIndicator AsthmaActivePatientsIndicator = Indicators.newCountIndicator("AsthmaActivePatientsIndicator",
                 AsthmaActivePatientsComposition,ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
         dsd.addColumn("asthmaActivePatients", "# of active asthma patients ", new Mapped(AsthmaActivePatientsIndicator,
@@ -584,7 +595,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 
 
 
-        CompositionCohortDefinition AsthmaActivePatientsNotSeenIn6MonthsComposition = ActivePatientsNotSeenIn6MonthsComposition(AsthmaActivePatientsComposition,AsthmapatientsSeenInPeriod);
+        CompositionCohortDefinition AsthmaActivePatientsNotSeenIn6MonthsComposition = ActivePatientsNotSeenIn6MonthsComposition(AsthmaActivePatientsComposition,NCDpatientSeen);
 
         CohortIndicator AsthmaActivePatientsNotSeenIn6MonthsIndicator = Indicators.newCountIndicator("AsthmaActivePatientsNotSeenIn6MonthsIndicator",
                 AsthmaActivePatientsNotSeenIn6MonthsComposition,ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
@@ -611,17 +622,17 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
 
         //=========================================================================
-        // B8: Of active Diabetes patients, % with no visit in 6 months            //
+        // B9: Of active Diabetes patients, % with no visit in 6 months            //
         //=========================================================================
 
 
 
-        EncounterCohortDefinition diabetesPatientsSeenInPeriod = Cohorts.createEncounterParameterizedByDate("Diabetes Patients seen",
-                onOrAfterOnOrBefore, diabetesEncounter);
+//        EncounterCohortDefinition diabetesPatientsSeenInPeriod = Cohorts.createEncounterParameterizedByDate("Diabetes Patients seen",
+//                onOrAfterOnOrBefore, diabetesEncounter);
 
 
 
-        CompositionCohortDefinition DiabetesActivePatientsComposition = activePatientOfADisease(diabetesPatientsSeenInPeriod,inDiabetesProgram);
+        CompositionCohortDefinition DiabetesActivePatientsComposition = activePatientOfADisease(NCDpatientSeen,inDiabetesProgram);
         CohortIndicator DiabetesActivePatientsIndicator = Indicators.newCountIndicator("DiabetesActivePatientsIndicator",
                 DiabetesActivePatientsComposition,ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
         dsd.addColumn("diabetesActivePatients", "# of active Diabetes patients ", new Mapped(DiabetesActivePatientsIndicator,
@@ -630,7 +641,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 
 
 
-        CompositionCohortDefinition DiabetesActivePatientsNotSeenIn6MonthsComposition = ActivePatientsNotSeenIn6MonthsComposition(DiabetesActivePatientsComposition,diabetesPatientsSeenInPeriod);
+        CompositionCohortDefinition DiabetesActivePatientsNotSeenIn6MonthsComposition = ActivePatientsNotSeenIn6MonthsComposition(DiabetesActivePatientsComposition,NCDpatientSeen);
 
         CohortIndicator DiabetesActivePatientsNotSeenIn6MonthsIndicator = Indicators.newCountIndicator("DiabetesActivePatientsNotSeenIn6MonthsIndicator",
                 DiabetesActivePatientsNotSeenIn6MonthsComposition,ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
@@ -657,17 +668,17 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
 
         //=========================================================================
-        // B8: Of active Heart failure patients, % with no visit in 6 months            //
+        // B10: Of active Heart failure patients, % with no visit in 6 months            //
         //=========================================================================
 
 
 
-        EncounterCohortDefinition heartFailurePatientsSeenInPeriod = Cohorts.createEncounterParameterizedByDate("Heart failure Patients seen",
-                onOrAfterOnOrBefore, heartFailureEncounter);
+//        EncounterCohortDefinition heartFailurePatientsSeenInPeriod = Cohorts.createEncounterParameterizedByDate("Heart failure Patients seen",
+//                onOrAfterOnOrBefore, heartFailureEncounter);
 
 
 
-        CompositionCohortDefinition heartFailureActivePatientsComposition = activePatientOfADisease(heartFailurePatientsSeenInPeriod,inHFProgram);
+        CompositionCohortDefinition heartFailureActivePatientsComposition = activePatientOfADisease(NCDpatientSeen,inHFProgram);
         CohortIndicator heartFailureActivePatientsIndicator = Indicators.newCountIndicator("heartFailureActivePatientsIndicator",
                 heartFailureActivePatientsComposition,ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
         dsd.addColumn("heartFailureActivePatients", "# of active heart Failure patients ", new Mapped(heartFailureActivePatientsIndicator,
@@ -676,7 +687,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 
 
 
-        CompositionCohortDefinition heartFailureActivePatientsNotSeenIn6MonthsComposition = ActivePatientsNotSeenIn6MonthsComposition(heartFailureActivePatientsComposition,heartFailurePatientsSeenInPeriod);
+        CompositionCohortDefinition heartFailureActivePatientsNotSeenIn6MonthsComposition = ActivePatientsNotSeenIn6MonthsComposition(heartFailureActivePatientsComposition,NCDpatientSeen);
 
         CohortIndicator heartFailureActivePatientsNotSeenIn6MonthsIndicator = Indicators.newCountIndicator("heartFailureActivePatientsNotSeenIn6MonthsIndicator",
                 heartFailureActivePatientsNotSeenIn6MonthsComposition,ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
@@ -704,17 +715,17 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 
 
         //=========================================================================
-        // B8: Of active Hypertension patients, % with no visit in 6 months            //
+        // B11: Of active Hypertension patients, % with no visit in 6 months            //
         //=========================================================================
 
 
 
-        EncounterCohortDefinition HypertensionPatientsSeenInPeriod = Cohorts.createEncounterParameterizedByDate("Hypertension Patients seen",
-                onOrAfterOnOrBefore, hypertesionEncounter);
+//        EncounterCohortDefinition HypertensionPatientsSeenInPeriod = Cohorts.createEncounterParameterizedByDate("Hypertension Patients seen",
+//                onOrAfterOnOrBefore, hypertesionEncounter);
 
 
 
-        CompositionCohortDefinition HypertensionActivePatientsComposition = activePatientOfADisease(HypertensionPatientsSeenInPeriod,inHFProgram);
+        CompositionCohortDefinition HypertensionActivePatientsComposition = activePatientOfADisease(NCDpatientSeen,inHypertensionProgram);
         CohortIndicator HypertensionActivePatientsIndicator = Indicators.newCountIndicator("HypertensionActivePatientsIndicator",
                 HypertensionActivePatientsComposition,ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
         dsd.addColumn("HypertensionActivePatients", "# of active heart Failure patients ", new Mapped(HypertensionActivePatientsIndicator,
@@ -723,7 +734,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 
 
 
-        CompositionCohortDefinition HypertensionActivePatientsNotSeenIn6MonthsComposition = ActivePatientsNotSeenIn6MonthsComposition(HypertensionActivePatientsComposition,HypertensionPatientsSeenInPeriod);
+        CompositionCohortDefinition HypertensionActivePatientsNotSeenIn6MonthsComposition = ActivePatientsNotSeenIn6MonthsComposition(HypertensionActivePatientsComposition,NCDpatientSeen);
         CohortIndicator HypertensionActivePatientsNotSeenIn6MonthsIndicator = Indicators.newCountIndicator("HypertensionActivePatientsNotSeenIn6MonthsIndicator",
                 HypertensionActivePatientsNotSeenIn6MonthsComposition,ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
         dsd.addColumn("HypertensionactivePatientsNotSeenIn6Months", "# of active heart Failure patients with no visit in 6 months", new Mapped(HypertensionActivePatientsNotSeenIn6MonthsIndicator,
@@ -945,33 +956,35 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         HIVPatientsOnART.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 
         HIVPatientsOnART.getSearches().put("1",new Mapped<CohortDefinition>(inHIVProgram, ParameterizableUtil
-                .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrBefore}")));
-        HIVPatientsOnART.getSearches().put("2",new Mapped<CohortDefinition>(OnArt(adulthivprogramname), ParameterizableUtil
                 .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-        HIVPatientsOnART.getSearches().put("3",new Mapped<CohortDefinition>(OnArt(pedihivprogramname), ParameterizableUtil
+        HIVPatientsOnART.getSearches().put("2",new Mapped<CohortDefinition>(HIVnPatientsSeenInPeriod, ParameterizableUtil
+                .createParameterMappings("onOrBefore=${onOrAfter},onOrAfter=${onOrBefore}")));
+        HIVPatientsOnART.getSearches().put("3",new Mapped<CohortDefinition>(OnArt(adulthivprogramname), ParameterizableUtil
                 .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-        HIVPatientsOnART.getSearches().put("4",new Mapped<CohortDefinition>(OnArt(pmtctprogramname), ParameterizableUtil
+        HIVPatientsOnART.getSearches().put("4",new Mapped<CohortDefinition>(OnArt(pedihivprogramname), ParameterizableUtil
                 .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-        HIVPatientsOnART.getSearches().put("5",new Mapped<CohortDefinition>(OnArt(pmtctCombinedMotherProgramname), ParameterizableUtil
+        HIVPatientsOnART.getSearches().put("5",new Mapped<CohortDefinition>(OnArt(pmtctprogramname), ParameterizableUtil
                 .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-        HIVPatientsOnART.setCompositionString("1 AND (2 OR 3 OR 4 OR 5)");
+        HIVPatientsOnART.getSearches().put("6",new Mapped<CohortDefinition>(OnArt(pmtctCombinedMotherProgramname), ParameterizableUtil
+                .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+        HIVPatientsOnART.setCompositionString("1 AND 2 AND (3 OR 4 OR 5 OR 6)");
 
         CohortIndicator HIVPatientsOnARTMonthlyIndicator = Indicators.newCountIndicator("HIVPatientsOnARTMonthlyIndicator",
-                HIVPatientsOnART,ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
+                HIVPatientsOnART,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate-12m+1d},onOrAfter=${endDate}"));
         dsd.addColumn("HIVPatientsOnART", "# of Active patients  ", new Mapped(HIVPatientsOnARTMonthlyIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
 
         //female
         CohortIndicator femaleHIVPatientsOnARTMonthlyIndicator = Indicators.newCountIndicator("femaleHIVPatientsOnARTMonthlyIndicator",
                 femaleComposition(HIVPatientsOnART,femaleCohort),
-                ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-12m+1d},onOrBefore=${endDate}"));
+                ParameterizableUtil.createParameterMappings("onOrBefore=${endDate-12m+1d},onOrAfter=${endDate}"));
         dsd.addColumn("femaleHIVPatientsOnART", "# of female Active patients  ", new Mapped(femaleHIVPatientsOnARTMonthlyIndicator,
                 ParameterizableUtil.createParameterMappings("endDate=${endDate}")), "");
 
 
 //        SqlCohortDefinition viralLoadGreaterThan1000InLast6Months = new SqlCohortDefinition("select vload.person_id from (select * from obs where concept_id="+viralLoad.getConceptId()+" and value_numeric<20 and obs_datetime> :beforeDate and obs_datetime<= :onDate order by obs_datetime desc) as vload group by vload.person_id");
 
-        SqlCohortDefinition viralLoadInPeriod = new SqlCohortDefinition("select vload.person_id from (select * from obs where concept_id="+viralLoadConcept.getConceptId()+" and obs_datetime> :onOrAfter and obs_datetime<= :onOrBefore order by obs_datetime desc) as vload group by vload.person_id");
+        SqlCohortDefinition viralLoadInPeriod = new SqlCohortDefinition("select vload.person_id from (select * from obs where concept_id="+viralLoadConcept.getConceptId()+" and obs_datetime>= :onOrAfter and obs_datetime<= :onOrBefore and voided = 0  order by obs_datetime desc) as vload group by vload.person_id");
         viralLoadInPeriod.setName("viralLoadInPeriod");
         viralLoadInPeriod.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         viralLoadInPeriod.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
@@ -982,7 +995,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         ActivePatientWithVlInperiod.addParameter(new Parameter("onOrAfter","onOrAfter",Date .class));
 
         ActivePatientWithVlInperiod.getSearches().put("1",new Mapped<CohortDefinition>(HIVPatientsOnART, ParameterizableUtil
-                .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+                .createParameterMappings("onOrBefore=${onOrAfter},onOrAfter=${onOrBefore}")));
         ActivePatientWithVlInperiod.getSearches().put("2",new Mapped<CohortDefinition>(viralLoadInPeriod, ParameterizableUtil
                 .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
         ActivePatientWithVlInperiod.setCompositionString("1 AND 2");
@@ -1005,7 +1018,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         //=========================================================================================
 
 
-        SqlCohortDefinition viralLoadInPeriodLessthanTwenty = new SqlCohortDefinition("select vload.person_id from (select * from obs where concept_id="+viralLoadConcept.getConceptId()+" and value_numeric<20 and obs_datetime> :onOrAfter and obs_datetime<= :onOrBefore order by obs_datetime desc) as vload group by vload.person_id");
+        SqlCohortDefinition viralLoadInPeriodLessthanTwenty = new SqlCohortDefinition("select vload.person_id from (select * from obs where concept_id="+viralLoadConcept.getConceptId()+" and value_numeric<20 and obs_datetime>= :onOrAfter and obs_datetime<= :onOrBefore and voided = 0 order by obs_datetime desc) as vload group by vload.person_id");
         viralLoadInPeriodLessthanTwenty.setName("viralLoadInPeriod");
         viralLoadInPeriodLessthanTwenty.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         viralLoadInPeriodLessthanTwenty.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
@@ -1016,7 +1029,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         ActivePatientWithVlLessthanTwentyInperiod.addParameter(new Parameter("onOrAfter","onOrAfter",Date .class));
 
         ActivePatientWithVlLessthanTwentyInperiod.getSearches().put("1",new Mapped<CohortDefinition>(HIVPatientsOnART, ParameterizableUtil
-                .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+                .createParameterMappings("onOrBefore=${onOrAfter},onOrAfter=${onOrBefore}")));
         ActivePatientWithVlLessthanTwentyInperiod.getSearches().put("2",new Mapped<CohortDefinition>(viralLoadInPeriodLessthanTwenty, ParameterizableUtil
                 .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
         ActivePatientWithVlLessthanTwentyInperiod.setCompositionString("1 AND 2");
@@ -1223,8 +1236,10 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         CKDEncounter =  gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE);
         epilepsyEncounter =  gp.getEncounterType(GlobalPropertiesManagement.EPILEPSY_VISIT);
         HFHTNCKDEncounter =  gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+        POSTCARDIACSURGERYVISIT =  gp.getEncounterType(GlobalPropertiesManagement.POST_CARDIAC_SURGERY_VISIT);
         pdcEncounterType =  gp.getEncounterType(GlobalPropertiesManagement.PDC_VISIT);
         hivencounterTypeIds =  gp.getEncounterTypeList(GlobalPropertiesManagement.PEDIANDADULTHIV_ENCOUNTER_TYPES);
+
 
 
 
@@ -1236,11 +1251,27 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         NCDEncouterTypes.add(CKDEncounter);
         NCDEncouterTypes.add(epilepsyEncounter);
         NCDEncouterTypes.add(HFHTNCKDEncounter);
+        NCDEncouterTypes.add(POSTCARDIACSURGERYVISIT);
 
 
 
-//        EncounterTypesIds.add(outpatientOncEncounterType.getEncounterTypeId());
-//        EncounterTypesIds.add(inpatientOncologyEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(outpatientOncEncounterType.getEncounterTypeId());
+        EncounterTypesIds.add(inpatientOncologyEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(inpatientOncologyEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(hypertesionEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(heartFailureEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(asthmaEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(diabetesEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(CKDEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(HFHTNCKDEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(epilepsyEncounter.getEncounterTypeId());
+        EncounterTypesIds.add(pdcEncounterType.getEncounterTypeId());
+        for(EncounterType enc : hivencounterTypeIds){
+            EncounterTypesIds.add(enc.getEncounterTypeId());
+        }
+
+
+
 
 
         //concepts

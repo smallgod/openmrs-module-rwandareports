@@ -66,7 +66,9 @@ public class SetupExposedClinicInfantMonthly {
 	private String NVPSuspDrugId;
 	
 	private String bactrimDrugId;
-	
+
+	private Date onDate;
+
 	public void setup() throws Exception {
 		
 		setupProperties();
@@ -99,7 +101,7 @@ public class SetupExposedClinicInfantMonthly {
 		reportDefinition.setName("HIV-PMTCT Exposed Infant Clinical Report-Monthly");
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
 		
@@ -351,7 +353,7 @@ public class SetupExposedClinicInfantMonthly {
 		    new HashMap<String, Object>());
 		dataSetDefinition5.addColumn(RowPerPatientColumns.getMostRecentReturnVisitDate("nextVisit", "dd-MMM-yyyy", null),
 		    new HashMap<String, Object>());
-		
+
 		dataSetDefinition1.addColumn(RowPerPatientColumns.getAgeInMonths("ageInMonths"), new HashMap<String, Object>());
 		dataSetDefinition1.addColumn(
 		    RowPerPatientColumns.getStateOfPatient("FeedingGroup", pmtctinfantProgram, feedingState, new BorFStateFilter()),
@@ -449,7 +451,7 @@ public class SetupExposedClinicInfantMonthly {
 		dataSetDefinition3.addParameter(new Parameter("endDate", "End Date", Date.class));
 		dataSetDefinition4.addParameter(new Parameter("endDate", "End Date", Date.class));
 		dataSetDefinition5.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("location", "${location}");
 		mappings.put("endDate", "${endDate}");
@@ -472,6 +474,7 @@ public class SetupExposedClinicInfantMonthly {
 		cotrimoxazole = gp.getConcept(GlobalPropertiesManagement.COTRIMOXAZOLE_DRUG);
 		NVPSuspDrugId = Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.NVP_Susp);
 		bactrimDrugId = Context.getAdministrationService().getGlobalProperty(GlobalPropertiesManagement.BACTRIM);
+
 		
 	}
 	

@@ -108,6 +108,13 @@
 			The id for the Pediatric Initial Encounter Type
 		</description>
 	</globalProperty>
+	<globalProperty>
+		<property>reports.pedihivprogramname</property>
+		<defaultValue>PEDIATRIC HIV PROGRAM</defaultValue>
+		<description>
+			The PEDIATRIC HIV PROGRAM
+		</description>
+	</globalProperty>
 
 	<globalProperty>
 		<property>reports.tbprogramname</property>
@@ -2594,8 +2601,8 @@
 
 	<globalProperty>
 		<property>reports.mentalHealthNextVisitForms</property>
-		<defaultValue>1cda6620-6c2a-4ab6-8f55-4b53a782b5ff,8e43fa83-8892-4b52-9dd7-4af953661289,1dae19e4-7a80-4fad-821e-c3728f11ac76,dac034ee-a701-46cd-85de-d1e6d29e3ea3</defaultValue>
-		<description>Mental Health Pharmacotherapy,Psychotherapy_approach,missed visit and initial encounter forms uuid
+		<defaultValue>1cda6620-6c2a-4ab6-8f55-4b53a782b5ff,8e43fa83-8892-4b52-9dd7-4af953661289,1dae19e4-7a80-4fad-821e-c3728f11ac76,dac034ee-a701-46cd-85de-d1e6d29e3ea3,196f9752-d49e-4b52-b825-5d210e592411,0888cc0c-ca54-4bf5-bf29-b7ff8a02b0c8</defaultValue>
+		<description>Mental Health Pharmacotherapy,Psychotherapy_approach,missed visit, initial encounter, MH access Inpatient admission,MH Outpatient visit copy of the access forms uuid
 		</description>
 	</globalProperty>
 

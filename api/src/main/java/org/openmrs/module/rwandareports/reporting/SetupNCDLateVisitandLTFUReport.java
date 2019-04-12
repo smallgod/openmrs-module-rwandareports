@@ -89,14 +89,14 @@ public class SetupNCDLateVisitandLTFUReport {
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
 		    ParameterizableUtil.createParameterMappings("location=${location}"));
-		
+
 		for (Program program : diseases) {
 			for (FilterType filterType : FilterType.values()) {
-				
+
 				createDataSetDefinition(reportDefinition, program, filterType, diseases.indexOf(program));
 			}
 		}
-		
+
 		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
@@ -141,7 +141,7 @@ public class SetupNCDLateVisitandLTFUReport {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName", 
 			new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
 		
-		
+
 		dataSetDefinition.addColumn(RowPerPatientColumns.getRecentEncounterType("Last visit type", clinicalEncoutersExcLab,
 		    new LastEncounterFilter()), new HashMap<String, Object>());
 		
