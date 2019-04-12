@@ -17,6 +17,7 @@ import org.openmrs.Concept;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.*;
+import org.openmrs.module.reporting.common.DurationUnit;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -59,6 +60,8 @@ public class SetupHMISIndicatorMonthlyReport {
 	private String hundrepercentInsuredInsuranceIDs;
 
 	private String indigentsInsuranceIDs;
+
+	private  int ICDConceptClassId;
 
 
 	private  List<String> onOrAfterOnOrBefore =new ArrayList<String>();
@@ -443,6 +446,50 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 		// E) New cases of priority health problems in General OPD/Nouveaux cas de maladies (Causes majeures de Consultation)
 
 
+		AgeCohortDefinition patientBelowFiveYear = patientWithAgeBelow(5);
+
+		GenderCohortDefinition males = new GenderCohortDefinition();
+		males.setName("male Patients");
+		males.setMaleIncluded(true);
+
+
+
+
+		SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate and o.concept_id=3065");
+		foodPoisoningPatient.setName("foodPoisoningPatient");
+		foodPoisoningPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		foodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+
+
+		/*SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+		//SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
+		foodPoisoningPatient.setName("foodPoisoningPatient");
+		foodPoisoningPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		foodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+*/
+
+
+		CompositionCohortDefinition belowFoodPoisoningPatient = new CompositionCohortDefinition();
+		belowFoodPoisoningPatient.setName("belowFoodPoisoningPatient");
+		belowFoodPoisoningPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		belowFoodPoisoningPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		belowFoodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		belowFoodPoisoningPatient.getSearches().put("1", new Mapped<CohortDefinition>(foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		belowFoodPoisoningPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		belowFoodPoisoningPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		belowFoodPoisoningPatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator belowFoodPoisoningPatientIndicator = Indicators.newCohortIndicator("belowFoodPoisoningPatientIndicator",
+				foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.4.M.5", "Food poisoning/ Intoxication alimentaire Male Under 5 years", new Mapped(belowFoodPoisoningPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+
+
+
 
 	}
 
@@ -468,5 +515,45 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 		indigentsInsuranceIDs=Context.getAdministrationService().getGlobalProperty("reports.indigentsInsuranceIDs");
 
+		ICDConceptClassId=Integer.parseInt(Context.getAdministrationService().getGlobalProperty("reports.ICDConceptClassId"));
+
+	}
+
+	private AgeCohortDefinition patientWithAgeBelow(int age) {
+		AgeCohortDefinition patientsWithAgebilow = new AgeCohortDefinition();
+		patientsWithAgebilow.setName("patientsWithAgebilow");
+		patientsWithAgebilow.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		patientsWithAgebilow.setMaxAge(age - 1);
+		patientsWithAgebilow.setMaxAgeUnit(DurationUnit.YEARS);
+		return patientsWithAgebilow;
+	}
+
+	private AgeCohortDefinition patientWithAgeBelowAndIncuded(int age) {
+		AgeCohortDefinition patientsWithAgebilow = new AgeCohortDefinition();
+		patientsWithAgebilow.setName("patientsWithAgebilow");
+		patientsWithAgebilow.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		patientsWithAgebilow.setMaxAge(age);
+		patientsWithAgebilow.setMaxAgeUnit(DurationUnit.YEARS);
+		return patientsWithAgebilow;
+	}
+
+	private AgeCohortDefinition patientWithAgeBetween(int age1, int age2) {
+		AgeCohortDefinition patientsWithAge = new AgeCohortDefinition();
+		patientsWithAge.setName("patientsWithAge");
+		patientsWithAge.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		patientsWithAge.setMinAge(age1);
+		patientsWithAge.setMaxAge(age2);
+		patientsWithAge.setMinAgeUnit(DurationUnit.YEARS);
+		patientsWithAge.setMaxAgeUnit(DurationUnit.YEARS);
+		return patientsWithAge;
+	}
+
+	private AgeCohortDefinition patientWithAgeAbove(int age) {
+		AgeCohortDefinition patientsWithAge = new AgeCohortDefinition();
+		patientsWithAge.setName("patientsWithAge");
+		patientsWithAge.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		patientsWithAge.setMinAge(age);
+		patientsWithAge.setMinAgeUnit(DurationUnit.YEARS);
+		return patientsWithAge;
 	}
 }
