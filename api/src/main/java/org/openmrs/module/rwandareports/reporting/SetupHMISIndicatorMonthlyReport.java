@@ -454,41 +454,423 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 
 
+		SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%A05%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 
-		SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate and o.concept_id=3065");
-		foodPoisoningPatient.setName("foodPoisoningPatient");
-		foodPoisoningPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
-		foodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-
-
-
-		/*SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+	//SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 		//SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
 		foodPoisoningPatient.setName("foodPoisoningPatient");
 		foodPoisoningPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
 		foodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-*/
 
 
-		CompositionCohortDefinition belowFoodPoisoningPatient = new CompositionCohortDefinition();
-		belowFoodPoisoningPatient.setName("belowFoodPoisoningPatient");
-		belowFoodPoisoningPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
-		belowFoodPoisoningPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
-		belowFoodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-		belowFoodPoisoningPatient.getSearches().put("1", new Mapped<CohortDefinition>(foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		belowFoodPoisoningPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-		belowFoodPoisoningPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
-		belowFoodPoisoningPatient.setCompositionString("1 and 2 and 3");
+		CompositionCohortDefinition maleBelow5FoodPoisoningPatient = new CompositionCohortDefinition();
+		maleBelow5FoodPoisoningPatient.setName("maleBelow5FoodPoisoningPatient");
+		maleBelow5FoodPoisoningPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBelow5FoodPoisoningPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBelow5FoodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBelow5FoodPoisoningPatient.getSearches().put("1", new Mapped<CohortDefinition>(foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBelow5FoodPoisoningPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBelow5FoodPoisoningPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBelow5FoodPoisoningPatient.setCompositionString("1 and 2 and 3");
 
-		CohortIndicator belowFoodPoisoningPatientIndicator = Indicators.newCohortIndicator("belowFoodPoisoningPatientIndicator",
-				foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		dsd.addColumn("II.E.4.M.5", "Food poisoning/ Intoxication alimentaire Male Under 5 years", new Mapped(belowFoodPoisoningPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-
-
+		CohortIndicator maleBelow5FoodPoisoningPatientIndicator = Indicators.newCohortIndicator("maleBelow5FoodPoisoningPatientIndicator",
+				maleBelow5FoodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.4.M.5", "Food poisoning/ Intoxication alimentaire Male Under 5 years", new Mapped(maleBelow5FoodPoisoningPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 
+		CompositionCohortDefinition femaleBelow5FoodPoisoningPatient = new CompositionCohortDefinition();
+		femaleBelow5FoodPoisoningPatient.setName("FemaleBelow5FoodPoisoningPatient");
+		femaleBelow5FoodPoisoningPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBelow5FoodPoisoningPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBelow5FoodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBelow5FoodPoisoningPatient.getSearches().put("1", new Mapped<CohortDefinition>(foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBelow5FoodPoisoningPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBelow5FoodPoisoningPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBelow5FoodPoisoningPatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBelow5FoodPoisoningPatientIndicator = Indicators.newCohortIndicator("femaleBelow5FoodPoisoningPatientIndicator",
+				femaleBelow5FoodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.4.F.5", "Food poisoning/ Intoxication alimentaire Female Under 5 years", new Mapped(femaleBelow5FoodPoisoningPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+		AgeCohortDefinition patientBetweenFiveAndNineteenYears = patientWithAgeBetween(5,19);
 
 
+		CompositionCohortDefinition betweenFiveAndNineteenYearsFoodPoisoningMalePatients = new CompositionCohortDefinition();
+		betweenFiveAndNineteenYearsFoodPoisoningMalePatients.setName("betweenFiveAndNineteenYearsFoodPoisoningMalePatients");
+		betweenFiveAndNineteenYearsFoodPoisoningMalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		betweenFiveAndNineteenYearsFoodPoisoningMalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		betweenFiveAndNineteenYearsFoodPoisoningMalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		betweenFiveAndNineteenYearsFoodPoisoningMalePatients.getSearches().put("1", new Mapped<CohortDefinition>(foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		betweenFiveAndNineteenYearsFoodPoisoningMalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenFiveAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		betweenFiveAndNineteenYearsFoodPoisoningMalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		betweenFiveAndNineteenYearsFoodPoisoningMalePatients.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator betweenFiveAndNineteenYearsFoodPoisoningMalePatientsIndicator = Indicators.newCohortIndicator("betweenFiveAndNineteenYearsFoodPoisoningMalePatientsIndicator",
+				betweenFiveAndNineteenYearsFoodPoisoningMalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.4.M.5_19", "Food poisoning/ Intoxication alimentaire Male Between 5 and 19 years", new Mapped(betweenFiveAndNineteenYearsFoodPoisoningMalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+		CompositionCohortDefinition betweenFiveAndNineteenYearsFoodPoisoningFemalePatients = new CompositionCohortDefinition();
+		betweenFiveAndNineteenYearsFoodPoisoningFemalePatients.setName("betweenFiveAndNineteenYearsFoodPoisoningFemalePatients");
+		betweenFiveAndNineteenYearsFoodPoisoningFemalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		betweenFiveAndNineteenYearsFoodPoisoningFemalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		betweenFiveAndNineteenYearsFoodPoisoningFemalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		betweenFiveAndNineteenYearsFoodPoisoningFemalePatients.getSearches().put("1", new Mapped<CohortDefinition>(foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		betweenFiveAndNineteenYearsFoodPoisoningFemalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenFiveAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		betweenFiveAndNineteenYearsFoodPoisoningFemalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		betweenFiveAndNineteenYearsFoodPoisoningFemalePatients.setCompositionString("1 and 2 and (not 3)");
+
+
+
+		CohortIndicator betweenFiveAndNineteenYearsFoodPoisoningFemalePatientsIndicator = Indicators.newCohortIndicator("betweenFiveAndNineteenYearsFoodPoisoningFemalePatientsIndicator",
+				betweenFiveAndNineteenYearsFoodPoisoningFemalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.4.F.5_19", "Food poisoning/ Intoxication alimentaire Female Between  5 and 19 years", new Mapped(betweenFiveAndNineteenYearsFoodPoisoningFemalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+		AgeCohortDefinition patientAbove20Years = patientWithAgeAbove(20);
+
+		CompositionCohortDefinition above20YearsFoodPoisoningMalePatients = new CompositionCohortDefinition();
+		above20YearsFoodPoisoningMalePatients.setName("above20YearsFoodPoisoningMalePatients");
+		above20YearsFoodPoisoningMalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		above20YearsFoodPoisoningMalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		above20YearsFoodPoisoningMalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		above20YearsFoodPoisoningMalePatients.getSearches().put("1", new Mapped<CohortDefinition>(foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		above20YearsFoodPoisoningMalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove20Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		above20YearsFoodPoisoningMalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		above20YearsFoodPoisoningMalePatients.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator above20YearsFoodPoisoningMalePatientsIndicator = Indicators.newCohortIndicator("above20YearsFoodPoisoningMalePatientsIndicator",
+				above20YearsFoodPoisoningMalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.4.M.20", "Food poisoning/ Intoxication alimentaire Male above 20 years", new Mapped(above20YearsFoodPoisoningMalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+		CompositionCohortDefinition above20YearsFoodPoisoningFemalePatients = new CompositionCohortDefinition();
+		above20YearsFoodPoisoningFemalePatients.setName("above20YearsFoodPoisoningFemalePatients");
+		above20YearsFoodPoisoningFemalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		above20YearsFoodPoisoningFemalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		above20YearsFoodPoisoningFemalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		above20YearsFoodPoisoningFemalePatients.getSearches().put("1", new Mapped<CohortDefinition>(foodPoisoningPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		above20YearsFoodPoisoningFemalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove20Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		above20YearsFoodPoisoningFemalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		above20YearsFoodPoisoningFemalePatients.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator above20YearsFoodPoisoningFemalePatientsIndicator = Indicators.newCohortIndicator("above20YearsFoodPoisoningFemalePatientsIndicator",
+				above20YearsFoodPoisoningFemalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.4.F.20", "Food poisoning/ Intoxication alimentaire Female above 20 years", new Mapped(above20YearsFoodPoisoningFemalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+//===================================================================================
+
+
+
+		SqlCohortDefinition earInfectionsPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%H65%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+
+		//SqlCohortDefinition earInfectionsPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+		//SqlCohortDefinition earInfectionsPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
+		earInfectionsPatient.setName("earInfectionsPatient");
+		earInfectionsPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		earInfectionsPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+
+		CompositionCohortDefinition maleBelow5earInfectionsPatient = new CompositionCohortDefinition();
+		maleBelow5earInfectionsPatient.setName("maleBelow5earInfectionsPatient");
+		maleBelow5earInfectionsPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBelow5earInfectionsPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBelow5earInfectionsPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBelow5earInfectionsPatient.getSearches().put("1", new Mapped<CohortDefinition>(earInfectionsPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBelow5earInfectionsPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBelow5earInfectionsPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBelow5earInfectionsPatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleBelow5earInfectionsPatientIndicator = Indicators.newCohortIndicator("maleBelow5earInfectionsPatientIndicator",
+				maleBelow5earInfectionsPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.5.M.5", "Ear infections/ Infections de l’oreille Male Under 5 years", new Mapped(maleBelow5earInfectionsPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		CompositionCohortDefinition femaleBelow5earInfectionsPatient = new CompositionCohortDefinition();
+		femaleBelow5earInfectionsPatient.setName("FemaleBelow5earInfectionsPatient");
+		femaleBelow5earInfectionsPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBelow5earInfectionsPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBelow5earInfectionsPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBelow5earInfectionsPatient.getSearches().put("1", new Mapped<CohortDefinition>(earInfectionsPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBelow5earInfectionsPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBelow5earInfectionsPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBelow5earInfectionsPatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBelow5earInfectionsPatientIndicator = Indicators.newCohortIndicator("femaleBelow5earInfectionsPatientIndicator",
+				femaleBelow5earInfectionsPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.5.F.5", "Ear infections/ Infections de l’oreille Female Under 5 years", new Mapped(femaleBelow5earInfectionsPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+		CompositionCohortDefinition betweenFiveAndNineteenYearsearInfectionsMalePatients = new CompositionCohortDefinition();
+		betweenFiveAndNineteenYearsearInfectionsMalePatients.setName("betweenFiveAndNineteenYearsearInfectionsMalePatients");
+		betweenFiveAndNineteenYearsearInfectionsMalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		betweenFiveAndNineteenYearsearInfectionsMalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		betweenFiveAndNineteenYearsearInfectionsMalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		betweenFiveAndNineteenYearsearInfectionsMalePatients.getSearches().put("1", new Mapped<CohortDefinition>(earInfectionsPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		betweenFiveAndNineteenYearsearInfectionsMalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenFiveAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		betweenFiveAndNineteenYearsearInfectionsMalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		betweenFiveAndNineteenYearsearInfectionsMalePatients.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator betweenFiveAndNineteenYearsearInfectionsMalePatientsIndicator = Indicators.newCohortIndicator("betweenFiveAndNineteenYearsearInfectionsMalePatientsIndicator",
+				betweenFiveAndNineteenYearsearInfectionsMalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.5.M.5_19", "Ear infections/ Infections de l’oreille Male Between 5 and 19 years", new Mapped(betweenFiveAndNineteenYearsearInfectionsMalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+		CompositionCohortDefinition betweenFiveAndNineteenYearsearInfectionsFemalePatients = new CompositionCohortDefinition();
+		betweenFiveAndNineteenYearsearInfectionsFemalePatients.setName("betweenFiveAndNineteenYearsearInfectionsFemalePatients");
+		betweenFiveAndNineteenYearsearInfectionsFemalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		betweenFiveAndNineteenYearsearInfectionsFemalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		betweenFiveAndNineteenYearsearInfectionsFemalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		betweenFiveAndNineteenYearsearInfectionsFemalePatients.getSearches().put("1", new Mapped<CohortDefinition>(earInfectionsPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		betweenFiveAndNineteenYearsearInfectionsFemalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenFiveAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		betweenFiveAndNineteenYearsearInfectionsFemalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		betweenFiveAndNineteenYearsearInfectionsFemalePatients.setCompositionString("1 and 2 and (not 3)");
+
+
+
+		CohortIndicator betweenFiveAndNineteenYearsearInfectionsFemalePatientsIndicator = Indicators.newCohortIndicator("betweenFiveAndNineteenYearsearInfectionsFemalePatientsIndicator",
+				betweenFiveAndNineteenYearsearInfectionsFemalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.5.F.5_19", "Ear infections/ Infections de l’oreille Female Between  5 and 19 years", new Mapped(betweenFiveAndNineteenYearsearInfectionsFemalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		CompositionCohortDefinition above20YearsearInfectionsMalePatients = new CompositionCohortDefinition();
+		above20YearsearInfectionsMalePatients.setName("above20YearsearInfectionsMalePatients");
+		above20YearsearInfectionsMalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		above20YearsearInfectionsMalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		above20YearsearInfectionsMalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		above20YearsearInfectionsMalePatients.getSearches().put("1", new Mapped<CohortDefinition>(earInfectionsPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		above20YearsearInfectionsMalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove20Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		above20YearsearInfectionsMalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		above20YearsearInfectionsMalePatients.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator above20YearsearInfectionsMalePatientsIndicator = Indicators.newCohortIndicator("above20YearsearInfectionsMalePatientsIndicator",
+				above20YearsearInfectionsMalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.5.M.20", "Ear infections/ Infections de l’oreille Male above 20 years", new Mapped(above20YearsearInfectionsMalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+		CompositionCohortDefinition above20YearsearInfectionsFemalePatients = new CompositionCohortDefinition();
+		above20YearsearInfectionsFemalePatients.setName("above20YearsearInfectionsFemalePatients");
+		above20YearsearInfectionsFemalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		above20YearsearInfectionsFemalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		above20YearsearInfectionsFemalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		above20YearsearInfectionsFemalePatients.getSearches().put("1", new Mapped<CohortDefinition>(earInfectionsPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		above20YearsearInfectionsFemalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove20Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		above20YearsearInfectionsFemalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		above20YearsearInfectionsFemalePatients.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator above20YearsearInfectionsFemalePatientsIndicator = Indicators.newCohortIndicator("above20YearsearInfectionsFemalePatientsIndicator",
+				above20YearsearInfectionsFemalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.5.F.20", "Ear infections/ Infections de l’oreille Female above 20 years", new Mapped(above20YearsearInfectionsFemalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+//=========================================================================================================
+
+
+
+
+		SqlCohortDefinition schistosomiasisPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%B65%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+
+		//SqlCohortDefinition schistosomiasisPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+		//SqlCohortDefinition schistosomiasisPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
+		schistosomiasisPatient.setName("schistosomiasisPatient");
+		schistosomiasisPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		schistosomiasisPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+
+		CompositionCohortDefinition maleBelow5schistosomiasisPatient = new CompositionCohortDefinition();
+		maleBelow5schistosomiasisPatient.setName("maleBelow5schistosomiasisPatient");
+		maleBelow5schistosomiasisPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBelow5schistosomiasisPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBelow5schistosomiasisPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBelow5schistosomiasisPatient.getSearches().put("1", new Mapped<CohortDefinition>(schistosomiasisPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBelow5schistosomiasisPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBelow5schistosomiasisPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBelow5schistosomiasisPatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleBelow5schistosomiasisPatientIndicator = Indicators.newCohortIndicator("maleBelow5schistosomiasisPatientIndicator",
+				maleBelow5schistosomiasisPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.6.M.5", "Schistosomiasis/ Schistosomiasis Male Under 5 years", new Mapped(maleBelow5schistosomiasisPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		CompositionCohortDefinition femaleBelow5schistosomiasisPatient = new CompositionCohortDefinition();
+		femaleBelow5schistosomiasisPatient.setName("FemaleBelow5schistosomiasisPatient");
+		femaleBelow5schistosomiasisPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBelow5schistosomiasisPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBelow5schistosomiasisPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBelow5schistosomiasisPatient.getSearches().put("1", new Mapped<CohortDefinition>(schistosomiasisPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBelow5schistosomiasisPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBelow5schistosomiasisPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBelow5schistosomiasisPatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBelow5schistosomiasisPatientIndicator = Indicators.newCohortIndicator("femaleBelow5schistosomiasisPatientIndicator",
+				femaleBelow5schistosomiasisPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.6.F.5", "Schistosomiasis/ Schistosomiasis Female Under 5 years", new Mapped(femaleBelow5schistosomiasisPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+		CompositionCohortDefinition betweenFiveAndNineteenYearsschistosomiasisMalePatients = new CompositionCohortDefinition();
+		betweenFiveAndNineteenYearsschistosomiasisMalePatients.setName("betweenFiveAndNineteenYearsschistosomiasisMalePatients");
+		betweenFiveAndNineteenYearsschistosomiasisMalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		betweenFiveAndNineteenYearsschistosomiasisMalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		betweenFiveAndNineteenYearsschistosomiasisMalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		betweenFiveAndNineteenYearsschistosomiasisMalePatients.getSearches().put("1", new Mapped<CohortDefinition>(schistosomiasisPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		betweenFiveAndNineteenYearsschistosomiasisMalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenFiveAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		betweenFiveAndNineteenYearsschistosomiasisMalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		betweenFiveAndNineteenYearsschistosomiasisMalePatients.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator betweenFiveAndNineteenYearsschistosomiasisMalePatientsIndicator = Indicators.newCohortIndicator("betweenFiveAndNineteenYearsschistosomiasisMalePatientsIndicator",
+				betweenFiveAndNineteenYearsschistosomiasisMalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.6.M.5_19", "Schistosomiasis/ Schistosomiasis Male Between 5 and 19 years", new Mapped(betweenFiveAndNineteenYearsschistosomiasisMalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+		CompositionCohortDefinition betweenFiveAndNineteenYearsschistosomiasisFemalePatients = new CompositionCohortDefinition();
+		betweenFiveAndNineteenYearsschistosomiasisFemalePatients.setName("betweenFiveAndNineteenYearsschistosomiasisFemalePatients");
+		betweenFiveAndNineteenYearsschistosomiasisFemalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		betweenFiveAndNineteenYearsschistosomiasisFemalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		betweenFiveAndNineteenYearsschistosomiasisFemalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		betweenFiveAndNineteenYearsschistosomiasisFemalePatients.getSearches().put("1", new Mapped<CohortDefinition>(schistosomiasisPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		betweenFiveAndNineteenYearsschistosomiasisFemalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenFiveAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		betweenFiveAndNineteenYearsschistosomiasisFemalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		betweenFiveAndNineteenYearsschistosomiasisFemalePatients.setCompositionString("1 and 2 and (not 3)");
+
+
+
+		CohortIndicator betweenFiveAndNineteenYearsschistosomiasisFemalePatientsIndicator = Indicators.newCohortIndicator("betweenFiveAndNineteenYearsschistosomiasisFemalePatientsIndicator",
+				betweenFiveAndNineteenYearsschistosomiasisFemalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.6.F.5_19", "Schistosomiasis/ Schistosomiasis Female Between  5 and 19 years", new Mapped(betweenFiveAndNineteenYearsschistosomiasisFemalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		CompositionCohortDefinition above20YearsschistosomiasisMalePatients = new CompositionCohortDefinition();
+		above20YearsschistosomiasisMalePatients.setName("above20YearsschistosomiasisMalePatients");
+		above20YearsschistosomiasisMalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		above20YearsschistosomiasisMalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		above20YearsschistosomiasisMalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		above20YearsschistosomiasisMalePatients.getSearches().put("1", new Mapped<CohortDefinition>(schistosomiasisPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		above20YearsschistosomiasisMalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove20Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		above20YearsschistosomiasisMalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		above20YearsschistosomiasisMalePatients.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator above20YearsschistosomiasisMalePatientsIndicator = Indicators.newCohortIndicator("above20YearsschistosomiasisMalePatientsIndicator",
+				above20YearsschistosomiasisMalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.6.M.20", "Schistosomiasis/ Schistosomiasis Male above 20 years", new Mapped(above20YearsschistosomiasisMalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+		CompositionCohortDefinition above20YearsschistosomiasisFemalePatients = new CompositionCohortDefinition();
+		above20YearsschistosomiasisFemalePatients.setName("above20YearsschistosomiasisFemalePatients");
+		above20YearsschistosomiasisFemalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		above20YearsschistosomiasisFemalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		above20YearsschistosomiasisFemalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		above20YearsschistosomiasisFemalePatients.getSearches().put("1", new Mapped<CohortDefinition>(schistosomiasisPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		above20YearsschistosomiasisFemalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove20Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		above20YearsschistosomiasisFemalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		above20YearsschistosomiasisFemalePatients.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator above20YearsschistosomiasisFemalePatientsIndicator = Indicators.newCohortIndicator("above20YearsschistosomiasisFemalePatientsIndicator",
+				above20YearsschistosomiasisFemalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.6.F.20", "Schistosomiasis/ Schistosomiasis Female above 20 years", new Mapped(above20YearsschistosomiasisFemalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+		//==============================================================================
+
+
+		SqlCohortDefinition ascarisLumbricoidesPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%B77%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+
+		//SqlCohortDefinition ascarisLumbricoidesPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+		//SqlCohortDefinition ascarisLumbricoidesPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
+		ascarisLumbricoidesPatient.setName("ascarisLumbricoidesPatient");
+		ascarisLumbricoidesPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		ascarisLumbricoidesPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+
+		CompositionCohortDefinition maleBelow5ascarisLumbricoidesPatient = new CompositionCohortDefinition();
+		maleBelow5ascarisLumbricoidesPatient.setName("maleBelow5ascarisLumbricoidesPatient");
+		maleBelow5ascarisLumbricoidesPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBelow5ascarisLumbricoidesPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBelow5ascarisLumbricoidesPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBelow5ascarisLumbricoidesPatient.getSearches().put("1", new Mapped<CohortDefinition>(ascarisLumbricoidesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBelow5ascarisLumbricoidesPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBelow5ascarisLumbricoidesPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBelow5ascarisLumbricoidesPatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleBelow5ascarisLumbricoidesPatientIndicator = Indicators.newCohortIndicator("maleBelow5ascarisLumbricoidesPatientIndicator",
+				maleBelow5ascarisLumbricoidesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.7.M.5", "Ascaris lumbricoides/ Ascaris lumbricoides Male Under 5 years", new Mapped(maleBelow5ascarisLumbricoidesPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		CompositionCohortDefinition femaleBelow5ascarisLumbricoidesPatient = new CompositionCohortDefinition();
+		femaleBelow5ascarisLumbricoidesPatient.setName("FemaleBelow5ascarisLumbricoidesPatient");
+		femaleBelow5ascarisLumbricoidesPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBelow5ascarisLumbricoidesPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBelow5ascarisLumbricoidesPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBelow5ascarisLumbricoidesPatient.getSearches().put("1", new Mapped<CohortDefinition>(ascarisLumbricoidesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBelow5ascarisLumbricoidesPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBelowFiveYear, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBelow5ascarisLumbricoidesPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBelow5ascarisLumbricoidesPatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBelow5ascarisLumbricoidesPatientIndicator = Indicators.newCohortIndicator("femaleBelow5ascarisLumbricoidesPatientIndicator",
+				femaleBelow5ascarisLumbricoidesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.7.F.5", "Ascaris lumbricoides/ Ascaris lumbricoides Female Under 5 years", new Mapped(femaleBelow5ascarisLumbricoidesPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+		CompositionCohortDefinition betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients = new CompositionCohortDefinition();
+		betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients.setName("betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients");
+		betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients.getSearches().put("1", new Mapped<CohortDefinition>(ascarisLumbricoidesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenFiveAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator betweenFiveAndNineteenYearsascarisLumbricoidesMalePatientsIndicator = Indicators.newCohortIndicator("betweenFiveAndNineteenYearsascarisLumbricoidesMalePatientsIndicator",
+				betweenFiveAndNineteenYearsascarisLumbricoidesMalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.7.M.5_19", "Ascaris lumbricoides/ Ascaris lumbricoides Male Between 5 and 19 years", new Mapped(betweenFiveAndNineteenYearsascarisLumbricoidesMalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+		CompositionCohortDefinition betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients = new CompositionCohortDefinition();
+		betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients.setName("betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients");
+		betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients.getSearches().put("1", new Mapped<CohortDefinition>(ascarisLumbricoidesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenFiveAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients.setCompositionString("1 and 2 and (not 3)");
+
+
+
+		CohortIndicator betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatientsIndicator = Indicators.newCohortIndicator("betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatientsIndicator",
+				betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.7.F.5_19", "Ascaris lumbricoides/ Ascaris lumbricoides Female Between  5 and 19 years", new Mapped(betweenFiveAndNineteenYearsascarisLumbricoidesFemalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		CompositionCohortDefinition above20YearsascarisLumbricoidesMalePatients = new CompositionCohortDefinition();
+		above20YearsascarisLumbricoidesMalePatients.setName("above20YearsascarisLumbricoidesMalePatients");
+		above20YearsascarisLumbricoidesMalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		above20YearsascarisLumbricoidesMalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		above20YearsascarisLumbricoidesMalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		above20YearsascarisLumbricoidesMalePatients.getSearches().put("1", new Mapped<CohortDefinition>(ascarisLumbricoidesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		above20YearsascarisLumbricoidesMalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove20Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		above20YearsascarisLumbricoidesMalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		above20YearsascarisLumbricoidesMalePatients.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator above20YearsascarisLumbricoidesMalePatientsIndicator = Indicators.newCohortIndicator("above20YearsascarisLumbricoidesMalePatientsIndicator",
+				above20YearsascarisLumbricoidesMalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.7.M.20", "Ascaris lumbricoides/ Ascaris lumbricoides Male above 20 years", new Mapped(above20YearsascarisLumbricoidesMalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+		CompositionCohortDefinition above20YearsascarisLumbricoidesFemalePatients = new CompositionCohortDefinition();
+		above20YearsascarisLumbricoidesFemalePatients.setName("above20YearsascarisLumbricoidesFemalePatients");
+		above20YearsascarisLumbricoidesFemalePatients.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		above20YearsascarisLumbricoidesFemalePatients.addParameter(new Parameter("startDate", "startDate", Date.class));
+		above20YearsascarisLumbricoidesFemalePatients.addParameter(new Parameter("endDate", "endDate", Date.class));
+		above20YearsascarisLumbricoidesFemalePatients.getSearches().put("1", new Mapped<CohortDefinition>(ascarisLumbricoidesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		above20YearsascarisLumbricoidesFemalePatients.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove20Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		above20YearsascarisLumbricoidesFemalePatients.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		above20YearsascarisLumbricoidesFemalePatients.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator above20YearsascarisLumbricoidesFemalePatientsIndicator = Indicators.newCohortIndicator("above20YearsascarisLumbricoidesFemalePatientsIndicator",
+				above20YearsascarisLumbricoidesFemalePatients, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("II.E.7.F.20", "Ascaris lumbricoides/ Ascaris lumbricoides Female above 20 years", new Mapped(above20YearsascarisLumbricoidesFemalePatientsIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 
 	}
