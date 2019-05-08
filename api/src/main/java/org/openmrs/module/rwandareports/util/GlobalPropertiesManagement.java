@@ -859,6 +859,9 @@ public class GlobalPropertiesManagement {
 
 	public final static String MENTAL_HEALTH_VISIT="reports.mentalHealthEncounterType";
 
+	public final static String OPD_VISIT="reports.OPDEncounterType";
+
+
 	public final static String MENTAL_HEALTH_NEXT_VISIT_FORMS ="reports.mentalHealthNextVisitForms";
 
 	public final static String MENTAL_HEALTH_MISSED_VISIT_FORM="reports.MHMissedVisitForm";

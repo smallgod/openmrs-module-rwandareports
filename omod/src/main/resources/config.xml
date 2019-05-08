@@ -4189,4 +4189,13 @@
 		<description>Concept Class ID of ICD (International classification of diseases)</description>
 	</globalProperty>
 
+
+	<globalProperty>
+		<property>reports.OPDEncounterType</property>
+		<defaultValue>Diagnosis</defaultValue>
+		<description>OPD encounter type id or Name</description>
+	</globalProperty>
+
+
+
 </module>

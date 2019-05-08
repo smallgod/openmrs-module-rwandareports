@@ -66,6 +66,7 @@ public class SetupHMISIndicatorMonthlyReport {
 
 	private  List<String> onOrAfterOnOrBefore =new ArrayList<String>();
 
+	Properties properties = new Properties();
 
 	public void setup() throws Exception {
 		
@@ -74,92 +75,424 @@ public class SetupHMISIndicatorMonthlyReport {
 
 		//Monthly report set-up
 
-		
-		Properties properties = new Properties();
+
+
 		properties.setProperty("hierarchyFields", "countyDistrict:District");
-
-		
-		// Monthly Report Definition: Start
-		
-		ReportDefinition monthlyRd = new ReportDefinition();
-		monthlyRd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		monthlyRd.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
-		monthlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
-		
-		monthlyRd.setName("District Hospital Monthly HMIS Report");
-		
-		monthlyRd.addDataSetDefinition(createMonthlyLocationDataSet(),
-		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
-		
-		// Monthly Report Definition: End
-
 
 
 		EncounterCohortDefinition patientWithOPDForm=Cohorts.createEncounterBasedOnForms("patientWithOPDForm",onOrAfterOnOrBefore,OPDForms);
 
-
-
+// II. Outpatient Consultations/ Consultations Externes
 		
-		monthlyRd.setBaseCohortDefinition(patientWithOPDForm,
+		ReportDefinition monthlyRdII = createReportDefinition("District Hospital Monthly HMIS Report - II. Outpatient Consultations",properties);
+
+		monthlyRdII.setBaseCohortDefinition(patientWithOPDForm,
 		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
-		
 
-		Helper.saveReportDefinition(monthlyRd);
-		
+		monthlyRdII.addDataSetDefinition(createEncounterCohortMonthlyLocationDataSetII(),
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
 
-		
-		ReportDesign monthlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRd,
-				"District_Hospital_Monthly_HMIS_Report.xls", "District Hospital Monthly HMIS Report (Excel)", null);
-		Properties monthlyProps = new Properties();
-		monthlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set");
-		monthlyProps.put("sortWeight","5000");
-		monthlyDesign.setProperties(monthlyProps);
-		Helper.saveReportDesign(monthlyDesign);
-		
+		Helper.saveReportDefinition(monthlyRdII);
+
+		ReportDesign monthlyDesignII = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRdII,
+				"District_Hospital_Monthly_HMIS_Report_II.xls", "District Hospital Monthly HMIS Report_II (Excel)", null);
+		Properties monthlyPropsII = new Properties();
+		monthlyPropsII.put("repeatingSections", "sheet:1,dataset:Encounter Monthly Data Set Two");
+		monthlyPropsII.put("sortWeight","5000");
+		monthlyDesignII.setProperties(monthlyPropsII);
+		Helper.saveReportDesign(monthlyDesignII);
+
+// III. Mental Health/ Santé mentale
+
+
+		ReportDefinition monthlyRdIII = createReportDefinition("District Hospital Monthly HMIS Report - III. Mental Health",properties);
+
+		monthlyRdIII.setBaseCohortDefinition(patientWithOPDForm,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		monthlyRdIII.addDataSetDefinition(createCohortMonthlyLocationDataSetIII(),
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+
+		Helper.saveReportDefinition(monthlyRdIII);
+
+		ReportDesign monthlyDesignIII = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRdIII,
+				"District_Hospital_Monthly_HMIS_Report_III.xls", "District Hospital Monthly HMIS Report_III (Excel)", null);
+		Properties monthlyPropsIII = new Properties();
+		monthlyPropsIII.put("repeatingSections", "sheet:1,dataset:Monthly Cohort Data Set Three");
+		monthlyPropsIII.put("sortWeight","5000");
+		monthlyDesignIII.setProperties(monthlyPropsIII);
+		Helper.saveReportDesign(monthlyDesignIII);
+
+
+//IV. Chronic Diseases
+		ReportDefinition monthlyRdIV = createReportDefinition("District Hospital Monthly HMIS Report - IV. Chronic Diseases",properties);
+
+		monthlyRdIV.setBaseCohortDefinition(patientWithOPDForm,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		monthlyRdIV.addDataSetDefinition(createCohortMonthlyLocationDataSetIV(),
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+
+		Helper.saveReportDefinition(monthlyRdIV);
+
+		ReportDesign monthlyDesignIV = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRdIV,
+				"District_Hospital_Monthly_HMIS_Report_IV.xls", "District Hospital Monthly HMIS Report_IV (Excel)", null);
+		Properties monthlyPropsIV = new Properties();
+		monthlyPropsIV.put("repeatingSections", "sheet:1,dataset:Monthly Cohort Data Set Four");
+		monthlyPropsIV.put("sortWeight","5000");
+		monthlyDesignIV.setProperties(monthlyPropsIV);
+		Helper.saveReportDesign(monthlyDesignIV);
+
+// V. Other Cardiovascular and Kidney diseases
+
+
+		ReportDefinition monthlyRdV = createReportDefinition("District Hospital Monthly HMIS Report - V. Other Cardiovascular and Kidney diseases",properties);
+
+		monthlyRdV.setBaseCohortDefinition(patientWithOPDForm,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		monthlyRdV.addDataSetDefinition(createCohortMonthlyLocationDataSetV(),
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+
+		Helper.saveReportDefinition(monthlyRdV);
+
+		ReportDesign monthlyDesignV = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRdV,
+				"District_Hospital_Monthly_HMIS_Report_V.xls", "District Hospital Monthly HMIS Report_V (Excel)", null);
+		Properties monthlyPropsV = new Properties();
+		monthlyPropsV.put("repeatingSections", "sheet:1,dataset:Monthly Cohort Data Set Five");
+		monthlyPropsV.put("sortWeight","5000");
+		monthlyDesignV.setProperties(monthlyPropsV);
+		Helper.saveReportDesign(monthlyDesignV);
+
+
+// VI. Injuries
+
+		ReportDefinition monthlyRdVI = createReportDefinition("District Hospital Monthly HMIS Report - VI. Injuries",properties);
+
+		monthlyRdVI.setBaseCohortDefinition(patientWithOPDForm,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		monthlyRdVI.addDataSetDefinition(createCohortMonthlyLocationDataSetVI(),
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+
+		Helper.saveReportDefinition(monthlyRdVI);
+
+		ReportDesign monthlyDesignVI = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRdVI,
+				"District_Hospital_Monthly_HMIS_Report_VI.xls", "District Hospital Monthly HMIS Report_VI (Excel)", null);
+		Properties monthlyPropsVI = new Properties();
+		monthlyPropsVI.put("repeatingSections", "sheet:1,dataset:Monthly Cohort Data Set Six");
+		monthlyPropsVI.put("sortWeight","5000");
+		monthlyDesignVI.setProperties(monthlyPropsVI);
+		Helper.saveReportDesign(monthlyDesignVI);
+
+// VII. Palliative care
+
+		ReportDefinition monthlyRdVII = createReportDefinition("District Hospital Monthly HMIS Report - VII. Palliative care",properties);
+
+		monthlyRdVII.setBaseCohortDefinition(patientWithOPDForm,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		monthlyRdVII.addDataSetDefinition(createCohortMonthlyLocationDataSetVII(),
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+
+		Helper.saveReportDefinition(monthlyRdVII);
+
+		ReportDesign monthlyDesignVII = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRdVII,
+				"District_Hospital_Monthly_HMIS_Report_VII.xls", "District Hospital Monthly HMIS Report_VII (Excel)", null);
+		Properties monthlyPropsVII = new Properties();
+		monthlyPropsVII.put("repeatingSections", "sheet:1,dataset:Monthly Cohort Data Set Seven");
+		monthlyPropsVII.put("sortWeight","5000");
+		monthlyDesignVII.setProperties(monthlyPropsVII);
+		Helper.saveReportDesign(monthlyDesignVII);
+
+// VIII. Community Checkup
+
+		ReportDefinition monthlyRdVIII = createReportDefinition("District Hospital Monthly HMIS Report - VIII. Community Checkup",properties);
+
+		monthlyRdVIII.setBaseCohortDefinition(patientWithOPDForm,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		monthlyRdVIII.addDataSetDefinition(createCohortMonthlyLocationDataSetVIII(),
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+
+		Helper.saveReportDefinition(monthlyRdVIII);
+
+		ReportDesign monthlyDesignVIII = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRdVIII,
+				"District_Hospital_Monthly_HMIS_Report_VIII.xls", "District Hospital Monthly HMIS Report_VIII (Excel)", null);
+		Properties monthlyPropsVIII = new Properties();
+		monthlyPropsVIII.put("repeatingSections", "sheet:1,dataset:Monthly Cohort Data Set Eight");
+		monthlyPropsVIII.put("sortWeight","5000");
+		monthlyDesignVIII.setProperties(monthlyPropsVIII);
+		Helper.saveReportDesign(monthlyDesignVIII);
+
+// IX.  Cancer screening
+
+		ReportDefinition monthlyRdIX = createReportDefinition("District Hospital Monthly HMIS Report - IX. Cancer screening",properties);
+
+		monthlyRdIX.setBaseCohortDefinition(patientWithOPDForm,
+				ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
+
+		monthlyRdIX.addDataSetDefinition(createCohortMonthlyLocationDataSetIX(),
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
+
+		Helper.saveReportDefinition(monthlyRdIX);
+
+		ReportDesign monthlyDesignIX = Helper.createRowPerPatientXlsOverviewReportDesign(monthlyRdIX,
+				"District_Hospital_Monthly_HMIS_Report_IX.xls", "District Hospital Monthly HMIS Report_IX (Excel)", null);
+		Properties monthlyPropsIX = new Properties();
+		monthlyPropsIX.put("repeatingSections", "sheet:1,dataset:Monthly Cohort Data Set Nine");
+		monthlyPropsIX.put("sortWeight","5000");
+		monthlyDesignIX.setProperties(monthlyPropsIX);
+		Helper.saveReportDesign(monthlyDesignIX);
+
+
 	}
 	
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("District Hospital Monthly HMIS Report (Excel)".equals(rd.getName())) {
+			if ("District Hospital Monthly HMIS Report_II (Excel)".equals(rd.getName()) || "District Hospital Monthly HMIS Report_III (Excel)".equals(rd.getName())
+					|| "District Hospital Monthly HMIS Report_IV (Excel)".equals(rd.getName())
+					|| "District Hospital Monthly HMIS Report_V (Excel)".equals(rd.getName())
+					|| "District Hospital Monthly HMIS Report_VI (Excel)".equals(rd.getName())
+					|| "District Hospital Monthly HMIS Report_VII (Excel)".equals(rd.getName())
+					|| "District Hospital Monthly HMIS Report_VIII (Excel)".equals(rd.getName())
+					|| "District Hospital Monthly HMIS Report_IX (Excel)".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report");
-
+		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - II. Outpatient Consultations");
+		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - III. Mental Health");
+		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - IV. Chronic Diseases");
+		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - V. Other Cardiovascular and Kidney diseases");
+		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - VI. Injuries");
+		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - VII. Palliative care");
+		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - VIII. Community Checkup");
+		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - IX. Cancer screening");
 	}
+
+
+	public ReportDefinition createReportDefinition(String name, Properties properties){
+
+		ReportDefinition reportDefinition = new ReportDefinition();
+		reportDefinition.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
+		reportDefinition.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
+		reportDefinition.setName(name);
+		return reportDefinition;
+	}
+
+
 	
 
 	
-	//Create Monthly Encounter Data set
+	//Create Monthly Encounter and Cohort Data set
 	
-	public LocationHierachyIndicatorDataSetDefinition createMonthlyLocationDataSet() {
+	public LocationHierachyIndicatorDataSetDefinition createEncounterCohortMonthlyLocationDataSetII() {
 		
 		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
-		        createEncounterMonthlyBaseDataSet());
-		ldsd.addBaseDefinition(createMonthlyBaseDataSet());
-		ldsd.setName("Encounter Monthly Data Set");
+		        createEncounterMonthlyBaseDataSetII());
+		ldsd.addBaseDefinition(createCohortMonthlyBaseDataSetII());
+		ldsd.setName("Encounter Monthly Data Set Two");
 		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
 		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
-		
 		return ldsd;
 	}
-	
-	private EncounterIndicatorDataSetDefinition createEncounterMonthlyBaseDataSet() {
+
+	// create Monthly cohort Data set
+	private CohortIndicatorDataSetDefinition createCohortMonthlyBaseDataSetII() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("Monthly Cohort Data Set");
+		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		createCohortMonthlyIndicatorsII(dsd);
+		return dsd;
+	}
+
+	private EncounterIndicatorDataSetDefinition createEncounterMonthlyBaseDataSetII() {
 		
 		EncounterIndicatorDataSetDefinition eidsd = new EncounterIndicatorDataSetDefinition();
-		
 		eidsd.setName("eidsd");
 		eidsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		eidsd.addParameter(new Parameter("endDate", "End Date", Date.class));
-		
-		createMonthlyIndicators(eidsd);
+		createEncounterMonthlyIndicatorsII(eidsd);
 		return eidsd;
 	}
-	
-	private void createMonthlyIndicators(EncounterIndicatorDataSetDefinition dsd) {
+
+
+
+// III. Mental Health/ Santé mentale
+
+	public LocationHierachyIndicatorDataSetDefinition createCohortMonthlyLocationDataSetIII() {
+
+		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
+				createCohortMonthlyBaseDataSetIII());
+		ldsd.setName("Monthly Cohort Data Set Three");
+		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
+		return ldsd;
+	}
+
+
+
+	private CohortIndicatorDataSetDefinition createCohortMonthlyBaseDataSetIII() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("Monthly Cohort Data Set");
+		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		createCohortMonthlyIndicatorsIII(dsd);
+		return dsd;
+	}
+
+// III. Mental Health/ Santé mentale
+
+	public LocationHierachyIndicatorDataSetDefinition createCohortMonthlyLocationDataSetIV() {
+
+		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
+				createCohortMonthlyBaseDataSetIV());
+		ldsd.setName("Monthly Cohort Data Set Three");
+		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
+		return ldsd;
+	}
+
+
+
+	private CohortIndicatorDataSetDefinition createCohortMonthlyBaseDataSetIV() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("Monthly Cohort Data Set");
+		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		createCohortMonthlyIndicatorsIV(dsd);
+		return dsd;
+	}
+
+// V. Other Cardiovascular and Kidney diseases
+
+	public LocationHierachyIndicatorDataSetDefinition createCohortMonthlyLocationDataSetV() {
+
+		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
+				createCohortMonthlyBaseDataSetV());
+		ldsd.setName("Monthly Cohort Data Set Three");
+		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
+		return ldsd;
+	}
+
+
+
+	private CohortIndicatorDataSetDefinition createCohortMonthlyBaseDataSetV() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("Monthly Cohort Data Set");
+		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		createCohortMonthlyIndicatorsV(dsd);
+		return dsd;
+	}
+
+
+// VI. Injuries
+
+	public LocationHierachyIndicatorDataSetDefinition createCohortMonthlyLocationDataSetVI() {
+
+		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
+				createCohortMonthlyBaseDataSetVI());
+		ldsd.setName("Monthly Cohort Data Set Three");
+		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
+		return ldsd;
+	}
+
+
+
+	private CohortIndicatorDataSetDefinition createCohortMonthlyBaseDataSetVI() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("Monthly Cohort Data Set");
+		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		createCohortMonthlyIndicatorsVI(dsd);
+		return dsd;
+	}
+
+// VII. Palliative care
+
+	public LocationHierachyIndicatorDataSetDefinition createCohortMonthlyLocationDataSetVII() {
+
+		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
+				createCohortMonthlyBaseDataSetVII());
+		ldsd.setName("Monthly Cohort Data Set Three");
+		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
+		return ldsd;
+	}
+
+
+
+	private CohortIndicatorDataSetDefinition createCohortMonthlyBaseDataSetVII() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("Monthly Cohort Data Set");
+		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		createCohortMonthlyIndicatorsVII(dsd);
+		return dsd;
+	}
+
+// VIII. Community Checkup
+
+	public LocationHierachyIndicatorDataSetDefinition createCohortMonthlyLocationDataSetVIII() {
+
+		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
+				createCohortMonthlyBaseDataSetVIII());
+		ldsd.setName("Monthly Cohort Data Set Three");
+		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
+		return ldsd;
+	}
+
+	private CohortIndicatorDataSetDefinition createCohortMonthlyBaseDataSetVIII() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("Monthly Cohort Data Set");
+		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		createCohortMonthlyIndicatorsVIII(dsd);
+		return dsd;
+	}
+
+// IX.  Cancer screening
+
+	public LocationHierachyIndicatorDataSetDefinition createCohortMonthlyLocationDataSetIX() {
+
+		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
+				createCohortMonthlyBaseDataSetIX());
+		ldsd.setName("Monthly Cohort Data Set Three");
+		ldsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		ldsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		ldsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
+		return ldsd;
+	}
+
+
+
+	private CohortIndicatorDataSetDefinition createCohortMonthlyBaseDataSetIX() {
+		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+		dsd.setName("Monthly Cohort Data Set");
+		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		createCohortMonthlyIndicatorsIX(dsd);
+		return dsd;
+	}
+
+
+// II. Outpatient Consultations/ Consultations Externes: EncounterIndicatorDataSetDefinition
+
+	private void createEncounterMonthlyIndicatorsII(EncounterIndicatorDataSetDefinition dsd) {
 
 		// A) Outpatient Morbidity summary table/ Tableau synthétique Consultations externes
 
@@ -377,18 +710,10 @@ public class SetupHMISIndicatorMonthlyReport {
 
 
 	}
-	
-	// create quarterly cohort Data set
-	private CohortIndicatorDataSetDefinition createMonthlyBaseDataSet() {
-		CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
-		dsd.setName("Monthly Cohort Data Set");
-		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
-		createMonthlyIndicators(dsd);
-		return dsd;
-	}
-	
-	private void createMonthlyIndicators(CohortIndicatorDataSetDefinition dsd) {
+
+
+	// II. Outpatient Consultations/ Consultations Externes : CohortIndicatorDataSetDefinition
+private void createCohortMonthlyIndicatorsII(CohortIndicatorDataSetDefinition dsd) {
 
 
 		//B) Health insurance status of new cases/ Assurance maladies pour nouveaux cas
@@ -454,13 +779,15 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 
 
-		SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%A05%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+		SqlCohortDefinition foodPoisoningPatient=patientWithIDCObsByStartDateAndEndDate("A05");
+
+				//new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%A05%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 
 	//SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 		//SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
-		foodPoisoningPatient.setName("foodPoisoningPatient");
+		/*foodPoisoningPatient.setName("foodPoisoningPatient");
 		foodPoisoningPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
-		foodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		foodPoisoningPatient.addParameter(new Parameter("endDate", "endDate", Date.class));*/
 
 
 		CompositionCohortDefinition maleBelow5FoodPoisoningPatient = new CompositionCohortDefinition();
@@ -561,14 +888,16 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 
 
-		SqlCohortDefinition earInfectionsPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%H65%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+		SqlCohortDefinition earInfectionsPatient=patientWithIDCObsByStartDateAndEndDate("H65");
+
+		/*		new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%H65%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 
 		//SqlCohortDefinition earInfectionsPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 		//SqlCohortDefinition earInfectionsPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
 		earInfectionsPatient.setName("earInfectionsPatient");
 		earInfectionsPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
 		earInfectionsPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-
+*/
 
 		CompositionCohortDefinition maleBelow5earInfectionsPatient = new CompositionCohortDefinition();
 		maleBelow5earInfectionsPatient.setName("maleBelow5earInfectionsPatient");
@@ -667,14 +996,16 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 
 
-		SqlCohortDefinition schistosomiasisPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%B65%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+		SqlCohortDefinition schistosomiasisPatient=patientWithIDCObsByStartDateAndEndDate("B65");
+
+		/*		new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%B65%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 
 		//SqlCohortDefinition schistosomiasisPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 		//SqlCohortDefinition schistosomiasisPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
 		schistosomiasisPatient.setName("schistosomiasisPatient");
 		schistosomiasisPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
 		schistosomiasisPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-
+*/
 
 		CompositionCohortDefinition maleBelow5schistosomiasisPatient = new CompositionCohortDefinition();
 		maleBelow5schistosomiasisPatient.setName("maleBelow5schistosomiasisPatient");
@@ -771,14 +1102,17 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 		//==============================================================================
 
 
-		SqlCohortDefinition ascarisLumbricoidesPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%B77%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+		SqlCohortDefinition ascarisLumbricoidesPatient=patientWithIDCObsByStartDateAndEndDate("B77");
+
+
+		/*		new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%B77%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 
 		//SqlCohortDefinition ascarisLumbricoidesPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 		//SqlCohortDefinition ascarisLumbricoidesPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
 		ascarisLumbricoidesPatient.setName("ascarisLumbricoidesPatient");
 		ascarisLumbricoidesPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
 		ascarisLumbricoidesPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-
+*/
 
 		CompositionCohortDefinition maleBelow5ascarisLumbricoidesPatient = new CompositionCohortDefinition();
 		maleBelow5ascarisLumbricoidesPatient.setName("maleBelow5ascarisLumbricoidesPatient");
@@ -875,7 +1209,108 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 	}
 
-	
+
+// III. Mental Health/ Santé mentale
+
+	private void createCohortMonthlyIndicatorsIII(CohortIndicatorDataSetDefinition dsd) {
+
+
+		AgeCohortDefinition patientBetweenZeroAndNineteenYears = patientWithAgeBetween(0,19);
+
+		GenderCohortDefinition males = new GenderCohortDefinition();
+		males.setName("male Patients");
+		males.setMaleIncluded(true);
+
+		AgeCohortDefinition patientBetweenFiveAndNineteenYears = patientWithAgeBetween(5,19);
+
+
+		AgeCohortDefinition patientAbove20Years = patientWithAgeAbove(20);
+
+
+		// III.B. 2 Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique
+
+		SqlCohortDefinition postTraumaticStressDisorderPatient=patientWithIDCObsByStartDateAndEndDate("F431");
+
+
+		CompositionCohortDefinition maleBeteen0And19PostTraumaticStressDisorderPatient = new CompositionCohortDefinition();
+		maleBeteen0And19PostTraumaticStressDisorderPatient.setName("maleBeteen0And19TraumaticStressDisorderPatient");
+		maleBeteen0And19PostTraumaticStressDisorderPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderPatient.getSearches().put("1", new Mapped<CohortDefinition>(postTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19PostTraumaticStressDisorderPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19PostTraumaticStressDisorderPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19PostTraumaticStressDisorderPatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleBetween0And19PosttTraumaticStressDisorderPatientIndicator = Indicators.newCohortIndicator("maleBetween0And19PosttTraumaticStressDisorderPatientIndicator",
+				maleBeteen0And19PostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.M.019", "Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Male", new Mapped(maleBetween0And19PosttTraumaticStressDisorderPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19postTraumaticStressDisorderPatient = new CompositionCohortDefinition();
+		femaleBeteen0And19postTraumaticStressDisorderPatient.setName("femaleBelow5postTraumaticStressDisorderPatient");
+		femaleBeteen0And19postTraumaticStressDisorderPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19postTraumaticStressDisorderPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19postTraumaticStressDisorderPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19postTraumaticStressDisorderPatient.getSearches().put("1", new Mapped<CohortDefinition>(postTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19postTraumaticStressDisorderPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19postTraumaticStressDisorderPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19postTraumaticStressDisorderPatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBeteen0And19PostTraumaticStressDisorderPatientIndicator = Indicators.newCohortIndicator("femaleBelow5postTraumaticStressDisorderPatientIndicator",
+				femaleBeteen0And19postTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.F.019", "Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Female", new Mapped(femaleBeteen0And19PostTraumaticStressDisorderPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+	}
+
+// IV. Chronic Diseases
+
+	private void createCohortMonthlyIndicatorsIV(CohortIndicatorDataSetDefinition dsd) {
+
+
+	}
+
+// V. Other Cardiovascular and Kidney diseases
+
+	private void createCohortMonthlyIndicatorsV(CohortIndicatorDataSetDefinition dsd) {
+
+
+	}
+
+// VI. Injuries
+
+	private void createCohortMonthlyIndicatorsVI(CohortIndicatorDataSetDefinition dsd) {
+
+
+	}
+
+// VII. Palliative care
+
+	private void createCohortMonthlyIndicatorsVII(CohortIndicatorDataSetDefinition dsd) {
+
+
+	}
+
+// VIII. Community Checkup
+
+	private void createCohortMonthlyIndicatorsVIII(CohortIndicatorDataSetDefinition dsd) {
+
+
+	}
+
+// IX.  Cancer screening
+
+	private void createCohortMonthlyIndicatorsIX(CohortIndicatorDataSetDefinition dsd) {
+
+
+	}
+
+
 	private void setUpProperties() {
 		
 		onOrAfterOnOrBefore.add("onOrAfter");
@@ -938,4 +1373,20 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 		patientsWithAge.setMinAgeUnit(DurationUnit.YEARS);
 		return patientsWithAge;
 	}
+
+
+	private SqlCohortDefinition patientWithIDCObsByStartDateAndEndDate(String ICDCode){
+
+		SqlCohortDefinition patientWithIDCObs=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%"+ICDCode+"%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+
+		//SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
+		//SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
+		patientWithIDCObs.setName("patientWithIDCObs");
+		patientWithIDCObs.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientWithIDCObs.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		return patientWithIDCObs;
+
+	}
+
 }
