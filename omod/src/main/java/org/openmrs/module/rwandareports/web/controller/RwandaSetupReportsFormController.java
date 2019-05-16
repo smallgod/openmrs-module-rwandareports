@@ -969,7 +969,17 @@ public class RwandaSetupReportsFormController {
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
+	@RequestMapping("/module/rwandareports/register_MonthlyExecutiveDashboardMetricsReport")
+	public ModelAndView registerMonthlyExecutiveDashboardMetricsReport() throws Exception {
+		new SetupMonthlyExecutiveDashboardMetricsReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 
+	@RequestMapping("/module/rwandareports/remove_MonthlyExecutiveDashboardMetricsReport")
+	public ModelAndView removeMonthlyExecutiveDashboardMetricsReport() throws Exception {
+		new SetupMonthlyExecutiveDashboardMetricsReport().delete();
+    return new ModelAndView(new RedirectView("rwandareports.form"));
+  }
 
 	@RequestMapping("/module/rwandareports/register_HMISIndicatorMonthly")
 	public ModelAndView registerHMISIndicatorMonthlyIndicatorReport() throws Exception {

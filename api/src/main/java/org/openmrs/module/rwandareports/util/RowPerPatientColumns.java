@@ -105,8 +105,10 @@ public class RowPerPatientColumns {
 	public static PatientAgeInMonths getAgeInMonths(String name) {
 		PatientAgeInMonths ageInMonths = new PatientAgeInMonths();
 		ageInMonths.setName(name);
+		ageInMonths.addParameter(new Parameter("endDate", "onDate", Date.class));
 		return ageInMonths;
 	}
+
 
 	public static AgeAtDateOfOtherDefinition getAgeAtDateOfOtherDefinition(
 			String name, DateOfPatientData definition) {

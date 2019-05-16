@@ -1452,6 +1452,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 				"2",
 				new Mapped<CohortDefinition>(patientOnRegimen, null));
 		patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen.setCompositionString("1 AND (NOT 2)");
+		patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimen.setCompositionString("1");
 
 		CohortIndicator patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimenIndicator = Indicators.newCountIndicator(
 				"patientsWithHypertensionVisitAndNotOnAnyHypertensionRegimenIndicator",
@@ -1812,8 +1813,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		
 		diastolicBP = gp.getConcept(GlobalPropertiesManagement.DIASTOLIC_BLOOD_PRESSURE);
 		
-		hypertensionMedications = gp
-        .getConceptsByConceptSet(GlobalPropertiesManagement.HYPERTENSION_TREATMENT_DRUGS);
+		hypertensionMedications = gp.getConceptsByConceptSet(GlobalPropertiesManagement.HYPERTENSION_TREATMENT_DRUGS);
 		
 		smokingHistory = gp.getConcept(GlobalPropertiesManagement.SMOKING_HISTORY);
 		

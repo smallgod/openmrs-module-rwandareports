@@ -128,7 +128,7 @@ public class CleanReportingTablesAndRegisterAllReports {
 			
 			new SetupHeartFailureConsultSheet().setup();
 			new SetupHeartFailureLateVisit().setup();
-			new SetupHeartFailureQuarterlyAndMonthlyReport();
+			new SetupHeartFailureQuarterlyAndMonthlyReport().setup();
 
 			new SetupCKDQuarterlyAndMonthlyReport();
 			new SetupCKDMissedvisitReport();

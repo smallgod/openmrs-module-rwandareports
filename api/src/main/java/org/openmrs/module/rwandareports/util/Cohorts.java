@@ -647,7 +647,7 @@ public class Cohorts {
 		
 		List<Program> programs = new ArrayList<Program>();
 		programs.add(program);
-		
+
 		inProgram.setPrograms(programs);
 		
 		return inProgram;
@@ -704,6 +704,12 @@ public class Cohorts {
 	
 	public static InProgramCohortDefinition createInProgramParameterizableByStartEndDate(String name, Program program) {
 		InProgramCohortDefinition inProgram = createInProgram(name, program);
+		inProgram.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		inProgram.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		return inProgram;
+	}
+	public static InProgramCohortDefinition createInProgramParameterizableByStartEndDate(String name, List<Program> programs) {
+		InProgramCohortDefinition inProgram = createInProgram(name, programs);
 		inProgram.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		inProgram.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 		return inProgram;
