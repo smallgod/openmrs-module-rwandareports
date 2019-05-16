@@ -569,10 +569,10 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_MOH-HMISIndicatorreport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td>-</td>
-<td>-</td>
-<td>-</td>
-<td>-</td>
+<td>District Hospital Monthly HMIS Report</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_HMISIndicatorMonthly.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_HMISIndicatorMonthlyReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
 <td>-</td>

@@ -1,9 +1,5 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
@@ -23,39 +19,43 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
-public class SetupGenericEncounterReport {
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class SetupGenericEncounterBySiteReport {
 		
-	protected final static Log log = LogFactory.getLog(SetupGenericEncounterReport.class);
+	protected final static Log log = LogFactory.getLog(SetupGenericEncounterBySiteReport.class);
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
-		
+
 	public void setup() throws Exception {		
-		ReportDefinition rd =createReportDefinition();		
-		  ReportDesign designExcel = Helper.createExcelDesign(rd,"Generic Encounter Report.xls_",true);
-		  ReportDesign designCSV = Helper.createCsvReportDesign(rd,"Generic Encounter Report.csv_");
+		ReportDefinition rdBySite = createReportDefinitionBySite();
+		  ReportDesign designExcelBySite = Helper.createExcelDesign(rdBySite,"Generic Encounter Report by site.xls_",true);
+		  ReportDesign designCSVBySite = Helper.createCsvReportDesign(rdBySite,"Generic Encounter Report by site.csv_");
 		  
-			Helper.saveReportDesign(designExcel);
-			Helper.saveReportDesign(designCSV);
+			Helper.saveReportDesign(designExcelBySite);
+			Helper.saveReportDesign(designCSVBySite);
 	}
 	
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Generic Encounter Report.xls_".equals(rd.getName()) || "Generic Encounter Report.csv_".equals(rd.getName())) {
+			if ("Generic Encounter Report by site.xls_".equals(rd.getName()) || "Generic Encounter Report by site.csv_".equals(rd.getName())) {
 				rs.purgeReportDesign(rd);
 			}
 		}
-		Helper.purgeReportDefinition("Generic Encounter Report");
+		Helper.purgeReportDefinition("Generic Encounter Report By Site");
 	}
 	
-	private ReportDefinition createReportDefinition() {
+	private ReportDefinition createReportDefinitionBySite() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("Generic Encounter Report");	
-		reportDefinition.addParameter(new Parameter("startDate", "From Date", Date.class));	
-		reportDefinition.addParameter(new Parameter("endDate", "To Date", Date.class));
-		reportDefinition.addParameter(new Parameter("location", "Health Facility", Location.class));
-		Parameter encouterType = new Parameter("encounterTypes", "Encounter Type", EncounterType.class);
+		reportDefinition.setName("Generic Encounter Report By Site");
+		reportDefinition.addParameter(new Parameter("startDate", "From", Date.class));
+		reportDefinition.addParameter(new Parameter("endDate", "To", Date.class));
+		reportDefinition.addParameter(new Parameter("location", "Facility", Location.class));
+		Parameter encouterType = new Parameter("encounterTypes", "Enc.Type", EncounterType.class);
 		Parameter form = new Parameter("forms", "Form", Form.class);
 		encouterType.setRequired(false);
 		form.setRequired(false);
@@ -63,17 +63,18 @@ public class SetupGenericEncounterReport {
 		reportDefinition.addParameter(encouterType);
 		reportDefinition.addParameter(form);
 		
-		createDataSetDefinition(reportDefinition);
+		createDataSetDefinitionBySite(reportDefinition);
 
 		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
 	}
 	
-	private void createDataSetDefinition(ReportDefinition reportDefinition) {
+	private void createDataSetDefinitionBySite(ReportDefinition reportDefinition) {
 		EncounterAndObsDataSetDefinition dsd = new EncounterAndObsDataSetDefinition();
 		dsd.setName("dsd");
-		dsd.setParameters(getParameters());
+		dsd.setParameters(getParametersBySite());
+
 
 		BasicEncounterQuery rowFilter = new BasicEncounterQuery();
 		rowFilter.addParameter(new Parameter("onOrAfter", "On Or After", Date.class));
@@ -85,6 +86,8 @@ public class SetupGenericEncounterReport {
 		form.setRequired(false);
 		rowFilter.addParameter(encouterType);
 		rowFilter.addParameter(form);
+		MappedParametersEncounterQuery q = new MappedParametersEncounterQuery(rowFilter, ObjectUtil.toMap("onOrAfter=startDate,onOrBefore=endDate,location=location,encounterTypes=encounterTypes,forms=forms"));
+		dsd.addRowFilter(Mapped.mapStraightThrough(q));
 
 		BuiltInPatientDataLibrary patientData=new BuiltInPatientDataLibrary();
 
@@ -101,16 +104,11 @@ public class SetupGenericEncounterReport {
 		dsd.addColumn("ENCOUNTER_DATETIME", encounterData.getEncounterDatetime(), "");
 		dsd.addColumn("LOCATION", encounterData.getLocationName(), "");
 
-
-		MappedParametersEncounterQuery q = new MappedParametersEncounterQuery(rowFilter, ObjectUtil.toMap("onOrAfter=${startDate},onOrBefore=${endDate},location=${location},encounterTypes=${encounterTypes},forms=${forms}"));
-		dsd.addRowFilter(Mapped.mapStraightThrough(q));
-
-
 		reportDefinition.addDataSetDefinition("dsd",Mapped.mapStraightThrough(dsd));
 		
 	}
 	
-	public List<Parameter> getParameters() {
+	public List<Parameter> getParametersBySite() {
 		List<Parameter> l = new ArrayList<Parameter>();
 		l.add(new Parameter("startDate", "From Date", Date.class));
 		l.add(new Parameter("endDate", "To Date", Date.class));

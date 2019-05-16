@@ -796,7 +796,10 @@ public class GlobalPropertiesManagement {
 	public final static String CLINICAL_ENCOUNTER_TYPES = "ClinicalencounterTypeIds.labTestIncl";
 	
 	public final static String CLINICAL_ENCOUNTER_TYPES_EXC_LAB_TEST = "ClinicalencounterTypeIds.labTestExcl";
-	
+
+	public final static String NCD_CLINICAL_ENCOUNTER_TYPES_EXC_LAB_TEST = "reports.NCDEncounterTypeIds";
+
+
 	public final static String CARDIOLOGY_ENCTOUNTER_TYPES = "cardiologyreporting.cardilogyEncounterTypes";
 	
 	public final static String PEDI_FLOWSHEET_ENCOUNTER = "reports.pediFlowsheetEncounter";
@@ -855,6 +858,9 @@ public class GlobalPropertiesManagement {
 	public final static String ASTHMA_DDB_RENDEVOUS_VISIT_FORMS="reports.AsthmaDDBAndRendezvousForms";
 
 	public final static String MENTAL_HEALTH_VISIT="reports.mentalHealthEncounterType";
+
+	public final static String OPD_VISIT="reports.OPDEncounterType";
+
 
 	public final static String MENTAL_HEALTH_NEXT_VISIT_FORMS ="reports.mentalHealthNextVisitForms";
 
