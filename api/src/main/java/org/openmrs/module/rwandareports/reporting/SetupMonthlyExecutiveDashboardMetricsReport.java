@@ -963,11 +963,11 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
                 .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
         HIVPatientsOnART.getSearches().put("4",new Mapped<CohortDefinition>(OnArt(pedihivprogramname), ParameterizableUtil
                 .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-        HIVPatientsOnART.getSearches().put("5",new Mapped<CohortDefinition>(OnArt(pmtctprogramname), ParameterizableUtil
-                .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-        HIVPatientsOnART.getSearches().put("6",new Mapped<CohortDefinition>(OnArt(pmtctCombinedMotherProgramname), ParameterizableUtil
-                .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
-        HIVPatientsOnART.setCompositionString("1 AND 2 AND (3 OR 4 OR 5 OR 6)");
+//        HIVPatientsOnART.getSearches().put("5",new Mapped<CohortDefinition>(OnArt(pmtctprogramname), ParameterizableUtil
+//                .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+//        HIVPatientsOnART.getSearches().put("6",new Mapped<CohortDefinition>(OnArt(pmtctCombinedMotherProgramname), ParameterizableUtil
+//                .createParameterMappings("onOrBefore=${onOrBefore},onOrAfter=${onOrAfter}")));
+        HIVPatientsOnART.setCompositionString("1 AND 2 AND (3 OR 4)");
 
         CohortIndicator HIVPatientsOnARTMonthlyIndicator = Indicators.newCountIndicator("HIVPatientsOnARTMonthlyIndicator",
                 HIVPatientsOnART,ParameterizableUtil.createParameterMappings("onOrBefore=${endDate-12m+1d},onOrAfter=${endDate}"));
