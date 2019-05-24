@@ -93,29 +93,29 @@ public class LocationHierachyIndicatorDataSetEvaluator implements DataSetEvaluat
 					hierarchyToCheck = location.getHierarchy().split(",");
 				}
 				
-				for (String h : hierarchyToCheck) {
-					String[] config = h.split(":");
-					String hVal = config[0];
-					String hDisplay = config[0];
-					if (config.length > 0) {
-						hDisplay = config[1];
-					}
-					
-					TreeSet<String> allLoc = new TreeSet<String>();
-					for (Location l : allLocations) {
-						String hierarchyValue = (String) ReflectionUtil.getPropertyValue(l, hVal);
-						if (hierarchyValue != null) {
-							hierarchyValue = hierarchyValue.trim();
-							hierarchyValue = hierarchyValue.toUpperCase();
-							allLoc.add(hierarchyValue);
-						}
-					}
-					
-					for (String hLoc : allLoc) {
-						addIteration(ret, getBaseCohort(hLoc, HIERARCHY, hVal), hLoc + " " + hDisplay, context,
-						    lhdsd.getBaseDefinition());
-					}
-				}
+//				for (String h : hierarchyToCheck) {
+//					String[] config = h.split(":");
+//					String hVal = config[0];
+//					String hDisplay = config[0];
+//					if (config.length > 0) {
+//						hDisplay = config[1];
+//					}
+//
+//					TreeSet<String> allLoc = new TreeSet<String>();
+//					for (Location l : allLocations) {
+//						String hierarchyValue = (String) ReflectionUtil.getPropertyValue(l, hVal);
+//						if (hierarchyValue != null) {
+//							hierarchyValue = hierarchyValue.trim();
+//							hierarchyValue = hierarchyValue.toUpperCase();
+//							allLoc.add(hierarchyValue);
+//						}
+//					}
+//
+//					for (String hLoc : allLoc) {
+//						addIteration(ret, getBaseCohort(hLoc, HIERARCHY, hVal), hLoc + " " + hDisplay, context,
+//						    lhdsd.getBaseDefinition());
+//					}
+//				}
 				
 				for (Location l : allLocations) {
 					addIteration(ret, getBaseCohort(l.getName(), LOCATION, l.getName()), l.getName(), context,

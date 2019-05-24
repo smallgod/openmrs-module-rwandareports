@@ -108,6 +108,13 @@
 			The id for the Pediatric Initial Encounter Type
 		</description>
 	</globalProperty>
+	<globalProperty>
+		<property>reports.pedihivprogramname</property>
+		<defaultValue>PEDIATRIC HIV PROGRAM</defaultValue>
+		<description>
+			The PEDIATRIC HIV PROGRAM
+		</description>
+	</globalProperty>
 
 	<globalProperty>
 		<property>reports.tbprogramname</property>
@@ -735,7 +742,7 @@
 
 	<globalProperty>
 		<property>reports.adultflowsheetencounter</property>
-		<defaultValue>24</defaultValue>
+		<defaultValue>c1c39e98-2f2d-432b-8cc9-b2f273209c29</defaultValue>
 		<description>
 			The Adult HIV Flowsheet encounter id that is used to
 			return the io and side effects for a patient
@@ -947,7 +954,7 @@
 
 	<globalProperty>
 		<property>reports.hivencounterTypeIds</property>
-		<defaultValue>1,2,3,4,24,25</defaultValue>
+		<defaultValue>4d911d04-26fe-102b-80cb-0017a47871b2,4d911f5c-26fe-102b-80cb-0017a47871b2,4d9120ba-26fe-102b-80cb-0017a47871b2,4d91222c-26fe-102b-80cb-0017a47871b2,5e8fecc0-0cae-43a2-896d-9f8477e16392,c1c39e98-2f2d-432b-8cc9-b2f273209c29</defaultValue>
 		<description>HIV Encounter types used when the patient is in adult or
 			pedi hiv program</description>
 	</globalProperty>
@@ -2594,8 +2601,8 @@
 
 	<globalProperty>
 		<property>reports.mentalHealthNextVisitForms</property>
-		<defaultValue>1cda6620-6c2a-4ab6-8f55-4b53a782b5ff,8e43fa83-8892-4b52-9dd7-4af953661289,1dae19e4-7a80-4fad-821e-c3728f11ac76,dac034ee-a701-46cd-85de-d1e6d29e3ea3</defaultValue>
-		<description>Mental Health Pharmacotherapy,Psychotherapy_approach,missed visit and initial encounter forms uuid
+		<defaultValue>1cda6620-6c2a-4ab6-8f55-4b53a782b5ff,8e43fa83-8892-4b52-9dd7-4af953661289,1dae19e4-7a80-4fad-821e-c3728f11ac76,dac034ee-a701-46cd-85de-d1e6d29e3ea3,196f9752-d49e-4b52-b825-5d210e592411,0888cc0c-ca54-4bf5-bf29-b7ff8a02b0c8</defaultValue>
+		<description>Mental Health Pharmacotherapy,Psychotherapy_approach,missed visit, initial encounter, MH access Inpatient admission,MH Outpatient visit copy of the access forms uuid
 		</description>
 	</globalProperty>
 
@@ -4118,6 +4125,36 @@
 		<property>reports.NCDSurgeryTypeNonCoced</property>
 		<defaultValue>b4ebf8d1-615e-40a9-adeb-416bab132d21</defaultValue>
 		<description>concept id for NCD Surgery Type,non coded</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.referredOutForPalliativeSystemicTherapy</property>
+		<defaultValue>1aa2e9cc-aa02-441a-9a2e-d32f0997e4b4</defaultValue>
+		<description>concept id for Referred out for Palliative systemic therapy</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.ReferredOutForCurativeCancerCare</property>
+		<defaultValue>219e4d48-2201-46cf-8ac1-002bf1ffd75c</defaultValue>
+		<description>concept id for Referred out for Curative Cancer care</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.OtherReasonForReferral</property>
+		<defaultValue>eea065ac-117b-4be9-976b-2948b29046b7</defaultValue>
+		<description>concept id for Referred out for Other reason for referral</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.notCancerNoBiopsy</property>
+		<defaultValue>885dc5bf-0f2a-4cb5-ab53-00d0116a1bed</defaultValue>
+		<description>concept id for Not cancer - no biopsy</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.PATIENTREFUSED</property>
+		<defaultValue>efab937b-853e-47da-b97e-220f1bdff97d</defaultValue>
+		<description>concept id for PATIENT REFUSED</description>
 	</globalProperty>
 
 	<globalProperty>

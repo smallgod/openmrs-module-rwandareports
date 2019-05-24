@@ -226,26 +226,26 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 	}
 	
 	private void createQuarterlyIndicators(EncounterIndicatorDataSetDefinition dsd) {
-		
+
 		//=======================================================================
 		//  A1: Total # of patient visits to DM clinic in the last quarter
 		//==================================================================
 		SqlEncounterQuery patientVisitsToAsthmaClinic = new SqlEncounterQuery();
-		
+
 		patientVisitsToAsthmaClinic
 		        .setQuery("select encounter_id from encounter where encounter_type="+asthmaEncounterType.getEncounterTypeId()+" and encounter_datetime>= :startDate and encounter_datetime<= :endDate and voided=0 group by encounter_datetime, patient_id");
 		patientVisitsToAsthmaClinic.setName("patientVisitsToAsthmaClinic");
 		patientVisitsToAsthmaClinic.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientVisitsToAsthmaClinic.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
+
 		EncounterIndicator patientVisitsToAsthmaClinicQuarterlyIndicator = new EncounterIndicator();
 		patientVisitsToAsthmaClinicQuarterlyIndicator.setName("patientVisitsToAsthmaClinicQuarterlyIndicator");
 		patientVisitsToAsthmaClinicQuarterlyIndicator.setEncounterQuery(new Mapped<EncounterQuery>(
 		        patientVisitsToAsthmaClinic, ParameterizableUtil
 		                .createParameterMappings("endDate=${endDate},startDate=${startDate}")));
-		
+
 		dsd.addColumn(patientVisitsToAsthmaClinicQuarterlyIndicator);
-		
+
 	}
 	
 	// create quarterly cohort Data set
