@@ -779,7 +779,7 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 
 
-		SqlCohortDefinition foodPoisoningPatient=patientWithIDCObsByStartDateAndEndDate("A05");
+		SqlCohortDefinition foodPoisoningPatient= patientWithICDCodeObsByStartDateAndEndDate("A05");
 
 				//new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%A05%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 
@@ -888,7 +888,7 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 
 
-		SqlCohortDefinition earInfectionsPatient=patientWithIDCObsByStartDateAndEndDate("H65");
+		SqlCohortDefinition earInfectionsPatient= patientWithICDCodeObsByStartDateAndEndDate("H65");
 
 		/*		new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%H65%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 
@@ -996,7 +996,7 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 
 
-		SqlCohortDefinition schistosomiasisPatient=patientWithIDCObsByStartDateAndEndDate("B65");
+		SqlCohortDefinition schistosomiasisPatient= patientWithICDCodeObsByStartDateAndEndDate("B65");
 
 		/*		new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%B65%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
 
@@ -1102,7 +1102,7 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 		//==============================================================================
 
 
-		SqlCohortDefinition ascarisLumbricoidesPatient=patientWithIDCObsByStartDateAndEndDate("B77");
+		SqlCohortDefinition ascarisLumbricoidesPatient= patientWithICDCodeObsByStartDateAndEndDate("B77");
 
 
 		/*		new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%B77%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
@@ -1221,30 +1221,33 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 		males.setName("male Patients");
 		males.setMaleIncluded(true);
 
-		AgeCohortDefinition patientBetweenFiveAndNineteenYears = patientWithAgeBetween(5,19);
 
 
-		AgeCohortDefinition patientAbove20Years = patientWithAgeAbove(20);
+
+		// III.B. 2 New case patient with Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique
 
 
-		// III.B. 2 Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique
+		SqlCohortDefinition newCasePatiens=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("newCasePatiens",caseStatus,newCase);
 
-		SqlCohortDefinition postTraumaticStressDisorderPatient=patientWithIDCObsByStartDateAndEndDate("F431");
+		SqlCohortDefinition newpostTraumaticStressDisorderPatient= patientWithICDCodeObsByStartDateAndEndDate("F431",caseStatus,newCase);
 
+// 0-19
 
 		CompositionCohortDefinition maleBeteen0And19PostTraumaticStressDisorderPatient = new CompositionCohortDefinition();
 		maleBeteen0And19PostTraumaticStressDisorderPatient.setName("maleBeteen0And19TraumaticStressDisorderPatient");
 		maleBeteen0And19PostTraumaticStressDisorderPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		maleBeteen0And19PostTraumaticStressDisorderPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
 		maleBeteen0And19PostTraumaticStressDisorderPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-		maleBeteen0And19PostTraumaticStressDisorderPatient.getSearches().put("1", new Mapped<CohortDefinition>(postTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19PostTraumaticStressDisorderPatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderPatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderPatient.getSearches().put("1", new Mapped<CohortDefinition>(newpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		maleBeteen0And19PostTraumaticStressDisorderPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
 		maleBeteen0And19PostTraumaticStressDisorderPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
 		maleBeteen0And19PostTraumaticStressDisorderPatient.setCompositionString("1 and 2 and 3");
 
 		CohortIndicator maleBetween0And19PosttTraumaticStressDisorderPatientIndicator = Indicators.newCohortIndicator("maleBetween0And19PosttTraumaticStressDisorderPatientIndicator",
 				maleBeteen0And19PostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		dsd.addColumn("III.B.2.M.019", "Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Male", new Mapped(maleBetween0And19PosttTraumaticStressDisorderPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		dsd.addColumn("III.B.2.N.M.019", "New case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Male", new Mapped(maleBetween0And19PosttTraumaticStressDisorderPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 
 
@@ -1254,14 +1257,1484 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 		femaleBeteen0And19postTraumaticStressDisorderPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
 		femaleBeteen0And19postTraumaticStressDisorderPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
 		femaleBeteen0And19postTraumaticStressDisorderPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-		femaleBeteen0And19postTraumaticStressDisorderPatient.getSearches().put("1", new Mapped<CohortDefinition>(postTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        femaleBeteen0And19postTraumaticStressDisorderPatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        femaleBeteen0And19postTraumaticStressDisorderPatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19postTraumaticStressDisorderPatient.getSearches().put("1", new Mapped<CohortDefinition>(newpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		femaleBeteen0And19postTraumaticStressDisorderPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
 		femaleBeteen0And19postTraumaticStressDisorderPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
-		femaleBeteen0And19postTraumaticStressDisorderPatient.setCompositionString("1 and 2 and (not 3)");
+        femaleBeteen0And19postTraumaticStressDisorderPatient.setCompositionString("1 and 2 and (not 3)");
 
 		CohortIndicator femaleBeteen0And19PostTraumaticStressDisorderPatientIndicator = Indicators.newCohortIndicator("femaleBelow5postTraumaticStressDisorderPatientIndicator",
 				femaleBeteen0And19postTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
-		dsd.addColumn("III.B.2.F.019", "Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Female", new Mapped(femaleBeteen0And19PostTraumaticStressDisorderPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+		dsd.addColumn("III.B.2.N.F.019", "New case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Female", new Mapped(femaleBeteen0And19PostTraumaticStressDisorderPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+		AgeCohortDefinition patientBetween20And39Years = patientWithAgeBetween(20,39);
+
+
+		CompositionCohortDefinition malepatientsBetween20And39YearsWithPostTraumaticStressDisorder = new CompositionCohortDefinition();
+		malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.setName("malepatientsBetween20And39YearsWithPostTraumaticStressDisorder");
+		malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("endDate", "endDate", Date.class));
+        malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("1", new Mapped<CohortDefinition>(newpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+        malepatientsBetween20And39YearsWithPostTraumaticStressDisorder.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator malepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator = Indicators.newCohortIndicator("malepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator",
+				malepatientsBetween20And39YearsWithPostTraumaticStressDisorder, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.N.M.2039", "New case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Male between 20 and 39 years", new Mapped(malepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder = new CompositionCohortDefinition();
+		femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.setName("femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder");
+		femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("endDate", "endDate", Date.class));
+        femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("1", new Mapped<CohortDefinition>(newpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+        femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femalepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator = Indicators.newCohortIndicator("femalepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator",
+				femalepatientsBetween20And39YearsWithPostTraumaticStressDisorder, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.N.F.2039", "New case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Female between 20 and 39 years", new Mapped(femalepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+		AgeCohortDefinition patientAbove40Years = patientWithAgeAbove(40);
+
+		CompositionCohortDefinition malepatientsAbove40YearsWithPostTraumaticStressDisorder = new CompositionCohortDefinition();
+		malepatientsAbove40YearsWithPostTraumaticStressDisorder.setName("malepatientsAbove40YearsWithPostTraumaticStressDisorder");
+		malepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("endDate", "endDate", Date.class));
+        malepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        malepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("1", new Mapped<CohortDefinition>(newpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+        malepatientsAbove40YearsWithPostTraumaticStressDisorder.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator malepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator = Indicators.newCohortIndicator("malepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator",
+				malepatientsAbove40YearsWithPostTraumaticStressDisorder, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.N.M.40", "New case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Male above 40", new Mapped(malepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsAbove40YearsWithPostTraumaticStressDisorder = new CompositionCohortDefinition();
+		femalepatientsAbove40YearsWithPostTraumaticStressDisorder.setName("femalepatientsAbove40YearsWithPostTraumaticStressDisorder");
+		femalepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("endDate", "endDate", Date.class));
+        femalepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+        femalepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("1", new Mapped<CohortDefinition>(newpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+        femalepatientsAbove40YearsWithPostTraumaticStressDisorder.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femalepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator = Indicators.newCohortIndicator("femalepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator",
+				femalepatientsAbove40YearsWithPostTraumaticStressDisorder, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.N.F.40", "New case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Female above 40", new Mapped(femalepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// III.B. 2 Old case patient with Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique
+
+		SqlCohortDefinition oldCasePatiens=Cohorts.getPatientsWithCodedObservationsBetweenStartDateAndEndDate("oldCasePatiens",caseStatus,oldCase);
+
+		SqlCohortDefinition odlpostTraumaticStressDisorderPatient= patientWithICDCodeObsByStartDateAndEndDate("F431",caseStatus,oldCase);
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19PostTraumaticStressDisorderOldCasePatient = new CompositionCohortDefinition();
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.setName("maleBeteen0And19TraumaticStressDisorderOldCasePatient");
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(odlpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19PostTraumaticStressDisorderOldCasePatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleBetween0And19PosttTraumaticStressDisorderOldCasePatientIndicator = Indicators.newCohortIndicator("maleBetween0And19PosttTraumaticStressDisorderOldCasePatientIndicator",
+				maleBeteen0And19PostTraumaticStressDisorderOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.O.M.019", "Old case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Male", new Mapped(maleBetween0And19PosttTraumaticStressDisorderOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19postTraumaticStressDisorderOldCasePatient = new CompositionCohortDefinition();
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.setName("femaleBelow5postTraumaticStressDisorderOldCasePatient");
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(odlpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19postTraumaticStressDisorderOldCasePatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBeteen0And19PostTraumaticStressDisorderOldCasePatientIndicator = Indicators.newCohortIndicator("femaleBelow5postTraumaticStressDisorderOldCasePatientIndicator",
+				femaleBeteen0And19postTraumaticStressDisorderOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.O.F.019", "Old case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Female", new Mapped(femaleBeteen0And19PostTraumaticStressDisorderOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+		CompositionCohortDefinition maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder = new CompositionCohortDefinition();
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.setName("maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder");
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("1", new Mapped<CohortDefinition>(odlpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator = Indicators.newCohortIndicator("maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator",
+				malepatientsBetween20And39YearsWithPostTraumaticStressDisorder, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.O.M.2039", "Old case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Male between 20 and 39 years", new Mapped(maleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder = new CompositionCohortDefinition();
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.setName("femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder");
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("1", new Mapped<CohortDefinition>(odlpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator",
+				femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorder, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.O.F.2039", "Old case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Female between 20 and 39 years", new Mapped(femaleOldCasepatientsBetween20And39YearsWithPostTraumaticStressDisorderIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+		CompositionCohortDefinition maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder = new CompositionCohortDefinition();
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.setName("maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder");
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("1", new Mapped<CohortDefinition>(odlpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator = Indicators.newCohortIndicator("maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator",
+				maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.O.M.40", "Old case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Male above 40", new Mapped(maleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder = new CompositionCohortDefinition();
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.setName("femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder");
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("1", new Mapped<CohortDefinition>(odlpostTraumaticStressDisorderPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator",
+				femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorder, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.2.O.F.40", "Old case Post-traumatic stress disorder/ Syndrome de Stress Post-Traumatique Female above 40", new Mapped(femaleOldCasepatientsAbove40YearsWithPostTraumaticStressDisorderIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+
+
+
+		// III.B. 3 New case patient with Schizophrenia and other psychoses / Schizophrénie et autres Psychoses
+
+
+
+		SqlCohortDefinition  newschizophreniaAndOtherPsychosesPatient= patientWithICDCodeObsByStartDateAndEndDate("F209",caseStatus,newCase);
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19schizophreniaAndOtherPsychosesPatient = new CompositionCohortDefinition();
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.setName("maleBeteen0And19schizophreniaAndOtherPsychosesPatient");
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.getSearches().put("1", new Mapped<CohortDefinition>(newschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19schizophreniaAndOtherPsychosesPatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleBetween0And19schizophreniaAndOtherPsychosesPatientIndicator = Indicators.newCohortIndicator("maleBetween0And19schizophreniaAndOtherPsychosesPatientIndicator",
+				maleBeteen0And19schizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.N.M.019", "New case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Male", new Mapped(maleBetween0And19schizophreniaAndOtherPsychosesPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19schizophreniaAndOtherPsychosesPatient = new CompositionCohortDefinition();
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.setName("femaleBelow5schizophreniaAndOtherPsychosesPatient");
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.getSearches().put("1", new Mapped<CohortDefinition>(newschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesPatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBeteen0And19schizophreniaAndOtherPsychosesPatientIndicator = Indicators.newCohortIndicator("femaleBelow5schizophreniaAndOtherPsychosesPatientIndicator",
+				femaleBeteen0And19schizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.N.F.019", "New case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Female", new Mapped(femaleBeteen0And19schizophreniaAndOtherPsychosesPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+
+
+		CompositionCohortDefinition malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses = new CompositionCohortDefinition();
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.setName("malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses");
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("1", new Mapped<CohortDefinition>(newschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator = Indicators.newCohortIndicator("malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator",
+				malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.N.M.2039", "New case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Male between 20 and 39 years", new Mapped(malepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses = new CompositionCohortDefinition();
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.setName("femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses");
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("1", new Mapped<CohortDefinition>(newschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("4", new Mapped<CohortDefinition>(newCasePatiens, ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")));
+		femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator = Indicators.newCohortIndicator("femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator",
+				femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.N.F.2039", "New case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Female between 20 and 39 years", new Mapped(femalepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+
+		CompositionCohortDefinition malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses = new CompositionCohortDefinition();
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.setName("malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses");
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("1", new Mapped<CohortDefinition>(newschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator malepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator = Indicators.newCohortIndicator("malepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator",
+				malepatientsAbove40YearsWithschizophreniaAndOtherPsychoses, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.N.M.40", "New case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Male above 40", new Mapped(malepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses = new CompositionCohortDefinition();
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.setName("femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses");
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("1", new Mapped<CohortDefinition>(newschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femalepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator = Indicators.newCohortIndicator("femalepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator",
+				femalepatientsAbove40YearsWithschizophreniaAndOtherPsychoses, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.N.F.40", "New case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Female above 40", new Mapped(femalepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// III.B. 3 Old case patient with Schizophrenia and other psychoses / Schizophrénie et autres Psychoses
+		SqlCohortDefinition  oldschizophreniaAndOtherPsychosesPatient= patientWithICDCodeObsByStartDateAndEndDate("F209",caseStatus,oldCase);
+
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient = new CompositionCohortDefinition();
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.setName("maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient");
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleBetween0And19schizophreniaAndOtherPsychosesOldCasePatientIndicator = Indicators.newCohortIndicator("maleBetween0And19schizophreniaAndOtherPsychosesOldCasePatientIndicator",
+				maleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.O.M.019", "Old case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Male", new Mapped(maleBetween0And19schizophreniaAndOtherPsychosesOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient = new CompositionCohortDefinition();
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.setName("femaleBelow5schizophreniaAndOtherPsychosesOldCasePatient");
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatientIndicator = Indicators.newCohortIndicator("femaleBelow5schizophreniaAndOtherPsychosesOldCasePatientIndicator",
+				femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.O.F.019", "Old case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Female", new Mapped(femaleBeteen0And19schizophreniaAndOtherPsychosesOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+		CompositionCohortDefinition maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses = new CompositionCohortDefinition();
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.setName("maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses");
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("1", new Mapped<CohortDefinition>(oldschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator = Indicators.newCohortIndicator("maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator",
+				maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.O.M.2039", "Old case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Male between 20 and 39 years", new Mapped(maleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses = new CompositionCohortDefinition();
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.setName("femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses");
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("1", new Mapped<CohortDefinition>(oldschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator",
+				femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychoses, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.O.F.2039", "Old case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Female between 20 and 39 years", new Mapped(femaleOldCasepatientsBetween20And39YearsWithschizophreniaAndOtherPsychosesIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+		CompositionCohortDefinition maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses = new CompositionCohortDefinition();
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.setName("maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses");
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("1", new Mapped<CohortDefinition>(oldschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator = Indicators.newCohortIndicator("maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator",
+				maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.O.M.40", "Old case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Male above 40", new Mapped(maleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses = new CompositionCohortDefinition();
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.setName("femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses");
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("1", new Mapped<CohortDefinition>(oldschizophreniaAndOtherPsychosesPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator",
+				femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychoses, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.3.O.F.40", "Old case Schizophrenia and other psychoses / Schizophrénie et autres Psychoses Female above 40", new Mapped(femaleOldCasepatientsAbove40YearsWithschizophreniaAndOtherPsychosesIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+
+
+
+		// III.B. 4 New case patient with Somatoform disorders/Troubles somatiques
+
+
+
+		SqlCohortDefinition newsomatoformDisordersPatient= patientWithICDCodeObsByStartDateAndEndDate("F459",caseStatus,newCase);
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19somatoformDisordersPatient = new CompositionCohortDefinition();
+		maleBeteen0And19somatoformDisordersPatient.setName("maleBeteen0And19somatoformDisordersPatient");
+		maleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19somatoformDisordersPatient.getSearches().put("1", new Mapped<CohortDefinition>(newsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19somatoformDisordersPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19somatoformDisordersPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19somatoformDisordersPatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleBetween0And19somatoformDisordersPatientIndicator = Indicators.newCohortIndicator("maleBetween0And19somatoformDisordersPatientIndicator",
+				maleBeteen0And19somatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.N.M.019", "New case Somatoform disorders/Troubles somatiques Male", new Mapped(maleBetween0And19somatoformDisordersPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19somatoformDisordersPatient = new CompositionCohortDefinition();
+		femaleBeteen0And19somatoformDisordersPatient.setName("femaleBelow5somatoformDisordersPatient");
+		femaleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19somatoformDisordersPatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19somatoformDisordersPatient.getSearches().put("1", new Mapped<CohortDefinition>(newsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19somatoformDisordersPatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19somatoformDisordersPatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19somatoformDisordersPatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBeteen0And19somatoformDisordersPatientIndicator = Indicators.newCohortIndicator("femaleBelow5somatoformDisordersPatientIndicator",
+				femaleBeteen0And19somatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.N.F.019", "New case Somatoform disorders/Troubles somatiques Female", new Mapped(femaleBeteen0And19somatoformDisordersPatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+
+
+		CompositionCohortDefinition malepatientsBetween20And39YearsWithsomatoformDisorders = new CompositionCohortDefinition();
+		malepatientsBetween20And39YearsWithsomatoformDisorders.setName("malepatientsBetween20And39YearsWithsomatoformDisorders");
+		malepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("1", new Mapped<CohortDefinition>(newsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsBetween20And39YearsWithsomatoformDisorders.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator malepatientsBetween20And39YearsWithsomatoformDisordersIndicator = Indicators.newCohortIndicator("malepatientsBetween20And39YearsWithsomatoformDisordersIndicator",
+				malepatientsBetween20And39YearsWithsomatoformDisorders, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.N.M.2039", "New case Somatoform disorders/Troubles somatiques Male between 20 and 39 years", new Mapped(malepatientsBetween20And39YearsWithsomatoformDisordersIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsBetween20And39YearsWithsomatoformDisorders = new CompositionCohortDefinition();
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.setName("femalepatientsBetween20And39YearsWithsomatoformDisorders");
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("1", new Mapped<CohortDefinition>(newsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsBetween20And39YearsWithsomatoformDisorders.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femalepatientsBetween20And39YearsWithsomatoformDisordersIndicator = Indicators.newCohortIndicator("femalepatientsBetween20And39YearsWithsomatoformDisordersIndicator",
+				femalepatientsBetween20And39YearsWithsomatoformDisorders, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.N.F.2039", "New case Somatoform disorders/Troubles somatiques Female between 20 and 39 years", new Mapped(femalepatientsBetween20And39YearsWithsomatoformDisordersIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+
+		CompositionCohortDefinition malepatientsAbove40YearsWithsomatoformDisorders = new CompositionCohortDefinition();
+		malepatientsAbove40YearsWithsomatoformDisorders.setName("malepatientsAbove40YearsWithsomatoformDisorders");
+		malepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("1", new Mapped<CohortDefinition>(newsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsAbove40YearsWithsomatoformDisorders.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator malepatientsAbove40YearsWithsomatoformDisordersIndicator = Indicators.newCohortIndicator("malepatientsAbove40YearsWithsomatoformDisordersIndicator",
+				malepatientsAbove40YearsWithsomatoformDisorders, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.N.M.40", "New case Somatoform disorders/Troubles somatiques Male above 40", new Mapped(malepatientsAbove40YearsWithsomatoformDisordersIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsAbove40YearsWithsomatoformDisorders = new CompositionCohortDefinition();
+		femalepatientsAbove40YearsWithsomatoformDisorders.setName("femalepatientsAbove40YearsWithsomatoformDisorders");
+		femalepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("1", new Mapped<CohortDefinition>(newsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsAbove40YearsWithsomatoformDisorders.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femalepatientsAbove40YearsWithsomatoformDisordersIndicator = Indicators.newCohortIndicator("femalepatientsAbove40YearsWithsomatoformDisordersIndicator",
+				femalepatientsAbove40YearsWithsomatoformDisorders, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.N.F.40", "New case Somatoform disorders/Troubles somatiques Female above 40", new Mapped(femalepatientsAbove40YearsWithsomatoformDisordersIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// III.B. 4 Old case patient with Somatoform disorders/Troubles somatiques
+
+		SqlCohortDefinition oldsomatoformDisordersPatient= patientWithICDCodeObsByStartDateAndEndDate("F459",caseStatus,newCase);
+
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19somatoformDisordersOldCasePatient = new CompositionCohortDefinition();
+		maleBeteen0And19somatoformDisordersOldCasePatient.setName("maleBeteen0And19somatoformDisordersOldCasePatient");
+		maleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19somatoformDisordersOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19somatoformDisordersOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19somatoformDisordersOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19somatoformDisordersOldCasePatient.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleBetween0And19somatoformDisordersOldCasePatientIndicator = Indicators.newCohortIndicator("maleBetween0And19somatoformDisordersOldCasePatientIndicator",
+				maleBeteen0And19somatoformDisordersOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.O.M.019", "Old case Somatoform disorders/Troubles somatiques Male", new Mapped(maleBetween0And19somatoformDisordersOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19somatoformDisordersOldCasePatient = new CompositionCohortDefinition();
+		femaleBeteen0And19somatoformDisordersOldCasePatient.setName("femaleBelow5somatoformDisordersOldCasePatient");
+		femaleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19somatoformDisordersOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19somatoformDisordersOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19somatoformDisordersOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19somatoformDisordersOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19somatoformDisordersOldCasePatient.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleBeteen0And19somatoformDisordersOldCasePatientIndicator = Indicators.newCohortIndicator("femaleBelow5somatoformDisordersOldCasePatientIndicator",
+				femaleBeteen0And19somatoformDisordersOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.O.F.019", "Old case Somatoform disorders/Troubles somatiques Female", new Mapped(femaleBeteen0And19somatoformDisordersOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+		CompositionCohortDefinition maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders = new CompositionCohortDefinition();
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.setName("maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders");
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("1", new Mapped<CohortDefinition>(oldsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleOldCasepatientsBetween20And39YearsWithsomatoformDisordersIndicator = Indicators.newCohortIndicator("maleOldCasepatientsBetween20And39YearsWithsomatoformDisordersIndicator",
+				maleOldCasepatientsBetween20And39YearsWithsomatoformDisorders, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.O.M.2039", "Old case Somatoform disorders/Troubles somatiques Male between 20 and 39 years", new Mapped(maleOldCasepatientsBetween20And39YearsWithsomatoformDisordersIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders = new CompositionCohortDefinition();
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.setName("femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders");
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("1", new Mapped<CohortDefinition>(oldsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleOldCasepatientsBetween20And39YearsWithsomatoformDisordersIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsBetween20And39YearsWithsomatoformDisordersIndicator",
+				femaleOldCasepatientsBetween20And39YearsWithsomatoformDisorders, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.O.F.2039", "Old case Somatoform disorders/Troubles somatiques Female between 20 and 39 years", new Mapped(femaleOldCasepatientsBetween20And39YearsWithsomatoformDisordersIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+		CompositionCohortDefinition maleOldCasepatientsAbove40YearsWithsomatoformDisorders = new CompositionCohortDefinition();
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.setName("maleOldCasepatientsAbove40YearsWithsomatoformDisorders");
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("1", new Mapped<CohortDefinition>(oldsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsAbove40YearsWithsomatoformDisorders.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleOldCasepatientsAbove40YearsWithsomatoformDisordersIndicator = Indicators.newCohortIndicator("maleOldCasepatientsAbove40YearsWithsomatoformDisordersIndicator",
+				maleOldCasepatientsAbove40YearsWithsomatoformDisorders, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.O.M.40", "Old case Somatoform disorders/Troubles somatiques Male above 40", new Mapped(maleOldCasepatientsAbove40YearsWithsomatoformDisordersIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsAbove40YearsWithsomatoformDisorders = new CompositionCohortDefinition();
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.setName("femaleOldCasepatientsAbove40YearsWithsomatoformDisorders");
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("1", new Mapped<CohortDefinition>(oldsomatoformDisordersPatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsAbove40YearsWithsomatoformDisorders.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femaleOldCasepatientsAbove40YearsWithsomatoformDisordersIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsAbove40YearsWithsomatoformDisordersIndicator",
+				femaleOldCasepatientsAbove40YearsWithsomatoformDisorders, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.4.O.F.40", "Old case Somatoform disorders/Troubles somatiques Female above 40", new Mapped(femaleOldCasepatientsAbove40YearsWithsomatoformDisordersIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+
+
+		// III.B. 5 New case patient with Behavioral and emotional disorders with on set usually occurring in childhood and adolescence
+
+
+
+		SqlCohortDefinition newBehavioralDisordersOccurringInChildhoodAndAdolescencePatient=patientWithICDCodesObsByStartDateAndEndDate("F10,F11,F12,F13,F14,F15,F16,F17,F18,F19",caseStatus,newCase);
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient = new CompositionCohortDefinition();
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.setName("maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient");
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.getSearches().put("1", new Mapped<CohortDefinition>(newBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleBetween0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatientIndicator = Indicators.newCohortIndicator("maleBetween0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatientIndicator",
+				maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.N.M.019", "New case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Male", new Mapped(maleBetween0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient = new CompositionCohortDefinition();
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.setName("femaleBelow5BehavioralDisordersOccurringInChildhoodAndAdolescencePatient");
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.getSearches().put("1", new Mapped<CohortDefinition>(newBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatientIndicator = Indicators.newCohortIndicator("femaleBelow5BehavioralDisordersOccurringInChildhoodAndAdolescencePatientIndicator",
+				femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.N.F.019", "New case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Female", new Mapped(femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescencePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+
+
+		CompositionCohortDefinition malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence = new CompositionCohortDefinition();
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setName("malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence");
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("1", new Mapped<CohortDefinition>(newBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator = Indicators.newCohortIndicator("malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator",
+				malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.N.M.2039", "New case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Male between 20 and 39 years", new Mapped(malepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence = new CompositionCohortDefinition();
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setName("femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence");
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("1", new Mapped<CohortDefinition>(newBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setCompositionString("1 and 2 and (not 3)");
+
+		CohortIndicator femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator = Indicators.newCohortIndicator("femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator",
+				femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.N.F.2039", "New case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Female between 20 and 39 years", new Mapped(femalepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+
+		CompositionCohortDefinition malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence = new CompositionCohortDefinition();
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setName("malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence");
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("1", new Mapped<CohortDefinition>(newBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator = Indicators.newCohortIndicator("malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator",
+				malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.N.M.40", "New case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Male above 40", new Mapped(malepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence = new CompositionCohortDefinition();
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setName("femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence");
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("1", new Mapped<CohortDefinition>(newBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator = Indicators.newCohortIndicator("femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator",
+				femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.N.F.40", "New case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Female above 40", new Mapped(femalepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// III.B. 5 Old case patient with Behavioral and emotional disorders with on set usually occurring in childhood and adolescence
+
+
+		SqlCohortDefinition oldBehavioralDisordersOccurringInChildhoodAndAdolescencePatient=patientWithICDCodesObsByStartDateAndEndDate("F10,F11,F12,F13,F14,F15,F16,F17,F18,F19",caseStatus,oldCase);
+
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient = new CompositionCohortDefinition();
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.setName("maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient");
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleBetween0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatientIndicator = Indicators.newCohortIndicator("maleBetween0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatientIndicator",
+				maleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.O.M.019", "Old case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Male", new Mapped(maleBetween0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient = new CompositionCohortDefinition();
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.setName("femaleBelow5BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient");
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatientIndicator = Indicators.newCohortIndicator("femaleBelow5BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatientIndicator",
+				femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.O.F.019", "Old case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Female", new Mapped(femaleBeteen0And19BehavioralDisordersOccurringInChildhoodAndAdolescenceOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+		CompositionCohortDefinition maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence = new CompositionCohortDefinition();
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setName("maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence");
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("1", new Mapped<CohortDefinition>(oldBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator = Indicators.newCohortIndicator("maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator",
+				maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.O.M.2039", "Old case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Male between 20 and 39 years", new Mapped(maleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence = new CompositionCohortDefinition();
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setName("femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence");
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("1", new Mapped<CohortDefinition>(oldBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator",
+				femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.O.F.2039", "Old case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Female between 20 and 39 years", new Mapped(femaleOldCasepatientsBetween20And39YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+		CompositionCohortDefinition maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence = new CompositionCohortDefinition();
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setName("maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence");
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("1", new Mapped<CohortDefinition>(oldBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator = Indicators.newCohortIndicator("maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator",
+				maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.O.M.40", "Old case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Male above 40", new Mapped(maleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence = new CompositionCohortDefinition();
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setName("femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence");
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("1", new Mapped<CohortDefinition>(oldBehavioralDisordersOccurringInChildhoodAndAdolescencePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator",
+				femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescence, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.5.O.F.40", "Old case Behavioral and emotional disorders with on set usually occurring in childhood and adolescence Female above 40", new Mapped(femaleOldCasepatientsAbove40YearsWithBehavioralDisordersOccurringInChildhoodAndAdolescenceIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		// III.B. 6 New case patient with Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool
+
+
+
+		SqlCohortDefinition newmentalAndBehavioralDisorderDueToUseOfAlcohol=patientWithICDCodesObsByStartDateAndEndDate("F80,F81,F82,F83,F84,F85,F86,F87,F88,F89",caseStatus,newCase);
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.setName("maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol");
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleBetween0And19mentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("maleBetween0And19mentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.N.M.019", "New case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Male", new Mapped(maleBetween0And19mentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.setName("femaleBelow5mentalAndBehavioralDisorderDueToUseOfAlcohol");
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("femaleBelow5mentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.N.F.019", "New case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Female", new Mapped(femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+
+
+		CompositionCohortDefinition malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setName("malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol");
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.N.M.2039", "New case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Male between 20 and 39 years", new Mapped(malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setName("femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol");
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.N.F.2039", "New case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Female between 20 and 39 years", new Mapped(femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+
+		CompositionCohortDefinition malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setName("malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol");
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.N.M.40", "New case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Male above 40", new Mapped(malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setName("femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol");
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.N.F.40", "New case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Female above 40", new Mapped(femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// III.B. 6 Old case patient with Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool
+
+		SqlCohortDefinition OldmentalAndBehavioralDisorderDueToUseOfAlcohol=patientWithICDCodesObsByStartDateAndEndDate("F80,F81,F82,F83,F84,F85,F86,F87,F88,F89",caseStatus,oldCase);
+
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient = new CompositionCohortDefinition();
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.setName("maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient");
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleBetween0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatientIndicator = Indicators.newCohortIndicator("maleBetween0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatientIndicator",
+				maleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.O.M.019", "Old case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Male", new Mapped(maleBetween0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient = new CompositionCohortDefinition();
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.setName("femaleBelow5mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient");
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatientIndicator = Indicators.newCohortIndicator("femaleBelow5mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatientIndicator",
+				femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.O.F.019", "Old case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Female", new Mapped(femaleBeteen0And19mentalAndBehavioralDisorderDueToUseOfAlcoholOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+		CompositionCohortDefinition maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setName("maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol");
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.O.M.2039", "Old case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Male between 20 and 39 years", new Mapped(maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setName("femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol");
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.O.F.2039", "Old case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Female between 20 and 39 years", new Mapped(femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+		CompositionCohortDefinition maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setName("maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol");
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.O.M.40", "Old case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Male above 40", new Mapped(maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol = new CompositionCohortDefinition();
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setName("femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol");
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator",
+				femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcohol, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.6.O.F.40", "Old case Mental and behavioral disorder due to use of alcohol/Troubles mentaux et du comportement due à l’usage de l’alcool Female above 40", new Mapped(femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToUseOfAlcoholIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+
+
+
+		// III.B. 7 New case patient with Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues
+
+
+
+		SqlCohortDefinition newmentalAndBehavioralDisorderDueToSubstanceAbuse=patientWithICDCodesObsByStartDateAndEndDate("F11,F12,F13,F14,F15,F16,F17,F18,F19",caseStatus,newCase);
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.setName("maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse");
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleBetween0And19mentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("maleBetween0And19mentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.N.M.019", "New case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Male", new Mapped(maleBetween0And19mentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.setName("femaleBelow5mentalAndBehavioralDisorderDueToSubstanceAbuse");
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("femaleBelow5mentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.N.F.019", "New case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Female", new Mapped(femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+
+
+		CompositionCohortDefinition malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setName("malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse");
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.N.M.2039", "New case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Male between 20 and 39 years", new Mapped(malepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setName("femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse");
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.N.F.2039", "New case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Female between 20 and 39 years", new Mapped(femalepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+
+		CompositionCohortDefinition malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setName("malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse");
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.N.M.40", "New case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Male above 40", new Mapped(malepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setName("femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse");
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(newmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.N.F.40", "New case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Female above 40", new Mapped(femalepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// III.B. 7 Old case patient with Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues
+
+		SqlCohortDefinition OldmentalAndBehavioralDisorderDueToSubstanceAbuse=patientWithICDCodesObsByStartDateAndEndDate("F11,F12,F13,F14,F15,F16,F17,F18,F19",caseStatus,oldCase);
+
+
+// 0-19
+
+		CompositionCohortDefinition maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient = new CompositionCohortDefinition();
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.setName("maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient");
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleBetween0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatientIndicator = Indicators.newCohortIndicator("maleBetween0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatientIndicator",
+				maleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.O.M.019", "Old case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Male", new Mapped(maleBetween0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient = new CompositionCohortDefinition();
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.setName("femaleBelow5mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient");
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndNineteenYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatientIndicator = Indicators.newCohortIndicator("femaleBelow5mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatientIndicator",
+				femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.O.F.019", "Old case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Female", new Mapped(femaleBeteen0And19mentalAndBehavioralDisorderDueToSubstanceAbuseOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//20-39
+
+		CompositionCohortDefinition maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setName("maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse");
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and 3");
+
+		CohortIndicator maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.O.M.2039", "Old case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Male between 20 and 39 years", new Mapped(maleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setName("femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse");
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientBetween20And39Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.O.F.2039", "Old case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Female between 20 and 39 years", new Mapped(femaleOldCasepatientsBetween20And39YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+		// 40 +
+
+		CompositionCohortDefinition maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setName("maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse");
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and 3");
+
+
+		CohortIndicator maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.O.M.40", "Old case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Male above 40", new Mapped(maleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+
+
+		CompositionCohortDefinition femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse = new CompositionCohortDefinition();
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setName("femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse");
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("startDate", "startDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("endDate", "endDate", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("1", new Mapped<CohortDefinition>(OldmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.getSearches().put("3", new Mapped<CohortDefinition>(males, null));
+		femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse.setCompositionString("1 and 2 and (not 3)");
+
+
+		CohortIndicator femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator",
+				femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuse, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dsd.addColumn("III.B.7.O.F.40", "Old case Mental and behavioral disorder due to substance abuse/Troubles mentaux et du comportement due à l’usage de drogues Female above 40", new Mapped(femaleOldCasepatientsAbove40YearsWithmentalAndBehavioralDisorderDueToSubstanceAbuseIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
 
 
 
@@ -1375,12 +2848,9 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 	}
 
 
-	private SqlCohortDefinition patientWithIDCObsByStartDateAndEndDate(String ICDCode){
+	private SqlCohortDefinition patientWithICDCodeObsByStartDateAndEndDate(String ICDCode){
 
 		SqlCohortDefinition patientWithIDCObs=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (select distinct concept_id from concept_name where name like '%"+ICDCode+"%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
-
-		//SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o where o.value_coded in (10201) and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate");
-		//SqlCohortDefinition foodPoisoningPatient=new SqlCohortDefinition("select o.person_id from obs o,concept c where c.class_id=19 and o.value_coded=c.concept_id and o.voided=0 and o.obs_datetime>='2019-01-01' and o.obs_datetime<='2019-04-05'");
 		patientWithIDCObs.setName("patientWithIDCObs");
 		patientWithIDCObs.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientWithIDCObs.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1388,5 +2858,50 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 		return patientWithIDCObs;
 
 	}
+
+	private SqlCohortDefinition patientWithICDCodeObsByStartDateAndEndDate(String ICDCode,Concept caseStatusQuestion, Concept caseAnswer){
+
+		SqlCohortDefinition patientWithIDCObs=new SqlCohortDefinition("select o.person_id from obs o " +
+				"inner join obs o2 on o.encounter_id=o2.encounter_id" +
+				" where o.value_coded in (select distinct concept_id from concept_name where name like '%"+ICDCode+"%') and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate and o2.concept_id="+caseStatusQuestion.getConceptId()+" and o2.value_coded="+caseAnswer.getConceptId()+"");
+		patientWithIDCObs.setName("patientWithIDCObs");
+		patientWithIDCObs.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientWithIDCObs.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		return patientWithIDCObs;
+
+	}
+	private SqlCohortDefinition patientWithICDCodesObsByStartDateAndEndDate(String ICDCodes,Concept caseStatusQuestion, Concept caseAnswer){
+
+		String icdTencodes[] =ICDCodes.split(",");
+
+		StringBuilder q=new StringBuilder();
+		q.append("select o.person_id from obs o " +
+				"inner join obs o2 on o.encounter_id=o2.encounter_id" +
+				" where o.value_coded in (select distinct concept_id from concept_name where ");
+		int i=0;
+		for (String c:icdTencodes){
+			if(i==0){
+				q.append("name like '%"+c+"%'");
+				i++;
+			}else {
+				q.append(" or name like '%"+c+"%'");
+				i++;
+			}
+		}
+		q.append(") and o.value_coded in (select distinct concept_id from concept where class_id="+ICDConceptClassId+") and o.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate and o2.concept_id="+caseStatusQuestion.getConceptId()+" and o2.value_coded="+caseAnswer.getConceptId()+"");
+
+		SqlCohortDefinition patientWithIDCObs=new SqlCohortDefinition(q.toString());
+		patientWithIDCObs.setName("patientWithIDCObs");
+		patientWithIDCObs.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientWithIDCObs.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		return patientWithIDCObs;
+
+	}
+
+
+
+
 
 }
