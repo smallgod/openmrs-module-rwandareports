@@ -66,7 +66,7 @@ public class DiabetesAlerts implements CustomCalculation {
 				if (patientHasDiabetesDDBForm(result) == false) {
 					alerts.append("no Enrollment form \n");
 				}
-			}				
+			}
 		}
 		
 		alert.setValue(alerts.toString());

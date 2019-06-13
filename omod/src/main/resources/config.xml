@@ -1011,6 +1011,22 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.invalidimbIdIdentifier</property>
+		<defaultValue>Incorrect IMB ID</defaultValue>
+		<description>Identifier type that should be returned for the incorect
+			IMB Id</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.RwandaNationalID</property>
+		<defaultValue>Rwanda National ID</defaultValue>
+		<description>Identifier type that should be returned for the Rwanda National ID
+			IMB Id</description>
+	</globalProperty>
+
+
+
+	<globalProperty>
 		<property>reports.pmtctMotherRelationship</property>
 		<defaultValue>13</defaultValue>
 		<description>The id of the Relationship that represents the mother in
@@ -3244,13 +3260,13 @@
 	</globalProperty>
 	
 	<globalProperty>
-		<property>reports.primaryDoctorName</property>
+		<property>reports.namesAndFirstNamesOfContact</property>
 		<defaultValue>3cd997f2-26fe-102b-80cb-0017a47871b2</defaultValue>
-		<description>The concept id for the primary doctor name for Oncology Path forms</description>
+		<description>The concept id for the NAMES AND FIRSTNAMES OF CONTACT</description>
 	</globalProperty>
 	
 	<globalProperty>
-		<property>reports.primaryDoctorTelephone</property>
+		<property>reports.telephoneNumberOfContact</property>
 		<defaultValue>276f8057-55a4-4b1c-8915-69ad090fcffb</defaultValue>
 		<description>The concept id for the primary doctor telephone for Oncology Path forms</description>
 	</globalProperty>
@@ -4232,6 +4248,25 @@
 		<defaultValue>Diagnosis</defaultValue>
 		<description>OPD encounter type id or Name</description>
 	</globalProperty>
+
+	<globalProperty>
+		<property>reports.homeGlucometerStudyWorkflow</property>
+		<defaultValue>de0b55a2-9a65-4232-854d-9f3b2351f1dd</defaultValue>
+		<description>Diabetes home glucometer study workflow</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.inStudyState</property>
+		<defaultValue>3141cca2-562b-4ac0-87fc-65672e4e90a5</defaultValue>
+		<description>In study state of home glucometer study workflow of diabetes</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.notInstudy</property>
+		<defaultValue>b10b16c7-2369-46fa-a71b-6de4647dbec7</defaultValue>
+		<description>Not instudy state of home glucometer study workflow of diabetes</description>
+	</globalProperty>
+
 
 
 

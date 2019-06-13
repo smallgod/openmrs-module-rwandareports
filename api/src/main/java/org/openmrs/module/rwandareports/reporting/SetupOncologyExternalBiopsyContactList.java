@@ -171,9 +171,9 @@ public class SetupOncologyExternalBiopsyContactList {
 		
 		primaryDoctorConstruct = gp.getConcept(GlobalPropertiesManagement.PRIMARY_DOCTOR_CONSTRUCT);
 		
-		primaryDoctorName = gp.getConcept(GlobalPropertiesManagement.PRIMARY_DOCTOR_NAME);
+		primaryDoctorName = gp.getConcept(GlobalPropertiesManagement.NAMESANDFIRSTNAMESOFCONTACT);
 		
-		primaryDoctorTelephone = gp.getConcept(GlobalPropertiesManagement.PRIMARY_DOCTOR_TELEPHONE);
+		primaryDoctorTelephone = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_OF_CONTACT);
 		
 		primaryDoctorEmail = gp.getConcept(GlobalPropertiesManagement.PRIMARY_DOCTOR_EMAIL);
 		

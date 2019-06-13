@@ -123,6 +123,11 @@ public class RowPerPatientColumns {
 		return gender;
 	}
 
+	public static PatientProperty getCitizenship(String name) {
+		PatientProperty gender = new PatientProperty("gender");
+		gender.setName(name);
+		return gender;
+	}
 	public static DateOfBirthShowingEstimation getDateOfBirth(String name,
 			String dateFormat, String estimatedDateFormat) {
 		DateOfBirthShowingEstimation birthdate = new DateOfBirthShowingEstimation();
@@ -201,6 +206,22 @@ public class RowPerPatientColumns {
 		
 		return ids;
 	}
+
+
+	public static MultiplePatientDataDefinitions getRwandaNationalID(String name) {
+		PatientIdentifierType RwandaNationalID = gp
+				.getPatientIdentifier(GlobalPropertiesManagement.RWANDA_NATIONAL_ID);
+		PatientIdentifier id = new PatientIdentifier(RwandaNationalID);
+
+		MultiplePatientDataDefinitions ids = new MultiplePatientDataDefinitions();
+		ids.setName(name);
+		ids.addPatientDataDefinition(id, new HashMap<String, Object>());
+
+		return ids;
+	}
+
+
+
 
 	public static SystemIdentifier getSystemId(String name) {
 		SystemIdentifier systemId = new SystemIdentifier();
