@@ -861,6 +861,9 @@ public class GlobalPropertiesManagement {
 
 	public final static String OPD_VISIT="reports.OPDEncounterType";
 
+	public final static String PHARMACY_VISIT="reports.PHARMACYEncounterType";
+
+
 
 	public final static String MENTAL_HEALTH_NEXT_VISIT_FORMS ="reports.mentalHealthNextVisitForms";
 

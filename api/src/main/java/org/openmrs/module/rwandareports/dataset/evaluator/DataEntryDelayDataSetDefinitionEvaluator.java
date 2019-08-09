@@ -138,7 +138,9 @@ public class DataEntryDelayDataSetDefinitionEvaluator implements DataSetEvaluato
 			Location loc = Context.getLocationService().getLocation(location);
 			
 			SqlEncounterQuery locationCohort = new SqlEncounterQuery();
-			String sql = "select encounter_id from encounter where form_id is not null and date_created >= :startDate and date_created <= :endDate and voided=0 and location_id =" + loc.getLocationId();
+			//String sql = "select encounter_id from encounter where form_id is not null and date_created >= :startDate and date_created <= :endDate and voided=0 and location_id =" + loc.getLocationId();
+			String sql = "select encounter_id from encounter where date_created >= :startDate and date_created <= :endDate and voided=0 and location_id =" + loc.getLocationId();
+
 			if(encounterTypes != null && encounterTypes.size() > 0)
 			{
 				sql = sql + " and encounter_type in (" + getCommaSeparatedEncounterTypes(encounterTypes) + ")";
@@ -154,8 +156,10 @@ public class DataEntryDelayDataSetDefinitionEvaluator implements DataSetEvaluato
 			String hVal = resolveDatabaseColumnName(hierarchyValue);
 			
 			SqlEncounterQuery locationCohort = new SqlEncounterQuery();
-			String sql = "select encounter_id from encounter where form_id is not null and date_created >= :startDate and date_created <= :endDate and voided=0 and location_id in (select location_id from location where retired = 0 and "
-			                + hVal + " = '" + location + "')";
+			/*String sql = "select encounter_id from encounter where form_id is not null and date_created >= :startDate and date_created <= :endDate and voided=0 and location_id in (select location_id from location where retired = 0 and "
+			                + hVal + " = '" + location + "')";*/
+			String sql = "select encounter_id from encounter where date_created >= :startDate and date_created <= :endDate and voided=0 and location_id in (select location_id from location where retired = 0 and "
+					+ hVal + " = '" + location + "')";
 			if(encounterTypes != null && encounterTypes.size() > 0)
 			{
 				sql = sql + " and encounter_type in (" + getCommaSeparatedEncounterTypes(encounterTypes) + ")";
@@ -169,7 +173,9 @@ public class DataEntryDelayDataSetDefinitionEvaluator implements DataSetEvaluato
 		} else {
 			
 			SqlEncounterQuery locationCohort = new SqlEncounterQuery();
-			String sql = "select encounter_id from encounter where form_id is not null and date_created >= :startDate and date_created <= :endDate and voided=0";
+			//String sql = "select encounter_id from encounter where form_id is not null and date_created >= :startDate and date_created <= :endDate and voided=0";
+			String sql = "select encounter_id from encounter where date_created >= :startDate and date_created <= :endDate and voided=0";
+
 			if(encounterTypes != null && encounterTypes.size() > 0)
 			{
 				sql = sql + " and encounter_type in (" + getCommaSeparatedEncounterTypes(encounterTypes) + ")";

@@ -4233,6 +4233,17 @@
 		<description>OPD encounter type id or Name</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.LabEncounterType</property>
+		<defaultValue>LAB TEST</defaultValue>
+		<description>LAB TEST encounter type id or Name</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.PHARMACYEncounterType</property>
+		<defaultValue>PHARMACY</defaultValue>
+		<description>PHARMACY encounter type id or Name</description>
+	</globalProperty>
+
 
 
 </module>
