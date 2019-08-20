@@ -313,7 +313,7 @@ public class SetupOncologyTestPatientList {
 		
 		primaryDoctorConstruct = gp.getConcept(GlobalPropertiesManagement.PRIMARY_DOCTOR_CONSTRUCT);
 		
-		primaryDoctorDetails = gp.getConcept(GlobalPropertiesManagement.PRIMARY_DOCTOR_NAME);
+		primaryDoctorDetails = gp.getConcept(GlobalPropertiesManagement.NAMESANDFIRSTNAMESOFCONTACT);
 		
 		biopsyScheduled = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_TEST_VISIT);
 		

@@ -325,6 +325,13 @@ public class GlobalPropertiesManagement {
     public final static String PMTCT_MOTHER_GROUP_STATES="reports.pmtctmotherstates";
 	
 	public final static String EXPOSED_INFANT_GROUP_STATES="reports.exposedInfantstates";
+
+	public final static String HOMEGLUCOMETERSTUDYWORKFLOW="reports.homeGlucometerStudyWorkflow";
+
+	public final static String INSTUDYSTATE="reports.inStudyState";
+
+	public final static String NOTINSTUDY="reports.notInstudy";
+
 	
 	//Identifiers
 	public final static String IMB_IDENTIFIER = "reports.imbIdIdentifier"; 
@@ -336,8 +343,10 @@ public class GlobalPropertiesManagement {
 	
 	public final static String TRACNET_IDENTIFIER = "reports.tracIdentifier";
 	
-	public final static String INVALID_IMB_IDENTIFIER = "reports.invalidimbIdIdentifier"; 
-	
+	public final static String INVALID_IMB_IDENTIFIER = "reports.invalidimbIdIdentifier";
+
+	public final static String RWANDA_NATIONAL_ID = "reports.RwandaNationalID";
+
 	//Concepts
 	public final static String TELEPHONE_NUMBER_CONCEPT = "reports.telephoneNumberConcept"; 
 	
@@ -597,10 +606,11 @@ public class GlobalPropertiesManagement {
     
     public final static String PRIMARY_DOCTOR_CONSTRUCT = "reports.primaryDoctorConstruct";
     
-    public final static String PRIMARY_DOCTOR_NAME = "reports.primaryDoctorName";
-    
-    public final static String PRIMARY_DOCTOR_TELEPHONE = "reports.primaryDoctorTelephone";
-    
+    public final static String NAMESANDFIRSTNAMESOFCONTACT = "reports.namesAndFirstNamesOfContact";
+
+
+    public final static String TELEPHONE_NUMBER_OF_CONTACT = "reports.telephoneNumberOfContact"; //this is mapped wrongly
+
     public final static String PRIMARY_DOCTOR_EMAIL = "reports.primaryDoctorEmail";
     
     public final static String PATHOLOGY_ACCESSION_NUMBER = "reports.pathologyAccessionNumber";

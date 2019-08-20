@@ -25,7 +25,6 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.D
 import org.openmrs.module.rwandareports.customcalculator.DiabetesAlerts;
 import org.openmrs.module.rwandareports.customcalculator.OnInsulin;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
-import org.openmrs.module.rwandareports.filter.AccompagnateurStatusFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -40,6 +39,10 @@ public class SetupDiabetesConsultAndLTFU {
 	//properties retrieved from global variables
 	private Program diabetesProgram;
 	private List<EncounterType> diabetesEncouters;
+	private ProgramWorkflow homeGlucometerStudyWorkflow;
+
+	private ProgramWorkflowState inStudyState;
+	private ProgramWorkflowState notInstudy;
 
 	private RelationshipType HBCP;
 		
@@ -49,7 +52,7 @@ public class SetupDiabetesConsultAndLTFU {
 		ReportDefinition consultReportDefinition = createConsultReportDefinition();	
 		ReportDefinition ltfuReportDefinition = createLTFUReportDefinition();
 		
-		ReportDesign consultReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(consultReportDefinition, "DiabetesConsultSheet.xls","DiabetesConsultSheet.xls_", null);	
+		ReportDesign consultReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(consultReportDefinition, "DiabetesConsultSheet.xls","DiabetesConsultSheet.xls_", null);
 		ReportDesign ltfuReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(ltfuReportDefinition, "DiabetesLTFUSheet.xls","DiabetesLTFUSheet.xls_", null);	
 		
 		Properties consultProps = new Properties();
@@ -136,7 +139,7 @@ public class SetupDiabetesConsultAndLTFU {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Has accompagnateur", new AccompagnateurDisplayFilter()), new HashMap<String, Object>());
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientRelationship("HBCP",HBCP.getRelationshipTypeId(),"A",null), new HashMap<String, Object>());
-
+		dataSetDefinition.addColumn(RowPerPatientColumns.getStateOfPatient("SMBG", diabetesProgram, homeGlucometerStudyWorkflow, null),new HashMap<String, Object>());
 
 		//Calculation definitions
 				
@@ -145,6 +148,7 @@ public class SetupDiabetesConsultAndLTFU {
 		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getMostRecentHbA1c("RecentHbA1c", "dd-MMM-yy"), new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getMostRecentCreatinine("RecentCreatinine", "@ddMMMyy"), new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getMostRecentSBP("RecentSBP", "dd-MMM-yy"), new HashMap<String, Object>());
+//		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getStateOfPatient("SMBG", diabetesProgram, homeGlucometerStudyWorkflow, null),new HashMap<String, Object>());
 		alert.setCalculator(new DiabetesAlerts());
 		alert.addParameter(new Parameter("endDate","endDate",Date.class));
 		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
@@ -227,6 +231,14 @@ public class SetupDiabetesConsultAndLTFU {
 		diabetesEncouters = gp.getEncounterTypeList(GlobalPropertiesManagement.DIABETES_VISIT);
 
 		HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
+
+		homeGlucometerStudyWorkflow = gp.getProgramWorkflow(GlobalPropertiesManagement.HOMEGLUCOMETERSTUDYWORKFLOW,GlobalPropertiesManagement.DM_PROGRAM);
+
+		inStudyState = gp.getProgramWorkflowState(GlobalPropertiesManagement.INSTUDYSTATE,GlobalPropertiesManagement.HOMEGLUCOMETERSTUDYWORKFLOW,GlobalPropertiesManagement.DM_PROGRAM);
+
+		notInstudy = gp.getProgramWorkflowState(GlobalPropertiesManagement.NOTINSTUDY,GlobalPropertiesManagement.HOMEGLUCOMETERSTUDYWORKFLOW,GlobalPropertiesManagement.DM_PROGRAM);
+
+
 	}
 	
 	//Add common columns for the two datasets
