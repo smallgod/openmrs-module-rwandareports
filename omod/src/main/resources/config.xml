@@ -4325,6 +4325,17 @@
 		<defaultValue>3ce8a170-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>CAUSE OF DEATH concept</description>
 	</globalProperty>
+  <globalProperty>
+		<property>reports.LabEncounterType</property>
+		<defaultValue>LAB TEST</defaultValue>
+		<description>LAB TEST encounter type id or Name</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.PHARMACYEncounterType</property>
+		<defaultValue>PHARMACY</defaultValue>
+		<description>PHARMACY encounter type id or Name</description>
+	</globalProperty>
+
 
 	<globalProperty>
 		<property>reports.LOCATIONOFDEATH</property>
