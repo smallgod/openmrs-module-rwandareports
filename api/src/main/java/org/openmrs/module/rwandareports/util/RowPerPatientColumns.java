@@ -7,70 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openmrs.Concept;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.Program;
-import org.openmrs.ProgramWorkflow;
+import org.openmrs.*;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.AgeAtDateOfOtherDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.AllDrugOrdersRestrictedByConcept;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.AllDrugOrdersRestrictedByConceptSet;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineDrugOrder;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineEncounter;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineObservation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineObservationAnswer;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.BaselineProgramEnrollment;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.CurrentOrdersRestrictedByConceptSet;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.DateDiffType;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfAllProgramEnrolment;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfFirstDrugOrderStartedRestrictedByConceptSet;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfMostRecentEncounterOfType;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfObsAfterDateOfOtherDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfPatientData;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramCompletion;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramEnrolment;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfWorkflowStateChange;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DatesOfVisitsByStartDateAndEndDate;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.EnrolledInProgram;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.EvaluateDefinitionForOtherPersonData;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugOrderStartedAfterDateRestrictedByConceptSet;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugOrderStartedRestrictedByConceptSet;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstRecordedObservation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstRecordedObservationWithCodedConceptAnswer;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstStateOfPatient;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.FullHistoryOfProgramWorkflowStates;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObsgroup;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentProgramWorkflowState;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsAfterPeriodOfTimeFromEncounterDate;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsValueAfterDateOfOtherDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsValueBeforeDateOfOtherDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounter;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAddress;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAgeInMonths;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAttribute;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientHash;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientIdentifier;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.PersonData;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounter;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilter;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationship;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationshipAndByProgram;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatientMatchWithEncounter;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.SystemIdentifier;
 import org.openmrs.module.rwandareports.customcalculator.BooleanCalculation;
 import org.openmrs.module.rwandareports.definition.*;
 
@@ -118,12 +59,6 @@ public class RowPerPatientColumns {
 	}
 
 	public static PatientProperty getGender(String name) {
-		PatientProperty gender = new PatientProperty("gender");
-		gender.setName(name);
-		return gender;
-	}
-
-	public static PatientProperty getCitizenship(String name) {
 		PatientProperty gender = new PatientProperty("gender");
 		gender.setName(name);
 		return gender;
@@ -2028,5 +1963,176 @@ public class RowPerPatientColumns {
 		return obsValues;
 	}
 
+
+	public static DateOfFirstOrLastDrugOrderRestrictedByConcept getDateofFirstOrdersetsRestrictedByConceptEndDate(
+			String name,Concept drugConcept,String dateFormat){
+		DateOfFirstOrLastDrugOrderRestrictedByConcept dateOfFirstDrug = new DateOfFirstOrLastDrugOrderRestrictedByConcept();
+		dateOfFirstDrug.setName(name);
+		dateOfFirstDrug.setDrugConcept(drugConcept);
+		dateOfFirstDrug.setFirsOrLast("first");
+		dateOfFirstDrug.addParameter(new Parameter("endDate", "endDate", Date.class));
+		if (dateFormat != null) {
+			dateOfFirstDrug.setDateFormat(dateFormat);
+		}
+		return dateOfFirstDrug;
+	}
+	public static DateOfFirstOrLastDrugOrderRestrictedByConcept getDateofFirstOrdersetsRestrictedByConceptInThePeriod(
+			String name,Concept drugConcept,String dateFormat){
+		DateOfFirstOrLastDrugOrderRestrictedByConcept dateOfFirstDrug = new DateOfFirstOrLastDrugOrderRestrictedByConcept();
+		dateOfFirstDrug.setName(name);
+		dateOfFirstDrug.setDrugConcept(drugConcept);
+		dateOfFirstDrug.setFirsOrLast("firstInPeriod");
+		dateOfFirstDrug.addParameter(new Parameter("startDate", "startDate", Date.class));
+		dateOfFirstDrug.addParameter(new Parameter("endDate", "endDate", Date.class));
+		if (dateFormat != null) {
+			dateOfFirstDrug.setDateFormat(dateFormat);
+		}
+		return dateOfFirstDrug;
+	}
+	public static DateOfFirstOrLastDrugOrderRestrictedByConcept getDateofLastOrdersetsRestrictedByConceptEndDate(
+			String name,Concept drugConcept,String dateFormat){
+		DateOfFirstOrLastDrugOrderRestrictedByConcept dateOfFirstDrug = new DateOfFirstOrLastDrugOrderRestrictedByConcept();
+		dateOfFirstDrug.setName(name);
+		dateOfFirstDrug.setDrugConcept(drugConcept);
+		dateOfFirstDrug.setFirsOrLast("last");
+		dateOfFirstDrug.addParameter(new Parameter("endDate", "endDate", Date.class));
+		if (dateFormat != null) {
+			dateOfFirstDrug.setDateFormat(dateFormat);
+		}
+		return dateOfFirstDrug;
+	}
+	public static DateOfFirstOrLastDrugOrderRestrictedByConcept getDateofLastOrdersetsRestrictedByConceptInThePeriod(
+			String name,Concept drugConcept,String dateFormat){
+		DateOfFirstOrLastDrugOrderRestrictedByConcept dateOfFirstDrug = new DateOfFirstOrLastDrugOrderRestrictedByConcept();
+		dateOfFirstDrug.setName(name);
+		dateOfFirstDrug.setDrugConcept(drugConcept);
+		dateOfFirstDrug.setFirsOrLast("lastInPeriod");
+		dateOfFirstDrug.addParameter(new Parameter("startDate", "startDate", Date.class));
+		dateOfFirstDrug.addParameter(new Parameter("endDate", "endDate", Date.class));		if (dateFormat != null) {
+			dateOfFirstDrug.setDateFormat(dateFormat);
+		}
+		return dateOfFirstDrug;
+	}
+	public static AllTheOrdersetsWithIndicationOfConcept getNamesOfAllOrdersetsOfConcept(String name, Concept indicationConcept){
+
+		AllTheOrdersetsWithIndicationOfConcept orderSets = new AllTheOrdersetsWithIndicationOfConcept();
+		orderSets.setName(name);
+		orderSets.setIndicationConcept(indicationConcept);
+		return orderSets;
+	}
+
+	public static AllTheOrdersetsWithIndicationOfConcept getNamesOfAllOrdersetsOfConceptInPeriod(String name, Concept indicationConcept){
+
+		AllTheOrdersetsWithIndicationOfConcept orderSets = new AllTheOrdersetsWithIndicationOfConcept();
+		orderSets.setName(name);
+		orderSets.setIndicationConcept(indicationConcept);
+		orderSets.addParameter(new Parameter("afterDate","afterDate",Date.class));
+		orderSets.addParameter(new Parameter("beforeDate","beforeDate",Date.class));
+		return orderSets;
+	}
+	public static PatientDied getPatientDeathInfo(String name, String valueType, ResultFilter filter, String dateFormat){
+		PatientDied patientdeathInfo = new PatientDied();
+		patientdeathInfo.setName(name);
+		patientdeathInfo.setValueType(valueType);
+
+		if(dateFormat!=null){
+			patientdeathInfo.setDateFormat(dateFormat);
+		}
+		if(filter!=null){
+			patientdeathInfo.setFilter(filter);
+		}
+		return patientdeathInfo;
+
+	}
+
+	public  static DateOfMostRecentObservationHavingCodedAnswer getDateOfMostRecentObservationHavingCodedAnswer
+			(String name,List<Concept> concepts,List<Concept> answers,String dateFormat){
+
+		DateOfMostRecentObservationHavingCodedAnswer mostRecentDate = new DateOfMostRecentObservationHavingCodedAnswer();
+		mostRecentDate.setName(name);
+		mostRecentDate.setConcepts(concepts);
+		mostRecentDate.setAnswers(answers);
+		mostRecentDate.setDateFormat(dateFormat);
+
+		return mostRecentDate;
+	}
+
+	public static DateOfMostRecentObservationHavingCodedAnswer getDateOfMostRecentObservationHavingCodedAnswer
+			(String name,Concept concept,List<Concept> answers,String dateFormat){
+		List<Concept> Concepts = new ArrayList<Concept>();
+		Concepts.add(concept);
+
+		return getDateOfMostRecentObservationHavingCodedAnswer(name,Concepts,answers,dateFormat);
+
+	}
+
+	public static DateOfEarliestEnrolmentOfPrograms getDateOfEarliestEnrolmentOfPrograms
+			(String name,List<Program> programs,Date startDate,Date endDate,String dateFormat){
+
+		DateOfEarliestEnrolmentOfPrograms earliestDate = new DateOfEarliestEnrolmentOfPrograms();
+		earliestDate.setName(name);
+		earliestDate.setPrograms(programs);
+		earliestDate.setStartDate(startDate);
+		earliestDate.setEndDate(endDate);
+		earliestDate.setDateFormat(dateFormat);
+
+		return earliestDate;
+	}
+
+	public static DateOfEarliestEnrolmentOfPrograms getDateOfEarliestHIVProgramEnrolmentExcludePMTCTInfant
+			(String name,String dateFormat){
+
+		List<Program> programs = new ArrayList<Program>();
+		programs.add(gp.getProgram(GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM));
+		programs.add(gp.getProgram(GlobalPropertiesManagement.PMTCT_COMBINED_MOTHER_PROGRAM));
+		programs.add(gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM));
+		programs.add(gp.getProgram(GlobalPropertiesManagement.PEDI_HIV_PROGRAM));
+		DateOfEarliestEnrolmentOfPrograms earliestDate = new DateOfEarliestEnrolmentOfPrograms();
+		earliestDate.setName(name);
+		earliestDate.setPrograms(programs);
+		earliestDate.addParameter(new Parameter("endDate", "endDate", Date.class));;
+		earliestDate.setDateFormat(dateFormat);
+
+		return earliestDate;
+	}
+
+	public static MostRecentObservationInPeriod getMostRecentInPeriod
+			(String name,Concept concept,Date startDate,Date endDate, String dateFormat){
+		MostRecentObservationInPeriod mostRecent = new MostRecentObservationInPeriod();
+		mostRecent.setName(name);
+		mostRecent.setConcept(concept);
+		mostRecent.addParameter(new Parameter("endDate", "endDate", Date.class));
+		mostRecent.addParameter(new Parameter("startDate", "startDate", Date.class));
+		if (dateFormat != null) {
+			mostRecent.setDateFormat(dateFormat);
+		}
+		return mostRecent;
+
+	}
+	public static MostRecentObservationInPeriod getMostRecentInperiodHavingCodedAnswers
+			(String name,Concept question,List<Concept> answers,Date startDate,Date endDate, String dateFormat){
+		MostRecentObservationInPeriod mostRecent = new MostRecentObservationInPeriod();
+		mostRecent.setName(name);
+		mostRecent.setConcept(question);
+		mostRecent.setAnswers(answers);
+		mostRecent.addParameter(new Parameter("endDate", "endDate", Date.class));
+		mostRecent.addParameter(new Parameter("startDate", "startDate", Date.class));
+		if (dateFormat != null) {
+			mostRecent.setDateFormat(dateFormat);
+		}
+		return mostRecent;
+	}
+
+	public static DateOfMostRecentEncounterOfTypeInPeriod getMostRecentEncounterOfTypebyEnddate(String name, List<EncounterType> encounterTypes, String dateFormat){
+		DateOfMostRecentEncounterOfTypeInPeriod mostRecentEncounter = new DateOfMostRecentEncounterOfTypeInPeriod();
+		mostRecentEncounter.setName(name);
+		mostRecentEncounter.setEncounterTypes(encounterTypes);
+		mostRecentEncounter.addParameter(new Parameter("startDate","startDate",Date.class));
+		mostRecentEncounter.addParameter(new Parameter("endDate","endDate",Date.class));
+		if(dateFormat !=null) {
+			mostRecentEncounter.setDateFormat(dateFormat);
+		}
+		return mostRecentEncounter;
+	}
 
 }

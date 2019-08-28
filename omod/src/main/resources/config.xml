@@ -1011,13 +1011,6 @@
 	</globalProperty>
 
 	<globalProperty>
-		<property>reports.invalidimbIdIdentifier</property>
-		<defaultValue>Incorrect IMB ID</defaultValue>
-		<description>Identifier type that should be returned for the incorect
-			IMB Id</description>
-	</globalProperty>
-
-	<globalProperty>
 		<property>reports.RwandaNationalID</property>
 		<defaultValue>Rwanda National ID</defaultValue>
 		<description>Identifier type that should be returned for the Rwanda National ID
@@ -4168,6 +4161,12 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.biopsyNegative</property>
+		<defaultValue>59fae8e5-4355-47d4-b3c3-ee25ed7c884b</defaultValue>
+		<description>concept id for Biopsy negative</description>
+	</globalProperty>
+
+	<globalProperty>
 		<property>reports.PATIENTREFUSED</property>
 		<defaultValue>efab937b-853e-47da-b97e-220f1bdff97d</defaultValue>
 		<description>concept id for PATIENT REFUSED</description>
@@ -4267,8 +4266,66 @@
 		<description>Not instudy state of home glucometer study workflow of diabetes</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.otherOperativeFindings</property>
+		<defaultValue>9e74aa34-fc7e-4705-85d2-875818d2395d</defaultValue>
+		<description>Other operative findings concept</description>
+	</globalProperty>
 
 	<globalProperty>
+		<property>reports.tumorOfTNM</property>
+		<defaultValue>4f0e66bb-5bd2-4300-af5c-5c5df9b31314</defaultValue>
+		<description>Tumor of TNM concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.nodeOfTNM</property>
+		<defaultValue>f208cc43-c7ee-4b2d-8653-db4874a721ea</defaultValue>
+		<description>Node of TNM concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.metastesesofTNM</property>
+		<defaultValue>a93327e3-bea1-4b7c-bc7d-ee47aba5c637</defaultValue>
+		<description>Metasteses of TNM concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.metastesesofTNM</property>
+		<defaultValue>f213cee1-df80-4a6d-a3eb-44e4581c3479</defaultValue>
+		<description>Metasteses of TNM concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.radiationorChemotherapyStatus</property>
+		<defaultValue>ef2f24b6-02a7-495c-a72b-7184ec7aca93</defaultValue>
+		<description>Radiation or Chemotherapy Status concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.RadiationStatus</property>
+		<defaultValue>4084fde4-1c2d-4830-a660-d34da22d3266</defaultValue>
+		<description>Radiation Status concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.treatmentIntent</property>
+		<defaultValue>74bf3a55-6e92-4b91-86b0-a19345f22ad2</defaultValue>
+		<description>Treatment Intent concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.Patientreferredtowhere</property>
+		<defaultValue>4c12ce40-d2d9-42dc-8202-3ffc91e1e642</defaultValue>
+		<description>Patient referred to where concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.causeOfDeath</property>
+		<defaultValue>3ce8a170-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>CAUSE OF DEATH concept</description>
+	</globalProperty>
+  <globalProperty>
 		<property>reports.LabEncounterType</property>
 		<defaultValue>LAB TEST</defaultValue>
 		<description>LAB TEST encounter type id or Name</description>
@@ -4280,5 +4337,10 @@
 	</globalProperty>
 
 
+	<globalProperty>
+		<property>reports.LOCATIONOFDEATH</property>
+		<defaultValue>7d3a9892-1674-4943-adc5-414a8076319e</defaultValue>
+		<description>LOCATION OF DEATH concept</description>
+	</globalProperty>
 
 </module>
