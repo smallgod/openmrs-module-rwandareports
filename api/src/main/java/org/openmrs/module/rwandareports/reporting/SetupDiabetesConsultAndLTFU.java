@@ -148,7 +148,6 @@ public class SetupDiabetesConsultAndLTFU {
 		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getMostRecentHbA1c("RecentHbA1c", "dd-MMM-yy"), new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getMostRecentCreatinine("RecentCreatinine", "@ddMMMyy"), new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getMostRecentSBP("RecentSBP", "dd-MMM-yy"), new HashMap<String, Object>());
-//		alert.addPatientDataToBeEvaluated(RowPerPatientColumns.getStateOfPatient("SMBG", diabetesProgram, homeGlucometerStudyWorkflow, null),new HashMap<String, Object>());
 		alert.setCalculator(new DiabetesAlerts());
 		alert.addParameter(new Parameter("endDate","endDate",Date.class));
 		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));

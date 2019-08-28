@@ -506,6 +506,12 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyquarterlyindicatorreport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
+<td>ONC-Registry</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_OncologyRegistry.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyRegistry.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
 <tr>
 <td rowspan="5" class="tabletd">PDC Reports</td>
 <td>PDC-Weekly Consulation sheet</td>

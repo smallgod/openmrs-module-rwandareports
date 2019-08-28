@@ -789,6 +789,20 @@ public class RwandaSetupReportsFormController {
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
+	@RequestMapping("/module/rwandareports/register_OncologyRegistry")
+	public ModelAndView registerOncologyRegistryReport()
+			throws Exception {
+		new SetupOncologyRegistry().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_OncologyRegistry")
+	public ModelAndView removeOncologyRegistryReport()
+			throws Exception {
+		new SetupOncologyRegistry().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
 	// Remove/Register PBF report
 	@RequestMapping("/module/rwandareports/remove_PBFReport")
 	public ModelAndView removePBFIndicator() throws Exception {

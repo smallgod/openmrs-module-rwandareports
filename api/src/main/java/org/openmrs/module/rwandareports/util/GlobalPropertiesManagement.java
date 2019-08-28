@@ -607,6 +607,18 @@ public class GlobalPropertiesManagement {
     public final static String PRIMARY_DOCTOR_CONSTRUCT = "reports.primaryDoctorConstruct";
     
     public final static String NAMESANDFIRSTNAMESOFCONTACT = "reports.namesAndFirstNamesOfContact";
+	public final static String OTHEROPERATIVEFINDINGS = "reports.otherOperativeFindings";
+	public final static String TUMOROFTNM="reports.tumorOfTNM";
+	public final static String NODEOFTNM = "reports.nodeOfTNM";
+	public final static String METASTESESOFTNM = "reports.metastesesofTNM";
+	public final static String RADIATIONORCHEMOTHERAPYSTATUS = "reports.radiationorChemotherapyStatus";
+	public final static String RADIATIONSTATUS = "reports.RadiationStatus";
+	public final static String TREATMENTINTENT = "reports.treatmentIntent";
+	public final static String PATIENTREFERREDTOWHERE = "reports.Patientreferredtowhere";
+
+
+
+
 
 
     public final static String TELEPHONE_NUMBER_OF_CONTACT = "reports.telephoneNumberOfContact"; //this is mapped wrongly
@@ -797,6 +809,8 @@ public class GlobalPropertiesManagement {
 	public static final String UNKNOWN_CAUSE_OF_DEATH_OUTCOMES = "reports.unknownCauseDeathOutcomes";
 	public static final String OTHER_CAUSE_OF_DEATH_OUTCOMES = "reports.otherCauseOfDeathOutcomes";
 	public static final String LOST_TO_FOLLOWUP_OUTCOME = "reports.LostToFolloUp";
+	public static final String CAUSEOFDEATH = "reports.causeOfDeath";
+	public static final String LOCATIONOFDEATH = "reports.LOCATIONOFDEATH";
 
 
 
@@ -1143,6 +1157,10 @@ public class GlobalPropertiesManagement {
 
 	public final static String PATIENTREFUSED = "reports.PATIENTREFUSED";
 
+	public final static String BIOPSYNEGATIVE = "reports.biopsyNegative";
+
+
+
 
 
 
@@ -1260,11 +1278,8 @@ public class GlobalPropertiesManagement {
 	public final static String NCD_SURGERY_TYPE_NON_CODED = "reports.NCDSurgeryTypeNonCoced";
 
 	public final static String DM_ENROLL_FORM = "reports.DMENROLLformId";
-
 	public final static String HTN_ENROLL_FORM = "reports.HTNENROLLformId";
-
 	public final static String ASTHMA_ENROLLMENT_FORM = "reports.asthmaENROLLformId";
-
 
 
 }

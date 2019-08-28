@@ -82,6 +82,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
     private List<Concept> referredConcepts = new ArrayList<Concept>();
     private Concept reasonForExitingCare;
     private Concept patientDied;
+    private Concept biopsyNegative;
     private Concept notCancerNoBiopsy;
     private Concept patientRefused;
     private Concept LostToFolloUp;
@@ -366,9 +367,20 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         dsd.addColumn("femaleoncologyPatientsDied", "# of oncology female Patients Died", new Mapped(femaleExitReason(inOncologyProgram,femaleCohort,patientDied),
                 ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
+        //=========================================================================
+        // A4: # of Biopsy negative                                                    //
+        //=========================================================================
+
+        SqlCohortDefinition patientWithBiopsyNegativeOutcomes = Cohorts.getPatientsWithOutcomeprogramEndReasons("patientWithBiopsyNegativeOutcomes", oncologyprogramendreason, biopsyNegative);
+
+        dsd.addColumn("oncologyBiopsyNegativePatients", "# of Biopsy negative ", new Mapped(patientsWithProgramOutcome(patientWithBiopsyNegativeOutcomes),
+                ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+        dsd.addColumn("femaleoncologyBiopsyNegativePatients", "# of oncology female Patients Died", new Mapped(femalepatientsWithProgramOutcome(patientWithBiopsyNegativeOutcomes,femaleCohort),
+                ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
         //=========================================================================
-        // A5: # of No cancer no biopsy                                          //
+        // A6: # of No cancer no biopsy                                          //
         //=========================================================================
 
         SqlCohortDefinition patientWithOncologyNoCanceNoBiopsyOutcomes = Cohorts.getPatientsWithOutcomeprogramEndReasons("patientWithOncologyNoCanceNoBiopsyOutcomes", oncologyprogramendreason, notCancerNoBiopsy);
@@ -381,7 +393,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 
 
         //=========================================================================
-        // A6: # of Patient refused                                              //
+        // A7: # of Patient refused                                              //
         //=========================================================================
 
         SqlCohortDefinition patientWithOncologypatientRefusedOutcomes = Cohorts.getPatientsWithOutcomeprogramEndReasons("patientWithOncologypatientRefusedOutcomes", oncologyprogramendreason, patientRefused);
@@ -393,7 +405,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
                 ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
         //=========================================================================
-        // A7: # of Lost To FolloUp                                             //
+        // A8: # of Lost To FolloUp                                             //
         //=========================================================================
 
         SqlCohortDefinition patientWithOncologyLostToFolloUpOutcomes = Cohorts.getPatientsWithOutcomeprogramEndReasons("patientWithOncologyLostToFolloUpOutcomes", oncologyprogramendreason, LostToFolloUp);
@@ -1052,8 +1064,6 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 
         CompositionCohortDefinition patientWithProgramOutcome = new CompositionCohortDefinition();
         patientWithProgramOutcome.setName("patientWithProgramOutcome");
-        patientWithProgramOutcome.addParameter(new Parameter("onOrBefore","onOrBefore",Date .class));
-        patientWithProgramOutcome.addParameter(new Parameter("onOrAfter","onOrAfter",Date .class));
         patientWithProgramOutcome.addParameter(new Parameter("startDate","startDate",Date .class));
         patientWithProgramOutcome.addParameter(new Parameter("endDate","endDate",Date .class));
 
@@ -1286,6 +1296,8 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         referredConcepts.add(OtherReasonForReferral);
         reasonForExitingCare= gp.getConcept(GlobalPropertiesManagement.REASON_FOR_EXITING_CARE);
         patientDied = gp.getConcept(GlobalPropertiesManagement.PATIENT_DIED);
+        biopsyNegative = gp.getConcept(GlobalPropertiesManagement.BIOPSYNEGATIVE);
+
         notCancerNoBiopsy = gp.getConcept(GlobalPropertiesManagement.NOTCANCERNOBIOPSY);
         patientRefused = gp.getConcept(GlobalPropertiesManagement.PATIENTREFUSED);
         LostToFolloUp = gp.getConcept(GlobalPropertiesManagement.LOST_TO_FOLLOWUP_OUTCOME);
