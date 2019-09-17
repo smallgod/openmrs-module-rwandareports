@@ -71,7 +71,8 @@ public class RwandaRegisterAllReportsFormController {
 		CleanReportingTablesAndRegisterAllReports.registerPCReports();
 		CleanReportingTablesAndRegisterAllReports.registerCHWReports();
 		CleanReportingTablesAndRegisterAllReports.registerOncologyReports();	
-		CleanReportingTablesAndRegisterAllReports.registerPDCReports();	
+		CleanReportingTablesAndRegisterAllReports.registerPDCReports();
+		CleanReportingTablesAndRegisterAllReports.registerMHReports();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 	@RequestMapping("/module/rwandareports/register_allHIVReports")
@@ -119,6 +120,12 @@ public class RwandaRegisterAllReportsFormController {
 	@RequestMapping("/module/rwandareports/register_allPDCReport")
 	public ModelAndView registerAllregisterPDCReports() throws Exception{
 		CleanReportingTablesAndRegisterAllReports.registerPDCReports();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/register_allMHReport")
+	public ModelAndView registerAllregisterMHReports() throws Exception{
+		CleanReportingTablesAndRegisterAllReports.registerMHReports();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 	

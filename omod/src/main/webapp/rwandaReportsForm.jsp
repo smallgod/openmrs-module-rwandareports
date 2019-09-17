@@ -63,7 +63,7 @@ $(document).ready(function(){
 <br /><br />
 
 <table class="reports" style="width:100%;">
-<tr><th>ALL</th><th>HIV</th><th>NCD</th><th>ONCOLOGY</th><th>CENTRAL</th><th>SITE</th><th>PRIMARY CARE</th><th>CHW</th><th>PDC</th></tr>
+<tr><th>ALL</th><th>HIV</th><th>NCD</th><th>ONCOLOGY</th><th>CENTRAL</th><th>SITE</th><th>PRIMARY CARE</th><th>CHW</th><th>PDC</th><th>Mental Health</th></tr>
 
 <tr>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allReports.form" onclick=msgreg(this)>(Re)Register</a></td>
@@ -75,10 +75,11 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allPCReport.form" onclick=msgreg(this)>(Re)Register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allCHWReport.form" onclick=msgreg(this)>(Re)Register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allPDCReport.form" onclick=msgreg(this)>(Re)Register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_allMHReport.form" onclick=msgreg(this)>(Re)Register</a></td>
 </tr>
 <tr>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_all.form" onclick=msgrem(this)>Remove All </a></td>
-<td colspan="8"><center><b>The category remove is not yet available</b></center></td>
+<td colspan="9"><center><b>The category remove is not yet available</b></center></td>
 </tr>
 
 </table>
@@ -268,6 +269,13 @@ $(document).ready(function(){
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_dataDelay.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_dataDelay.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td rowspan="1" class="tabletd">Data Quantity</td>
+<td>Data Quantity Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_DataEntryQuantityReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_DataEntryQuantityReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
 <td rowspan="3" class="tabletd">Research</td>
@@ -613,7 +621,6 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_MonthlyExecutiveDashboardMetricsReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_MonthlyExecutiveDashboardMetricsReport.form" onclick=msgrem(this)>Remove</a></td>
 
-</tr>
 
 
 

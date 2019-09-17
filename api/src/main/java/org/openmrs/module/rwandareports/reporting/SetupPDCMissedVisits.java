@@ -48,6 +48,8 @@ public class SetupPDCMissedVisits {
 	private Form referralForm;
     private Form visitForm;
     private Concept returnVisitDate;
+    private Concept namesAndFirstNamesOfContact;
+    private Concept telephoneNumberOfContact;
 	
 	public void setup() throws Exception {
 		
@@ -160,6 +162,13 @@ public class SetupPDCMissedVisits {
 		
 		RecentEncounterType lastEncounterType = RowPerPatientColumns.getRecentEncounterType("LastVisit",pdcEncounters, null, new LastEncounterFilter());
 		dataSetDefinition.addColumn(lastEncounterType, new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("address",true,true,true,true),new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInPeriod("Next Of Kin Name", namesAndFirstNamesOfContact,null,null, "dd-MMM-yyyy"), new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInPeriod("Next Of Kin Tel Number", telephoneNumberOfContact,null,null, "dd-MMM-yyyy"),new HashMap<String, Object>());
+
 		
 		CustomCalculationBasedOnMultiplePatientDataDefinitions alert = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		alert.setName("alert");
@@ -196,6 +205,9 @@ public class SetupPDCMissedVisits {
 	    referralAndVisitForms.add(referralForm);
 	    referralAndVisitForms.add(visitForm);
 	    returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+		namesAndFirstNamesOfContact = gp.getConcept(GlobalPropertiesManagement.NAMESANDFIRSTNAMESOFCONTACT);
+
+		telephoneNumberOfContact = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_OF_CONTACT);
 	   
 		
 	}

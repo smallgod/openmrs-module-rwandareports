@@ -97,14 +97,14 @@ public class CleanReportingTablesAndRegisterAllReports {
 			////new SetupHivArtRegisterReport(true).setup();
 			
 			new SetupCombinedHFCSPConsultationReport().setup();
-			new SetupPMTCTFoodDistributionReport().setup();
-			new SetupPMTCTFormulaDistributionReport().setup();
+//			new SetupPMTCTFoodDistributionReport().setup();
+//			new SetupPMTCTFormulaDistributionReport().setup();
 			new SetupPMTCTPregnancyConsultationReport().setup(); 
 			new SetupPediHIVConsultationSheet().setup();
 			new SetupAdultHIVConsultationSheet().setup();
 			new SetupTBConsultationSheet().setup();
 			new SetupAdultLateVisitAndCD4Report().setup();
-			new SetupPediatricLateVisitAndCD4Report().setup();
+//			new SetupPediatricLateVisitAndCD4Report().setup();
 			new SetupHMISRwandaReportBySite().setup();
 			//new SetupPBFReport().setup();
 			new SetupPMTCTCombinedClinicMotherMonthlyReport().setup();
@@ -130,23 +130,35 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupHeartFailureLateVisit().setup();
 			new SetupHeartFailureQuarterlyAndMonthlyReport().setup();
 
+			new SetupCKDConsultationSheetReport().setup();
 			new SetupCKDQuarterlyAndMonthlyReport();
-			new SetupCKDMissedvisitReport();
+			new SetupCKDMissedvisitReport().setup();
+			new SetupNCDConsultationSheet().setup();
+			new SetupNCDLateVisitandLTFUReport().setup();
+
     }
 	public static void registerCentralReports() throws Exception {
 			new SetupHIVResearchDataQualitySheet().setup();
 			new SetupHIVResearchExtractionSheet().setup();
 			new SetupIDProgramQuarterlyIndicatorReport().setup(); 
-			new SetupMonthlyCD4DeclineReport().setup();
-			new SetupMissingCD4Report().setup();
+//			new SetupMonthlyCD4DeclineReport().setup();
+//			new SetupMissingCD4Report().setup();
 			new SetupQuarterlyCrossSiteIndicatorByDistrictReport().setup();	
 			new SetupQuarterlyViralLoadReport().setup();
-			new SetupPMTCTFormCompletionSheet().setup();
+//			new SetupPMTCTFormCompletionSheet().setup();
 			new SetupEligibleForViralLoadReport().setup();
-    }
+			new SetupDataEntryQuantityReport().setup();
+			new SetupHMISMOHReport().setup();
+			new SetupHMISIndicatorMonthlyReport().setup();
+			new SetupMonthlyExecutiveDashboardMetricsReport().setup();
+
+	}
 	public static void registerSiteReports() throws Exception {
 			new SetupDataQualityIndicatorReport().setup();
 			new SetupDataEntryDelayReport().setup();
+			new SetupGenericEncounterReport().setup();
+			new SetupGenericPatientByProgramReport().setup();
+			new SetupGenericDrugReport().setup();
     }
 	public static void registerOncologyReports() throws Exception {
 			new SetupOncologyTreatmentAdministrationPlan().setup();
@@ -161,7 +173,8 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupOncologyOutpatientAppointmentList().setup();
 			new SetupOncologyQuarterlyIndicatorReport().setup();
 			new SetupOncologyTestPatientList().setup();
-			new SetupOncologyExternalBiopsyContactList().setup();	
+			new SetupOncologyExternalBiopsyContactList().setup();
+			new SetupOncologyRegistry().setup();
     }
 	public static void registerCHWReports() {
 	    
@@ -175,6 +188,11 @@ public class CleanReportingTablesAndRegisterAllReports {
 		new SetupPDCIndicatorReport().setup();
 		new SetupPDCMonthlyLTFU().setup();
 		new SetupPDCMissedVisits().setup();
-}
+	}
+	public static void registerMHReports() throws Exception{
+		new SetupMentalHealthConsultationSheet().setup();
+		new SetupMentalHealthLateVisit().setup();
+		new SetupMentalHealthIndicatorReport().setup();
+	}
 
 }

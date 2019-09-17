@@ -993,7 +993,7 @@ public class RwandaSetupReportsFormController {
 	public ModelAndView removeMonthlyExecutiveDashboardMetricsReport() throws Exception {
 		new SetupMonthlyExecutiveDashboardMetricsReport().delete();
     return new ModelAndView(new RedirectView("rwandareports.form"));
-  }
+  	}
 
 	@RequestMapping("/module/rwandareports/register_HMISIndicatorMonthly")
 	public ModelAndView registerHMISIndicatorMonthlyIndicatorReport() throws Exception {
@@ -1004,6 +1004,18 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_HMISIndicatorMonthlyReport")
 	public ModelAndView removeHMISIndicatorMonthlyReport() throws Exception {
 		new SetupHMISIndicatorMonthlyReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/register_DataEntryQuantityReport")
+	public ModelAndView registerDataEntryQuantityReport() throws Exception {
+		new SetupDataEntryQuantityReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_DataEntryQuantityReport")
+	public ModelAndView removeDataEntryQuantityReport() throws Exception {
+		new SetupDataEntryQuantityReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 }
