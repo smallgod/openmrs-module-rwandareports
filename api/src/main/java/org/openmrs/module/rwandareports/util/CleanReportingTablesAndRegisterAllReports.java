@@ -148,7 +148,7 @@ public class CleanReportingTablesAndRegisterAllReports {
 //			new SetupPMTCTFormCompletionSheet().setup();
 			new SetupEligibleForViralLoadReport().setup();
 			new SetupDataEntryQuantityReport().setup();
-			new SetupHMISMOHReport().setup();
+//			new SetupHMISMOHReport().setup();
 			new SetupHMISIndicatorMonthlyReport().setup();
 			new SetupMonthlyExecutiveDashboardMetricsReport().setup();
 
