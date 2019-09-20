@@ -34,16 +34,19 @@ protected Log log = LogFactory.getLog(DaysLate.class);
 				{
 
 					long diff=0;
-					DateFormat dateformat = new SimpleDateFormat("dd/MM/yy");
+					DateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
+
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + nextVisit + " Date String: " + nextVisit.getValue() + " Date:" + nextVisit.getDateOfObservation());
 					
 					//try to get the return visit date
 					Date returnVisitDate = null;
 					try {
-						returnVisitDate = dateformat.parse(nextVisit.getValue());
-					} catch (ParseException e) {
+//						returnVisitDate = dateformat.parse(nextVisit.getValue());
+						returnVisitDate = nextVisit.getDateOfObservation();
+					} catch (Exception e) {
 						log.error("Could not parse return visit date", e);
 						//just tell the user that the difference between dates is not available
-						sr.setValue("Not available"+nextVisit.getValue());
+						sr.setValue("Not available");
 						return sr;
 					}
 					Calendar nextVisitDate = Calendar.getInstance();
