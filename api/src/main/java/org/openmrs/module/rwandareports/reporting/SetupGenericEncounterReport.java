@@ -6,11 +6,13 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
-import org.openmrs.Location;
+import org.openmrs.*;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.common.AuditInfo;
 import org.openmrs.module.reporting.common.ObjectUtil;
+import org.openmrs.module.reporting.data.converter.PropertyConverter;
+import org.openmrs.module.reporting.data.encounter.definition.AuditInfoEncounterDataDefinition;
+import org.openmrs.module.reporting.data.encounter.definition.ConvertedEncounterDataDefinition;
 import org.openmrs.module.reporting.data.encounter.library.BuiltInEncounterDataLibrary;
 import org.openmrs.module.reporting.data.patient.library.BuiltInPatientDataLibrary;
 import org.openmrs.module.reporting.dataset.definition.EncounterAndObsDataSetDefinition;
@@ -101,6 +103,10 @@ public class SetupGenericEncounterReport {
 		dsd.addColumn("ENCOUNTER_DATETIME", encounterData.getEncounterDatetime(), "");
 		dsd.addColumn("LOCATION", encounterData.getLocationName(), "");
 
+		ConvertedEncounterDataDefinition encounterCreatorGivenName=new ConvertedEncounterDataDefinition(new AuditInfoEncounterDataDefinition(),new PropertyConverter(AuditInfo.class, "creator.givenName"));
+		dsd.addColumn("CREATOR_GIVEN_NAME", encounterCreatorGivenName, "");
+		ConvertedEncounterDataDefinition encounterCreatorFamillynName=new ConvertedEncounterDataDefinition(new AuditInfoEncounterDataDefinition(),new PropertyConverter(AuditInfo.class, "creator.familyName"));
+		dsd.addColumn("CREATOR_FAMILLY_NAME", encounterCreatorFamillynName, "");
 
 		MappedParametersEncounterQuery q = new MappedParametersEncounterQuery(rowFilter, ObjectUtil.toMap("onOrAfter=${startDate},onOrBefore=${endDate},location=${location},encounterTypes=${encounterTypes},forms=${forms}"));
 		dsd.addRowFilter(Mapped.mapStraightThrough(q));

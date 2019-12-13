@@ -132,7 +132,7 @@ public class SetupOncologyTreatmentAdministrationPlan {
 		DrugRegimenInformation info = RowPerPatientColumns.getDrugRegimenInformation("regimenInfo");
 		info.addParameter(new Parameter("regimen", "regimen", String.class));
 		dataSetDefinition.addColumn(info, ParameterizableUtil.createParameterMappings("regimen=${regimen}"));
-		
+
 		//Premedication dataSet
 		ExtendedDrugOrderDataSetDefinition premedicationDS = new ExtendedDrugOrderDataSetDefinition();
 		premedicationDS.setIndication(premedication);

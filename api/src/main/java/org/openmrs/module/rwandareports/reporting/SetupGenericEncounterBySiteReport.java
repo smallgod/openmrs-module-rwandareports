@@ -2,11 +2,16 @@ package org.openmrs.module.rwandareports.reporting;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.common.AuditInfo;
 import org.openmrs.module.reporting.common.ObjectUtil;
+import org.openmrs.module.reporting.data.converter.PropertyConverter;
+import org.openmrs.module.reporting.data.encounter.definition.AuditInfoEncounterDataDefinition;
+import org.openmrs.module.reporting.data.encounter.definition.ConvertedEncounterDataDefinition;
 import org.openmrs.module.reporting.data.encounter.library.BuiltInEncounterDataLibrary;
 import org.openmrs.module.reporting.data.patient.library.BuiltInPatientDataLibrary;
 import org.openmrs.module.reporting.dataset.definition.EncounterAndObsDataSetDefinition;
@@ -59,7 +64,7 @@ public class SetupGenericEncounterBySiteReport {
 		Parameter form = new Parameter("forms", "Form", Form.class);
 		encouterType.setRequired(false);
 		form.setRequired(false);
-		
+
 		reportDefinition.addParameter(encouterType);
 		reportDefinition.addParameter(form);
 		
@@ -103,6 +108,12 @@ public class SetupGenericEncounterBySiteReport {
 		dsd.addColumn("ENCOUNTER_TYPE", encounterData.getEncounterTypeName(), "");
 		dsd.addColumn("ENCOUNTER_DATETIME", encounterData.getEncounterDatetime(), "");
 		dsd.addColumn("LOCATION", encounterData.getLocationName(), "");
+
+		ConvertedEncounterDataDefinition encounterCreatorGivenName=new ConvertedEncounterDataDefinition(new AuditInfoEncounterDataDefinition(),new PropertyConverter(AuditInfo.class, "creator.givenName"));
+		dsd.addColumn("CREATOR_GIVEN_NAME", encounterCreatorGivenName, "");
+		ConvertedEncounterDataDefinition encounterCreatorFamillynName=new ConvertedEncounterDataDefinition(new AuditInfoEncounterDataDefinition(),new PropertyConverter(AuditInfo.class, "creator.familyName"));
+		dsd.addColumn("CREATOR_FAMILLY_NAME", encounterCreatorFamillynName, "");
+
 
 		reportDefinition.addDataSetDefinition("dsd",Mapped.mapStraightThrough(dsd));
 		
