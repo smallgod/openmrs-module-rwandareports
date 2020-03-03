@@ -81,7 +81,7 @@ public class SetupDataEntryQuantityReport {
 
 
         Map<String, Object> mappings = new HashMap<String, Object>();
-        mappings.put("endDate", "${endDate+1d}");
+        mappings.put("endDate", "${endDate}");
         mappings.put("startDate", "${startDate}");
         mappings.put("program", "${program}");
         mappings.put("encounterType", "${encounterType}");

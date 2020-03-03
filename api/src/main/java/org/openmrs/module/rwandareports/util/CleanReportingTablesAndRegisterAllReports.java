@@ -133,8 +133,8 @@ public class CleanReportingTablesAndRegisterAllReports {
 			new SetupCKDConsultationSheetReport().setup();
 			new SetupCKDQuarterlyAndMonthlyReport();
 			new SetupCKDMissedvisitReport().setup();
-			new SetupNCDConsultationSheet().setup();
-			new SetupNCDLateVisitandLTFUReport().setup();
+//			new SetupNCDConsultationSheet().setup();
+//			new SetupNCDLateVisitandLTFUReport().setup();
 
     }
 	public static void registerCentralReports() throws Exception {

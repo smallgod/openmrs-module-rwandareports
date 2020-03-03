@@ -927,6 +927,18 @@ public class GlobalPropertiesManagement {
 
 	public final static String Mental_Health_Diagnosis_Stopping_Reason_Concept ="reports.MentalHealthDiagnosisStoppingReasonConcept";
 
+	public final static String SomatoformdisordersF45 = "reports.SomatoformdisordersF45";
+
+	public final static String EpilepsyandrecurrentseizuresG40 = "reports.EpilepsyandrecurrentseizuresG40";
+
+	public final static String BipolardisorderF31 = "reports.BipolardisorderF31";
+
+	public final static String MajorDepressiveDisorderRecurrentSevereWithPsychoticsymptomsF333 = "reports.MajorDepressiveDisorderRecurrentSevereWithPsychoticsymptomsF333";
+	public final static String MajorDepressiveDisorderSingleEpisodeF32 = "reports.MajorDepressiveDisorderSingleEpisodeF32";
+	public final static String MajorDepressiveDisorderRecurrentF33 = "reports.MajorDepressiveDisorderRecurrentF33";
+	public final static String UnspecifiedPsychosisNotDueToaSubstanceOrKnownPsychologicalConditionF29 = "reports.UnspecifiedPsychosisNotDueToaSubstanceOrKnownPsychologicalConditionF29";
+	public final static String SchizophreniaF20 = "reports.SchizophreniaF20";
+
 
 
 
@@ -1283,6 +1295,7 @@ public class GlobalPropertiesManagement {
 	public final static String DM_ENROLL_FORM = "reports.DMENROLLformId";
 	public final static String HTN_ENROLL_FORM = "reports.HTNENROLLformId";
 	public final static String ASTHMA_ENROLLMENT_FORM = "reports.asthmaENROLLformId";
+	public final static String GESTATIONALAGEATBIRTHINWEEKS="reports.gestationalAgeAtBirthInWeeks";
 
 
 }

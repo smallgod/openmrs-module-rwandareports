@@ -99,6 +99,8 @@ public class SetupGenericPatientByProgramReport {
 
 		DateOfBirth birthdate = Cohorts.getDateOfBirthWithoutTilde("Birth date (Analysis)", "yyyy/MM/dd");
 		dataSetDefinition.addColumn(birthdate, new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientDeathInfo("Date Of Death","DeathDate",null,"dd-MMM-yyyy"), new HashMap<String, Object>());
 		
 		PatientRelationship accompagnateur = RowPerPatientColumns.getAccompRelationship("Accompagnateur");
 		accompagnateur.setName("Accompagnateur");

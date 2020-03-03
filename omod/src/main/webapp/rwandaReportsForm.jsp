@@ -522,7 +522,7 @@ $(document).ready(function(){
 <tr>
 <tr>
 <td rowspan="5" class="tabletd">PDC Reports</td>
-<td>PDC-Weekly Consulation sheet</td>
+<td>PDC-Weekly and daily Consulation sheet</td>
 <td>At Site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_pdcWeeklySheet.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pdcWeeklySheet.form" onclick=msgrem(this)>Remove</a></td>
