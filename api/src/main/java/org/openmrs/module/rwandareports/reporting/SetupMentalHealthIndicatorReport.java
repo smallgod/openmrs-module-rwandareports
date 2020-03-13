@@ -49,7 +49,7 @@ public class SetupMentalHealthIndicatorReport {
 
 //    private Concept PrimaryDiagnosisConcept;
 
-    private Concept SomatoformDisorderTroubleSomatoformMHPDWorkflowState;
+    private Concept SomatoformDisorderTroubleSomatoformConcept;
     private Concept EPILEPSYConcept;
     private Concept BipolarDisorderConcept;
     private Concept DepressionDueToOtherMedicalConditionConcept;
@@ -61,6 +61,14 @@ public class SetupMentalHealthIndicatorReport {
     private Concept SCHIZOPHRENIAConcept;
     private Concept MentalHealthDiagnosisStoppingReasonConcept;
     private Concept mentalHealthDiagnosis;
+    private Concept SOMATOFORMDISORDERSF45;
+    private Concept EpilepsyandrecurrentseizuresG40;
+    private Concept BipolardisorderF31;
+    private Concept MajorDepressiveDisorderRecurrentSevereWithPsychoticsymptomsF333;
+    private Concept MajorDepressiveDisorderSingleEpisodeF32;
+    private Concept MajorDepressiveDisorderRecurrentF33;
+    private Concept UnspecifiedPsychosisNotDueToaSubstanceOrKnownPsychologicalConditionF29;
+    private Concept SchizophreniaF20;
 
 
     private List<Concept> SomatoformDisorderTroubleSomatoformList =  new ArrayList<Concept>() ;
@@ -388,7 +396,7 @@ public class SetupMentalHealthIndicatorReport {
 
 //        PrimaryDiagnosisConcept = gp.getConcept(GlobalPropertiesManagement.Primary_Diagnosis_Concept);
 
-        SomatoformDisorderTroubleSomatoformMHPDWorkflowState = gp.getConcept(GlobalPropertiesManagement.Somatoform_Disorder_or_Trouble_Somatoform_Concept);
+        SomatoformDisorderTroubleSomatoformConcept = gp.getConcept(GlobalPropertiesManagement.Somatoform_Disorder_or_Trouble_Somatoform_Concept);
         EPILEPSYConcept = gp.getConcept(GlobalPropertiesManagement.EPILEPSY_Concept);
         BipolarDisorderConcept = gp.getConcept(GlobalPropertiesManagement.Bipolar_Disorder_Concept);
         DepressionDueToOtherMedicalConditionConcept = gp.getConcept(GlobalPropertiesManagement.Depression_due_to_other_medical_condition_Concept);
@@ -399,18 +407,47 @@ public class SetupMentalHealthIndicatorReport {
         PsychosisDueToOtherMedicalConditionConcept = gp.getConcept(GlobalPropertiesManagement.Psychosis_due_to_other_medical_condition_Concept);
         SCHIZOPHRENIAConcept = gp.getConcept(GlobalPropertiesManagement.SCHIZOPHRENIA_Concept);
 
-        SomatoformDisorderTroubleSomatoformList.add(SomatoformDisorderTroubleSomatoformMHPDWorkflowState);
+        //icd-10
+        SOMATOFORMDISORDERSF45 =  gp.getConcept(GlobalPropertiesManagement.SomatoformdisordersF45);
+        EpilepsyandrecurrentseizuresG40 = gp.getConcept(GlobalPropertiesManagement.EpilepsyandrecurrentseizuresG40);
+        BipolardisorderF31 = gp.getConcept(GlobalPropertiesManagement.BipolardisorderF31);
+        MajorDepressiveDisorderRecurrentSevereWithPsychoticsymptomsF333 = gp.getConcept(GlobalPropertiesManagement.MajorDepressiveDisorderRecurrentSevereWithPsychoticsymptomsF333);
+        MajorDepressiveDisorderSingleEpisodeF32 = gp.getConcept(GlobalPropertiesManagement.MajorDepressiveDisorderSingleEpisodeF32);
+        MajorDepressiveDisorderRecurrentF33 = gp.getConcept(GlobalPropertiesManagement.MajorDepressiveDisorderRecurrentF33);
+        UnspecifiedPsychosisNotDueToaSubstanceOrKnownPsychologicalConditionF29 = gp.getConcept(GlobalPropertiesManagement.UnspecifiedPsychosisNotDueToaSubstanceOrKnownPsychologicalConditionF29);
+        SchizophreniaF20 = gp.getConcept(GlobalPropertiesManagement.SchizophreniaF20);
+
+        SomatoformDisorderTroubleSomatoformList.add(SomatoformDisorderTroubleSomatoformConcept);
+        SomatoformDisorderTroubleSomatoformList.add(SOMATOFORMDISORDERSF45);
         EPILEPSYList.add(EPILEPSYConcept);
+        EPILEPSYList.add(EpilepsyandrecurrentseizuresG40);
         BipolarDisorderList.add(BipolarDisorderConcept);
+        BipolarDisorderList.add(BipolardisorderF31);
         DepressionList.add(DepressionDueToOtherMedicalConditionConcept);
         DepressionList.add(DepressionWithPsychoticFeaturesConcept);
         DepressionList.add(DepressionUnspecifiedConcept);
         DepressionList.add(MajorDepressiveDisorderConcept);
+        DepressionList.add(MajorDepressiveDisorderRecurrentSevereWithPsychoticsymptomsF333);
+        DepressionList.add(MajorDepressiveDisorderSingleEpisodeF32);
+        DepressionList.add(MajorDepressiveDisorderRecurrentF33);
         PsychosisorSchizophreniaList.add(PSYCHOSISConcept);
         PsychosisorSchizophreniaList.add(PsychosisDueToOtherMedicalConditionConcept);
         PsychosisorSchizophreniaList.add(SCHIZOPHRENIAConcept);
+        PsychosisorSchizophreniaList.add(UnspecifiedPsychosisNotDueToaSubstanceOrKnownPsychologicalConditionF29);
+        PsychosisorSchizophreniaList.add(SchizophreniaF20);
         MentalHealthDiagnosisStoppingReasonConcept = gp.getConcept(GlobalPropertiesManagement.Mental_Health_Diagnosis_Stopping_Reason_Concept);
         mentalHealthDiagnosis = gp.getConcept(GlobalPropertiesManagement.MENTAL_HEALTH_DIAGNOSIS_CONCEPT);
+
+
+        SOMATOFORMDISORDERSF45 =  gp.getConcept(GlobalPropertiesManagement.SomatoformdisordersF45);
+        EpilepsyandrecurrentseizuresG40 = gp.getConcept(GlobalPropertiesManagement.EpilepsyandrecurrentseizuresG40);
+        BipolardisorderF31 = gp.getConcept(GlobalPropertiesManagement.BipolardisorderF31);
+        MajorDepressiveDisorderRecurrentSevereWithPsychoticsymptomsF333 = gp.getConcept(GlobalPropertiesManagement.MajorDepressiveDisorderRecurrentSevereWithPsychoticsymptomsF333);
+        MajorDepressiveDisorderSingleEpisodeF32 = gp.getConcept(GlobalPropertiesManagement.MajorDepressiveDisorderSingleEpisodeF32);
+        MajorDepressiveDisorderRecurrentF33 = gp.getConcept(GlobalPropertiesManagement.MajorDepressiveDisorderRecurrentF33);
+        UnspecifiedPsychosisNotDueToaSubstanceOrKnownPsychologicalConditionF29 = gp.getConcept(GlobalPropertiesManagement.UnspecifiedPsychosisNotDueToaSubstanceOrKnownPsychologicalConditionF29);
+        SchizophreniaF20 = gp.getConcept(GlobalPropertiesManagement.SchizophreniaF20);
+
 
     }
 

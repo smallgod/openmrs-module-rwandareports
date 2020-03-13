@@ -521,9 +521,9 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 
 
 
-//=================================================
+//====================================================================
 // B1:  Of new patients, % of patients with urine protein documented
-//=================================================
+//====================================================================
 
 		SqlCohortDefinition patientWithurinaryAlbumin=Cohorts.getPatientsWithObservationsByStartDateAndEndDate("patientWithurinaryAlbumin", urinaryAlbumin);
 
@@ -556,6 +556,70 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 				"B1",
 				"Of new patients, % of patients with urine protein documented",
 				new Mapped(newPatientWithUrinaryAlbuminInSameQuarterIndicator, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+
+//================================================================================================
+// 		currently enrolled excluded the newly enrolled patients.
+//================================================================================================
+
+		InProgramCohortDefinition patientInProgram = Cohorts.createInProgramParameterizableByDate(
+				"Enrolled In hypertensionProgram", hypertensionProgram);
+
+//		ProgramEnrollmentCohortDefinition patientEnrolledInHypertensionProgramByEndDate = Cohorts.createProgramEnrollmentEverByEndDate("Enrolled Ever In hypertensionProgram", hypertensionProgram);
+
+
+		CompositionCohortDefinition patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter=new CompositionCohortDefinition();
+		patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter.setName("patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter");
+//		patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter.addParameter(new Parameter("onDate", "onDate", Date.class));
+		patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter.getSearches().put(
+				"1",new Mapped<CohortDefinition>(patientInProgram, ParameterizableUtil
+						.createParameterMappings("onDate=${startDate}")));
+		patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter.getSearches().put(
+				"2",new Mapped<CohortDefinition>(patientInProgram, ParameterizableUtil
+						.createParameterMappings("onDate=${endDate}")));
+		patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter.setCompositionString("1 and 2");
+
+
+
+
+		CohortIndicator patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarterIndicator = Indicators.newCountIndicator(
+				"patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarterIndicator", patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+		dsd.addColumn(
+				"nonNewEnrol",
+				"Total # of currently enrolled excluded the newly enrolled patients",
+				new Mapped(patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarterIndicator, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
+
+//================================================================================================
+// B1ofNonNewEnrol:  Of non newly currently enrolled, % of patients with urine protein in 6 months documented.
+//================================================================================================
+
+		CompositionCohortDefinition nonNewpatientsWithUrinaryAlbuminInQuarter=new CompositionCohortDefinition();
+		nonNewpatientsWithUrinaryAlbuminInQuarter.setName("nonNewpatientsWithUrinaryAlbuminInQuarter");
+		nonNewpatientsWithUrinaryAlbuminInQuarter.addParameter(new Parameter("startDate", "startDate", Date.class));
+		nonNewpatientsWithUrinaryAlbuminInQuarter.addParameter(new Parameter("endDate", "endDate", Date.class));
+		nonNewpatientsWithUrinaryAlbuminInQuarter.getSearches().put(
+				"1",new Mapped<CohortDefinition>(patientCurrentEnrolledInHypertensionExludingNewlyenrolledQuarter, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		nonNewpatientsWithUrinaryAlbuminInQuarter.getSearches().put(
+				"2",new Mapped<CohortDefinition>(patientWithurinaryAlbumin, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		nonNewpatientsWithUrinaryAlbuminInQuarter.setCompositionString("1 and 2");
+
+
+		CohortIndicator nonNewpatientsWithUrinaryAlbuminInQuarterIndicator = Indicators.newCountIndicator(
+				"nonNewpatientsWithUrinaryAlbuminInQuarterIndicator", nonNewpatientsWithUrinaryAlbuminInQuarter,
+				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+		dsd.addColumn(
+				"UaofNonNewEnrol",
+				"Of non newly currently enrolled Active, % of patients with urine protein documented in the period.",
+				new Mapped(nonNewpatientsWithUrinaryAlbuminInQuarterIndicator, ParameterizableUtil
 						.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 //=======================================

@@ -1080,7 +1080,7 @@
 
 	<globalProperty>
 		<property>reports.hbcpRelationship</property>
-		<defaultValue>16</defaultValue>
+		<defaultValue>dcdc30c6-5235-48c8-957b-445fdaf69363</defaultValue>
 		<description>The id,uuid or name of the Relationship that represents the
 			HBCP</description>
 	</globalProperty>
@@ -1169,6 +1169,13 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.SomatoformdisordersF45</property>
+		<defaultValue>cf671d1c-d38a-11e8-b6e2-0c5b8f279a64</defaultValue>
+		<description>Somatoform disorders - F45
+		</description>
+	</globalProperty>
+
+	<globalProperty>
 		<property>reports.EPILEPSYConcept</property>
 		<defaultValue>3cce0a90-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>The EPILEPSY Concept
@@ -1176,9 +1183,23 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.EpilepsyandrecurrentseizuresG40</property>
+		<defaultValue>cf6741b1-d38a-11e8-b6e2-0c5b8f279a64</defaultValue>
+		<description>Epilepsy and recurrent seizures - G40
+		</description>
+	</globalProperty>
+
+	<globalProperty>
 		<property>reports.BipolarDisorderConcept</property>
 		<defaultValue>acaeb953-eecd-4a42-8752-59ecf560366a</defaultValue>
 		<description>The Bipolar Disorder Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.BipolardisorderF31</property>
+		<defaultValue>cf66f134-d38a-11e8-b6e2-0c5b8f279a64</defaultValue>
+		<description>Bipolar disorder - F31
 		</description>
 	</globalProperty>
 
@@ -1197,9 +1218,23 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.MajorDepressiveDisorderRecurrentSevereWithPsychoticsymptomsF333</property>
+		<defaultValue>cf670c7e-d38a-11e8-b6e2-0c5b8f279a64</defaultValue>
+		<description>Major depressive disorder, recurrent, severe with psychotic symptoms - F333
+		</description>
+	</globalProperty>
+
+	<globalProperty>
 		<property>reports.DepressionUnspecifiedConcept</property>
 		<defaultValue>778a336c-9bc6-44ff-9700-10ac5a7e8bd5</defaultValue>
 		<description>The Depression unspecified Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.MajorDepressiveDisorderSingleEpisodeF32</property>
+		<defaultValue>cf670451-d38a-11e8-b6e2-0c5b8f279a64</defaultValue>
+		<description>Major depressive disorder, single episode - F32
 		</description>
 	</globalProperty>
 
@@ -1211,9 +1246,23 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.MajorDepressiveDisorderRecurrentF33</property>
+		<defaultValue>cf6709a7-d38a-11e8-b6e2-0c5b8f279a64</defaultValue>
+		<description>Major depressive disorder, recurrent - F33
+		</description>
+	</globalProperty>
+
+	<globalProperty>
 		<property>reports.PSYCHOSISConcept</property>
 		<defaultValue>3ccea7fc-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>The  PSYCHOSIS Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.UnspecifiedPsychosisNotDueToaSubstanceOrKnownPsychologicalConditionF29</property>
+		<defaultValue>cf66eb96-d38a-11e8-b6e2-0c5b8f279a64</defaultValue>
+		<description>Unspecified psychosis not due to a substance or known psychological condition - F29
 		</description>
 	</globalProperty>
 
@@ -1228,6 +1277,13 @@
 		<property>reports.SCHIZOPHRENIAConcept</property>
 		<defaultValue>3cd134f4-26fe-102b-80cb-0017a47871b2</defaultValue>
 		<description>The SCHIZOPHRENIA Concept
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.SchizophreniaF20</property>
+		<defaultValue>3cd134f4-26fe-102b-80cb-0017a47871b2</defaultValue>
+		<description>Schizophrenia - F20
 		</description>
 	</globalProperty>
 
@@ -4071,8 +4127,8 @@
 
 	<globalProperty>
 		<property>reports.heartFailureDDBAndRendezvousForms</property>
-		<defaultValue>1df78f57-990d-46a7-aa9b-9a992d32ea57,c4302c96-94a6-4724-90cf-88cc29409aa5,08af7816-f8b1-4b57-a4e7-34f417b55d16,8ecf1ee0-2613-4047-9274-8af0f1c40a10,d9d135f9-7540-4b47-bf48-73c8441f58d1,ad08f2c3-4661-4e48-b424-bc1d5cc1bbea</defaultValue>
-		<description>form ids or uuids of Heart Failure DDB, NCD followup form And Rendezvous Forms. Please separate them by using a comma(,)  </description>
+		<defaultValue>1df78f57-990d-46a7-aa9b-9a992d32ea57,c4302c96-94a6-4724-90cf-88cc29409aa5,08af7816-f8b1-4b57-a4e7-34f417b55d16,8ecf1ee0-2613-4047-9274-8af0f1c40a10,d9d135f9-7540-4b47-bf48-73c8441f58d1,ad08f2c3-4661-4e48-b424-bc1d5cc1bbea,ad08f2c3-4661-4e48-b424-bc1d5cc1bbea</defaultValue>
+		<description>form ids or uuids of Heart Failure DDB, NCD followup form And Rendezvous,Fiche de Suive Postopératoire Cardiaque- RENDEZ-VOUS Forms. Please separate them by using a comma(,)  </description>
 	</globalProperty>
 
 	<globalProperty>
@@ -4341,6 +4397,12 @@
 		<property>reports.LOCATIONOFDEATH</property>
 		<defaultValue>7d3a9892-1674-4943-adc5-414a8076319e</defaultValue>
 		<description>LOCATION OF DEATH concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.gestationalAgeAtBirthInWeeks</property>
+		<defaultValue>1409AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</defaultValue>
+		<description>Gestational age at birth in weeks concept</description>
 	</globalProperty>
 
 </module>

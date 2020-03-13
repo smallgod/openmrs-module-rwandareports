@@ -20,16 +20,16 @@ jQuery(document).ready(function() {
 				<c:forEach var="dataSetDefinitionEntry" items="${__openmrs_report_data.definition.dataSetDefinitions}" varStatus="itemStatus">
 				<c:set var="dataSetKey" value="${dataSetDefinitionEntry.key}"/>
 				<c:set var="dataSet" value="${__openmrs_report_data.dataSets[dataSetKey]}"/>
-				<c:forEach items="${dataSet.rowMap}" var="rowEntry" varStatus="rowEntryIndex">
+				<c:forEach items="${dataSet.rows}" var="rowEntry" varStatus="rowEntryIndex">
 					<c:if test="${first == '1'}">,</c:if>	
 						<c:set var="first" value="1"/>
 						{
-					    title  : '<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[1]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[2]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[3]]}"/>',				
-					    start  : '<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[4]]}"/>',
-					    end :'<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[4]]}"/>',
+					    title  : '<c:out value="${rowEntry.columnValues[dataSet.metaData.columns[1]]}"/> <c:out value="${rowEntry.columnValues[dataSet.metaData.columns[2]]}"/> <c:out value="${rowEntry.columnValues[dataSet.metaData.columns[3]]}"/>',
+					    start  : '<c:out value="${rowEntry.columnValues[dataSet.metaData.columns[4]]}"/>',
+					    end :'<c:out value="${rowEntry.columnValues[dataSet.metaData.columns[4]]}"/>',
 					    textColor: '#000000',
 					    color: <c:if test="${itemStatus.index == 0}">'#99CCFF'</c:if><c:if test="${itemStatus.index == 1}">'#D076FF'</c:if><c:if test="${itemStatus.index == 2}">'#FFC79A'</c:if><c:if test="${itemStatus.index == 3}">'#BBFFA2'</c:if><c:if test="${itemStatus.index == 4}">'#FFBFEF'</c:if><c:if test="${itemStatus.index == 5}">'#2F72FF'</c:if>,
-					    url : '/openmrs/patientDashboard.form?patientId=<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[0]]}"/>' 
+					    url : '/openmrs/patientDashboard.form?patientId=<c:out value="${rowEntry.columnValues[dataSet.metaData.columns[0]]}"/>'
 					 }
 				</c:forEach>
 				</c:forEach>
@@ -50,13 +50,13 @@ jQuery(document).ready(function() {
 			<c:set var="dataSetKey" value="${dataSetDefinitionEntry.key}"/>
 			<c:set var="dataSet" value="${__openmrs_report_data.dataSets[dataSetKey]}"/>
 
-			<c:forEach items="${dataSet.rowMap}" var="rowEntry" varStatus="rowEntryIndex">
+			<c:forEach items="${dataSet.rows}" var="rowEntry" varStatus="rowEntryIndex">
 			<c:if test="${first == '1'}">,</c:if>	
 				<c:set var="first" value="1"/>
 					{
-				    title  : '<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[6]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[1]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[2]]}"/> <c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[3]]}"/>',				
-				    start  : '<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[4]]}"/>',
-				    end :'<c:out value="${rowEntry.value.columnValues[dataSet.metaData.columns[4]]}"/>',
+				    title  : '<c:out value="${rowEntry.columnValues[dataSet.metaData.columns[6]]}"/> <c:out value="${rowEntry.columnValues[dataSet.metaData.columns[1]]}"/> <c:out value="${rowEntry.columnValues[dataSet.metaData.columns[2]]}"/> <c:out value="${rowEntry.columnValues[dataSet.metaData.columns[3]]}"/>',
+				    start  : '<c:out value="${rowEntry.columnValues[dataSet.metaData.columns[4]]}"/>',
+				    end :'<c:out value="${rowEntry.columnValues[dataSet.metaData.columns[4]]}"/>',
 				    textColor: '#000000',
 				    color: <c:if test="${itemStatus.index == 0}">'#99CCFF'</c:if><c:if test="${itemStatus.index == 1}">'#D076FF'</c:if><c:if test="${itemStatus.index == 2}">'#FFC79A'</c:if><c:if test="${itemStatus.index == 3}">'#BBFFA2'</c:if><c:if test="${itemStatus.index == 4}">'#FFBFEF'</c:if><c:if test="${itemStatus.index == 5}">'#2F72FF'</c:if>
 				 }
