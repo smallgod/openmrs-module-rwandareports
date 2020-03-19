@@ -91,7 +91,7 @@ public class SetupNCDConsultationSheet {
 		//Add Filters	
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate(program.getName()+"Cohort", program), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		
-        dataSetDefinition.addFilter(Cohorts.createDateObsCohortDefinition(gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE), RangeComparator.GREATER_EQUAL,RangeComparator.LESS_EQUAL, TimeModifier.ANY), ParameterizableUtil.createParameterMappings("value1=${endDate},value2=${endDate+7d}"));
+        dataSetDefinition.addFilter(Cohorts.createDateObsCohortDefinition(gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE), RangeComparator.GREATER_EQUAL,RangeComparator.LESS_EQUAL, TimeModifier.ANY), ParameterizableUtil.createParameterMappings("value1=${endDate},value2=${endDate+6d}"));
          
      	DateFormatFilter dateFilter = new DateFormatFilter();
 		dateFilter.setFinalDateFormat("dd-MMM-yyyy");

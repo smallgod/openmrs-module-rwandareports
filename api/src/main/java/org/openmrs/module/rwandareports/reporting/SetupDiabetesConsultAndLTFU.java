@@ -127,7 +127,7 @@ public class SetupDiabetesConsultAndLTFU {
 		//Add filters
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate(program.getName()+"Cohort", program), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		
-		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(diabetesRendezvousForms), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
+		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(diabetesRendezvousForms), ParameterizableUtil.createParameterMappings("end=${endDate+6d},start=${endDate}"));
 				
 		//Add Columns
          

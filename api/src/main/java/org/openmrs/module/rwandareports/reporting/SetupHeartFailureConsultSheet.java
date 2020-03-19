@@ -101,7 +101,7 @@ public class SetupHeartFailureConsultSheet {
 		//Add filters
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+heartFailureProgram.getName(), heartFailureProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		
-		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(DDBAndRendezvousForms), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
+		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(DDBAndRendezvousForms), ParameterizableUtil.createParameterMappings("end=${endDate+6d},start=${endDate}"));
 		
 		DateFormatFilter dateFilter = new DateFormatFilter();
 		dateFilter.setFinalDateFormat("dd-MMM-yyyy");

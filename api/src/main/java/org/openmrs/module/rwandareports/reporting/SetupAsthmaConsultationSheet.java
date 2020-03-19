@@ -103,7 +103,7 @@ public class SetupAsthmaConsultationSheet {
 		//Add filters
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+asthmaProgram.getName(), asthmaProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 		
-		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(DDBAndRendezvousForms), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
+		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(DDBAndRendezvousForms), ParameterizableUtil.createParameterMappings("end=${endDate+6d},start=${endDate}"));
 		
 		//dataSetDefinition.addFilter(getMondayToSundayPatientReturnVisit(), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
