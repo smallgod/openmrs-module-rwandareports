@@ -112,7 +112,7 @@ public class SetupMentalHealthConsultationSheet {
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfMostRecentEncounterType("LastVisitDate", mentalHealthEncounterTypeList, "yyyy/MM/dd"), new HashMap<String, Object>());
 
-//        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentReturnVisitDate("nextVisit", "dd-MMM-yyyy", null), new HashMap<String, Object>());
+        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentReturnVisitDate("nextVisit", "dd-MMM-yyyy", null), new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("Id"), new HashMap<String, Object>());
 
