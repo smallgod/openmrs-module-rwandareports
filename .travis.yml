@@ -3,5 +3,5 @@ jdk: openjdk8
 script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -B
 env:
   global:
-  - secure: PchT9h8kAEOseDWf8ZQvDBJ2zMCbxoTRKCEJu2NAAP2qzFBITZSU7P8blfwI+c277cdzc3/IYB1m4qcvuH5z/4+H7bgz71n8JSRk+244fSqsWKISqMSXK8R8v+1CnM52XmTZiGJ5TvfTt5nLEZrLh/6hNCVkkuVLq4wlm7qaKbA=
-  - secure: E3ng5hZX8GqJbWqIzFX6rmr+dYLqRGLb86pEUBcC59loTs553c2Os8b4cwMfmAvxDzKdBOzE00o5d9DBqcCHlham3hnbeADILzZSfW7qM/w1hFoqHG9kiKrcmRFYuKiRwjfgW+4wXhh0jCMncY+B7LOucn+6Qo5xapCuq5tiEZ4=
+  - secure: Y4as6T2KDcyS93Nv9wCchHgFpnxZKCHrZkZSjTaqXYkP9MZVrlgXIqM2I1NeIny+ALbj5skVMin5D41MPiRyO0S7IFYYp6NOMAhUgXcSzA5C4vLiL5uFYf3HkFryeFtj51vxGpe/h1CADiiP1pxBx/q8czBZ1nV3Ya+6O44cKk0=
+  - secure: J07OwyGVqC0W/bMDepefVzTd/wPmgYPbgZHzDZxNcZEkCzviDzqpYScJOezlsuaPlRlnZvrzLrlPW1NhO21lUxDpcXBk+MuSeeBbk9exE5y8byswiVXBvXDvPeAXvZFd/aXz2vvne12wts5TXvh1LBfNJvqYj9GWd9cfujh4qoQ=
