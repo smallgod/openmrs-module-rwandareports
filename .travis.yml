@@ -1,5 +1,6 @@
 language: java
 jdk: openjdk8
+script: mvn deploy -B
 env:
   global:
   - secure: LBq4Pd36soJmdw2t5DGr3T09dGtAC+7kHhM/yOVAdhd/N8roJCYLKoD1K+ViFwsaqvAEfJ+E42fROPGztDQ5WWOtRmRYN4qjNBBTwKJ8+fjLk+D7QbwND6SJ/kp1S707q9meaH0mFmQUl8F4F2qxXyyKzQnCpCoYipjjEZDlYTw=
