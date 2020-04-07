@@ -1,7 +1,7 @@
 language: java
 jdk: openjdk8
-script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -B"
+script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -B
 env:
   global:
-  - secure: LBq4Pd36soJmdw2t5DGr3T09dGtAC+7kHhM/yOVAdhd/N8roJCYLKoD1K+ViFwsaqvAEfJ+E42fROPGztDQ5WWOtRmRYN4qjNBBTwKJ8+fjLk+D7QbwND6SJ/kp1S707q9meaH0mFmQUl8F4F2qxXyyKzQnCpCoYipjjEZDlYTw=
-  - secure: GSLpzF+w9GsVQo/hKvrjtsdCjW+BmohMpqPbGMicid7OfsJ+bSEAXzwpAsyuwFKH8qf2L7YIWVo9DvRwjZx2lZFAz3fB3vOlARL0uSHoSc3A3qhpD9QnmzFWWoLrzTdzB/HWWx+wmrQq3vKbbwwyaWDwX5W8rrzC/ZkHrmMVbsY=
+  - secure: PchT9h8kAEOseDWf8ZQvDBJ2zMCbxoTRKCEJu2NAAP2qzFBITZSU7P8blfwI+c277cdzc3/IYB1m4qcvuH5z/4+H7bgz71n8JSRk+244fSqsWKISqMSXK8R8v+1CnM52XmTZiGJ5TvfTt5nLEZrLh/6hNCVkkuVLq4wlm7qaKbA=
+  - secure: E3ng5hZX8GqJbWqIzFX6rmr+dYLqRGLb86pEUBcC59loTs553c2Os8b4cwMfmAvxDzKdBOzE00o5d9DBqcCHlham3hnbeADILzZSfW7qM/w1hFoqHG9kiKrcmRFYuKiRwjfgW+4wXhh0jCMncY+B7LOucn+6Qo5xapCuq5tiEZ4=
