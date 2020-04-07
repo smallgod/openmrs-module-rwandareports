@@ -3,19 +3,12 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>rwandareports</artifactId>
-	<version>2.7.3-SNAPSHOT</version>
+	<version>2.7.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Rwanda Reports</name>
-	<description>Parent project for Rwanda Reports</description>
+	<description>Rwanda Reports Module</description>
 
 	<url>http://openmrs.org</url>
-
-	<scm>
-		<connection>scm:git:https://github.com/PIH/openmrs-module-rwandareports.git</connection>
-		<developerConnection>scm:git:https://github.com/PIH/openmrs-module-rwandareports.git</developerConnection>
-		<url>https://github.com/PIH/openmrs-module-rwandareports.git</url>
-	  <tag>HEAD</tag>
-  </scm>
 	
 	<modules>
 		<module>api</module>
@@ -366,16 +359,23 @@
 		</pluginManagement>
 	</build>
 
+	<scm>
+		<connection>scm:git:git@github.com:PIH/openmrs-module-rwandareports.git</connection>
+		<developerConnection>scm:git:git@github.com:PIH/openmrs-module-rwandareports.git</developerConnection>
+		<url>scm:git:git@github.com:PIH/openmrs-module-rwandareports.git</url>
+		<tag>HEAD</tag>
+	</scm>
+
 	<distributionManagement>
 		<repository>
-			<id>openmrs-repo-modules</id>
-			<name>OpenMRS Modules</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
+			<id>openmrs-repo-modules-pih</id>
+			<name>OpenMRS PIH Modules</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules-pih/</url>
 		</repository>
 		<snapshotRepository>
-			<id>openmrs-repo-snapshots</id>
-			<name>OpenMRS Snapshots</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+			<id>openmrs-repo-modules-pih-snapshots</id>
+			<name>OpenMRS PIH Module Snapshots</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules-pih-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
