@@ -3,12 +3,12 @@
         <server>
             <id>openmrs-repo-modules-pih</id>
             <username>{{MAVEN_REPO_MODULES_PIH_USERNAME}}</username>
-            <password>{{env.MAVEN_REPO_MODULES_PIH_PASSWORD}}</password>
+            <password>{{MAVEN_REPO_MODULES_PIH_PASSWORD}}</password>
         </server>
         <server>
             <id>openmrs-repo-modules-pih-snapshots</id>
-            <username>{{env.MAVEN_REPO_MODULES_PIH_USERNAME}}</username>
-            <password>{{env.MAVEN_REPO_MODULES_PIH_PASSWORD}}</password>
+            <username>{{MAVEN_REPO_MODULES_PIH_USERNAME}}</username>
+            <password>{{MAVEN_REPO_MODULES_PIH_PASSWORD}}</password>
         </server>
     </servers>
 </settings>
