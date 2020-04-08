@@ -1,6 +1,9 @@
 language: java
 jdk: openjdk8
 script: mvn deploy --settings maven-settings.xml
+cache:
+  directories:
+    - $HOME/.m2
 env:
   global:
   - secure: FzM9snPdmxXR4p5eScQrtl1mMpPHsMalm304nDJVUmWs7bPTQ3xR2QId1nBJume5VNgMU7hSyh77NgVqAdvklaa9TbfDOmcQ9o2f7BtYMukgOArd8RZS5vwxLmWoK/tMZRpZhKqa9WacCS4V6X2DE0Vf0oGkmSpkmi3R/k/OwGY=
