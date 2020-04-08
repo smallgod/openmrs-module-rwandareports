@@ -1,6 +1,6 @@
 language: java
 jdk: openjdk8
-script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -B
+script: mvn deploy --settings maven-settings.xml
 env:
   global:
   - secure: Y4as6T2KDcyS93Nv9wCchHgFpnxZKCHrZkZSjTaqXYkP9MZVrlgXIqM2I1NeIny+ALbj5skVMin5D41MPiRyO0S7IFYYp6NOMAhUgXcSzA5C4vLiL5uFYf3HkFryeFtj51vxGpe/h1CADiiP1pxBx/q8czBZ1nV3Ya+6O44cKk0=
