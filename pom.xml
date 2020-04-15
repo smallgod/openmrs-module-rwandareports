@@ -360,9 +360,8 @@
 	</build>
 
 	<scm>
-		<connection>scm:git:git@github.com:PIH/openmrs-module-rwandareports.git</connection>
-		<developerConnection>scm:git:git@github.com:PIH/openmrs-module-rwandareports.git</developerConnection>
-		<url>scm:git:git@github.com:PIH/openmrs-module-rwandareports.git</url>
+		<developerConnection>scm:git:https://github.com/PIH/openmrs-module-rwandareports</developerConnection>
+		<url>https://github.com/PIH/openmrs-module-rwandareports</url>
 		<tag>HEAD</tag>
 	</scm>
 
