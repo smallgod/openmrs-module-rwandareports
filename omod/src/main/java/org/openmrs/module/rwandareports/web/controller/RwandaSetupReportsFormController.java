@@ -62,12 +62,14 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/register_EncounterAndObsReport")
 	public ModelAndView registerEncounterAndObsReport() throws Exception {
 		new SetupGenericEncounterReport().setup();
+		//new SetupGenericEncounterBySiteReport().setup();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
 	@RequestMapping("/module/rwandareports/remove_EncounterAndObsReport")
 	public ModelAndView removeEncounterAndObsReport() throws Exception {
 		new SetupGenericEncounterReport().delete();
+		//new SetupGenericEncounterBySiteReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 

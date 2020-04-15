@@ -59,12 +59,16 @@ public class SetupGenericEncounterBySiteReport {
 		reportDefinition.setName("Generic Encounter Report By Site");
 		reportDefinition.addParameter(new Parameter("startDate", "From", Date.class));
 		reportDefinition.addParameter(new Parameter("endDate", "To", Date.class));
-		reportDefinition.addParameter(new Parameter("location", "Facility", Location.class));
+		//reportDefinition.addParameter(new Parameter("location", "Health Facility", Location.class));
+		Parameter location = new Parameter("location", "Health Facility", Location.class);
+		location.setRequired(false);
+
 		Parameter encouterType = new Parameter("encounterTypes", "Enc.Type", EncounterType.class);
 		Parameter form = new Parameter("forms", "Form", Form.class);
 		encouterType.setRequired(false);
 		form.setRequired(false);
 
+		reportDefinition.addParameter(location);
 		reportDefinition.addParameter(encouterType);
 		reportDefinition.addParameter(form);
 		
@@ -84,14 +88,19 @@ public class SetupGenericEncounterBySiteReport {
 		BasicEncounterQuery rowFilter = new BasicEncounterQuery();
 		rowFilter.addParameter(new Parameter("onOrAfter", "On Or After", Date.class));
 		rowFilter.addParameter(new Parameter("onOrBefore", "On Or Before", Date.class));
-		rowFilter.addParameter(new Parameter("location", "Health Facility", Location.class));
+		//rowFilter.addParameter(new Parameter("locationList", "Health Facility", Location.class));
 		Parameter encouterType = new Parameter("encounterTypes", "Encounter Type", EncounterType.class);
 		Parameter form = new Parameter("forms", "Form", Form.class);
+		Parameter locationList = new Parameter("locationList", "Health Facility", Location.class);
+
+		locationList.setRequired(false);
 		encouterType.setRequired(false);
 		form.setRequired(false);
-		rowFilter.addParameter(encouterType);
+
 		rowFilter.addParameter(form);
-		MappedParametersEncounterQuery q = new MappedParametersEncounterQuery(rowFilter, ObjectUtil.toMap("onOrAfter=startDate,onOrBefore=endDate,location=location,encounterTypes=encounterTypes,forms=forms"));
+		rowFilter.addParameter(encouterType);
+		rowFilter.addParameter(locationList);
+		MappedParametersEncounterQuery q = new MappedParametersEncounterQuery(rowFilter, ObjectUtil.toMap("onOrAfter=startDate,onOrBefore=endDate,locationList=location,encounterTypes=encounterTypes,forms=forms"));
 		dsd.addRowFilter(Mapped.mapStraightThrough(q));
 
 		BuiltInPatientDataLibrary patientData=new BuiltInPatientDataLibrary();
