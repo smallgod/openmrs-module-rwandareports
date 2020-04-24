@@ -52,7 +52,7 @@ jobs:
     - name: Build on push or if versions differ
       run: |
         echo "Here we will check $EVENT_TYPE and diff result to determine whether to deploy"
-        if [[ `cat target/openmrs-dependency/versions-diff-status.txt` == "DIFFER" ] || [ $EVENT_TYPE == "push" ]]; then
+        if [[ `cat target/openmrs-dependency/versions-diff-status.txt` == "DIFFER" ]] || [ $EVENT_TYPE == "push" ]; then
           echo "Versions Differ or Push Detected, rebuilding"
         fi
       env:
