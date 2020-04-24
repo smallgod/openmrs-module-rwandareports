@@ -45,8 +45,9 @@ jobs:
       # Compare against the latest version to determine if there are new dependencies found
     - name: Diff current and previous dependency versions
       id: version_diff
+      shell: bash
       run:  |
-        file_diff=`diff --from-file $previous_file $built_file 2>/dev/null`
+        file_diff=`diff --from-file $PREVIOUS_FILE $BUILD_FILE 2>/dev/null`
         file_diff_result=$?
         echo "::set-output name=diff_result::$file_diff_result"
       env:
