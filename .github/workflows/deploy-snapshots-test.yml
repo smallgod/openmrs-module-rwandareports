@@ -56,4 +56,4 @@ jobs:
       # If this workflow was initiated by a push or if version changes are detected, initiate redeploy
     - name: Initiate Deploy
       run: echo "Initiating Deploy"
-      if: github.event_name = 'push' || env.DIFF_STATUS = 'DIFFER'
+      if: github.event_name == 'push' || env.DIFF_STATUS == 'DIFFER'
