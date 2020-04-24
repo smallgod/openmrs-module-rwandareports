@@ -41,18 +41,22 @@ jobs:
       # This is configured in the pom of the project, using the openmrs-dependencies plugin
     - name: Generate Dependency Reports
       run: mvn generate-resources -U --file pom.xml
+      uses: actions/upload-artifact@v1
+        with:
+          name: openmrs-dependency
+          path: target/openmrs-dependency
 
       # Compare against the latest version to determine if there are new dependencies found
     - name: Diff current and previous dependency versions
       id: version_diff
+      uses: actions/download-artifact@v1
+      with:
+        name: openmrs-dependency
       shell: bash
       run:  |
-        file_diff=`diff --from-file $PREVIOUS_FILE $BUILD_FILE 2>/dev/null`
+        file_diff=`diff --from-file openmrs-dependency/versions-retrieved.yml openmrs-dependency.versions.yml 2>/dev/null`
         file_diff_result=$?
         echo "::set-output name=diff_result::$file_diff_result"
-      env:
-        BUILD_FILE: "target/openmrs-dependency/versions.yml"
-        PREVIOUS_FILE: "target/openmrs-dependency/versions-retrieved.yml"
 
     - name: Build on push or if versions differ
       run: echo "Here we will check $event_type and $diff_result to determine whether to deploy"
