@@ -42,14 +42,6 @@ jobs:
     - name: Generate Dependency Reports
       run: mvn generate-resources -U --file pom.xml
 
-      # Create versions.diff file containing differences if both previous and current exist and differ, empty otherwise
-    - name: Diff current and previous dependency versions
-      run: [ -f $PREV_VER ] && echo `diff --from-file $PREV_VER $CURR_VER || exit 0` > $DIFF_FILE || touch $DIFF_FILE
-      env:
-        PREV_VER: "target/openmrs-dependency/versions-retrieved.yml"
-        CURR_VER: "target/openmrs-dependency/versions.yml"
-        DIFF_FILE: "target/openmrs-dependency/versions.diff"
-
       # Upload version artifacts to store with build results
     - name: Upload dependency reports
       uses: actions/upload-artifact@v1
@@ -58,6 +50,10 @@ jobs:
         path: target/openmrs-dependency
 
     - name: Build on push or if versions differ
-      run: echo "Here we will check $EVENT_TYPE and DIFF_RESULT to determine whether to deploy"
+      run: |
+        echo "Here we will check $EVENT_TYPE and diff result to determine whether to deploy"
+        if [[ `cat target/openmrs-dependency/versions-diff-status.txt` == "DIFFER" ] || [ $EVENT_TYPE == "push" ]]; then
+          echo "Versions Differ or Push Detected, rebuilding"
+        fi
       env:
         EVENT_TYPE: "${{ github.event.type }}"

@@ -228,6 +228,7 @@
 						<goals>
 							<goal>retrieve-versions</goal>
 							<goal>create-versions</goal>
+							<goal>compare-versions</goal>
 							<goal>attach-versions</goal>
 						</goals>
 					</execution>
