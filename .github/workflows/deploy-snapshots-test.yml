@@ -50,13 +50,12 @@ jobs:
 
       # Compare against the latest version to determine if there are new dependencies found
     - name: Diff current and previous dependency versions
-      uses: LouisBrunner/diff-action@v0.1.0
-      with:
-        old: target/openmrs-dependency/versions-retrieved.yml
-        new: target/openmrs-dependency/versions.yml
-        mode: addition
-        tolerance: same
-        output: versions.diff
+      uses: bash
+      run:  |
+        diff --from-file target/openmrs-dependency/versions-retrieved.yml target/openmrs-dependency/versions.yml 2>/dev/null
+        file_diff_result=$?
+        echo $file_diff > versions.diff
+        echo "::set-output name=diff_result::$file_diff_result"
 
     - name: Build on push or if versions differ
       run: echo "Here we will check $EVENT_TYPE and $DIFF_RESULT to determine whether to deploy"
