@@ -44,9 +44,9 @@ jobs:
 
     - name: Upload dependency reports
       uses: actions/upload-artifact@v1
-        with:
-          name: openmrs-dependency
-          path: target/openmrs-dependency
+      with:
+        name: openmrs-dependency
+        path: target/openmrs-dependency
 
       # Compare against the latest version to determine if there are new dependencies found
     - name: Diff current and previous dependency versions
