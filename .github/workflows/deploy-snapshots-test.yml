@@ -56,4 +56,4 @@ jobs:
           echo "Versions Differ or Push Detected, rebuilding"
         fi
       env:
-        EVENT_TYPE: "${{ github.event.type }}"
+        EVENT_TYPE: "${{ github.event_name }}"
