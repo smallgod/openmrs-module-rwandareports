@@ -56,5 +56,5 @@ jobs:
     - name: Build on push or if versions differ
       run: echo "Here we will check $event_type and $diff_result to determine whether to deploy"
       env:
-        event_type=${{ github.event.type }}
-        diff_result=${{ steps.version_diff.diff_result }}
+        EVENT_TYPE: "${{ github.event.type }}"
+        DIFF_RESULT: "${{ steps.version_diff.diff_result }}"
