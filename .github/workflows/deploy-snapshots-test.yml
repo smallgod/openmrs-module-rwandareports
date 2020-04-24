@@ -6,8 +6,8 @@ on:
   push:
     branches: ['master']
 
-  schedule:
-    - cron: '0 */1 * * *'  # Run hourly on the hour
+#  schedule:
+#    - cron: '0 */1 * * *'  # Run hourly on the hour
 
   repository_dispatch:
     types: ['deploy-snapshots']
@@ -40,20 +40,25 @@ jobs:
       # Execute the Maven command to report on current dependencies and most recently deployed dependencies
       # This is configured in the pom of the project, using the openmrs-dependencies plugin
     - name: Generate Dependency Reports
-      run: mvn generate-resources --file pom.xml
+      run: mvn generate-resources -U --file pom.xml
 
       # Compare against the latest version to determine if there are new dependencies found
     - name: Diff current and previous dependency versions
       run:  |
         built_file=target/openmrs-dependency/versions.yml
         previous_file=target/openmrs-dependency/versions-retrieved.yml
-        file_diff=`diff $previous_file $built_file 2>/dev/null`
+        file_diff=`diff --from-file $previous_file $built_file 2>/dev/null`
+        file_diff_result=$?
         echo "***** Built Dependencies *****"
         cat $built_file
         echo "***** Previous Dependencies *****"
         cat $previous_file 2>/dev/null
         echo "***** Difference *****"
-        echo "::set-env name=diff_result::$file_diff"
+        echo "Execute rebuild if diff result = 1.  Result: $file_diff_result"
+        if [  == 1 ]; then
+          echo "Differences found, need to rebuild"
+        fi
+        echo "::set-env name=diff_result::$file_diff_result"
 
     - name: Build on push or if versions differ
       run: echo "Here we will check $event_type and $diff_result to determine whether to deploy"
