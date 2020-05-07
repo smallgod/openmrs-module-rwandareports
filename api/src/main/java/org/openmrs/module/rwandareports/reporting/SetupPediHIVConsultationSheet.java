@@ -58,7 +58,7 @@ public class SetupPediHIVConsultationSheet {
 		    "PediHIVConsultationSheet.xls_", null);
 		
 		Properties props = new Properties();
-		props.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
+		props.put("repeatingSections", "sheet:1,row:7,dataset:dataSet");
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		Helper.saveReportDesign(design);
@@ -67,7 +67,7 @@ public class SetupPediHIVConsultationSheet {
 		    "PediPreArtHIVConsultationSheet.xls_", null);
 		
 		Properties props2 = new Properties();
-		props2.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
+		props2.put("repeatingSections", "sheet:1,row:8,dataset:dataSet");
 		props2.put("sortWeight","5000");
 		design2.setProperties(props2);
 		Helper.saveReportDesign(design2);
@@ -198,10 +198,10 @@ public class SetupPediHIVConsultationSheet {
 		dataSetDefinition.addColumn(
 				RowPerPatientColumns.getStateOfPatient("informed", pediProgram, informed, new InformedStateFilter()),
 		    new HashMap<String, Object>());
-		
-		dataSetDefinition.addColumn(
-		    RowPerPatientColumns.getStateOfPatient("counselling", pediProgram, counsellingWorkflow, null),
-		    new HashMap<String, Object>());
+
+		StateOfPatient counsellingState = RowPerPatientColumns.getStateOfPatient("counselling", pediProgram, counsellingWorkflow, null);
+		dataSetDefinition.addColumn(counsellingState,new HashMap<String, Object>());
+
 		
 		dataSetDefinition.addColumn(
 		    RowPerPatientColumns.getCurrentARTOrders("Regimen", "dd-MMM-yyyy", new DrugDosageFrequencyFilter()),
@@ -226,7 +226,7 @@ public class SetupPediHIVConsultationSheet {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("AccompName"), new HashMap<String, Object>());
 		RecentEncounterType lastEncInMonth = RowPerPatientColumns.getRecentEncounterType("lastEncInMonth",clinicalEnountersIncLab,null, null);
-		
+
 		CustomCalculationBasedOnMultiplePatientDataDefinitions alert = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		alert.setName("alert");
 		alert.addPatientDataToBeEvaluated(cd4Test, new HashMap<String, Object>());
@@ -240,10 +240,13 @@ public class SetupPediHIVConsultationSheet {
 		alert.addPatientDataToBeEvaluated(viralLoadTest, new HashMap<String, Object>());
 		alert.addPatientDataToBeEvaluated(lastEncInMonth, new HashMap<String, Object>());
 		alert.setCalculator(new HIVPediAlerts());
-		if(reportDefinition.getParameter("state")!=null){
+//		if(reportDefinition.getParameter("state")!=null){
 		alert.addParameter(new Parameter("state", "State",Date.class));
 		dataSetDefinition.addColumn(alert,ParameterizableUtil.createParameterMappings("state=${state}"));
-		}
+//		}
+//		else{
+//
+//		}
 
 		CustomCalculationBasedOnMultiplePatientDataDefinitions cd4Decline = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		cd4Decline.setName("cd4Decline");

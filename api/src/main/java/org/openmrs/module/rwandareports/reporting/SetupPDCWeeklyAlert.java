@@ -38,7 +38,9 @@ public class SetupPDCWeeklyAlert {
 	private Form referralForm;
     private Form visitForm;
     private Concept gestationalAgeAtBirthInWeeks;
+    private Concept NAMESANDFIRSTNAMESOFCONTACT;
 	private Concept accompPhoneNumberConcept;
+	private Concept TELEPHONENUMBEROFCONTACT;
 	
 	public void setup() throws Exception {
 		
@@ -139,11 +141,14 @@ public class SetupPDCWeeklyAlert {
 		dataSetDefinition.addColumn(intervalgrowth, new HashMap<String, Object>());
 		dataSetDefinition1.addColumn(intervalgrowth, new HashMap<String, Object>());
 
-		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
-		dataSetDefinition1.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
+//		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
+//		dataSetDefinition1.addColumn(RowPerPatientColumns.getAccompRelationship("Accompagnateur"), new HashMap<String, Object>());
 
-		dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("AccompPhoneNumber",accompPhoneNumberConcept,null,null,null ), new HashMap<String, Object>());
-		dataSetDefinition1.addColumn(RowPerPatientColumns.getAllObservationValues("AccompPhoneNumber",accompPhoneNumberConcept,null,null,null ), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("CareGiver",NAMESANDFIRSTNAMESOFCONTACT,null),new HashMap<String, Object>());
+		dataSetDefinition1.addColumn(RowPerPatientColumns.getMostRecent("CareGiver",NAMESANDFIRSTNAMESOFCONTACT,null),new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("CareGiverPhoneNumber",TELEPHONENUMBEROFCONTACT,null ), new HashMap<String, Object>());
+		dataSetDefinition1.addColumn(RowPerPatientColumns.getMostRecent("CareGiverPhoneNumber",TELEPHONENUMBEROFCONTACT,null ), new HashMap<String, Object>());
 
 		MostRecentObservation intervalgrowthcoded = RowPerPatientColumns.getMostRecentCodedIntGrowth("inadequate", "@ddMMMyy");
 		dataSetDefinition.addColumn(intervalgrowthcoded, new HashMap<String, Object>());
@@ -231,6 +236,9 @@ public class SetupPDCWeeklyAlert {
 	    referralAndVisitForms.add(visitForm);
 		gestationalAgeAtBirthInWeeks = gp.getConcept(GlobalPropertiesManagement.GESTATIONALAGEATBIRTHINWEEKS);
 		accompPhoneNumberConcept = gp.getConcept(GlobalPropertiesManagement.ACCOMPAGNATEUR_PHONE_NUMBER_CONCEPT);
+//		NAMESANDFIRSTNAMESOFCONTACT = gp.getConcept(GlobalPropertiesManagement.NAMESANDFIRSTNAMESOFCONTACT);
+		TELEPHONENUMBEROFCONTACT = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_OF_CONTACT);
+
 
 
 	}

@@ -26,9 +26,9 @@ public class HIVPediAlerts implements CustomCalculation{
 	public PatientDataResult calculateResult(List<PatientDataResult> results, EvaluationContext context) {
 		
 		PatientAttributeResult alert = new PatientAttributeResult(null, null);
-		
-		ProgramWorkflowState state = (ProgramWorkflowState)context.getParameterValue("state");
-		
+
+//		ProgramWorkflowState state = (ProgramWorkflowState)context.getParameterValue("state");
+
 		StringBuffer alerts = new StringBuffer();
 		
 		PatientPropertyResult age = null;
@@ -40,7 +40,6 @@ public class HIVPediAlerts implements CustomCalculation{
 		
 		for(PatientDataResult result: results)
 		{
-			
 			if(result.getName().equals("CD4Test"))
 			{
 				ObservationResult cd4 = (ObservationResult)result;
@@ -60,8 +59,8 @@ public class HIVPediAlerts implements CustomCalculation{
 					{
 						alerts.append("Very late CD4(" + diff + " months ago).\n");
 					}
-					//else if(diff > 6)
-					else if((diff > 6) && state.toString().contains("FOLLOWING"))
+					else if(diff > 6)
+//					else if((diff > 6) && state.toString().contains("FOLLOWING"))
 					{
 						alerts.append("late CD4(" + diff + " months ago).\n");
 					}
@@ -132,31 +131,27 @@ public class HIVPediAlerts implements CustomCalculation{
 					{
 						lastviraload = viraload.getValue().get(viraload.getValue().size()-1);
 					}
-					
-					if(state.toString().contains("GROUP") && (lastviraload == null))
-					{
+//					if (state.toString().contains("GROUP") && (lastviraload == null)) {
+					if (lastviraload == null) {
 						alerts.append("VL needed.\n");
-					}
-					else
-					{
-						try{
-						Date dateVl = lastviraload.getObsDatetime();
-						Date date = Calendar.getInstance().getTime();
-						
-						int diff = calculateMonthsDifference(date, dateVl);
-						
-						if(state.toString().contains("GROUP")){
-							if(diff > 12){
-							alerts.append("Late VL(" + diff + " months ago).\n");
+					} else {
+						try {
+							Date dateVl = lastviraload.getObsDatetime();
+							Date date = Calendar.getInstance().getTime();
+
+							int diff = calculateMonthsDifference(date, dateVl);
+
+//							if (state.toString().contains("GROUP")) {
+							if (diff > 12) {
+								alerts.append("Late VL(" + diff + " months ago).\n");
+							}
+
+							if (lastviraload.getValueNumeric() != null && lastviraload.getValueNumeric() > 1000) {
+								alerts.append("VL Failure " + lastviraload.getValueNumeric() + ".\n");
+							}
+//							}
+						} catch (Exception e) {
 						}
-						
-						if(lastviraload.getValueNumeric() != null && lastviraload.getValueNumeric() > 1000)
-						{
-							alerts.append("VL Failure "+lastviraload.getValueNumeric()+".\n");
-						 }
-					    }
-					   }
-						catch(Exception e){}
 					}
 				}	
 			}
@@ -220,7 +215,9 @@ public class HIVPediAlerts implements CustomCalculation{
 			
 			if(ageInt > 5)
 			{
-				if(cd4Obs != null && state.toString().contains("FOLLOWING") && cd4Obs.getObs().getValueNumeric() != null && cd4Obs.getObs().getValueNumeric() < 500)
+//				if(cd4Obs != null && state.toString().contains("FOLLOWING") && cd4Obs.getObs().getValueNumeric() != null && cd4Obs.getObs().getValueNumeric() < 500)
+				if(cd4Obs != null && cd4Obs.getObs().getValueNumeric() != null && cd4Obs.getObs().getValueNumeric() < 500)
+
 				{
 					alerts.append("CD4 < 500 \n");
 				}
@@ -228,10 +225,10 @@ public class HIVPediAlerts implements CustomCalculation{
 			
 			if(ageInt <= 5)
 			{
-				if(state.toString().contains("FOLLOWING"))
-				{
+//				if(state.toString().contains("FOLLOWING"))
+//				{
 					alerts.append("Needs ART \n");
-				}
+//				}
 			}
 		}
 		alert.setValue(alerts.toString());
