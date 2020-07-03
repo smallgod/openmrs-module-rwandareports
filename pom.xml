@@ -19,7 +19,6 @@
 		<openMRSVersion>1.9.9</openMRSVersion>
 		<reportingVersion>0.10.0</reportingVersion>
 		<rowperpatientsVersion>1.5.6-SNAPSHOT</rowperpatientsVersion>
-		<orderextensionVersion>2.0-SNAPSHOT</orderextensionVersion>
 		<reportingobjectgroupVersion>1.1</reportingobjectgroupVersion>
 		<htmlwidgetsVersion>1.6.4</htmlwidgetsVersion>
 		<serializationVersion>0.2.7</serializationVersion>
@@ -105,13 +104,6 @@
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>rowperpatientreports-api</artifactId>
 			<version>${rowperpatientsVersion}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>orderextension-api</artifactId>
-			<version>${orderextensionVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 

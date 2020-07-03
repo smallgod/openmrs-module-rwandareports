@@ -15,7 +15,7 @@ package org.openmrs.module.rwandareports.web.controller;
 
 import java.util.List;
 
-import org.openmrs.module.orderextension.DrugRegimen;
+
 import org.springframework.stereotype.Controller;
 
 /**
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Controller;
 public class RegimenDTO {
 	
 	private List<StartDateDTO> startDates;
-	private DrugRegimen drugRegimen;
+
 	
     public List<StartDateDTO> getStartDates() {
     	return startDates;
@@ -35,11 +35,11 @@ public class RegimenDTO {
     	this.startDates = startDates;
     }
 
-	public DrugRegimen getDrugRegimen() {
-    	return drugRegimen;
-    }
-	
-    public void setDrugRegimen(DrugRegimen drugRegimen) {
-    	this.drugRegimen = drugRegimen;
-    }
+//	public DrugRegimen getDrugRegimen() {
+//    	return drugRegimen;
+//    }
+//
+//    public void setDrugRegimen(DrugRegimen drugRegimen) {
+//    	this.drugRegimen = drugRegimen;
+//    }
 }

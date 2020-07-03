@@ -3,9 +3,6 @@ package org.openmrs.module.rwandareports.definition.evaluator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.orderextension.DrugRegimen;
-import org.openmrs.module.orderextension.api.OrderExtensionService;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.evaluator.RowPerPatientDataEvaluator;
@@ -23,15 +20,16 @@ public class FirstDrugRegimenCycleEvaluator implements RowPerPatientDataEvaluato
 		StringResult par = new StringResult(patientData, context);
 		FirstDrugRegimenCycle pd = (FirstDrugRegimenCycle) patientData;
 		
-		if(pd.getRegimen() != null)
-		{
-			DrugRegimen regimen = Context.getService(OrderExtensionService.class).getDrugRegimen(Integer.parseInt(pd.getRegimen()));
-			if (regimen.isCyclical() && regimen.getCycleNumber() > 1) {
-				par.setValue("true");
-			} else {
-				par.setValue("false");
-			}
-		}
+//		if(pd.getRegimen() != null)
+//		{
+//			DrugRegimen regimen = Context.getService(OrderExtensionService.class).getDrugRegimen(Integer.parseInt(pd.getRegimen()));
+//			if (regimen.isCyclical() && regimen.getCycleNumber() > 1) {
+//				par.setValue("true");
+//			} else {
+//				par.setValue("false");
+//			}
+//		}
+		par.setValue("false");
 		return par;
 	}
 }

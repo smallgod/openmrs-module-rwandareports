@@ -6,8 +6,6 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.orderextension.ExtendedDrugOrder;
-import org.openmrs.module.orderextension.api.OrderExtensionService;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.evaluator.RowPerPatientDataEvaluator;
@@ -34,39 +32,39 @@ public class AllTheOrdersetsWithIndicationOfConceptEvaluator implements RowPerPa
         Concept IndicationConcept = pd.getIndicationConcept();
         Date beforeDate = pd.getBeforeDate();
         Date afterDate = pd.getAfterDate();
-        List<ExtendedDrugOrder> orders = Context.getService(OrderExtensionService.class).getExtendedDrugOrders(pd.getPatient(),IndicationConcept,null,null);
+//        List<ExtendedDrugOrder> orders = Context.getService(OrderExtensionService.class).getExtendedDrugOrders(pd.getPatient(),IndicationConcept,null,null);
+//
+//        if(orders !=null){
+//            String allOrderSetsName = "";
+//            int i = 0;
+//            for(ExtendedDrugOrder order: orders)
+//            {
+//                if(order.getStartDate() != null &&(afterDate==null || OpenmrsUtil.compare(order.getStartDate(),afterDate) >=0) && (beforeDate==null || OpenmrsUtil.compare(order.getStartDate(),beforeDate)<=0))
+//                {
+//
+//                    if (i > 0) {
+//                        allOrderSetsName = allOrderSetsName + ",";
+//                    }
+//                    String orderSetName = null;
+//                    try{
+//                        orderSetName = order.getGroup().getOrderSet().getName();
+//                    }
+//                    catch(Exception e)
+//                    {
+//                        log.error("Unable to retrieve a name from the order set: " + e.getMessage());
+//                    }
+//                    if(orderSetName !=null) {
+//                        allOrderSetsName = allOrderSetsName + orderSetName;
+//                    }
+//                }
+//                i++;
+//            }
+//            if(allOrderSetsName !=null){
+//                par.setValue(allOrderSetsName);
+//            }
+//        }
 
-        if(orders !=null){
-            String allOrderSetsName = "";
-            int i = 0;
-            for(ExtendedDrugOrder order: orders)
-            {
-                if(order.getStartDate() != null &&(afterDate==null || OpenmrsUtil.compare(order.getStartDate(),afterDate) >=0) && (beforeDate==null || OpenmrsUtil.compare(order.getStartDate(),beforeDate)<=0))
-                {
-
-                    if (i > 0) {
-                        allOrderSetsName = allOrderSetsName + ",";
-                    }
-                    String orderSetName = null;
-                    try{
-                        orderSetName = order.getGroup().getOrderSet().getName();
-                    }
-                    catch(Exception e)
-                    {
-                        log.error("Unable to retrieve a name from the order set: " + e.getMessage());
-                    }
-                    if(orderSetName !=null) {
-                        allOrderSetsName = allOrderSetsName + orderSetName;
-                    }
-                }
-                i++;
-            }
-            if(allOrderSetsName !=null){
-                par.setValue(allOrderSetsName);
-            }
-        }
-
-                return par;
+        return par;
     }
 
 
