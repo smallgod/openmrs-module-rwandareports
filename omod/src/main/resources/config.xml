@@ -20,11 +20,17 @@
 		<require_module>org.openmrs.module.rowperpatientreports</require_module>
 		<require_module>org.openmrs.module.reportingobjectgroup</require_module>
 		<require_module>org.openmrs.module.heightweighttracker</require_module>
+		<require_module>org.openmrs.module.orderextension</require_module>
 	</require_modules>
 
 	<extension>
 		<point>org.openmrs.admin.list</point>
 		<class>@MODULE_PACKAGE@.extension.html.ManageAdminListExt</class>
+	</extension>
+
+	<extension>
+		<point>org.openmrs.module.orderextension.header</point>
+		<class>@MODULE_PACKAGE@.extension.html.TreatmentAdminPlanExt</class>
 	</extension>
 
 	<extension>

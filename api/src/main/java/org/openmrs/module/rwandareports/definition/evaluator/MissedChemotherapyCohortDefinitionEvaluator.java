@@ -23,6 +23,8 @@ import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.orderextension.ExtendedDrugOrder;
+import org.openmrs.module.orderextension.api.OrderExtensionService;
 import org.openmrs.module.reporting.cohort.EvaluatedCohort;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.evaluator.CohortDefinitionEvaluator;
@@ -65,32 +67,30 @@ public class MissedChemotherapyCohortDefinitionEvaluator implements CohortDefini
 			from.setTime(definition.getBeforeDate());
 		}
 		from.add(Calendar.MONTH, -6);
-
+		
+		List<ExtendedDrugOrder> orders = Context.getService(OrderExtensionService.class).getExtendedDrugOrders(null,
+		    definition.getChemotherapyIndication(), from.getTime(), definition.getBeforeDate());
 		Cohort cohort = new Cohort();
 		
-//		List<ExtendedDrugOrder> orders = Context.getService(OrderExtensionService.class).getExtendedDrugOrders(null,
-//		    definition.getChemotherapyIndication(), from.getTime(), definition.getBeforeDate());
-//
-//
-//		Calendar formEndDate = Calendar.getInstance();
-//		formEndDate.setTime(definition.getBeforeDate());
-//		formEndDate.add(Calendar.DAY_OF_YEAR, 1);
-//
-//		for (ExtendedDrugOrder order : orders) {
-//			if (order.getRoute() != null
-//			        && gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT).contains(order.getRoute())) {
-//				List<Encounter> lastChemo = Context.getEncounterService().getEncounters(order.getPatient(), null, null,
-//				    formEndDate.getTime(), forms, null, null, null, null, false);
-//				if (lastChemo.size() > 0) {
-//					Encounter lastEncounter = lastChemo.get(lastChemo.size() - 1);
-//					if (OpenmrsUtil.compare(order.getStartDate(), lastEncounter.getEncounterDatetime()) > 0) {
-//						cohort.addMember(order.getPatient().getId());
-//					}
-//				} else {
-//					cohort.addMember(order.getPatient().getId());
-//				}
-//			}
-//		}
+		Calendar formEndDate = Calendar.getInstance();
+		formEndDate.setTime(definition.getBeforeDate());
+		formEndDate.add(Calendar.DAY_OF_YEAR, 1);
+		
+		for (ExtendedDrugOrder order : orders) {
+			if (order.getRoute() != null
+			        && gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT).contains(order.getRoute())) {
+				List<Encounter> lastChemo = Context.getEncounterService().getEncounters(order.getPatient(), null, null,
+				    formEndDate.getTime(), forms, null, null, null, null, false);
+				if (lastChemo.size() > 0) {
+					Encounter lastEncounter = lastChemo.get(lastChemo.size() - 1);
+					if (OpenmrsUtil.compare(order.getStartDate(), lastEncounter.getEncounterDatetime()) > 0) {
+						cohort.addMember(order.getPatient().getId());
+					}
+				} else {
+					cohort.addMember(order.getPatient().getId());
+				}
+			}
+		}
 		return new EvaluatedCohort(cohort, cohortDefinition, context);
 	}
 }
