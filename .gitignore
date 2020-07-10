@@ -10,6 +10,7 @@
 .idea
 .project
 .settings/*
+target/*
 api/.classpath
 api/.project
 api/.settings/*
