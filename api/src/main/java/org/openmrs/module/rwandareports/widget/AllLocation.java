@@ -1,6 +1,8 @@
 package org.openmrs.module.rwandareports.widget;
 
 
+import org.apache.commons.lang.StringUtils;
+
 public class AllLocation {
 	
 	public static String LOCATION = "location";
@@ -48,5 +50,13 @@ public class AllLocation {
     public void setDisplayHierarchy(String displayHierarchy) {
     	this.displayHierarchy = displayHierarchy;
     }
-	
+
+    public static AllLocation valueOf(String value) {
+		AllLocation location = new AllLocation();
+		if (StringUtils.isNotBlank(value)){
+			location.setHierarchy(AllLocation.LOCATION);
+			location.setValue(value);
+		}
+		return location;
+	}
 }
