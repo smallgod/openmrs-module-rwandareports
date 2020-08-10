@@ -783,14 +783,24 @@ public class RowPerPatientColumns {
 				encounterType);
 	}
 
-	public static ObservationInMostRecentEncounterOfType getSeizureInMostRecentEncounterOfTheTypes(
+//
+//	public static ObservationInMostRecentEncounterOfType getSeizureInMostRecentEncounterOfTheTypes(
+//			String name,
+//			List<EncounterType> encounterType,
+//			ObservationInMostRecentEncounterOfType observationInMostRecentEncounterOfType,
+//			ResultFilter resultFilter) {
+//		return getObservationInMostRecentEncounterOfTheTypes(name,
+//				gp.getConcept(GlobalPropertiesManagement.SEIZURE_CONCEPT),
+//				encounterType,resultFilter);
+
+	public static ObservationInMostRecentEncounter getSeizureInMostRecentEncounterOfType(
 			String name,
-			List<EncounterType> encounterType,
-			ObservationInMostRecentEncounterOfType observationInMostRecentEncounterOfType,
-			ResultFilter resultFilter) {
-		return getObservationInMostRecentEncounterOfTheTypes(name,
-				gp.getConcept(GlobalPropertiesManagement.SEIZURE_CONCEPT),
-				encounterType,resultFilter);
+			List <EncounterType> encounterTypes,
+			ObservationInMostRecentEncounterOfType observationInMostRecentEncounterOfType) {
+		return getObservationInMostRecentEncounter(name,
+				gp.getConcept(GlobalPropertiesManagement.SEIZURE_CONCEPT),null,
+				encounterTypes,null);
+
 	}
 
 	public static ObservationInMostRecentEncounterOfType getNextVisitInMostRecentEncounterOfTypes(
@@ -927,7 +937,7 @@ public class RowPerPatientColumns {
 		if (dateFormat != null) {
 			mostRecent.setDateFormat(dateFormat);
 		}
-		return mostRecent;
+			return mostRecent;
 	}
 
 	public static MostRecentObservation getMostRecent(String name,

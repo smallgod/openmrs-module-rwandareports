@@ -1225,7 +1225,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport extends SingleSetupRepo
         oncologyEncounters.add(outpatientOncEncounterType);
         oncologyEncounters.add(inpatientOncologyEncounter);
         hypertesionEncounter =  gp.getEncounterType(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER);
-        heartFailureEncounter =  gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+        heartFailureEncounter =  gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTERS);
         asthmaEncounter =  gp.getEncounterType(GlobalPropertiesManagement.ASTHMA_VISIT);
         diabetesEncounter =  gp.getEncounterType(GlobalPropertiesManagement.DIABETES_VISIT);
         CKDEncounter =  gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE);

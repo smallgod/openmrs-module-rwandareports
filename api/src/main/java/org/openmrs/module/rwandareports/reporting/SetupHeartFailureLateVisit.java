@@ -38,8 +38,12 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 	// Properties retrieved from global variables
 	private Program heartFailureProgram;
 	private EncounterType heartFailureVisit;
-	private List<EncounterType> heartFailureencTypeList = new ArrayList<EncounterType>();
-	private EncounterType HFHTNCKDENCOUNTER;
+
+//	private List<EncounterType> heartFailureencTypeList = new ArrayList<EncounterType>();
+//	private EncounterType HFHTNCKDENCOUNTER;
+
+	private List<EncounterType> heartFailureEncounters;
+
     private Form heartFailureRDVForm;
     private Form heartFailureDDBForm;
     private Form followUpForm;
@@ -97,7 +101,11 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+ heartFailureProgram.getName(), heartFailureProgram),ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 
-		dataSetDefinition.addFilter(Cohorts.createPatientsLateForVisitINDifferentEncounterTypes(DDBAndRendezvousForms, heartFailureencTypeList), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+
+//		dataSetDefinition.addFilter(Cohorts.createPatientsLateForVisitINDifferentEncounterTypes(DDBAndRendezvousForms, heartFailureencTypeList), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+
+		dataSetDefinition.addFilter(Cohorts.createPatientsLateForVisitINDifferentEncounterTypes(DDBAndRendezvousForms, heartFailureEncounters), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+
 		  
 		// ==================================================================
 		// Columns of report settings
@@ -121,7 +129,11 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 		DateOfBirthShowingEstimation birthdate = RowPerPatientColumns.getDateOfBirth("Date of Birth", null, null);
 		dataSetDefinition.addColumn(birthdate, new HashMap<String, Object>());
 
-		dataSetDefinition.addColumn(RowPerPatientColumns.getNextVisitMostRecentEncounterOfTheTypes("nextVisit",heartFailureencTypeList,new ObservationInMostRecentEncounterOfType(), null),
+
+//		dataSetDefinition.addColumn(RowPerPatientColumns.getNextVisitMostRecentEncounterOfTheTypes("nextVisit",heartFailureencTypeList,new ObservationInMostRecentEncounterOfType(), null),
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getNextVisitMostRecentEncounterOfTheTypes("nextVisit",heartFailureEncounters,new ObservationInMostRecentEncounterOfType(), null),
+
 				new HashMap<String, Object>());
 		
 		MostRecentObservation systolic = RowPerPatientColumns.getMostRecentSystolicPB("systolic", "@ddMMMyy");
@@ -132,13 +144,21 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 
 
 		CustomCalculationBasedOnMultiplePatientDataDefinitions numberofdaysLate = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
-		numberofdaysLate.addPatientDataToBeEvaluated(RowPerPatientColumns.getNextVisitMostRecentEncounterOfTheTypes("nextVisit",heartFailureencTypeList,new ObservationInMostRecentEncounterOfType(),dateFilter),new HashMap<String, Object>());
+
+//		numberofdaysLate.addPatientDataToBeEvaluated(RowPerPatientColumns.getNextVisitMostRecentEncounterOfTheTypes("nextVisit",heartFailureencTypeList,new ObservationInMostRecentEncounterOfType(),dateFilter),new HashMap<String, Object>());
+
+		numberofdaysLate.addPatientDataToBeEvaluated(RowPerPatientColumns.getNextVisitMostRecentEncounterOfTheTypes("nextVisit",heartFailureEncounters,new ObservationInMostRecentEncounterOfType(),dateFilter),new HashMap<String, Object>());
+
 		numberofdaysLate.setName("numberofdaysLate");
 		numberofdaysLate.setCalculator(new DaysLate());
 		numberofdaysLate.addParameter(new Parameter("endDate","endDate",Date.class));
 		dataSetDefinition.addColumn(numberofdaysLate,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getSeizureInMostRecentEncounterOfTheTypes("seizure",heartFailureencTypeList,new ObservationInMostRecentEncounterOfType(),null),new HashMap<String, Object>());
+
+//		dataSetDefinition.addColumn(RowPerPatientColumns.getSeizureInMostRecentEncounterOfTheTypes("seizure",heartFailureencTypeList,new ObservationInMostRecentEncounterOfType(),null),new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getSeizureInMostRecentEncounterOfType("seizure",heartFailureEncounters,new ObservationInMostRecentEncounterOfType()),new HashMap<String, Object>());
+
 
 		PatientAddress address = RowPerPatientColumns.getPatientAddress("Address", true, true, true, true);
 		dataSetDefinition.addColumn(address, new HashMap<String, Object>());
@@ -168,10 +188,16 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 	private void setupProperties() {
 
         heartFailureProgram = gp.getProgram(GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
-        heartFailureVisit = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
-		HFHTNCKDENCOUNTER = gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
-		heartFailureencTypeList.add(heartFailureVisit);
-		heartFailureencTypeList.add(HFHTNCKDENCOUNTER);
+
+//        heartFailureVisit = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+//		HFHTNCKDENCOUNTER = gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+//		heartFailureencTypeList.add(heartFailureVisit);
+//		heartFailureencTypeList.add(HFHTNCKDENCOUNTER);
+
+//        heartFailureVisit = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+
+		heartFailureEncounters = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTERS);
+
 		heartFailureRDVForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_FLOW_VISIT);
 		heartFailureDDBForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB);
 		//followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
