@@ -57,8 +57,11 @@ public class RegisterReportsTask extends AbstractTask {
 			String version = ModuleFactory.getModuleById("rwandareports").getVersion();
 			String oldversion = Context.getAdministrationService().getGlobalProperty("reports.moduleVersion");
 			if(!version.equals(oldversion)){
+
 				ReportSetup.cleanTables();
 				ReportSetup.registerReports();
+
+
 				Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("reports.moduleVersion", version));
 			}
 		}
