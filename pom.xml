@@ -26,10 +26,10 @@
 		<reportingVersion>1.20.0</reportingVersion>
 		<rowperpatientreportsVersion>2.0.0-SNAPSHOT</rowperpatientreportsVersion>
 		<serializationVersion>0.2.14</serializationVersion>
-		<MODULE_NAME>${project.name}</MODULE_NAME>
-		<MODULE_PACKAGE>${project.groupId}</MODULE_PACKAGE>
-		<MODULE_ID>${project.artifactId}</MODULE_ID>
-		<MODULE_VERSION>${project.version}</MODULE_VERSION>
+		<MODULE_ID>${project.parent.artifactId}</MODULE_ID>
+		<MODULE_NAME>Rwanda Reports</MODULE_NAME>
+		<MODULE_VERSION>${project.parent.version}</MODULE_VERSION>
+		<MODULE_PACKAGE>${project.parent.groupId}.${project.parent.artifactId}</MODULE_PACKAGE>
 	</properties>
 
 	<dependencies>
