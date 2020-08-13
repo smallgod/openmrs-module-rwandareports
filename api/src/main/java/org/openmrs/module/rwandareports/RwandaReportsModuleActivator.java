@@ -32,17 +32,13 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 	
 	private static Log log = LogFactory.getLog(RwandaReportsModuleActivator.class);
 	
-	/**
-	 * @see org.openmrs.module.Activator#startup()
-	 */
+	@Override
 	public void started() {
 		log.info("Started Rwanda Report Module Config");
 		registerTask("Register Reports", "Registers report definitions", RegisterReportsTask.class, 60 * 60 * 24l);
 	}
-	
-	/**
-	 * @see org.openmrs.module.Activator#shutdown()
-	 */
+
+	@Override
 	public void stopped() {
 		log.info("Stopped Rwanda Report Module");
 	}

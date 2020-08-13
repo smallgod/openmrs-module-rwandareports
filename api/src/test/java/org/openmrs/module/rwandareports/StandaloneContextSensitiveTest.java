@@ -1,12 +1,12 @@
 package org.openmrs.module.rwandareports;
 
+import java.util.Properties;
+
 import org.junit.Before;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.Properties;
 
 @ContextConfiguration(locations = {"classpath:openmrs-servlet.xml"}, inheritLocations = true)
 @SkipBaseSetup
@@ -41,6 +41,6 @@ public abstract class StandaloneContextSensitiveTest extends BaseModuleContextSe
     }
 
 	@Override
-	public void deleteAllData() throws Exception {
+	public void deleteAllData() {
 	}
 }

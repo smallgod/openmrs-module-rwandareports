@@ -28,9 +28,14 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.orderextension.util.OrderEntryUtil;
+import org.openmrs.module.reporting.cohort.Cohorts;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
 import org.openmrs.module.reporting.common.ObjectUtil;
+import org.openmrs.module.reporting.data.patient.EvaluatedPatientData;
+import org.openmrs.module.reporting.data.patient.definition.PatientObjectDataDefinition;
+import org.openmrs.module.reporting.data.patient.service.PatientDataService;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -99,7 +104,7 @@ public class HIVARTRegisterDataSetDefinition2Evaluator implements DataSetEvaluat
 
 		// By default, get all patients
 		if (cohort == null) {
-			cohort = Context.getPatientSetService().getAllPatients();
+			cohort = Cohorts.allPatients();
 		}
 		
 		for(CohortDefinition cd: definition.getFilters())
@@ -115,18 +120,13 @@ public class HIVARTRegisterDataSetDefinition2Evaluator implements DataSetEvaluat
 		}
 
 		// Get a list of patients based on the cohort members
-		List<Patient> patients = Context.getPatientSetService().getPatients(cohort.getMemberIds());
-	
-//		int i = 0;
-		for (Patient p : patients) {			
+		EvaluationContext allPatientContext = new EvaluationContext();
+		allPatientContext.setBaseCohort(cohort);
+		EvaluatedPatientData patientData = Context.getService(PatientDataService.class).evaluate(new PatientObjectDataDefinition(), allPatientContext);
+
+		for (Object patientObj : patientData.getData().values()) {
 			DataSetRow row = new DataSetRow();
-			
-//			i++;
-//			
-//			if(i > 20)
-//			{
-//				break;
-//			}
+			Patient p = (Patient) patientObj;
 				
 			for(RowPerPatientData pd: definition.getColumns())
 			{
@@ -303,8 +303,8 @@ public class HIVARTRegisterDataSetDefinition2Evaluator implements DataSetEvaluat
 				Date endDate = null;
 				for(DrugOrder drO: values)
 				{
-					startDate = drO.getStartDate();
-					endDate = drO.getDiscontinuedDate();
+					startDate = drO.getEffectiveStartDate();
+					endDate = drO.getEffectiveStopDate();
 				}
 				
 				String dates = null;
@@ -501,9 +501,9 @@ public class HIVARTRegisterDataSetDefinition2Evaluator implements DataSetEvaluat
 			for(DrugOrder o: drugOrders)
 			{
 				Calendar oCal = Calendar.getInstance();
-				oCal.setTime(o.getStartDate());
+				oCal.setTime(o.getEffectiveStartDate());
 		
-				if((oCal.get(Calendar.YEAR) == obsResultCal.get(Calendar.YEAR) && oCal.get(Calendar.DAY_OF_YEAR) == obsResultCal.get(Calendar.DAY_OF_YEAR)) ||  o.getStartDate().after(startingDate))
+				if((oCal.get(Calendar.YEAR) == obsResultCal.get(Calendar.YEAR) && oCal.get(Calendar.DAY_OF_YEAR) == obsResultCal.get(Calendar.DAY_OF_YEAR)) ||  o.getEffectiveStartDate().after(startingDate))
 				{
 					ordersToReturn.add(o);
 				}
@@ -529,7 +529,7 @@ public class HIVARTRegisterDataSetDefinition2Evaluator implements DataSetEvaluat
 	
 				for(DrugOrder current: orders)
 				{	
-					if(current.isCurrent(monthDate.getTime()))
+					if(OrderEntryUtil.isCurrent(current, monthDate.getTime()))
 					{
 						String drugName = "Drug Missing";
 						try{
@@ -607,15 +607,16 @@ public class HIVARTRegisterDataSetDefinition2Evaluator implements DataSetEvaluat
 				{
 					discontinuedReasons = discontinuedReasons + " , ";
 				}
-		
-				if(o.getDiscontinuedReason() != null && o.getDrug() != null)
+
+				String discontinueReason = OrderEntryUtil.getDiscontinueReason(o);
+				if(discontinueReason != null && o.getDrug() != null)
 				{
-					discontinuedReasons = discontinuedReasons + o.getDrug().getName() + " - " + o.getDiscontinuedReason().getDisplayString(); 
+					discontinuedReasons = discontinuedReasons + o.getDrug().getName() + " - " + discontinueReason;
 				}
 		
-				if(o.getDiscontinuedDate() != null)
+				if(o.getDateStopped() != null)
 				{
-					discontinuedReasons =  discontinuedReasons + ":" + new SimpleDateFormat("yyyy-MM-dd").format(o.getDiscontinuedDate());
+					discontinuedReasons =  discontinuedReasons + ":" + new SimpleDateFormat("yyyy-MM-dd").format(o.getDateStopped());
 				}
 			}
 		}

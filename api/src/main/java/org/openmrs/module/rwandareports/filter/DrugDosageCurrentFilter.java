@@ -1,19 +1,20 @@
 package org.openmrs.module.rwandareports.filter;
 
-
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
+import org.openmrs.OrderFrequency;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilter;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
-
+import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 
 public class DrugDosageCurrentFilter implements ResultFilter {
 	
@@ -34,59 +35,29 @@ public class DrugDosageCurrentFilter implements ResultFilter {
 	
 		StringBuilder result = new StringBuilder();
 			
-		if(drugOrder.getDiscontinuedDate() != null){
-		  if(returnVisitDates().compareTo(drugOrder.getDiscontinuedDate()) < 0){
-			if(drugOrder != null && drugOrder.getDrug() != null){  
-			  result.append(drugOrder.getDrug().getName());
-			  result.append(" ");
-			  result.append(drugOrder.getDose());
-			  result.append(drugOrder.getUnits());
-			  result.append(" ");
-			  String freq = drugOrder.getFrequency();
-			  if(freq != null)
-			    {
-				 if(freq.indexOf("x") > 1)
-				 {   
-					result.append("\n");
-					result.append(freq);
-					result.append("\n");
+		if(drugOrder.getEffectiveStopDate() != null) {
+			if (returnVisitDates().compareTo(drugOrder.getEffectiveStopDate()) < 0) {
+				if (drugOrder != null && drugOrder.getDrug() != null) {
+					result.append(drugOrder.getDrug().getName());
+					result.append(" ");
+					result.append(drugOrder.getDose());
+					result.append(drugOrder.getDoseUnits() == null ? "" : drugOrder.getDoseUnits().getDisplayString());
+					result.append(" ");
+					OrderFrequency frequency = drugOrder.getFrequency();
+					result.append(frequency == null ? "" : frequency.getConcept().getDisplayString());
 				}
-				else
-				{   
-					result.append("\n");
-					result.append(freq);
-					result.append("\n");
+			} else if (drugOrder.getEffectiveStopDate() == null) {
+				if (drugOrder != null && drugOrder.getDrug() != null) {
+					result.append(drugOrder.getDrug().getName());
+					result.append(" ");
+					result.append(drugOrder.getDose());
+					result.append(drugOrder.getDoseUnits() == null ? "" : drugOrder.getDoseUnits().getDisplayString());
+					result.append(" ");
+					OrderFrequency frequency = drugOrder.getFrequency();
+					result.append(frequency == null ? "" : frequency.getConcept().getDisplayString());
 				}
-			   }
-			 }
-		    }
-		  }
-		 else if(drugOrder.getDiscontinuedDate() == null){
-				if(drugOrder != null && drugOrder.getDrug() != null){  
-				result.append(drugOrder.getDrug().getName());
-				result.append(" ");
-				result.append(drugOrder.getDose());
-				result.append(drugOrder.getUnits());
-				result.append(" ");
-				String freq = drugOrder.getFrequency();
-				if(freq != null)
-				{
-					 if(freq.indexOf("x") > 1)
-					{   
-						result.append("\n");
-						result.append(freq);
-						result.append("\n");
-					}
-					else
-					{   
-						result.append("\n");
-						result.append(freq);
-						result.append("\n");
-					}
-				   }
-				 }
-			  
-			  }
+			}
+		}
 		 
 		return result.toString();
 	}
@@ -110,7 +81,9 @@ public class DrugDosageCurrentFilter implements ResultFilter {
     	 DrugOrder drugOrder=new DrugOrder();
     	 Date retunv=null;
     	 Patient patient = drugOrder.getPatient();
-    	 List<Encounter> patientEncounters = Context.getEncounterService().getEncounters(patient, null, null, null, null, heartFailureEncounter, null, false);
+	     EncounterSearchCriteriaBuilder builder = new EncounterSearchCriteriaBuilder();
+	     builder.setPatient(patient).setEncounterTypes(heartFailureEncounter).setIncludeVoided(false);
+    	 List<Encounter> patientEncounters = Context.getEncounterService().getEncounters(builder.createEncounterSearchCriteria());
 
     	 if (patientEncounters.size() > 0 && !drugOrder.isDiscontinuedRightNow() ) {
          Encounter recentEncounter = patientEncounters.get(patientEncounters.size() - 1); //the last encounter in the List should be the most recent one.

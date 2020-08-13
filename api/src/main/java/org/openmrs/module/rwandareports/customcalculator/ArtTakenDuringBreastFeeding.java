@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
+import org.openmrs.module.orderextension.util.OrderEntryUtil;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculation;
 import org.openmrs.module.rowperpatientreports.patientdata.result.AllDrugOrdersResult;
@@ -52,11 +53,11 @@ public class ArtTakenDuringBreastFeeding implements CustomCalculation{
 			StringBuilder drugs = new StringBuilder();
 			for(DrugOrder drO: allDrugs.getValue())
 			{
-				if(drO.isCurrent((Date)birthDate.getValue()))
+				if(OrderEntryUtil.isCurrent(drO, (Date)birthDate.getValue()))
 				{
 					if(dateWeaned != null && dateWeaned.getValue() != null)
 					{
-						if(drO.isCurrent(dateWeaned.getValue()))
+						if(OrderEntryUtil.isCurrent(drO, dateWeaned.getValue()))
 						{
 							drugs.append(" ");
 							try{

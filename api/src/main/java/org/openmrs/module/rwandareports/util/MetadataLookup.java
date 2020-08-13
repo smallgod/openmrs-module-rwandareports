@@ -1,5 +1,8 @@
 package org.openmrs.module.rwandareports.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -15,9 +18,6 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.ObjectUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MetadataLookup {
 	
@@ -344,7 +344,7 @@ public class MetadataLookup {
 	public static OrderType getOrderType(String lookup) {
 		OrderType ot = Context.getOrderService().getOrderTypeByUuid(lookup);
 		if (ot == null) {
-			for (OrderType orderType : Context.getOrderService().getAllOrderTypes()) {
+			for (OrderType orderType : Context.getOrderService().getOrderTypes(true)) {
 				if (orderType.getName().equalsIgnoreCase(lookup)) {
 					ot = orderType;
 				}

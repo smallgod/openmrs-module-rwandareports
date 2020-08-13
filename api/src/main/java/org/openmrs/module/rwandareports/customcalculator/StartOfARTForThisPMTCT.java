@@ -3,6 +3,7 @@ package org.openmrs.module.rwandareports.customcalculator;
 import java.util.List;
 
 import org.openmrs.DrugOrder;
+import org.openmrs.module.orderextension.util.OrderEntryUtil;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculation;
 import org.openmrs.module.rowperpatientreports.patientdata.result.AllDrugOrdersResult;
@@ -46,9 +47,9 @@ public class StartOfARTForThisPMTCT implements CustomCalculation{
 			DrugOrder drug = null;
 			for(DrugOrder drO: allDrugs.getValue())
 			{
-				if(drO.isCurrent(pmtctStart.getValue()))
+				if(OrderEntryUtil.isCurrent(drO, pmtctStart.getValue()))
 				{
-					if(drug == null || drO.getStartDate().before(drug.getStartDate()))
+					if(drug == null || drO.getEffectiveStartDate().before(drug.getEffectiveStartDate()))
 					{
 						drug = drO;
 					}
@@ -57,7 +58,7 @@ public class StartOfARTForThisPMTCT implements CustomCalculation{
 			
 			if(drug != null)
 			{
-				startArt.setValue(drug.getStartDate());
+				startArt.setValue(drug.getEffectiveStartDate());
 			}
 		}
 		

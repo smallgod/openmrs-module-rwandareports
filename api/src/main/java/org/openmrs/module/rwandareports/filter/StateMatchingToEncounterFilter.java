@@ -26,7 +26,7 @@ public StateMatchingToEncounterFilter(ArrayList<Form> intakeForms,
 }
 public Object filter(Object value) {
 	int encounterId = Integer.parseInt((String)value);
-	int patientId=Context.getEncounterService().getEncounter(encounterId).getPatientId();
+	int patientId=Context.getEncounterService().getEncounter(encounterId).getPatient().getPatientId();
 	
 	List<Encounter> intakevisits=Context.getEncounterService().getEncounters(Context.getPatientService().getPatient(patientId), null, null, null, intakeForms, null, null, null, null, true);
 	

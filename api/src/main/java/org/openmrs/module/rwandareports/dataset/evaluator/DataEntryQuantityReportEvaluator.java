@@ -1,8 +1,23 @@
 package org.openmrs.module.rwandareports.dataset.evaluator;
 
-import org.openmrs.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import org.openmrs.Cohort;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
+import org.openmrs.EncounterType;
+import org.openmrs.Location;
+import org.openmrs.Person;
+import org.openmrs.Program;
+import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
 import org.openmrs.module.reporting.common.ObjectUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -17,11 +32,6 @@ import org.openmrs.module.reporting.query.encounter.EncounterQueryResult;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.query.encounter.service.EncounterQueryService;
 import org.openmrs.module.rwandareports.dataset.DataEntryQuantityReport;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 @Handler(supports = {DataEntryQuantityReport.class})
 public class DataEntryQuantityReportEvaluator implements DataSetEvaluator {
@@ -87,7 +97,6 @@ public class DataEntryQuantityReportEvaluator implements DataSetEvaluator {
                     int encMonth = enc.getEncounterDatetime().getMonth();
                     String encFormName = enc.getForm().getName();
                     Location encLocation =  enc.getLocation();
-                    Person encProvider = enc.getProvider();
                     User encCreator = enc.getCreator();
                     if(!encounterMonths.contains(encMonth)){
                         encounterMonths.add(encMonth);
@@ -98,8 +107,13 @@ public class DataEntryQuantityReportEvaluator implements DataSetEvaluator {
                     if(!encLocations.contains(encLocation)){
                         encLocations.add(encLocation);
                     }
-                    if(!encProviders.contains(encProvider)){
-                        encProviders.add(encProvider);
+                    if (enc.getEncounterProviders() != null) {
+                        for (EncounterProvider ep : enc.getEncounterProviders()) {
+                            Person encProvider = ep.getProvider().getPerson();
+                            if (!encProviders.contains(encProvider)) {
+                                encProviders.add(encProvider);
+                            }
+                        }
                     }
                     if(!encCreators.contains(encCreator)){
                         encCreators.add(encCreator);
@@ -176,19 +190,16 @@ public class DataEntryQuantityReportEvaluator implements DataSetEvaluator {
     }
     private String getCommaSeparatedPatientInProgram(Program program,Date endDate)
     {
-
-        Set<Integer> patientIds = Context.getPatientSetService().getPatientsByProgramAndState(program,null,null,endDate).getPatientIds();
-
-        StringBuilder result = new StringBuilder();
-        for(Integer pat: patientIds)
-        {
-            if(result.length() > 0)
-            {
-                result.append(",");
-            }
-            result.append(pat);
+        InProgramCohortDefinition cd = new InProgramCohortDefinition();
+        cd.setPrograms(Arrays.asList(program));
+        cd.setOnOrBefore(endDate);
+        try {
+            Cohort cohort = Context.getService(CohortDefinitionService.class).evaluate(cd, new EvaluationContext());
+            return cohort.getCommaSeparatedPatientIds();
         }
-        return result.toString();
+        catch (EvaluationException e) {
+            throw new IllegalStateException("Error eavaluating patients in program", e);
+        }
     }
     private List<Encounter> getEncounters(Set<Integer> encounterIds)
     {
@@ -209,9 +220,20 @@ public class DataEntryQuantityReportEvaluator implements DataSetEvaluator {
 
         int numberOfOccurences=0;
         for(Encounter enc: encounters){
-            if(enc.getEncounterDatetime().getMonth() == Month && enc.getCreator()==theCreator && enc.getForm().getName()==form
-                    && enc.getLocation()==theLocation && enc.getProvider()==theProvider && !enc.getPatient().isVoided()){
-                numberOfOccurences++;
+            if(enc.getEncounterDatetime().getMonth() == Month &&
+                    enc.getCreator().equals(theCreator) && enc.getForm().getName().equals(form)
+                    && enc.getLocation().equals(theLocation) && !enc.getPatient().isVoided()){
+                boolean keep = (theProvider == null);
+                if (theProvider != null) {
+                    for (EncounterProvider ep : enc.getEncounterProviders()) {
+                        if (ep.getProvider().getPerson().equals(theProvider)) {
+                            keep = true;
+                        }
+                    }
+                }
+                if (keep) {
+                    numberOfOccurences++;
+                }
             }
         }
         return numberOfOccurences;

@@ -13,13 +13,9 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.api.context.Context;
-import org.openmrs.logic.LogicService;
-import org.openmrs.logic.datasource.PersonDataSource;
-import org.openmrs.logic.rule.AgeRule;
-import org.openmrs.logic.token.TokenService;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
@@ -38,12 +34,12 @@ import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
-import org.openmrs.module.reporting.indicator.aggregation.MedianAggregator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.definition.DrugsActiveCohortDefinition;
+import org.openmrs.module.rwandareports.indicator.MedianAgeIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
@@ -231,22 +227,12 @@ public class SetupHeartFailurereport {
 		//=========================================================================================
 		//      1.2.   median age
 		//=========================================================================================
-		LogicService ls = Context.getLogicService();
-		TokenService ts = Context.getService(TokenService.class);
 		
-		try {
-			ls.getRule("AGE");
-		}
-		catch (Exception ex) {
-			AgeRule ageRule = new AgeRule();
-			
-			//ls.addRule("AGE", ageRule);
-			ts.registerToken("AGE", new PersonDataSource(), "");
-		}
-		
-		CohortIndicator medianAge = Indicators.newLogicIndicator("medianAge", patientsInHFProgram,
-		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"),
-		    MedianAggregator.class, "AGE");
+		MedianAgeIndicator medianAge = new MedianAgeIndicator();
+		medianAge.setName("medianAge");
+		medianAge.setCohortDefinition(new Mapped<CohortDefinition>(patientsInHFProgram,
+		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")
+		));
 		
 		//=========================================================================================
 		//      1.3.   Patients enrolled

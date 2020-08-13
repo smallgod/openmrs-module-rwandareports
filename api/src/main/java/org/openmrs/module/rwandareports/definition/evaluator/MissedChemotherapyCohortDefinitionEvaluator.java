@@ -15,15 +15,14 @@ package org.openmrs.module.rwandareports.definition.evaluator;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Cohort;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.orderextension.ExtendedDrugOrder;
 import org.openmrs.module.orderextension.api.OrderExtensionService;
 import org.openmrs.module.reporting.cohort.EvaluatedCohort;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
@@ -48,7 +47,7 @@ public class MissedChemotherapyCohortDefinitionEvaluator implements CohortDefini
 	}
 	
 	/**
-	 * @see CohortDefinitionEvaluator#evaluateCohort(CohortDefinition, EvaluationContext)
+	 * @see CohortDefinitionEvaluator#evaluate(CohortDefinition, EvaluationContext)
 	 */
 	public EvaluatedCohort evaluate(CohortDefinition cohortDefinition, EvaluationContext context) {
 		
@@ -68,7 +67,7 @@ public class MissedChemotherapyCohortDefinitionEvaluator implements CohortDefini
 		}
 		from.add(Calendar.MONTH, -6);
 		
-		List<ExtendedDrugOrder> orders = Context.getService(OrderExtensionService.class).getExtendedDrugOrders(null,
+		List<DrugOrder> orders = Context.getService(OrderExtensionService.class).getDrugOrders(null,
 		    definition.getChemotherapyIndication(), from.getTime(), definition.getBeforeDate());
 		Cohort cohort = new Cohort();
 		
@@ -76,14 +75,14 @@ public class MissedChemotherapyCohortDefinitionEvaluator implements CohortDefini
 		formEndDate.setTime(definition.getBeforeDate());
 		formEndDate.add(Calendar.DAY_OF_YEAR, 1);
 		
-		for (ExtendedDrugOrder order : orders) {
+		for (DrugOrder order : orders) {
 			if (order.getRoute() != null
 			        && gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT).contains(order.getRoute())) {
 				List<Encounter> lastChemo = Context.getEncounterService().getEncounters(order.getPatient(), null, null,
 				    formEndDate.getTime(), forms, null, null, null, null, false);
 				if (lastChemo.size() > 0) {
 					Encounter lastEncounter = lastChemo.get(lastChemo.size() - 1);
-					if (OpenmrsUtil.compare(order.getStartDate(), lastEncounter.getEncounterDatetime()) > 0) {
+					if (OpenmrsUtil.compare(order.getEffectiveStartDate(), lastEncounter.getEncounterDatetime()) > 0) {
 						cohort.addMember(order.getPatient().getId());
 					}
 				} else {

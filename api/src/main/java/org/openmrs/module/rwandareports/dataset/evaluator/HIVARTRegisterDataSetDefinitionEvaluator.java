@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,9 +29,15 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.calculation.EvaluationInstanceData;
+import org.openmrs.module.orderextension.util.OrderEntryUtil;
+import org.openmrs.module.reporting.cohort.Cohorts;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
 import org.openmrs.module.reporting.common.ObjectUtil;
+import org.openmrs.module.reporting.data.patient.EvaluatedPatientData;
+import org.openmrs.module.reporting.data.patient.definition.PatientObjectDataDefinition;
+import org.openmrs.module.reporting.data.patient.service.PatientDataService;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -99,7 +106,7 @@ public class HIVARTRegisterDataSetDefinitionEvaluator implements DataSetEvaluato
 
 		// By default, get all patients
 		if (cohort == null) {
-			cohort = Context.getPatientSetService().getAllPatients();
+			cohort = Cohorts.allPatients();
 		}
 		
 		for(CohortDefinition cd: definition.getFilters())
@@ -116,21 +123,15 @@ public class HIVARTRegisterDataSetDefinitionEvaluator implements DataSetEvaluato
 		}
 
 		// Get a list of patients based on the cohort members
-		List<Patient> patients = Context.getPatientSetService().getPatients(cohort.getMemberIds());
-	
-//		int i = 0;
-		for (Patient p : patients) {			
+		EvaluationContext allPatientContext = new EvaluationContext();
+		allPatientContext.setBaseCohort(cohort);
+		EvaluatedPatientData patientData = Context.getService(PatientDataService.class).evaluate(new PatientObjectDataDefinition(), allPatientContext);
+
+		for (Object patientObj : patientData.getData().values()) {
 			DataSetRow row = new DataSetRow();
-			
-//			i++;
-//			
-//			if(i > 15)
-//			{
-//				break;
-//			}
+			Patient p = (Patient) patientObj;
 				
-			for(RowPerPatientData pd: definition.getColumns())
-			{
+			for(RowPerPatientData pd: definition.getColumns()) {
 				pd.setPatient(p);
 				pd.setPatientId(p.getPatientId());
 				long startTime = System.currentTimeMillis();
@@ -139,13 +140,12 @@ public class HIVARTRegisterDataSetDefinitionEvaluator implements DataSetEvaluato
 					patientDataResult = Context.getService(RowPerPatientDataService.class).evaluate(pd, context);
 					DataSetColumn c = new DataSetColumn(patientDataResult.getName(), patientDataResult.getDescription(), patientDataResult.getColumnClass());
 					row.addColumnValue(c, patientDataResult);
-				} catch (EvaluationException e) {
+				}
+				catch (EvaluationException e) {
 					log.debug("Error evaluating dataSet", e);
 				}
 				long timeTake = System.currentTimeMillis() - startTime;
 				log.info(pd.getName() + ": " + timeTake);
-				
-				
 			}
 			dataSet.addRow(row);
 		}
@@ -311,8 +311,8 @@ public class HIVARTRegisterDataSetDefinitionEvaluator implements DataSetEvaluato
 			Date endDate = null;
 			for(DrugOrder drO: values)
 			{
-				startDate = drO.getStartDate();
-				endDate = drO.getDiscontinuedDate();
+				startDate = drO.getEffectiveStartDate();
+				endDate = drO.getEffectiveStopDate();
 			}
 			DataSetColumn startCol = new DataSetColumn("start " + columnList.get(k).getLabel() + sheetNumber, columnList.get(k).getLabel(), Date.class);
 			resultRow.addColumnValue(startCol, startDate);
@@ -524,9 +524,9 @@ public class HIVARTRegisterDataSetDefinitionEvaluator implements DataSetEvaluato
 			for(DrugOrder o: drugOrders)
 			{
 				Calendar oCal = Calendar.getInstance();
-				oCal.setTime(o.getStartDate());
+				oCal.setTime(o.getEffectiveStartDate());
 		
-				if((oCal.get(Calendar.YEAR) == obsResultCal.get(Calendar.YEAR) && oCal.get(Calendar.DAY_OF_YEAR) == obsResultCal.get(Calendar.DAY_OF_YEAR)) ||  o.getStartDate().after(startingDate))
+				if((oCal.get(Calendar.YEAR) == obsResultCal.get(Calendar.YEAR) && oCal.get(Calendar.DAY_OF_YEAR) == obsResultCal.get(Calendar.DAY_OF_YEAR)) ||  o.getEffectiveStartDate().after(startingDate))
 				{
 					ordersToReturn.add(o);
 				}
@@ -552,7 +552,7 @@ public class HIVARTRegisterDataSetDefinitionEvaluator implements DataSetEvaluato
 	
 				for(DrugOrder current: orders)
 				{	
-					if(current.isCurrent(monthDate.getTime()))
+					if(OrderEntryUtil.isCurrent(current, monthDate.getTime()))
 					{
 						String drugName = "Drug Missing";
 						try{
@@ -630,15 +630,16 @@ public class HIVARTRegisterDataSetDefinitionEvaluator implements DataSetEvaluato
 				{
 					discontinuedReasons = discontinuedReasons + " , ";
 				}
-		
-				if(o.getDiscontinuedReason() != null && o.getDrug() != null)
+
+				String discontinueReason = OrderEntryUtil.getDiscontinueReason(o);
+				if(discontinueReason != null && o.getDrug() != null)
 				{
-					discontinuedReasons = discontinuedReasons + o.getDrug().getName() + " - " + o.getDiscontinuedReason().getDisplayString(); 
+					discontinuedReasons = discontinuedReasons + o.getDrug().getName() + " - " + discontinueReason;
 				}
 		
-				if(o.getDiscontinuedDate() != null)
+				if(o.getDateStopped() != null)
 				{
-					discontinuedReasons =  discontinuedReasons + ":" + new SimpleDateFormat("yyyy-MM-dd").format(o.getDiscontinuedDate());
+					discontinuedReasons =  discontinuedReasons + ":" + new SimpleDateFormat("yyyy-MM-dd").format(o.getDateStopped());
 				}
 			}
 		}

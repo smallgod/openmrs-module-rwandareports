@@ -12,30 +12,29 @@
 	<activator>@MODULE_PACKAGE@.RwandaReportsModuleActivator</activator>
 	<updateURL>https://dev.openmrs.org/modules/download/@MODULE_ID@/update.rdf
 	</updateURL>
-	<require_version>1.4.0</require_version>
-
-
+	<require_version>${openMRSVersion}</require_version>
 	<require_modules>
         <require_module>org.openmrs.module.reporting</require_module>
 		<require_module>org.openmrs.module.rowperpatientreports</require_module>
 		<require_module>org.openmrs.module.reportingobjectgroup</require_module>
 		<require_module>org.openmrs.module.heightweighttracker</require_module>
 		<require_module>org.openmrs.module.orderextension</require_module>
+		<require_module>org.openmrs.module.legacyui</require_module>
 	</require_modules>
 
 	<extension>
 		<point>org.openmrs.admin.list</point>
-		<class>@MODULE_PACKAGE@.extension.html.ManageAdminListExt</class>
+		<class>org.openmrs.module.rwandareports.web.extension.ManageAdminListExt</class>
 	</extension>
 
 	<extension>
 		<point>org.openmrs.module.orderextension.header</point>
-		<class>@MODULE_PACKAGE@.extension.html.TreatmentAdminPlanExt</class>
+		<class>org.openmrs.module.rwandareports.web.extension.TreatmentAdminPlanExt</class>
 	</extension>
 
 	<extension>
 		<point>org.openmrs.patientDashboard.patientActionsContent</point>
-		<class>${project.parent.groupId}.${project.parent.artifactId}.web.extension.PatientDashboardActions</class>
+		<class>org.openmrs.module.rwandareports.web.extension.PatientDashboardActions</class>
 	</extension>
 
 	<messages>
@@ -43,21 +42,16 @@
 		<file>messages.properties</file>
 	</messages>
 
-	<mappingFiles>
-	</mappingFiles>
-
 	<globalProperty>
 		<property>reports.dataEntryDelay</property>
 		<defaultValue>21</defaultValue>
-		<description>The number of days the delay should be before turning up
-			in the outlier list</description>
+		<description>The number of days the delay should be before turning up in the outlier list</description>
 	</globalProperty>
 
 	<globalProperty>
 		<property>reports.dataEntryDelayAccepted</property>
 		<defaultValue>7</defaultValue>
-		<description>The number of days in which an encounter should be
-			entered</description>
+		<description>The number of days in which an encounter should be entered</description>
 	</globalProperty>
 
 

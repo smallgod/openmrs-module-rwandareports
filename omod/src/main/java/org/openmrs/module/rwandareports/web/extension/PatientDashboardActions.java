@@ -23,9 +23,13 @@ public class PatientDashboardActions extends Extension {
 		Patient patient = Context.getPatientService().getPatient(patientId);
 
 		Set<Program> currentlyEnrolledPrograms = new HashSet<Program>();
-		Collection<PatientProgram> patientPrograms = Context.getProgramWorkflowService().getCurrentPrograms(patient, null);
+		Collection<PatientProgram> patientPrograms = Context.getProgramWorkflowService().getPatientPrograms(
+				patient, null, null, null, null, null, false
+		);
 		for (PatientProgram pp : patientPrograms) {
-			currentlyEnrolledPrograms.add(pp.getProgram());
+			if (pp.getActive()) {
+				currentlyEnrolledPrograms.add(pp.getProgram());
+			}
 		}
 
 		StringBuilder sb = new StringBuilder();

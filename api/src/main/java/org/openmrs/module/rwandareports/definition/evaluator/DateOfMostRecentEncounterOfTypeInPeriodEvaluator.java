@@ -1,5 +1,8 @@
 package org.openmrs.module.rwandareports.definition.evaluator;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -12,9 +15,7 @@ import org.openmrs.module.rowperpatientreports.patientdata.evaluator.RowPerPatie
 import org.openmrs.module.rowperpatientreports.patientdata.result.DateResult;
 import org.openmrs.module.rowperpatientreports.patientdata.result.PatientDataResult;
 import org.openmrs.module.rwandareports.definition.DateOfMostRecentEncounterOfTypeInPeriod;
-
-import java.util.Date;
-import java.util.List;
+import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 
 @Handler(supports={DateOfMostRecentEncounterOfTypeInPeriod.class})
 public class DateOfMostRecentEncounterOfTypeInPeriodEvaluator implements RowPerPatientDataEvaluator {
@@ -31,7 +32,10 @@ public class DateOfMostRecentEncounterOfTypeInPeriodEvaluator implements RowPerP
             startDate = (Date) context.getParameterValue("startDate");
             endDate = (Date) context.getParameterValue("endDate");
         }
-        List<Encounter> encounters = Context.getEncounterService().getEncounters(pd.getPatient(),startDate,endDate);
+        EncounterSearchCriteriaBuilder builder = new EncounterSearchCriteriaBuilder();
+        builder.setPatient(pd.getPatient()).setFromDate(startDate).setToDate(endDate);
+
+        List<Encounter> encounters = Context.getEncounterService().getEncounters(builder.createEncounterSearchCriteria());
 
         Encounter enc = null;
         if(encounters != null)

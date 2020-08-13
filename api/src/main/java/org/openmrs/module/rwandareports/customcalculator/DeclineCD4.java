@@ -36,7 +36,7 @@ public class DeclineCD4 implements CustomCalculation{
 				DrugOrdersResult artDateResult = (DrugOrdersResult)result;
 				if(artDateResult.getValue() != null)
 				{
-					artInitiation = artDateResult.getValue().getStartDate();
+					artInitiation = artDateResult.getValue().getEffectiveStartDate();
 				}
 			}
 		}

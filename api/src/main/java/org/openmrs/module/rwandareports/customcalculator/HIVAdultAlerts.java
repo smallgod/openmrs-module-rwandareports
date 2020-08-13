@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
 import org.openmrs.Order;
-import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.context.Context;
+import org.openmrs.module.orderextension.util.OrderEntryUtil;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculation;
 import org.openmrs.module.rowperpatientreports.patientdata.result.AllObservationValuesResult;
@@ -178,10 +178,10 @@ public class HIVAdultAlerts implements CustomCalculation{
 						lastviCreatinine = creatinine.getValue().get(creatinine.getValue().size()-1);
 					}
 					
-					List<Order> orders=Context.getOrderService().getOrdersByPatient(result.getPatientData().getPatient());
+					List<DrugOrder> orders= OrderEntryUtil.getDrugOrdersByPatient(result.getPatientData().getPatient());
 					Order currrentTDF=null;
 					for (Order order : orders) {
-						if(((order.getConcept().getConceptId()==gp.getConcept(GlobalPropertiesManagement.TDF).getConceptId()) || (order.getConcept().getConceptId()==gp.getConcept(GlobalPropertiesManagement.TDF_3TC).getConceptId())) && order.getVoided()==false && order.getDiscontinued()==false)
+						if(((order.getConcept().getConceptId()==gp.getConcept(GlobalPropertiesManagement.TDF).getConceptId()) || (order.getConcept().getConceptId()==gp.getConcept(GlobalPropertiesManagement.TDF_3TC).getConceptId())) && order.getVoided()==false && !order.isDiscontinuedRightNow())
 						{
 							currrentTDF=order;
 							break;

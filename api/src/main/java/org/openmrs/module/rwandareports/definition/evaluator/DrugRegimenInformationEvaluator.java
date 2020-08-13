@@ -1,6 +1,5 @@
 package org.openmrs.module.rwandareports.definition.evaluator;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -11,10 +10,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.orderextension.DrugRegimen;
-import org.openmrs.module.orderextension.ExtendedDrugOrder;
 import org.openmrs.module.orderextension.api.OrderExtensionService;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
@@ -57,18 +56,18 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 		} else {
 			
 			
-			List<ExtendedDrugOrder> drugOrders = Context.getService(OrderExtensionService.class).getExtendedDrugOrders(
+			List<DrugOrder> drugOrders = Context.getService(OrderExtensionService.class).getDrugOrders(
 			    pd.getPatient(), pd.getIndication(), pd.getAsOfDate(), pd.getUntilDate());
 			
 			
-			for (ExtendedDrugOrder eo : drugOrders) {
-				if (eo.getGroup() != null) {
-					if (eo.getGroup() instanceof DrugRegimen) {
-						DrugRegimen reg = (DrugRegimen) eo.getGroup();
+			for (DrugOrder eo : drugOrders) {
+				if (eo.getOrderGroup() != null) {
+					if (eo.getOrderGroup() instanceof DrugRegimen) {
+						DrugRegimen reg = (DrugRegimen) eo.getOrderGroup();
 						
 						if(regimen == null || reg.getFirstDrugOrderStartDate().after(regimen.getFirstDrugOrderStartDate()))
 						{
-							regimen = (DrugRegimen) eo.getGroup();
+							regimen = (DrugRegimen) eo.getOrderGroup();
 						}
 					}
 				}
@@ -78,8 +77,7 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 		if (regimen != null) {
 			StringBuilder result = new StringBuilder();
 			if (regimen.isCyclical()) {
-				Integer maxCycleNum = Context.getService(OrderExtensionService.class).getMaxNumberOfCyclesForRegimen(
-				    pd.getPatient(), regimen);
+				Integer maxCycleNum = Context.getService(OrderExtensionService.class).getMaxNumberOfCyclesForRegimen(regimen);
 				
 				result.append("Cycle #: ");
 				result.append(regimen.getCycleNumber());
@@ -92,45 +90,45 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 			
 			StringBuilder drugs = new StringBuilder();
 			
-			List<ExtendedDrugOrder> members = new ArrayList<ExtendedDrugOrder>();
+			List<DrugOrder> members = new ArrayList<DrugOrder>();
 			members.addAll(regimen.getMembers());
-			Collections.sort(members, new Comparator<ExtendedDrugOrder>(){
+			Collections.sort(members, new Comparator<DrugOrder>(){
 
 				@Override
-                public int compare(ExtendedDrugOrder o1, ExtendedDrugOrder o2) {
+                public int compare(DrugOrder o1, DrugOrder o2) {
 	                return o1.getDrug().getName().compareTo(o2.getDrug().getName());
                 }
 				
 			});
 			
 			Date startDate = null;
-			for (ExtendedDrugOrder order : members) {
+			for (DrugOrder order : members) {
 				
-				if(pd.isShowDrugDetails() && (pd.getIndication() == null || pd.getIndication().equals(order.getIndication())))
+				if(pd.isShowDrugDetails() && (pd.getIndication() == null || pd.getIndication().equals(order.getOrderReason())))
 				{
-					if((OpenmrsUtil.compare(order.getStartDate(), pd.getAsOfDate()) >= 0) && (pd.getUntilDate() == null || OpenmrsUtil.compare(order.getStartDate(), pd.getUntilDate()) <= 0))
+					if((OpenmrsUtil.compare(order.getEffectiveStartDate(), pd.getAsOfDate()) >= 0) && (pd.getUntilDate() == null || OpenmrsUtil.compare(order.getEffectiveStartDate(), pd.getUntilDate()) <= 0))
 					{
 						drugs.append("\n");
 						drugs.append(order.getDrug().getName());
 						drugs.append(" ");
 						drugs.append(order.getDose());
-						drugs.append(order.getUnits());
+						drugs.append(order.getDoseUnits() == null ? "" : order.getDoseUnits().getDisplayString());
 					}
 				}
 				
 				if (order.getRoute() != null && iv.contains(order.getRoute())) {
 					
 					if (pd.getAsOfDate() != null) {
-						if (((startDate == null || OpenmrsUtil.compare(order.getStartDate(), pd.getAsOfDate()) >= 0)
-						        || (order.getStartDate().before(startDate) && OpenmrsUtil.compare(order.getStartDate(),
-						            pd.getAsOfDate()) >= 0)) && (pd.getUntilDate() == null || OpenmrsUtil.compare(order.getStartDate(), pd.getUntilDate()) <= 0)) {
-							startDate = order.getStartDate();
+						if (((startDate == null || OpenmrsUtil.compare(order.getEffectiveStartDate(), pd.getAsOfDate()) >= 0)
+						        || (order.getEffectiveStartDate().before(startDate) && OpenmrsUtil.compare(order.getEffectiveStartDate(),
+						            pd.getAsOfDate()) >= 0)) && (pd.getUntilDate() == null || OpenmrsUtil.compare(order.getEffectiveStartDate(), pd.getUntilDate()) <= 0)) {
+							startDate = order.getEffectiveStartDate();
 						}
 					}
 					else
 					{
-						if (startDate == null || order.getStartDate().after(startDate)) {
-							startDate = order.getStartDate();
+						if (startDate == null || order.getEffectiveStartDate().after(startDate)) {
+							startDate = order.getEffectiveStartDate();
 						}
 					}
 				}

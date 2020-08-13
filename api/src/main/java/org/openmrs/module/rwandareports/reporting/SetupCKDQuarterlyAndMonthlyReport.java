@@ -16,8 +16,6 @@ package org.openmrs.module.rwandareports.reporting;
 import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.*;
-import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;

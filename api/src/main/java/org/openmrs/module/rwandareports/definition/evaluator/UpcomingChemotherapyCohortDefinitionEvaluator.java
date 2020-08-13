@@ -16,9 +16,9 @@ package org.openmrs.module.rwandareports.definition.evaluator;
 import java.util.List;
 
 import org.openmrs.Cohort;
+import org.openmrs.DrugOrder;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.orderextension.ExtendedDrugOrder;
 import org.openmrs.module.orderextension.api.OrderExtensionService;
 import org.openmrs.module.reporting.cohort.EvaluatedCohort;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
@@ -41,15 +41,17 @@ public class UpcomingChemotherapyCohortDefinitionEvaluator implements CohortDefi
 	public UpcomingChemotherapyCohortDefinitionEvaluator() {}
 	
 	/**
-     * @see CohortDefinitionEvaluator#evaluateCohort(CohortDefinition, EvaluationContext)
+     * @see CohortDefinitionEvaluator#evaluate(CohortDefinition, EvaluationContext)
      */
     public EvaluatedCohort evaluate(CohortDefinition cohortDefinition, EvaluationContext context) {
     	UpcomingChemotherapyCohortDefinition definition = (UpcomingChemotherapyCohortDefinition) cohortDefinition;
-		
-    	List<ExtendedDrugOrder> orders = Context.getService(OrderExtensionService.class).getExtendedDrugOrders(null, definition.getChemotherapyIndication(), definition.getAsOfDate(), definition.getUntilDate());
+
+    	List<DrugOrder> orders = Context.getService(OrderExtensionService.class).getDrugOrders(
+    			null, definition.getChemotherapyIndication(), definition.getAsOfDate(), definition.getUntilDate()
+	    );
     	Cohort cohort = new Cohort();
     	
-    	for(ExtendedDrugOrder order: orders)
+    	for(DrugOrder order: orders)
     	{
     		if(order.getRoute() != null && gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT).contains(order.getRoute()))
     		{
