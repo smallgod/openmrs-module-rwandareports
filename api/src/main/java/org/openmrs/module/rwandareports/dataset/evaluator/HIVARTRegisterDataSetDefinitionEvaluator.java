@@ -19,7 +19,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,8 +28,8 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.openmrs.calculation.EvaluationInstanceData;
 import org.openmrs.module.orderextension.util.OrderEntryUtil;
+import org.openmrs.module.reporting.cohort.CohortUtil;
 import org.openmrs.module.reporting.cohort.Cohorts;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
@@ -114,7 +113,7 @@ public class HIVARTRegisterDataSetDefinitionEvaluator implements DataSetEvaluato
 			Cohort filter;
 			try {
 				filter = Context.getService(CohortDefinitionService.class).evaluate(cd, context);
-				cohort = cohort.intersect(cohort, filter);
+				cohort = CohortUtil.intersect(cohort, filter);
 			} catch (EvaluationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

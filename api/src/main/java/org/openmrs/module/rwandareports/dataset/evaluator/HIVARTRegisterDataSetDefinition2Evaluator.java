@@ -29,6 +29,7 @@ import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.orderextension.util.OrderEntryUtil;
+import org.openmrs.module.reporting.cohort.CohortUtil;
 import org.openmrs.module.reporting.cohort.Cohorts;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
@@ -112,7 +113,7 @@ public class HIVARTRegisterDataSetDefinition2Evaluator implements DataSetEvaluat
 			Cohort filter;
 			try {
 				filter = Context.getService(CohortDefinitionService.class).evaluate(cd, context);
-				cohort = cohort.intersect(cohort, filter);
+				cohort = CohortUtil.intersect(cohort, filter);
 			} catch (EvaluationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
