@@ -14,21 +14,13 @@
 package org.openmrs.module.rwandareports.dataset.evaluator;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
-import org.openmrs.Drug;
-import org.openmrs.DrugOrder;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.orderextension.ExtendedDrugOrder;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -37,7 +29,6 @@ import org.openmrs.module.reporting.dataset.definition.EncounterDataSetDefinitio
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.rwandareports.dataset.DrugOrderDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.DrugOrderTotalDataSetDefinition;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
@@ -92,7 +83,8 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 		
 		if (cohort != null) {
 			DecimalFormat f = new DecimalFormat("0.#");
-			
+			throw new EvaluationException("Unable to evaluate drug order total DSD.  Needs further analysis following migration");
+			/*
 			Map<Drug, Double> drugTotal = new HashMap<Drug, Double>();
 			for (Integer pId : cohort.getMemberIds()) {
 				Patient patient = Context.getPatientService().getPatient(pId);
@@ -258,6 +250,8 @@ public class DrugOrderTotalDataSetEvaluator implements DataSetEvaluator {
 				dataSet.addColumnValue(c.getId(), route, drugT.getRoute().getDisplayString());
 				
 			}
+
+			 */
 		}
 		return dataSet;
 	}

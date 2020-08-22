@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.rwandareports.widget.handler;
+package org.openmrs.module.rwandareports.web.widget.handler;
 
 import java.util.ArrayList;
 import java.util.List;

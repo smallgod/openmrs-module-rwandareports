@@ -32,9 +32,9 @@ public class DecisionDate implements CustomCalculation{
 				{
 					for(DrugOrder o: arvStart.getValue())
 					{
-						if(startDate == null || startDate.after(o.getStartDate()))
+						if(startDate == null || startDate.after(o.getEffectiveStartDate()))
 						{
-							startDate = o.getStartDate();
+							startDate = o.getEffectiveStartDate();
 						}
 					}
 				}

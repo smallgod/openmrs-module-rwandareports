@@ -5,12 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeSet;
+
 import org.openmrs.Cohort;
 import org.openmrs.Location;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.htmlwidgets.util.ReflectionUtil;
+import org.openmrs.module.reporting.cohort.CohortUtil;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
 import org.openmrs.module.reporting.common.ObjectUtil;
@@ -171,7 +172,7 @@ public class LocationHierachyIndicatorDataSetEvaluator implements DataSetEvaluat
 					Cohort baseCohort = Context.getService(CohortDefinitionService.class).evaluate(cohort, ec);
 					
 					if (context.getBaseCohort() != null) {
-						baseCohort = Cohort.intersect(baseCohort, context.getBaseCohort());
+						baseCohort = CohortUtil.intersect(baseCohort, context.getBaseCohort());
 					}
 					
 					ec.setBaseCohort(baseCohort);

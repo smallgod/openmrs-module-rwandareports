@@ -3,9 +3,9 @@
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>rwandareports</artifactId>
-		<version>2.7.4-SNAPSHOT</version>
+		<version>3.0.0-SNAPSHOT</version>
 	</parent>
-	<groupId>org.openmrs.module</groupId>
+
 	<artifactId>rwandareports-api</artifactId>
 	<packaging>jar</packaging>
 	<name>Rwanda Reports API</name>

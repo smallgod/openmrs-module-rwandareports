@@ -38,7 +38,7 @@ public class DiffBetweenStatusAndRegimenManipulation implements CustomCalculatio
 				DrugOrdersResult regimen = (DrugOrdersResult)res;
 				if(regimen.getValue() != null)
 				{
-					regimenStart = regimen.getValue().getStartDate();
+					regimenStart = regimen.getValue().getEffectiveStartDate();
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 package org.openmrs.module.rwandareports.filter;
 
 import org.openmrs.DrugOrder;
+import org.openmrs.OrderFrequency;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ResultFilter;
 
 public class DrugDosageFrequencyFilter implements ResultFilter {
@@ -17,20 +18,10 @@ public class DrugDosageFrequencyFilter implements ResultFilter {
 			result.append(drugOrder.getDrug().getName());
 			result.append(" ");
 			result.append(drugOrder.getDose());
-			result.append(drugOrder.getUnits());
+			result.append(drugOrder.getDoseUnits() == null ? "" : drugOrder.getDoseUnits().getDisplayString());
 			result.append(" ");
-			String freq = drugOrder.getFrequency();
-			if(freq != null)
-			{
-				if(freq.indexOf("x") > -1)
-				{
-					result.append(freq.substring(0, freq.indexOf("x")));
-				}
-				else
-				{
-					result.append(freq);
-				}
-			}
+			OrderFrequency frequency = drugOrder.getFrequency();
+			result.append(frequency == null ? "" : frequency.getConcept().getDisplayString());
 		}
 		
 		return result.toString();

@@ -11,9 +11,8 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.rwandareports.extension.html;
+package org.openmrs.module.rwandareports.web.extension;
 
-import org.openmrs.module.Extension;
 import org.openmrs.module.web.extension.PortletExt;
 
 

@@ -13,6 +13,7 @@ import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.orderextension.util.OrderEntryUtil;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -55,13 +56,13 @@ public class ArtSwitchEvaluator implements RowPerPatientDataEvaluator{
 			Date currentStart = null;
 			for(DrugOrder ex: existing)
 			{
-				if(currentStart == null || ex.getStartDate().after(currentStart))
+				if(currentStart == null || ex.getEffectiveStartDate().after(currentStart))
 				{
-					currentStart = ex.getStartDate();
+					currentStart = ex.getEffectiveStartDate();
 				}
 			}
 			
-			List<DrugOrder> orders = Context.getOrderService().getDrugOrdersByPatient(pd.getPatient());
+			List<DrugOrder> orders = OrderEntryUtil.getDrugOrdersByPatient(pd.getPatient());
 			
 	        if(orders != null && orders.size() > 0)
 	        {   	
@@ -91,11 +92,11 @@ public class ArtSwitchEvaluator implements RowPerPatientDataEvaluator{
 									arts.add(order);
 									if(!existingDrugs.contains(order.getDrug()))
 									{
-										if(order.getStartDate() != null)
+										if(order.getEffectiveStartDate() != null)
 										{		
-											if(order.getStartDate().after(currentStart) && (startingDate == null || startingDate.after(order.getStartDate())) && (pd.getEndDate() == null || order.getStartDate().before(pd.getEndDate())))
+											if(order.getEffectiveStartDate().after(currentStart) && (startingDate == null || startingDate.after(order.getEffectiveStartDate())) && (pd.getEndDate() == null || order.getEffectiveStartDate().before(pd.getEndDate())))
 											{
-												startingDate = order.getStartDate();
+												startingDate = order.getEffectiveStartDate();
 											}
 										}
 									}
@@ -106,13 +107,9 @@ public class ArtSwitchEvaluator implements RowPerPatientDataEvaluator{
 						//now check to see if any of the current drugs have been stopped before the next starting date
 						for(DrugOrder eo: existing)
 						{
-							if((eo.getDiscontinuedDate() != null && eo.getDiscontinuedDate().after(currentStart)) && (startingDate == null || startingDate.after(eo.getDiscontinuedDate())) && (pd.getEndDate() == null || eo.getDiscontinuedDate().before(pd.getEndDate())))
+							if((eo.getEffectiveStopDate() != null && eo.getEffectiveStopDate().after(currentStart)) && (startingDate == null || startingDate.after(eo.getEffectiveStopDate())) && (pd.getEndDate() == null || eo.getEffectiveStopDate().before(pd.getEndDate())))
 							{
-								startingDate = eo.getDiscontinuedDate();
-							}
-							else if((eo.getAutoExpireDate() != null && eo.getAutoExpireDate().after(currentStart)) && (startingDate == null || startingDate.after(eo.getAutoExpireDate())) && (pd.getEndDate() == null || eo.getAutoExpireDate().before(pd.getEndDate())))
-							{
-								startingDate = eo.getAutoExpireDate();
+								startingDate = eo.getEffectiveStopDate();
 							}
 						}
 						
@@ -120,7 +117,7 @@ public class ArtSwitchEvaluator implements RowPerPatientDataEvaluator{
 						{
 							for(DrugOrder art: arts)
 							{
-								if(art.isCurrent(startingDate))
+								if(OrderEntryUtil.isCurrent(art, startingDate))
 								{
 									results.add(art);
 								}

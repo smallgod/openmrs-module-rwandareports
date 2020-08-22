@@ -38,10 +38,10 @@ public class DrugOrderDateManipulation implements CustomCalculation{
 			{
 				DrugOrdersResult start = (DrugOrdersResult)result;
 				
-				if(start != null && start.getValue() != null && start.getValue().getStartDate() != null)
+				if(start != null && start.getValue() != null && start.getValue().getEffectiveStartDate() != null)
 				{
 					Calendar adjustedDate = Calendar.getInstance();
-					adjustedDate.setTime(start.getValue().getStartDate());
+					adjustedDate.setTime(start.getValue().getEffectiveStartDate());
 					
 					adjustedDate.add(dateUnit, dateChange);
 					

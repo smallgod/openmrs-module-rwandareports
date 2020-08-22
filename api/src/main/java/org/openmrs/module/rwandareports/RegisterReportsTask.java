@@ -19,13 +19,35 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.rwandareports.util.CleanReportingTablesAndRegisterAllReports;
+import org.openmrs.scheduler.tasks.AbstractTask;
 
 /**
  * Task to aggregate raw data and delete old data
  */
-public class RegisterReportsTask extends SessionTask {
+public class RegisterReportsTask extends AbstractTask {
 
 	private static Log log = LogFactory.getLog(RegisterReportsTask.class);
+
+	/**
+	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
+	 */
+	@Override
+	public void execute() {
+		if (!isExecuting) {
+			log.debug("Starting Auto Close Visits Task...");
+
+			startExecuting();
+			try {
+				onExecute();
+			}
+			catch (Exception e) {
+				log.error("Error while auto closing visits:", e);
+			}
+			finally {
+				stopExecuting();
+			}
+		}
+	}
 
 	/**
 	 * Does the actual data aggregation

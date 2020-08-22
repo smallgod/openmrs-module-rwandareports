@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
+import org.openmrs.OrderFrequency;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculation;
 import org.openmrs.module.rowperpatientreports.patientdata.result.PatientAttributeResult;
@@ -35,7 +37,7 @@ public class ArtDetails implements CustomCalculation{
 				DrugOrder startOrder = (DrugOrder)result.getValue();
 				if(startOrder != null)
 				{
-					startDate = startOrder.getStartDate();
+					startDate = startOrder.getEffectiveStartDate();
 				}
 			}
 			
@@ -44,7 +46,7 @@ public class ArtDetails implements CustomCalculation{
 				changeOrder = (List<DrugOrder>)result.getValue();
 				if(changeOrder != null && changeOrder.get(0) != null)
 				{
-					changeDate = changeOrder.get(0).getStartDate();
+					changeDate = changeOrder.get(0).getEffectiveStartDate();
 				}
 			}
 		}
@@ -74,19 +76,19 @@ public class ArtDetails implements CustomCalculation{
 				resultString.append(" (");
 				resultString.append(order.getDose());
 				resultString.append(" ");
-				String units = order.getUnits();
+				Concept units = order.getDoseUnits();
 				if(units != null)
 				{
-					units = units.replace("tab(s)", "Co");
-					resultString.append(units);
+					String unitStr = units.getDisplayString().replace("tab(s)", "Co");
+					resultString.append(unitStr);
 				}
 				
 				resultString.append(",");
-				String freq = order.getFrequency();
+				OrderFrequency freq = order.getFrequency();
 				if(freq != null)
 				{
-					freq = freq.replace("day x 7 days/week", "j");
-					resultString.append(freq);
+					String freqStr = freq.getConcept().getDisplayString().replace("day x 7 days/week", "j");
+					resultString.append(freqStr);
 				}
 				
 				resultString.append(")");
