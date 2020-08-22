@@ -34,6 +34,7 @@ public class SetupCKDMissedvisitReport {
     private Program CKDProgram;
 
     private EncounterType CKDflowsheet;
+    private EncounterType HFHTNCKDENCOUNTER;
 
     private List<EncounterType> CKDencounterTypes=new ArrayList<EncounterType>();
 
@@ -169,8 +170,11 @@ public class SetupCKDMissedvisitReport {
         CKDProgram = gp.getProgram(GlobalPropertiesManagement.CKD_PROGRAM);
 
         CKDflowsheet=gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE);
+        HFHTNCKDENCOUNTER=gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+
 
         CKDencounterTypes.add(CKDflowsheet);
+        CKDencounterTypes.add(HFHTNCKDENCOUNTER);
 
         CKDRDVForm = gp.getForm(GlobalPropertiesManagement.CKD_RDV_FORM);
 
