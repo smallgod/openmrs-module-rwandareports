@@ -1,28 +1,31 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import org.openmrs.*;
-import org.openmrs.api.context.Context;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
+import org.openmrs.Program;
+import org.openmrs.RelationshipType;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
-//import org.openmrs.module.rwandareports.customcalculator.CKDAlerts;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.DrugDosageCurrentFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-import java.util.*;
-
-public class SetupCKDConsultationSheetReport {
-
-    GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupCKDConsultationSheetReport extends SingleSetupReport {
 
     //properties retrieved from global variables
     private Program CKDProgram;
@@ -36,7 +39,7 @@ public class SetupCKDConsultationSheetReport {
     private RelationshipType HBCP;
 
     public void setup() throws Exception {
-
+        log.info("Setting up report: " + getReportName());
         setupProperties();
 
         ReportDefinition rd = createReportDefinition();
@@ -52,20 +55,15 @@ public class SetupCKDConsultationSheetReport {
         Helper.saveReportDesign(design);
     }
 
-    public void delete() {
-        ReportService rs = Context.getService(ReportService.class);
-        for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-            if ("CKDConsultationSheet.xls_".equals(rd.getName())) {
-                rs.purgeReportDesign(rd);
-            }
-        }
-        Helper.purgeReportDefinition("NCD-CKD Consultation Sheet");
+    @Override
+    public String getReportName() {
+        return "NCD-CKD Consultation Sheet";
     }
 
     private ReportDefinition createReportDefinition() {
 
         ReportDefinition reportDefinition = new ReportDefinition();
-        reportDefinition.setName("NCD-CKD Consultation Sheet");
+        reportDefinition.setName(getReportName());
 
         reportDefinition.addParameter(new Parameter("location", "Health Facility", Location.class));
         reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"), ParameterizableUtil.createParameterMappings("location=${location}"));

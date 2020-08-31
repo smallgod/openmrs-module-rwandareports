@@ -10,13 +10,11 @@ import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.EvaluateDefinitionForOtherPersonData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationship;
@@ -24,19 +22,22 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupPMTCTFoodDistributionReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupPMTCTFoodDistributionReport extends SingleSetupReport {
+
 	//Properties
 	private Program pmtctCombined;
 	
 	private List<ProgramWorkflowState> feedingStates = new ArrayList<ProgramWorkflowState>();
 	
 	private ProgramWorkflow feedingStatus;
-	
+
+	@Override
+	public String getReportName() {
+		return "HIV-PMTCT Food Package Distribution";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -50,19 +51,9 @@ public class SetupPMTCTFoodDistributionReport {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PMTCTFoodDistribution.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("HIV-PMTCT Food Package Distribution");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-PMTCT Food Package Distribution");
+		reportDefinition.setName(getReportName());
 		
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		

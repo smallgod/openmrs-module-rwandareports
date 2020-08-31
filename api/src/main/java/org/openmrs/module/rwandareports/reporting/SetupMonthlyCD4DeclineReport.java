@@ -14,7 +14,6 @@ import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
@@ -23,7 +22,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
@@ -50,12 +48,10 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupMonthlyCD4DeclineReport {
-	
-	protected final static Log log = LogFactory.getLog(SetupMonthlyCD4DeclineReport.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupMonthlyCD4DeclineReport implements SetupReport {
+
+	protected final Log log = LogFactory.getLog(getClass());
+
 	//Properties retrieved from global variables
 	private Program hivProgram;
 	
@@ -78,7 +74,6 @@ public class SetupMonthlyCD4DeclineReport {
 	private List<EncounterType> clinicalEncoutersExcLab;
 	
 	private Concept cd4;
-	
 	
 	public void setup() throws Exception {
 		
@@ -130,12 +125,6 @@ public class SetupMonthlyCD4DeclineReport {
 	}
 	
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("XlsCCMotherLateVisitAndCD4DeclineTemplate".equals(rd.getName()) || "XlsPediLateVisitAndCD4DeclineTemplate".equals(rd.getName()) || "XlsAdultLateVisitAndCD4DeclineTemplate".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
 		Helper.purgeReportDefinition("HIV-Pedi ART CD4 Decline-Monthly");
 		Helper.purgeReportDefinition("HIV-PMTCT Combined Clinic Mother ART CD4 Decline-Monthly");
 		Helper.purgeReportDefinition("HIV-Adult ART CD4 Decline-Monthly");
@@ -405,6 +394,7 @@ public class SetupMonthlyCD4DeclineReport {
 	}
 	
 	private void setupProperties() {
+		GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 		hivProgram = gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
 		
 		pediProgram = gp.getProgram(GlobalPropertiesManagement.PEDI_HIV_PROGRAM);

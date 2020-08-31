@@ -9,12 +9,10 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Program;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
@@ -23,7 +21,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
@@ -36,12 +33,10 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupPDCMonthlyAlert {
-	
+public class SetupPDCMonthlyAlert extends SingleSetupReport {
+
 	protected final static Log log = LogFactory.getLog(SetupPDCMonthlyAlert.class);
-	
-    GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	//properties retrieved from global variables
 	private Program PDCProgram;
 	List<EncounterType> pdcEncounters;
@@ -50,11 +45,14 @@ public class SetupPDCMonthlyAlert {
 	private List<Form> referralAndNotIntakeForm=new ArrayList<Form>();
 	private Form referralForm;
     private Form visitForm;
-    
+
+	@Override
+	public String getReportName() {
+		return "PDC-Monthly consulation Sheet";
+	}
 	
-	
-public void setup() throws Exception {
-		
+	public void setup() throws Exception {
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -70,20 +68,10 @@ public void setup() throws Exception {
 		Helper.saveReportDesign(design);
 	}
 	
-  public void delete() {
-	ReportService rs = Context.getService(ReportService.class);
-	for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-		if ("PDCMonthlyConsultationSheet.xls_".equals(rd.getName())) {
-			rs.purgeReportDesign(rd);
-		}
-	}
-	Helper.purgeReportDefinition("PDC-Monthly consulation Sheet");
-}
-	
-private ReportDefinition createReportDefinition() {
+	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("PDC-Monthly consulation Sheet");
+		reportDefinition.setName(getReportName());
 				
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));	
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),ParameterizableUtil.createParameterMappings("location=${location}"));

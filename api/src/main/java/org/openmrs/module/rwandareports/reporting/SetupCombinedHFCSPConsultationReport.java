@@ -14,40 +14,32 @@ import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.InverseCohortDefinition;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CurrentOrdersRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirth;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfNextTestDueFromBirth;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfObsAfterDateOfOtherDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.EvaluateDefinitionForOtherPersonData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObsValueAfterDateOfOtherDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAgeInMonths;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RetrievePersonByRelationshipAndByProgram;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.DateDiffType;
 import org.openmrs.module.rwandareports.customcalculator.CombinedHFCSPAlerts;
 import org.openmrs.module.rwandareports.definition.EvaluateMotherDefinition;
 import org.openmrs.module.rwandareports.filter.BorFStateFilter;
 import org.openmrs.module.rwandareports.filter.GroupStateFilter;
-import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
 import org.openmrs.module.rwandareports.filter.LastThreeObsFilter;
 import org.openmrs.module.rwandareports.filter.LastTwoObsFilter;
 import org.openmrs.module.rwandareports.filter.ObservationFilter;
@@ -55,9 +47,7 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupCombinedHFCSPConsultationReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupCombinedHFCSPConsultationReport extends SingleSetupReport {
 	
 	//Properties retrieved from global variables
 	private Program pmtctCombined;
@@ -77,7 +67,7 @@ public class SetupCombinedHFCSPConsultationReport {
 	private List<EncounterType> clinicalEnountersIncLab;
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -90,20 +80,15 @@ public class SetupCombinedHFCSPConsultationReport {
 		design.setProperties(props);
 		Helper.saveReportDesign(design);
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PMTCTCombinedClinicConsultationSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("HIV-PMTCT Combined Clinic Consultation sheet");
+
+	@Override
+	public String getReportName() {
+		return "HIV-PMTCT Combined Clinic Consultation sheet";
 	}
-	
+
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-PMTCT Combined Clinic Consultation sheet");
+		reportDefinition.setName(getReportName());
 		
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		

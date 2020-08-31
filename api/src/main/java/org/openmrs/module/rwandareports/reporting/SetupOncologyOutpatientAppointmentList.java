@@ -8,7 +8,6 @@ import java.util.Map;
 import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
@@ -16,17 +15,14 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rwandareports.renderer.CalendarWebRenderer;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupOncologyOutpatientAppointmentList {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupOncologyOutpatientAppointmentList extends SingleSetupReport {
+
 	//properties retrieved from global variables
 	private Program oncologyProgram;
 	
@@ -37,30 +33,25 @@ public class SetupOncologyOutpatientAppointmentList {
 	private Concept specialVisit;
 	
 	private Concept biopsyVisit;
-	
+
+	@Override
+	public String getReportName() {
+		return "ONC-Oncology Outpatient Clinic Appointment List";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
 		
 		createCustomWebRenderer(rd);
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Outpatient Appointment List".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("ONC-Oncology Outpatient Clinic Appointment List");
-	}
-	
+
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Oncology Outpatient Clinic Appointment List");
+		reportDefinition.setName(getReportName());
 		
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram),

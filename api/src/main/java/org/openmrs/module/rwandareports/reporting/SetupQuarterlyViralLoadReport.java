@@ -8,9 +8,8 @@ import java.util.Properties;
 import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
@@ -24,7 +23,6 @@ import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -32,10 +30,8 @@ import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupQuarterlyViralLoadReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupQuarterlyViralLoadReport extends SingleSetupReport {
+
 	//properties
 	private Program hivProgram;
 	
@@ -60,9 +56,14 @@ public class SetupQuarterlyViralLoadReport {
 	private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
 	
 	private Concept viralLoadConcept;
+
+	@Override
+	public String getReportName() {
+		return "PIH-Boston Viral Load Indicators-Quarterly";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = new ReportDefinition();
@@ -72,7 +73,7 @@ public class SetupQuarterlyViralLoadReport {
     	properties.setProperty("hierarchyFields", "countyDistrict:District");
     	rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
     	
-    	rd.setName("PIH-Boston Viral Load Indicators-Quarterly");
+    	rd.setName(getReportName());
     	
     	rd.addDataSetDefinition(createDataSet(),
     	    ParameterizableUtil.createParameterMappings("endDate=${endDate},location=${location}"));
@@ -86,17 +87,6 @@ public class SetupQuarterlyViralLoadReport {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		Helper.saveReportDesign(design);
-	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PIH Quarterly Viral Load (Excel)".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("PIH-Boston Viral Load Indicators-Quarterly");
-		
 	}
 	
 	public LocationHierachyIndicatorDataSetDefinition createDataSet() {

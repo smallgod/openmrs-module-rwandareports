@@ -25,7 +25,6 @@ import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InverseCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.PatientStateCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.PersonAttributeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.SetComparator;
@@ -49,10 +48,9 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
 
-public class SetupDataQualityIndicatorReport {
+public class SetupDataQualityIndicatorReport implements SetupReport {
 	
 	protected final Log log = LogFactory.getLog(getClass());
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
 	// properties
 	private Program pmtct;
@@ -92,27 +90,17 @@ public class SetupDataQualityIndicatorReport {
 	private OrderType drugOrderType;
 	private EncounterType transfeInEncounterType;
 
+	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+
 	public void setup() throws Exception {
 
 		setUpProperties();
-
 		createReportDefinitionBySite();
 		createReportDefinitionAllSites();
 		createReportDefinitionBySiteForNCD();
-
 	}
 
 	public void delete() {
-
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("DataQualityWebRenderer".equals(rd.getName())
-				|| "DataWebRenderer".equals(rd.getName())
-				||"DataWebRendererNCD".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		
 		Helper.purgeReportDefinition("DQ-Data Quality HIV/TB Report By Site");
 		Helper.purgeReportDefinition("DQ-Data Quality HIV/TB Report For All Sites");
 		Helper.purgeReportDefinition("DQ-Data Quality NCD/ONCOLOGY Report By Site");

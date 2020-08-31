@@ -5,7 +5,6 @@ import java.util.*;
 //import org.omg.CORBA.PRIVATE_MEMBER;
 import org.openmrs.*;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
@@ -24,7 +23,6 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
@@ -34,10 +32,8 @@ import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  
-public class SetupPDCIndicatorReport {
-        
-        GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-        
+public class SetupPDCIndicatorReport extends SingleSetupReport {
+
         //properties
         private Program PDCProgram;
         
@@ -148,12 +144,13 @@ public class SetupPDCIndicatorReport {
     private Concept PDCHeightForAgeZScore;
     private Concept PDCweightForHeightZScore;
 
-
-
-
+    @Override
+    public String getReportName() {
+        return "PDC-Indicator Report";
+    }
 
     public void setup() throws Exception {
-
+        log.info("Setting up report: " + getReportName());
                 setUpProperties();
                 
                 
@@ -165,7 +162,7 @@ public class SetupPDCIndicatorReport {
                 properties.setProperty("hierarchyFields", "countyDistrict:District");
                 rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
                 
-                rd.setName("PDC-Indicator Report");
+                rd.setName(getReportName());
                 
                 rd.addDataSetDefinition(createQuarterlyLocationDataSet(),
                     ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
@@ -186,18 +183,6 @@ public class SetupPDCIndicatorReport {
                 
                 
         }
-        
-        public void delete() {
-                ReportService rs = Context.getService(ReportService.class);
-                for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-                        if ("PDCIndicators".equals(rd.getName())) {
-                                rs.purgeReportDesign(rd);
-                        }
-                }
-                Helper.purgeReportDefinition("PDC-Indicator Report");
-                
-        }
-        
         
         public LocationHierachyIndicatorDataSetDefinition createQuarterlyLocationDataSet() {
                 

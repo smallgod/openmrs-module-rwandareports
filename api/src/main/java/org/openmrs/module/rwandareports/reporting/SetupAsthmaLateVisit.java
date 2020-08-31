@@ -9,14 +9,17 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.*;
-import org.openmrs.api.context.Context;
+import org.openmrs.Concept;
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
+import org.openmrs.Program;
+import org.openmrs.RelationshipType;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
@@ -32,11 +35,9 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupAsthmaLateVisit {
+public class SetupAsthmaLateVisit extends SingleSetupReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupAsthmaLateVisit.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
 	//Properties retrieved from global variables
 	private Program asthmaProgram;
@@ -56,7 +57,7 @@ public class SetupAsthmaLateVisit {
 	private RelationshipType HBCP;
 
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -69,20 +70,15 @@ public class SetupAsthmaLateVisit {
 		design.setProperties(props);
 		Helper.saveReportDesign(design);
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("AsthmaLateVisitTemplate".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD-Asthma Late Visit");
+
+	@Override
+	public String getReportName() {
+		return "NCD-Asthma Late Visit";
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("NCD-Asthma Late Visit");
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 		

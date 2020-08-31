@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
@@ -31,21 +31,17 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
-import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupOncologyQuarterlyIndicatorReport {
+public class SetupOncologyQuarterlyIndicatorReport extends SingleSetupReport {
 
 	public Helper h = new Helper();
-
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
 	// properties
 	private Program oncologyProgram;
@@ -113,8 +109,13 @@ public class SetupOncologyQuarterlyIndicatorReport {
     private EncounterType outpatientOncEncounterType;
     private EncounterType inpatientOncologyEncounter;
 
-	public void setup() throws Exception {
+	@Override
+	public String getReportName() {
+		return "ONC-Indicator Report-Quarterly";
+	}
 
+	public void setup() throws Exception {
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 
 		ReportDefinition rd = new ReportDefinition();
@@ -126,7 +127,7 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		rd.addParameter(new Parameter("location", "Location",AllLocation.class, properties));
 		rd.removeParameter(new Parameter("location", "Location",AllLocation.class, properties));
 */
-		rd.setName("ONC-Indicator Report-Quarterly");
+		rd.setName(getReportName());
 
 		rd.addDataSetDefinition(createQuarterlyLocationDataSet(),
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
@@ -140,17 +141,6 @@ public class SetupOncologyQuarterlyIndicatorReport {
 		props.put("sortWeight", "5000");
 		design.setProperties(props);
 		h.saveReportDesign(design);
-
-	}
-
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("OncologyQuarterlyIndicatorReport".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		h.purgeReportDefinition("ONC-Indicator Report-Quarterly");
 
 	}
 

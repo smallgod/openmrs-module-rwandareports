@@ -7,12 +7,10 @@ import java.util.Properties;
 import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
@@ -23,10 +21,8 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupOncologyTreatmentAdministrationPlan {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupOncologyTreatmentAdministrationPlan extends SingleSetupReport {
+
 	Program oncologyProgram;
 	
 	ProgramWorkflow treatmentIntent;
@@ -42,9 +38,14 @@ public class SetupOncologyTreatmentAdministrationPlan {
 	Concept doxorubicinGiven;
 	
 	Concept daunorubicinGiven;
-	
+
+	@Override
+	public String getReportName() {
+		return "ONC-Chemotherapy Treatment Administration Plan";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -60,20 +61,10 @@ public class SetupOncologyTreatmentAdministrationPlan {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("TreatmentAdministrationPlan.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("ONC-Chemotherapy Treatment Administration Plan");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Chemotherapy Treatment Administration Plan");
+		reportDefinition.setName(getReportName());
 		
 		reportDefinition.addParameter(new Parameter("patientId", "patientId", String.class));
 		reportDefinition.addParameter(new Parameter("regimenId", "regimenId", String.class));

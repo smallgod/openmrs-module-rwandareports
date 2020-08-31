@@ -1,11 +1,14 @@
 package org.openmrs.module.rwandareports.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -84,11 +87,13 @@ public class MetadataLookup {
 		ProgramWorkflow wf = getProgramWorkflow(programLookup, workflowLookup);
 		ProgramWorkflowState s = wf.getStateByName(stateLookup);
 		if (s == null) {
+			Concept stateConcept = null;
+			try {
+				stateConcept = getConcept(stateLookup);
+			}
+			catch (Exception e) {}
 			for (ProgramWorkflowState state : wf.getStates()) {
-				if (stateLookup.equalsIgnoreCase(state.getConcept().getName().toString())) {
-					s = state;
-				}
-				else if (stateLookup.equalsIgnoreCase(state.getConcept().getUuid())) {
+				if (stateConcept != null && state.getConcept().equals(stateConcept)) {
 					s = state;
 				}
 				else if (stateLookup.equalsIgnoreCase(state.getUuid())) {
@@ -143,29 +148,60 @@ public class MetadataLookup {
 	 * @return the Concept that matches the passed uuid, name, source:code mapping, or primary key id
 	 */
 	public static Concept getConcept(String lookup) {
+
+		// First try to lookup based on UUID
 		Concept c = Context.getConceptService().getConceptByUuid(lookup);
-		if (c == null) {
-			c = Context.getConceptService().getConceptByName(lookup);
+		if (c != null) {
+			return c;
 		}
-		if (c == null) {
-			try {
-				String[] split = lookup.split("\\:");
-				if (split.length == 2) {
-					c = Context.getConceptService().getConceptByMapping(split[1], split[0]);
+
+		// Next lookup based on name.  Return any exact match for current locale, otherwise first found concept with matching fully specified name
+		List<Concept> possible = Context.getConceptService().getConceptsByName(lookup, Context.getLocale(), false);
+		Set<Concept> matches = new HashSet<Concept>();
+		for (Concept concept : possible) {
+			for (ConceptName conceptName : concept.getNames(false)) {
+				if (conceptName.getName().equalsIgnoreCase(lookup)) {
+					matches.add(concept);
 				}
 			}
-			catch (Exception e) {}
 		}
-		if (c == null) {
-			try {
-				c = Context.getConceptService().getConcept(Integer.parseInt(lookup));
+		if (!matches.isEmpty()) {
+			if (matches.size() == 1) {
+				return matches.iterator().next();
 			}
-			catch (Exception e) {}
+			else {
+				for (Concept possibleMatch : matches) {
+					for (ConceptName conceptName : possibleMatch.getNames(false)) {
+						if (conceptName.isFullySpecifiedName()) {
+							return possibleMatch;
+						}
+					}
+				}
+			}
 		}
-		if (c == null) {
-			throw new IllegalArgumentException("Unable to find Concept using key: " + lookup);
+
+		// Next, try to lookup based on concept mapping, where the lookup is source:term
+		try {
+			String[] split = lookup.split("\\:");
+			if (split.length == 2) {
+				c = Context.getConceptService().getConceptByMapping(split[1], split[0]);
+				if (c != null) {
+					return c;
+				}
+			}
 		}
-		return c;
+		catch (Exception e) {}
+
+		// Finally try to lookup by id
+		try {
+			c = Context.getConceptService().getConcept(Integer.parseInt(lookup));
+			if (c != null) {
+				return c;
+			}
+		}
+		catch (Exception e) {}
+
+		throw new IllegalArgumentException("Unable to find Concept using key: " + lookup);
 	}
 
 	/**
@@ -206,6 +242,9 @@ public class MetadataLookup {
 	 * @return the Form that matches the passed uuid, name, or primary key id
 	 */
 	public static Form getForm(String lookup) {
+		if (lookup != null) {
+			lookup = lookup.trim();
+		}
 		Form form = Context.getFormService().getFormByUuid(lookup);
 		if (form == null) {
 			form = Context.getFormService().getForm(lookup);

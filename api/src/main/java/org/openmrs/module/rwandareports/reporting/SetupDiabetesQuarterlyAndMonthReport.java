@@ -10,9 +10,16 @@ import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
-import org.openmrs.module.reporting.cohort.definition.*;
+import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -23,7 +30,6 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
@@ -34,9 +40,7 @@ import org.openmrs.module.rwandareports.util.RwandaReportsUtil;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupDiabetesQuarterlyAndMonthReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupDiabetesQuarterlyAndMonthReport extends SingleSetupReport {
 	
 	// properties
 	private Program DMProgram;
@@ -116,10 +120,13 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 
 	private Concept urinaryAlbumin;
 
-
+	@Override
+	public String getReportName() {
+		return "NCD-Diabetes Indicator Report-Quarterly";
+	}
 
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 
 		Properties properties = new Properties();
@@ -134,7 +141,7 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 
 		quarterlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 		
-		quarterlyRd.setName("NCD-Diabetes Indicator Report-Quarterly");
+		quarterlyRd.setName(getReportName());
 		
 		quarterlyRd.addDataSetDefinition(createQuarterlyLocationDataSet(),
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
@@ -159,20 +166,7 @@ public class SetupDiabetesQuarterlyAndMonthReport {
 		Helper.saveReportDesign(quarterlyDesign);
 		
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Diabetes Quarterly Indicator Report (Excel)".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD-Diabetes Indicator Report-Quarterly");
 
-	}
-	
-
-	
 	//Create Quarterly Encounter Data set
 	
 	public LocationHierachyIndicatorDataSetDefinition createQuarterlyLocationDataSet() {

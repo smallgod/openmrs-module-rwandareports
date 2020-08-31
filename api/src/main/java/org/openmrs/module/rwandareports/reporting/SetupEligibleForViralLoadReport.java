@@ -25,7 +25,6 @@ import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
@@ -37,7 +36,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
@@ -50,9 +48,7 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 /**
  *
  */
-public class SetupEligibleForViralLoadReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupEligibleForViralLoadReport extends SingleSetupReport {
 	
 	//properties
 	private Program hivProgram;
@@ -78,9 +74,14 @@ public class SetupEligibleForViralLoadReport {
 	private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
 	
 	private Concept viralLoadConcept;
-	
+
+	@Override
+	public String getReportName() {
+		return "PIH-Eligible For Viral Load";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -100,20 +101,10 @@ public class SetupEligibleForViralLoadReport {
 		Helper.saveReportDesign(design);
 		
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("XlsEligibleForViralLoad".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("PIH-Eligible For Viral Load");
-	}
-	
+
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("PIH-Eligible For Viral Load");
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 		

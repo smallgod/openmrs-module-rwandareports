@@ -12,14 +12,12 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.DateOfVisitSixmonthsPostIntakeFilter;
@@ -32,10 +30,8 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupOncologyDataExtractionSheet {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupOncologyDataExtractionSheet extends SingleSetupReport {
+
 	//properties retrieved from global variables
 	private Program oncologyProgram;
 
@@ -143,9 +139,14 @@ public class SetupOncologyDataExtractionSheet {
 	
 	
 	/*private List<String> onOrAfterOnOrBefore = new ArrayList<String>();*/
-	
+
+	@Override
+	public String getReportName() {
+		return "ONC-Oncology Data extraction";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -161,20 +162,10 @@ public class SetupOncologyDataExtractionSheet {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("OncologyDataExtractionSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("ONC-Oncology Data extraction");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Oncology Data extraction");
+		reportDefinition.setName(getReportName());
 		//reportDefinition.addParameter(new Parameter("startDate", "StartDate", Date.class));		
 		reportDefinition.addParameter(new Parameter("endDate", "EndDate", Date.class));
 		

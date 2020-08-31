@@ -18,7 +18,6 @@ import java.util.*;
 import org.openmrs.*;
 import org.openmrs.module.reporting.cohort.definition.*;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -29,7 +28,6 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
@@ -39,10 +37,8 @@ import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupHypertensionQuarterlyAndMonthlyReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupHypertensionQuarterlyAndMonthlyReport extends SingleSetupReport {
+
 	// properties
 	private Program hypertensionProgram;
 	
@@ -103,9 +99,14 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 	private Concept urinaryAlbumin;
 
 	private Concept HIVStatus;
+
+	@Override
+	public String getReportName() {
+		return "NCD-Hypertension Indicator Report-Quarterly";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		//Monthly report set-up
@@ -123,7 +124,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		
 		quarterlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 		
-		quarterlyRd.setName("NCD-Hypertension Indicator Report-Quarterly");
+		quarterlyRd.setName(getReportName());
 		
 		quarterlyRd.addDataSetDefinition(createQuarterlyLocationDataSet(),
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
@@ -154,19 +155,6 @@ public class SetupHypertensionQuarterlyAndMonthlyReport {
 		Helper.saveReportDesign(quarterlyDesign);
 		
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Hypertension Quarterly Indicator Report (Excel)".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD-Hypertension Indicator Report-Quarterly");
-
-	}
-	
-
 	
 	//Create Quarterly Encounter Data set
 	

@@ -10,12 +10,10 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.*;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
@@ -31,12 +29,10 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupHypertensionLateVisit {
+public class SetupHypertensionLateVisit extends SingleSetupReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupHypertensionLateVisit.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	//Properties retrieved from global variables
 	private Program hypertensionProgram;
    
@@ -48,9 +44,14 @@ public class SetupHypertensionLateVisit {
 	RelationshipType HBCP;
     
     private List<Form> hypertensionForms = new ArrayList<Form>();
+
+	@Override
+	public String getReportName() {
+		return "NCD-Hypertension Late Visit";
+	}
 	
     public void setup() throws Exception {
-		
+	    log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -66,20 +67,10 @@ public class SetupHypertensionLateVisit {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("XLSHypertensionLateVisit".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD-Hypertension Late Visit");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("NCD-Hypertension Late Visit");
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 		

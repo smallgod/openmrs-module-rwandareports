@@ -7,27 +7,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.openmrs.*;
-import org.openmrs.api.context.Context;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.Form;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rwandareports.dataset.ConsecutiveCombinedDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.WeekViewDataSetDefinition;
-import org.openmrs.module.rwandareports.definition.UpcomingChemotherapyCohortDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupChemotherapyExpectedPatientList {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupChemotherapyExpectedPatientList implements SetupReport {
+
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	//properties retrieved from global variables
 	private Program oncologyProgram;
@@ -53,7 +54,7 @@ public class SetupChemotherapyExpectedPatientList {
 	
 	
 	public void setup() throws Exception {
-		
+
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -84,18 +85,8 @@ public class SetupChemotherapyExpectedPatientList {
 	}
 	
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("ChemotherapyPatientList.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-			if ("ChemotherapyPatientListInfusion.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
 		Helper.purgeReportDefinition("ONC-Oncology Expected Patient List - Inpatient Ward");
 		Helper.purgeReportDefinition("ONC-Oncology Expected Patient List - Infusion Center");
-		
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -235,7 +226,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	}
 	
 	private void setupProperties() {
-		
+		GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 		oncologyProgram = gp.getProgram(GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
 		diagnosis = gp.getProgramWorkflow(GlobalPropertiesManagement.DIAGNOSIS_WORKFLOW, GlobalPropertiesManagement.ONCOLOGY_PROGRAM);

@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.module.rwandareports.util.CleanReportingTablesAndRegisterAllReports;
+import org.openmrs.module.rwandareports.util.ReportSetup;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
 /**
@@ -34,14 +34,14 @@ public class RegisterReportsTask extends AbstractTask {
 	@Override
 	public void execute() {
 		if (!isExecuting) {
-			log.debug("Starting Auto Close Visits Task...");
+			log.debug("Starting Register Reports Task...");
 
 			startExecuting();
 			try {
 				onExecute();
 			}
 			catch (Exception e) {
-				log.error("Error while auto closing visits:", e);
+				log.error("Error executing Register Reports Task", e);
 			}
 			finally {
 				stopExecuting();
@@ -57,8 +57,8 @@ public class RegisterReportsTask extends AbstractTask {
 			String version = ModuleFactory.getModuleById("rwandareports").getVersion();
 			String oldversion = Context.getAdministrationService().getGlobalProperty("reports.moduleVersion");
 			if(!version.equals(oldversion)){
-				CleanReportingTablesAndRegisterAllReports.cleanTables();
-				CleanReportingTablesAndRegisterAllReports.registerReports();
+				ReportSetup.cleanTables();
+				ReportSetup.registerReports();
 				Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("reports.moduleVersion", version));
 			}
 		}

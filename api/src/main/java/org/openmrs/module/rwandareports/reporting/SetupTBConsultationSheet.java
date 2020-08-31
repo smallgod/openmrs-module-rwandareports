@@ -14,7 +14,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
@@ -28,17 +27,20 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupTBConsultationSheet {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupTBConsultationSheet extends SingleSetupReport {
 	
 	//Properties
 	private Program tbProgram;
 	
 	private EncounterType flowsheetAdult;
+
+	@Override
+	public String getReportName() {
+		return "TB-Consultation Sheet";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -52,19 +54,9 @@ public class SetupTBConsultationSheet {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("TBConsultationSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("TB-Consultation Sheet");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("TB-Consultation Sheet");
+		reportDefinition.setName(getReportName());
 		
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 		

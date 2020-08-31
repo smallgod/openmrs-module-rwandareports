@@ -9,9 +9,8 @@ import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
@@ -24,7 +23,6 @@ import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -32,10 +30,8 @@ import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupQuarterlyCrossSiteIndicatorByDistrictReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupQuarterlyCrossSiteIndicatorByDistrictReport extends SingleSetupReport {
+
 	//properties
 	private Program hivProgram;
 	
@@ -68,9 +64,14 @@ public class SetupQuarterlyCrossSiteIndicatorByDistrictReport {
 	private Concept cd4Concept;
 	
 	private Concept weightConcept;
+
+	@Override
+	public String getReportName() {
+		return "PIH-Boston Indicators-Quarterly";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = createCrossSiteReportDefinition();
@@ -89,19 +90,7 @@ public class SetupQuarterlyCrossSiteIndicatorByDistrictReport {
 		//		design2.setProperties(props2);
 		//		h.saveReportDesign(design2);
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PIH Quarterly Indicator Form (Excel)_".equals(rd.getName())
-			        || "PIH Quarterly Indicator Graph (Excel)_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("PIH-Boston Indicators-Quarterly");
-		//h.purgeReportDefinition("PIH_Quarterly_Individual_District_Indicator_Graph");
-	}
-	
+
 	private ReportDefinition createCrossSiteReportDefinition() {
 		// PIH Quarterly Cross Site Indicator Report
 		ReportDefinition rd = new ReportDefinition();
@@ -112,7 +101,7 @@ public class SetupQuarterlyCrossSiteIndicatorByDistrictReport {
 		properties.setProperty("hierarchyFields", "countyDistrict:District");
 		rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 		
-		rd.setName("PIH-Boston Indicators-Quarterly");
+		rd.setName(getReportName());
 		
 		rd.addDataSetDefinition(createDataSet(),
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));

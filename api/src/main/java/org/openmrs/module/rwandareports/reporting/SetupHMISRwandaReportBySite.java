@@ -13,7 +13,6 @@ import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
@@ -34,7 +33,6 @@ import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -43,11 +41,10 @@ import org.openmrs.module.rwandareports.util.MetadataLookup;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  
-public class SetupHMISRwandaReportBySite {
+public class SetupHMISRwandaReportBySite extends SingleSetupReport {
         
         protected final static Log log = LogFactory.getLog(SetupHMISRwandaReportBySite.class);
-        
-        GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+
         //MetadataLookup mlookup=new MetadataLookup();
      // properties
         private Program adulthivProgram;
@@ -79,10 +76,14 @@ public class SetupHMISRwandaReportBySite {
         private Concept kaletra;
         private Concept cotrimoxazole;
         private Concept dapsone;
-       
+
+        @Override
+        public String getReportName() {
+         return "HIV-HMIS Report";
+        }
        
         public void setup() throws Exception {
-                
+         log.info("Setting up report: " + getReportName());
                 setupProperties();
                 
                 ReportDefinition rd = createReportDefinition();
@@ -95,16 +96,6 @@ public class SetupHMISRwandaReportBySite {
                 Helper.saveReportDesign(design);
         }
         
-        public void delete() {
-                ReportService rs = Context.getService(ReportService.class);
-                for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-                        if ("Xlshivhmisreporttemplate".equals(rd.getName())) {
-                                rs.purgeReportDesign(rd);
-                        }
-                }
-                Helper.purgeReportDefinition("HIV-HMIS Report");
-        }
-        
         private ReportDefinition createReportDefinition() {
            
         	ReportDefinition rd = new ReportDefinition();
@@ -114,7 +105,7 @@ public class SetupHMISRwandaReportBySite {
             //properties.setProperty("hierarchyFields", "countyDistrict:District");
             rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
             
-            rd.setName("HIV-HMIS Report");
+            rd.setName(getReportName());
             
             LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
                     createDataSetDefinition());

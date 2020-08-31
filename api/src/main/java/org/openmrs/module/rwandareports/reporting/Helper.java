@@ -22,14 +22,14 @@ public class Helper {
 	
 	public static void purgeReportDefinition(String name) {
 		ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
-		try {
-			ReportDefinition findDefinition = findReportDefinition(name);
-			if (findDefinition != null) {
-				rds.purgeDefinition(findDefinition);
+		ReportService rs = Context.getService(ReportService.class);
+		ReportDefinition findDefinition = findReportDefinition(name);
+		if (findDefinition != null) {
+			// First purge the designs associated with this
+			for (ReportDesign rd : rs.getReportDesigns(findDefinition, null, true)) {
+				rs.purgeReportDesign(rd);
 			}
-		}
-		catch (RuntimeException e) {
-			// intentional empty as the author is too long out of business...
+			rds.purgeDefinition(findDefinition);
 		}
 	}
 	

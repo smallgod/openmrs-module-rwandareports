@@ -14,7 +14,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.DateObsCohortDefinition;
@@ -25,7 +24,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
@@ -36,12 +34,10 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupNCDLateVisitandLTFUReport {
+public class SetupNCDLateVisitandLTFUReport extends SingleSetupReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupNCDLateVisitandLTFUReport.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	// properties retrieved from global variables
 	private List<Program> diseases;
 	
@@ -56,8 +52,14 @@ public class SetupNCDLateVisitandLTFUReport {
 	private EncounterType CKDEncounter;
 	private EncounterType epilepsyEncounter;
 	private EncounterType HFHTNCKDEncounter;
+
+	@Override
+	public String getReportName() {
+		return "NCD Late Visit and Lost to Follow Up";
+	}
 	
 	public void setup() throws Exception {
+		log.info("Setting up report: " + getReportName());
 		setupPrograms();
 		ReportDefinition rd = createReportDefinition();
 		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "NCDLateVisitAndLTFUSheet.xls",
@@ -71,20 +73,10 @@ public class SetupNCDLateVisitandLTFUReport {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("NCDLateVisitAndLTFUSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD Late Visit and Lost to Follow Up");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("NCD Late Visit and Lost to Follow Up");
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),

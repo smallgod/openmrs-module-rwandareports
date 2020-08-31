@@ -30,7 +30,6 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
@@ -43,10 +42,8 @@ import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 /**
  *
  */
-public class SetupHeartFailureQuarterlyAndMonthlyReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupHeartFailureQuarterlyAndMonthlyReport extends SingleSetupReport {
+
 	// properties
 	private Program heartFailureProgram;
 	
@@ -157,11 +154,14 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 
 	private Concept HIVStatus;
 
-
+	@Override
+	public String getReportName() {
+		return "NCD-Heart Failure Indicator Report-Quarterly";
+	}
 	
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		// Monthly report set-up
@@ -178,7 +178,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 		
 		quarterlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 		
-		quarterlyRd.setName("NCD-Heart Failure Indicator Report-Quarterly");
+		quarterlyRd.setName(getReportName());
 		
 		quarterlyRd.addDataSetDefinition(createQuarterlyLocationDataSet(),
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
@@ -206,20 +206,7 @@ public class SetupHeartFailureQuarterlyAndMonthlyReport {
 			Helper.saveReportDesign(quarterlyDesign);
 		
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Heart Failure Quarterly Indicator Report (Excel)".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD-Heart Failure Indicator Report-Quarterly");
-		
-	}
-	
 
-	
   public LocationHierachyIndicatorDataSetDefinition createQuarterlyLocationDataSet() {
 		
 		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(

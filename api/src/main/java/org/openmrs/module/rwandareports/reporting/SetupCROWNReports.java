@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Program;
@@ -29,8 +31,8 @@ import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 public class SetupCROWNReports implements SetupReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	//properties retrieved from global variables
 	private Concept reasonForExitingCare;	
@@ -62,13 +64,6 @@ public class SetupCROWNReports implements SetupReport {
 	}
 	
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			String name = rd.getName();
-			if ("CROWNReports.xls_".equals(name) || "CROWN-Regimens Table.csv_".equals(name) || "CROWN-Viral Load Table.csv_".equals(name)) {
-				rs.purgeReportDesign(rd);
-			}
-		}
 		Helper.purgeReportDefinition("CROWN-Patients Table");
 		Helper.purgeReportDefinition("CROWN-Regimens Table");
 		Helper.purgeReportDefinition("CROWN-Viral Load Table");
@@ -100,7 +95,7 @@ public class SetupCROWNReports implements SetupReport {
 		return reportDefinition;
 	}
 	
-private ReportDefinition createViralLoadReportDefinition() {
+	private ReportDefinition createViralLoadReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("CROWN-Viral Load Table");	
@@ -198,6 +193,7 @@ private ReportDefinition createViralLoadReportDefinition() {
 	}
 	
 	private void setupProperties() {
+		GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 		reasonForExitingCare = Context.getConceptService().getConceptByUuid("3cde5ef4-26fe-102b-80cb-0017a47871b2");		
 		hivEncounterTypes = gp.getEncounterTypeList(GlobalPropertiesManagement.HIV_ENCOUNTER_TYPES,":");
 	}

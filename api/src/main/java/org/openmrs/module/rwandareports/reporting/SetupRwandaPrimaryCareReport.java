@@ -10,9 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
-import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.ReportingConstants;
+import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
@@ -25,7 +24,6 @@ import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.reportingobjectgroup.objectgroup.definition.SqlObjectGroupDefinition;
 import org.openmrs.module.reportingobjectgroup.objectgroup.indicator.ObjectGroupIndicator;
 import org.openmrs.module.reportingobjectgroup.report.definition.RollingDailyPeriodIndicatorReportDefinition;
@@ -33,12 +31,10 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
 
-public class SetupRwandaPrimaryCareReport {
+public class SetupRwandaPrimaryCareReport extends SingleSetupReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupRwandaPrimaryCareReport.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	// properties
 	private EncounterType registration;
 	
@@ -93,9 +89,14 @@ public class SetupRwandaPrimaryCareReport {
 	private Concept vaccinationService;
 	
 	private Concept temperature;
+
+	@Override
+	public String getReportName() {
+		return "PC-Rwanda Report";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition(registration, vitals);
@@ -105,17 +106,6 @@ public class SetupRwandaPrimaryCareReport {
         design.setProperties(props);
         Helper.saveReportDesign(design);
 		
-	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Primary_Care_Report_Template".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("PC-Rwanda Report");
 	}
 	
 	private ReportDefinition createReportDefinition(EncounterType reg, EncounterType vitals) {
@@ -129,7 +119,7 @@ public class SetupRwandaPrimaryCareReport {
 		rd.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		rd.addParameter(new Parameter("endDate", "End Date", Date.class));
 		rd.setRollingBaseReportQueryType(RollingDailyPeriodIndicatorReportDefinition.RollingBaseReportQueryType.ENCOUNTER);
-		rd.setName("PC-Rwanda Report");
+		rd.setName(getReportName());
 		
 		// Creation of Vitals and Registration Encounter types during report
 		// period

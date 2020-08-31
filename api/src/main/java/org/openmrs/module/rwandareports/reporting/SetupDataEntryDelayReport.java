@@ -7,24 +7,25 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.DataEntryDelayDataSetDefinition;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupDataEntryDelayReport {
+public class SetupDataEntryDelayReport extends SingleSetupReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupDataEntryDelayReport.class);
-	
-	private GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
+	@Override
+	public String getReportName() {
+		return "DQ-Data Entry Delay Report";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		ReportDefinition rd = createReportDefinition();
 		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "DataEntryDelay.xls", "XlsDataEntryDelay",
 		    null);
@@ -45,19 +46,9 @@ public class SetupDataEntryDelayReport {
 		
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("XlsDataEntryDelay".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("DQ-Data Entry Delay Report");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("DQ-Data Entry Delay Report");
+		reportDefinition.setName(getReportName());
 
 		Properties properties = new Properties();
 		properties.setProperty("hierarchyFields", "countyDistrict:District");

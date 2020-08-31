@@ -16,7 +16,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
 import org.openmrs.module.rwandareports.customcalculator.DeclineHighestCD4;
@@ -31,10 +30,8 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupPediHIVConsultationSheet {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupPediHIVConsultationSheet extends SingleSetupReport {
+
 	//properties
 	private Program pediProgram;
 	
@@ -47,9 +44,14 @@ public class SetupPediHIVConsultationSheet {
 	private EncounterType pediFlowsheet;
 	
 	private List<EncounterType> clinicalEnountersIncLab;
-	
+
+	@Override
+	public String getReportName() {
+		return "HIV-Pedi Consultation Sheet";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -80,20 +82,9 @@ public class SetupPediHIVConsultationSheet {
 		Helper.saveReportDesign(design3);*/
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PediHIVConsultationSheet.xls_".equals(rd.getName())
-			        || "PediPreArtHIVConsultationSheet.xls_".equals(rd.getName()) || "Bactrim.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("HIV-Pedi Consultation Sheet");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-Pedi Consultation Sheet");
+		reportDefinition.setName(getReportName());
 		
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 		reportDefinition.addParameter(new Parameter("onDate", "On Date", Date.class));
