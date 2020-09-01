@@ -14,37 +14,28 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
-import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
-import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupGenericPatientByProgramReport {
+public class SetupGenericPatientByProgramReport extends SingleSetupReport {
 		
 	protected final static Log log = LogFactory.getLog(SetupGenericPatientByProgramReport.class);
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
-		
-	public void setup() throws Exception {		
-		ReportDefinition rd =createReportDefinition();		
-		  ReportDesign designExcel = Helper.createExcelDesign(rd,"Generic Patient Report.xls_",true);
-		  ReportDesign designCSV = Helper.createCsvReportDesign(rd,"Generic Patient Report.csv_");
-		  
-			Helper.saveReportDesign(designExcel);
-			Helper.saveReportDesign(designCSV);
+	@Override
+	public String getReportName() {
+		return "Generic Patient Report";
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Generic Patient Report.xls_".equals(rd.getName()) || "Generic Patient Report.csv_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("Generic Patient Report");
+
+	public void setup() throws Exception {
+		log.info("Setting up report: " + getReportName());
+		ReportDefinition rd =createReportDefinition();		
+		ReportDesign designExcel = Helper.createExcelDesign(rd,"Generic Patient Report.xls_",true);
+		ReportDesign designCSV = Helper.createCsvReportDesign(rd,"Generic Patient Report.csv_");
+
+		Helper.saveReportDesign(designExcel);
+		Helper.saveReportDesign(designCSV);
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -52,9 +43,8 @@ public class SetupGenericPatientByProgramReport {
 		Parameter prog=new Parameter("programs", "Program",Program.class);
 		prog.setRequired(false);
 		
-		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("Generic Patient Report");	
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("startDate", "From Date", Date.class));	
 		reportDefinition.addParameter(new Parameter("endDate", "To Date", Date.class));		
 		reportDefinition.addParameter(prog);

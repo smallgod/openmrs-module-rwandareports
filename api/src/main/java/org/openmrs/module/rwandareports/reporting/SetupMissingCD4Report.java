@@ -12,14 +12,12 @@ import org.openmrs.Location;
 import org.openmrs.OrderType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.InverseCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
@@ -28,10 +26,8 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupMissingCD4Report {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupMissingCD4Report extends SingleSetupReport {
+
 	//properties
 	private Concept patientDied;
 	
@@ -50,9 +46,14 @@ public class SetupMissingCD4Report {
 	private ProgramWorkflow treatmentStatus;
 	
 	private List<EncounterType> clinicalEncoutersExcLab;
+
+	@Override
+	public String getReportName() {
+		return "DQ-HIV CD4 Labs with Missing Data";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -67,19 +68,9 @@ public class SetupMissingCD4Report {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("XlsMissingCD4ReportTemplate".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("DQ-HIV CD4 Labs with Missing Data");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("DQ-HIV CD4 Labs with Missing Data");
+		reportDefinition.setName(getReportName());
 		Properties properties = new Properties();
 		properties.setProperty("hierarchyFields", "countyDistrict:District");
 		reportDefinition.addParameter(new Parameter("location", "Location", AllLocation.class, properties));

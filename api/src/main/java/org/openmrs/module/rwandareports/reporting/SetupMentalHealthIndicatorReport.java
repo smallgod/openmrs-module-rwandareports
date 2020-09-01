@@ -1,7 +1,6 @@
 package org.openmrs.module.rwandareports.reporting;
 
 import org.openmrs.*;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.*;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -12,7 +11,6 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
@@ -27,9 +25,7 @@ import java.util.*;
 /**
  * Created by josua on 10/22/18.
  */
-public class SetupMentalHealthIndicatorReport {
-
-    GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupMentalHealthIndicatorReport extends SingleSetupReport {
 
     private Program mentalhealthProgram;
 
@@ -79,9 +75,13 @@ public class SetupMentalHealthIndicatorReport {
 
     private List<Concept> BifferStateList =  new ArrayList<Concept>() ;
 
+    @Override
+    public String getReportName() {
+        return "MentalHealth Indicator Report-Quarterly";
+    }
 
     public void setup() throws Exception {
-
+        log.info("Setting up report: " + getReportName());
         setUpProperties();
 
         //Monthly report set-up
@@ -99,7 +99,7 @@ public class SetupMentalHealthIndicatorReport {
 
         quarterlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 
-        quarterlyRd.setName("MentalHealth Indicator Report-Quarterly");
+        quarterlyRd.setName(getReportName());
 
         quarterlyRd.addDataSetDefinition(createQuarterlyLocationDataSet(),
                 ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
@@ -125,17 +125,6 @@ public class SetupMentalHealthIndicatorReport {
         quarterlyProps.put("sortWeight","5000");
         quarterlyDesign.setProperties(quarterlyProps);
         Helper.saveReportDesign(quarterlyDesign);
-
-    }
-
-    public void delete() {
-        ReportService rs = Context.getService(ReportService.class);
-        for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-            if ("MentalHealth Indicator Quarterly Report (Excel)".equals(rd.getName())) {
-                rs.purgeReportDesign(rd);
-            }
-        }
-        Helper.purgeReportDefinition("MentalHealth Indicator Report-Quarterly");
 
     }
 

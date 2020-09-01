@@ -22,9 +22,15 @@ import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
-import org.openmrs.module.reporting.cohort.definition.*;
+import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -35,7 +41,6 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
@@ -45,9 +50,7 @@ import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupAsthmaQuarterlyAndMonthReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupAsthmaQuarterlyAndMonthReport extends SingleSetupReport {
 	
 	// properties
 	private Program asthmaProgram;
@@ -132,12 +135,13 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 
 	private List<Form> asthmaVisitForms = new ArrayList<Form>();
 
-
-
-
+	@Override
+	public String getReportName() {
+		return "NCD-Asthma Indicator Report-Quarterly";
+	}
 
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		//Monthly report set-up
@@ -155,7 +159,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		
 		quarterlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 		
-		quarterlyRd.setName("NCD-Asthma Indicator Report-Quarterly");
+		quarterlyRd.setName(getReportName());
 		
 		quarterlyRd.addDataSetDefinition(createQuarterlyLocationDataSet(),
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
@@ -183,20 +187,7 @@ public class SetupAsthmaQuarterlyAndMonthReport {
 		Helper.saveReportDesign(quarterlyDesign);
 		
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Asthma Indicator Quarterly Report (Excel)".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD-Asthma Indicator Report-Quarterly");
-		
-	}
-	
 
-	
 	//Create Quarterly Encounter Data set
 	
 	public LocationHierachyIndicatorDataSetDefinition createQuarterlyLocationDataSet() {

@@ -8,11 +8,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.openmrs.Concept;
-import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.InverseCohortDefinition;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
@@ -20,16 +18,13 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupOncologyInpatientClinicMissedVisit {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupOncologyInpatientClinicMissedVisit extends SingleSetupReport {
+
 	//properties retrieved from global variables
 	private Program oncologyProgram;
 
@@ -58,11 +53,14 @@ public class SetupOncologyInpatientClinicMissedVisit {
 		
 		
 		private List<String> onOrAfterOnOrBefore=new ArrayList<String>();
-		
-	
+
+	@Override
+	public String getReportName() {
+		return "ONC-Oncology Missed Visit Patient List - Inpatient Ward";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -78,20 +76,10 @@ public class SetupOncologyInpatientClinicMissedVisit {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("OncologyInpatientClinicMissedVisit.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("ONC-Oncology Missed Visit Patient List - Inpatient Ward");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Oncology Missed Visit Patient List - Inpatient Ward");
+		reportDefinition.setName(getReportName());
 				
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));	
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));

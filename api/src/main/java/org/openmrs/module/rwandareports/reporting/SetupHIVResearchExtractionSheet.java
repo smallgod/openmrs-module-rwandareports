@@ -7,18 +7,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.*;
+import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfFirstDrugOrderStartedRestrictedByConceptSet;
 import org.openmrs.module.rwandareports.definition.ArtSwitch;
@@ -27,9 +31,9 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupHIVResearchExtractionSheet {
+public class SetupHIVResearchExtractionSheet implements SetupReport {
 
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+	protected final Log log = LogFactory.getLog(getClass());
 
 	//properties retrieved from global variables
 
@@ -132,12 +136,6 @@ public class SetupHIVResearchExtractionSheet {
 	}
 
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if (rd.getName().contains("ResearchDemographics") || rd.getName().contains("ResearchOI") || rd.getName().contains("ResearchSE") || rd.getName().contains("ResearchOngoing")) {
-				rs.purgeReportDesign(rd);
-			}
-		}
 		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Demographics Pediatric");
 		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Demographics Adult Male");
 		Helper.purgeReportDefinition("Research-Extraction Data for HIV Research - Demographics Adult Female");
@@ -1441,7 +1439,7 @@ public class SetupHIVResearchExtractionSheet {
 	}
 
 	private void setupProperties() {
-
+		GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 		pmtct = gp.getProgram(GlobalPropertiesManagement.PMTCT_PREGNANCY_PROGRAM);
 		adultHiv = gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
 		pediHiv = gp.getProgram(GlobalPropertiesManagement.PEDI_HIV_PROGRAM);

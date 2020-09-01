@@ -11,24 +11,22 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  
-public class SetupPBFReport {
+public class SetupPBFReport extends SingleSetupReport {
         
         protected final static Log log = LogFactory.getLog(SetupPBFReport.class);
-        
-        GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+
+
      // properties
         private Program pmtctPregnancyProgram;
         private Program CCMotherProgram;
@@ -60,10 +58,15 @@ public class SetupPBFReport {
         private ProgramWorkflowState pediOnFollowing;
         private ProgramWorkflowState pmtctArt;
         private List<EncounterType> clinicalEnountersIncLab;
-       
-       
+
+
+        @Override
+        public String getReportName() {
+            return "PBF Report";
+        }
+
         public void setup() throws Exception {
-                
+            log.info("Setting up report: " + getReportName());
                 setupProperties();
                 
                 ReportDefinition rd = createReportDefinition();
@@ -75,17 +78,7 @@ public class SetupPBFReport {
                 design.setProperties(props);
                 Helper.saveReportDesign(design);
         }
-        
-        public void delete() {
-                ReportService rs = Context.getService(ReportService.class);
-                for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-                        if ("XlsPBFreporttemplate".equals(rd.getName())) {
-                                rs.purgeReportDesign(rd);
-                        }
-                }
-                Helper.purgeReportDefinition("PBF Report");
-        }
-        
+
         private ReportDefinition createReportDefinition() {
            
         	ReportDefinition rd = new ReportDefinition();
@@ -95,7 +88,7 @@ public class SetupPBFReport {
             //properties.setProperty("hierarchyFields", "countyDistrict:District");
             rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
             
-            rd.setName("PBF Report");
+            rd.setName(getReportName());
             
             LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
                     createDataSetDefinition());

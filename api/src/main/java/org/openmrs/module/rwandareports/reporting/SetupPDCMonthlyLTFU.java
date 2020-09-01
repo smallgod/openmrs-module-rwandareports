@@ -12,7 +12,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Program;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
@@ -24,7 +23,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
 import org.openmrs.module.rwandareports.customcalculator.PDCAlerts;
@@ -33,10 +31,8 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupPDCMonthlyLTFU {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupPDCMonthlyLTFU extends SingleSetupReport {
+
 	//properties retrieved from global variables
 	private Program PDCProgram;
 	
@@ -47,9 +43,14 @@ public class SetupPDCMonthlyLTFU {
 	private Form referralForm;
     private Form visitForm;
     private Concept returnVisitDate;
-	
+
+	@Override
+	public String getReportName() {
+		return "PDC Monthly LTFU";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -67,20 +68,10 @@ public class SetupPDCMonthlyLTFU {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PDCLostToFollowUpSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("PDC Monthly LTFU");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("PDC Monthly LTFU");
+		reportDefinition.setName(getReportName());
 				
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));	
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),ParameterizableUtil.createParameterMappings("location=${location}"));

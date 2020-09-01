@@ -16,7 +16,6 @@ import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
@@ -29,7 +28,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
@@ -49,12 +47,10 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupPMTCTPregnancyMonthlyReport {
+public class SetupPMTCTPregnancyMonthlyReport extends SingleSetupReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupPMTCTPregnancyMonthlyReport.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	//Properties retrieved from global variables
 	private Program pmtctProgram;
 	private Concept cd4;
@@ -68,8 +64,14 @@ public class SetupPMTCTPregnancyMonthlyReport {
 	private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
 	private ProgramWorkflow treatmentGroup;
 	private ProgramWorkflowState onART;
+
+	@Override
+	public String getReportName() {
+		return "HIV-PMTCT Pregnancy Report-Monthly";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -84,19 +86,10 @@ public class SetupPMTCTPregnancyMonthlyReport {
 		design.setProperties(props);
 		Helper.saveReportDesign(design);
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PMTCTPregMonthlyTemplate".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("HIV-PMTCT Pregnancy Report-Monthly");
-	}
+
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-PMTCT Pregnancy Report-Monthly");
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 		

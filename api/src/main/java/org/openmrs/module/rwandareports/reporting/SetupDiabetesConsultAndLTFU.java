@@ -9,15 +9,19 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.*;
-import org.openmrs.api.context.Context;
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
+import org.openmrs.RelationshipType;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
@@ -30,10 +34,10 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupDiabetesConsultAndLTFU {
-	protected final static Log log = LogFactory.getLog(SetupDiabetesConsultAndLTFU.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupDiabetesConsultAndLTFU implements SetupReport {
+
+	protected final Log log = LogFactory.getLog(getClass());
+
 	private List<Form> diabetesRendezvousForms = new ArrayList<Form>(); //Diabetes forms which can be used to set a next return visit date
 	
 	//properties retrieved from global variables
@@ -45,7 +49,9 @@ public class SetupDiabetesConsultAndLTFU {
 	private ProgramWorkflowState notInstudy;
 
 	private RelationshipType HBCP;
-		
+
+	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+
 	public void setup() throws Exception {
 		setupPrograms();
 		
@@ -71,18 +77,8 @@ public class SetupDiabetesConsultAndLTFU {
 	}
 	
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("DiabetesConsultSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-			if ("DiabetesLTFUSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
 		Helper.purgeReportDefinition("NCD-Diabetes Consultation Sheet");
 		Helper.purgeReportDefinition("NCD-Diabetes Late Visit");
-		
 	}
 	
 	private ReportDefinition createConsultReportDefinition() {

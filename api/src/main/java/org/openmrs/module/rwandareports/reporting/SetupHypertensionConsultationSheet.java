@@ -8,14 +8,12 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.openmrs.*;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
@@ -26,10 +24,8 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupHypertensionConsultationSheet {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupHypertensionConsultationSheet extends SingleSetupReport {
+
 	//properties retrieved from global variables
 	private Program hypertensionProgram;
 	
@@ -48,9 +44,14 @@ public class SetupHypertensionConsultationSheet {
 	List<EncounterType> hypertensionEncounter;
 
 	private RelationshipType HBCP;
+
+	@Override
+	public String getReportName() {
+		return "NCD-Hypertension Consultation Sheet";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -66,20 +67,10 @@ public class SetupHypertensionConsultationSheet {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("HypertensionConsultationSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD-Hypertension Consultation Sheet");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("NCD-Hypertension Consultation Sheet");
+		reportDefinition.setName(getReportName());
 				
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));	
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),ParameterizableUtil.createParameterMappings("location=${location}"));

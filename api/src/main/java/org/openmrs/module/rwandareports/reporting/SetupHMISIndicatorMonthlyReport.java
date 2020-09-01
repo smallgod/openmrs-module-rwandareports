@@ -13,10 +13,22 @@
  */
 package org.openmrs.module.rwandareports.reporting;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.*;
+import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.DurationUnit;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -27,22 +39,18 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
-import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-import java.util.*;
+public class SetupHMISIndicatorMonthlyReport implements SetupReport {
 
-public class SetupHMISIndicatorMonthlyReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+	protected final Log log = LogFactory.getLog(getClass());
+
 	// properties
 
 	private List<Form> OPDForms;
@@ -249,18 +257,6 @@ public class SetupHMISIndicatorMonthlyReport {
 	}
 	
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("District Hospital Monthly HMIS Report_II (Excel)".equals(rd.getName()) || "District Hospital Monthly HMIS Report_III (Excel)".equals(rd.getName())
-					|| "District Hospital Monthly HMIS Report_IV (Excel)".equals(rd.getName())
-					|| "District Hospital Monthly HMIS Report_V (Excel)".equals(rd.getName())
-					|| "District Hospital Monthly HMIS Report_VI (Excel)".equals(rd.getName())
-					|| "District Hospital Monthly HMIS Report_VII (Excel)".equals(rd.getName())
-					|| "District Hospital Monthly HMIS Report_VIII (Excel)".equals(rd.getName())
-					|| "District Hospital Monthly HMIS Report_IX (Excel)".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
 		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - II. Outpatient Consultations");
 		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - III. Mental Health");
 		Helper.purgeReportDefinition("District Hospital Monthly HMIS Report - IV. Chronic Diseases");
@@ -281,10 +277,6 @@ public class SetupHMISIndicatorMonthlyReport {
 		reportDefinition.setName(name);
 		return reportDefinition;
 	}
-
-
-	
-
 	
 	//Create Monthly Encounter and Cohort Data set
 	

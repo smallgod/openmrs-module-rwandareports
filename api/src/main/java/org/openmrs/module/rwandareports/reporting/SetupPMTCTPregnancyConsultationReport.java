@@ -16,13 +16,10 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CurrentOrdersRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
 import org.openmrs.module.rwandareports.customcalculator.Alerts;
 import org.openmrs.module.rwandareports.customcalculator.BreastFeedingOrFormula;
@@ -31,17 +28,13 @@ import org.openmrs.module.rwandareports.customcalculator.DPA;
 import org.openmrs.module.rwandareports.customcalculator.DecisionDate;
 import org.openmrs.module.rwandareports.customcalculator.GestationalAge;
 import org.openmrs.module.rwandareports.filter.DrugNameFilter;
-import org.openmrs.module.rwandareports.filter.LastThreeObsFilter;
-import org.openmrs.module.rwandareports.filter.ObservationFilter;
 import org.openmrs.module.rwandareports.filter.RemoveDecimalFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupPMTCTPregnancyConsultationReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupPMTCTPregnancyConsultationReport extends SingleSetupReport {
+
 	//properties
 	private Program pmtct;
 	
@@ -56,9 +49,14 @@ public class SetupPMTCTPregnancyConsultationReport {
 	private EncounterType flowsheetEncounter;
 	
 	private List<EncounterType> clinicalEnountersIncLab;
-	
+
+	@Override
+	public String getReportName() {
+		return "HIV-PMTCT Pregnancy consultation sheet";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -73,19 +71,9 @@ public class SetupPMTCTPregnancyConsultationReport {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PMTCTPregnancyConsultationSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("HIV-PMTCT Pregnancy consultation sheet");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-PMTCT Pregnancy consultation sheet");
+		reportDefinition.setName(getReportName());
 		
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));		
 		

@@ -9,7 +9,6 @@ import java.util.Properties;
 import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
@@ -18,7 +17,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfProgramCompletion;
@@ -36,10 +34,8 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupHIVResearchDataQualitySheet {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupHIVResearchDataQualitySheet extends SingleSetupReport {
+
 	//properties retrieved from global variables
 	private Concept cd4;
 	
@@ -72,7 +68,12 @@ public class SetupHIVResearchDataQualitySheet {
 	private Program externalHiv;
 	
 	private List<Program> hivPrograms;
-	
+
+	@Override
+	public String getReportName() {
+		return "DQ-HIV Research Data Quality";
+	}
+
 	public void setup() throws Exception {
 		
 		setupProperties();
@@ -90,20 +91,10 @@ public class SetupHIVResearchDataQualitySheet {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("HIVResearchDataQuality".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("DQ-HIV Research Data Quality");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("DQ-HIV Research Data Quality");
+		reportDefinition.setName(getReportName());
 		
 		createDataSetDefinition(reportDefinition);
 		

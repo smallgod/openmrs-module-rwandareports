@@ -14,9 +14,8 @@ import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
@@ -31,7 +30,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateDiff.DateDiffType;
@@ -53,12 +51,10 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupPediatricLateVisitAndCD4Report {
-	
-	protected final static Log log = LogFactory.getLog(SetupAdultLateVisitAndCD4Report.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupPediatricLateVisitAndCD4Report implements SetupReport {
+
+	protected final Log log = LogFactory.getLog(getClass());
+
 	//Properties retrieved from global variables
 	private Program hivProgram;
 	
@@ -81,7 +77,7 @@ public class SetupPediatricLateVisitAndCD4Report {
 	private Concept cd4;
 	
 	private Concept cd4Percent;
-	
+
 	public void setup() throws Exception {
 		
 		setupProperties();
@@ -108,10 +104,7 @@ public class SetupPediatricLateVisitAndCD4Report {
 		props.put("sortWeight","5000");
 		design.setProperties(props);
 		Helper.saveReportDesign(design);		
-		
-		
-		
-		
+
 		Properties propsArtMed = new Properties();
 		propsArtMed.put(
 		    "repeatingSections",
@@ -119,19 +112,9 @@ public class SetupPediatricLateVisitAndCD4Report {
 		propsArtMed.put("sortWeight","5000");
 		designArtMedication.setProperties(propsArtMed);
 		Helper.saveReportDesign(designArtMedication);
-		
-        
-		
-		
 	}
 	
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("XlsPediatricLateVisitAndCD4Template".equals(rd.getName()) || "pediatricHivArtReport".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
 		Helper.purgeReportDefinition("HIV-Pedi Report-Monthly");
 		Helper.purgeReportDefinition("HIV-Pedi ART Medication Report");
 	}
@@ -700,6 +683,7 @@ public class SetupPediatricLateVisitAndCD4Report {
 	}
 	
 	private void setupProperties() {
+		GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 		hivProgram = gp.getProgram(GlobalPropertiesManagement.PEDI_HIV_PROGRAM);
 		
 		onART = gp.getProgramWorkflowState(GlobalPropertiesManagement.ON_ANTIRETROVIRALS_STATE,

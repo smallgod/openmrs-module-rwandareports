@@ -8,23 +8,19 @@ import java.util.Properties;
 import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rwandareports.definition.UpcomingChemotherapyCohortDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupChemotherapyDailyExpectedPatientList {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupChemotherapyDailyExpectedPatientList extends SingleSetupReport {
 	
 	//properties retrieved from global variables
 	private Program oncologyProgram;
@@ -39,7 +35,7 @@ public class SetupChemotherapyDailyExpectedPatientList {
 	
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -64,21 +60,17 @@ public class SetupChemotherapyDailyExpectedPatientList {
 		
 		Helper.saveReportDesign(designTwo);
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("ChemotherapyDailyPatientList.xls_".equals(rd.getName()) || "ChemotherapyDailyTreatmentSummary.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("ONC-Chemotherapy Daily Expected Patient List");
+
+	@Override
+	public String getReportName() {
+		return "ONC-Chemotherapy Daily Expected Patient List";
 	}
+
 	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Chemotherapy Daily Expected Patient List");
+		reportDefinition.setName(getReportName());
 				
 		UpcomingChemotherapyCohortDefinition baseCohort = new UpcomingChemotherapyCohortDefinition();
 		baseCohort.setChemotherapyIndication(chemotherapy);

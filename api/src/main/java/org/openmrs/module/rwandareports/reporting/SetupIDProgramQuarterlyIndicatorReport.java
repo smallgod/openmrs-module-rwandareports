@@ -10,7 +10,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
@@ -32,7 +31,6 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
@@ -42,10 +40,8 @@ import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
  
-public class SetupIDProgramQuarterlyIndicatorReport {
-        
-        GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-        
+public class SetupIDProgramQuarterlyIndicatorReport extends SingleSetupReport {
+
         //properties
         private Program hivProgram;
         
@@ -105,9 +101,14 @@ public class SetupIDProgramQuarterlyIndicatorReport {
         private Concept viralLoadConcept;
 
         private Concept artDrugOrderConceptSet;
+
+        @Override
+        public String getReportName() {
+            return "HIV-Indicator Report-Quarterly";
+        }
         
         public void setup() throws Exception {
-                
+            log.info("Setting up report: " + getReportName());
                 setUpProperties();
                 
                 
@@ -119,7 +120,7 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 properties.setProperty("hierarchyFields", "countyDistrict:District");
                 rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
                 
-                rd.setName("HIV-Indicator Report-Quarterly");
+                rd.setName(getReportName());
                 
                 rd.addDataSetDefinition(createQuarterlyLocationDataSet(),
                     ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
@@ -137,18 +138,6 @@ public class SetupIDProgramQuarterlyIndicatorReport {
                 
                 
         }
-        
-        public void delete() {
-                ReportService rs = Context.getService(ReportService.class);
-                for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-                        if ("HIVIndicators".equals(rd.getName())) {
-                                rs.purgeReportDesign(rd);
-                        }
-                }
-                Helper.purgeReportDefinition("HIV-Indicator Report-Quarterly");
-                
-        }
-        
         
         public LocationHierachyIndicatorDataSetDefinition createQuarterlyLocationDataSet() {
                 

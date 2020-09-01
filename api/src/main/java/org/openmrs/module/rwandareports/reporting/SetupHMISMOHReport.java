@@ -1,9 +1,27 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import org.openmrs.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
+import org.openmrs.Concept;
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
+import org.openmrs.Program;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.*;
+import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
+import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.DateObsCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.PatientStateCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.DurationUnit;
 import org.openmrs.module.reporting.common.SetComparator;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
@@ -14,17 +32,12 @@ import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.util.Indicators;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Created by jberchmas on 11/21/17.
  */
-public class SetupHMISMOHReport {
+public class SetupHMISMOHReport extends SingleSetupReport {
 
 
     Program hivProgram = Context.getProgramWorkflowService().getProgramByUuid("5ea0ebfb-cec3-4cce-9479-58cf2ac5b7fa");
@@ -148,7 +161,13 @@ public class SetupHMISMOHReport {
     private Concept MethodeOfferte = Context.getConceptService().getConceptByUuid("cd3e9923-a3d3-4309-be05-9e7f604afcd4");
     private Concept ModernContraceptiveMethod = Context.getConceptService().getConceptByUuid("cd3e9923-a3d3-4309-be05-9e7f604afcd4");
 
+    @Override
+    public String getReportName() {
+        return "MOH-HMIS Indicator report";
+    }
+
     public void setup() throws Exception {
+        log.info("Setting up report: " + getReportName());
         ReportDefinition rd = createReportDefinition();
         ReportDesign desinTemplate = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "HMISMOHreport.xls", "HMISMOHreport", null);
 
@@ -157,25 +176,11 @@ public class SetupHMISMOHReport {
         props.put("sortWeight", "5000");
         desinTemplate.setProperties(props);
         Helper.saveReportDesign(desinTemplate);
-
-
-    }
-
-    public void delete() {
-
-        ReportService rs = Context.getService(ReportService.class);
-        for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-            if ("HMISMOHreport".equals(rd.getName())) {
-                rs.purgeReportDesign(rd);
-            }
-        }
-        Helper.purgeReportDefinition("MOH-HMIS Indicator report");
-
     }
 
     private ReportDefinition createReportDefinition() {
         ReportDefinition reportDef = new ReportDefinition();
-        reportDef.setName("MOH-HMIS Indicator report");
+        reportDef.setName(getReportName());
         reportDef.addParameter(new Parameter("startDate", "Start Date", Date.class));
         reportDef.addParameter(new Parameter("endDate", "End Date", Date.class));
         reportDef.addParameter(new Parameter("location", "Health facility", Location.class));

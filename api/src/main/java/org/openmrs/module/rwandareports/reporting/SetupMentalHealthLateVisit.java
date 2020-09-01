@@ -3,13 +3,11 @@ package org.openmrs.module.rwandareports.reporting;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.*;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
@@ -24,11 +22,9 @@ import java.util.*;
 /**
  * Created by josua on 10/17/18.
  */
-public class SetupMentalHealthLateVisit {
+public class SetupMentalHealthLateVisit extends SingleSetupReport {
 
     protected final static Log log = LogFactory.getLog(SetupMentalHealthLateVisit.class);
-
-    GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
     //Properties retrieved from global variables
     private Program MentalHealth;
@@ -65,8 +61,13 @@ public class SetupMentalHealthLateVisit {
 
     private RelationshipType HBCP;
 
-    public void setup() throws Exception {
+    @Override
+    public String getReportName() {
+        return "Mental Health Late Visit";
+    }
 
+    public void setup() throws Exception {
+        log.info("Setting up report: " + getReportName());
         setupProperties();
 
         ReportDefinition rd = createReportDefinition();
@@ -80,19 +81,9 @@ public class SetupMentalHealthLateVisit {
         Helper.saveReportDesign(design);
     }
 
-    public void delete() {
-        ReportService rs = Context.getService(ReportService.class);
-        for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-            if ("MentalHealthLateVisitTemplate".equals(rd.getName())) {
-                rs.purgeReportDesign(rd);
-            }
-        }
-        Helper.purgeReportDefinition("Mental Health Late Visit");
-    }
-
     private ReportDefinition createReportDefinition() {
         ReportDefinition reportDefinition = new ReportDefinition();
-        reportDefinition.setName("Mental Health Late Visit");
+        reportDefinition.setName(getReportName());
         reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
         reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 

@@ -1,16 +1,30 @@
 package org.openmrs.module.rwandareports.reporting;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.*;
-import org.openmrs.api.context.Context;
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
+import org.openmrs.Program;
+import org.openmrs.RelationshipType;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.MultiplePatientDataDefinitions;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientAddress;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientProperty;
 import org.openmrs.module.rwandareports.customcalculator.DaysLate;
 import org.openmrs.module.rwandareports.filter.AccompagnateurDisplayFilter;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
@@ -19,16 +33,12 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-import java.util.*;
-
 /**
  * Created by josua on 10/13/17.
  */
-public class SetupCKDMissedvisitReport {
+public class SetupCKDMissedvisitReport extends SingleSetupReport {
 
     protected final static Log log = LogFactory.getLog(SetupCKDMissedvisitReport.class);
-
-    GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
     //Properties retrieved from global variables
     private Program CKDProgram;
@@ -49,7 +59,7 @@ public class SetupCKDMissedvisitReport {
     private List<Form> CKDForms = new ArrayList<Form>();
 
     public void setup() throws Exception {
-
+        log.info("Setting up report: " + getReportName());
         setupProperties();
 
         ReportDefinition rd = createReportDefinition();
@@ -65,20 +75,15 @@ public class SetupCKDMissedvisitReport {
         Helper.saveReportDesign(design);
     }
 
-    public void delete() {
-        ReportService rs = Context.getService(ReportService.class);
-        for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-            if ("XLSCKDLateVisit".equals(rd.getName())) {
-                rs.purgeReportDesign(rd);
-            }
-        }
-        Helper.purgeReportDefinition("NCD-CKD Late Visit");
+    @Override
+    public String getReportName() {
+        return "NCD-CKD Late Visit";
     }
 
     private ReportDefinition createReportDefinition() {
 
         ReportDefinition reportDefinition = new ReportDefinition();
-        reportDefinition.setName("NCD-CKD Late Visit");
+        reportDefinition.setName(getReportName());
         reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
         reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 

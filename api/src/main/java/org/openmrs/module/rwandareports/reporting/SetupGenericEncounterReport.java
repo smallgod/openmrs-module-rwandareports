@@ -6,8 +6,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.*;
-import org.openmrs.api.context.Context;
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
 import org.openmrs.module.reporting.common.AuditInfo;
 import org.openmrs.module.reporting.common.ObjectUtil;
 import org.openmrs.module.reporting.data.converter.PropertyConverter;
@@ -22,38 +23,30 @@ import org.openmrs.module.reporting.query.encounter.definition.BasicEncounterQue
 import org.openmrs.module.reporting.query.encounter.definition.MappedParametersEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
-import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
-public class SetupGenericEncounterReport {
+public class SetupGenericEncounterReport extends SingleSetupReport {
 		
 	protected final static Log log = LogFactory.getLog(SetupGenericEncounterReport.class);
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
-		
-	public void setup() throws Exception {		
-		ReportDefinition rd =createReportDefinition();		
-		  ReportDesign designExcel = Helper.createExcelDesign(rd,"Generic Encounter Report.xls_",true);
-		  ReportDesign designCSV = Helper.createCsvReportDesign(rd,"Generic Encounter Report.csv_");
-		  
-			Helper.saveReportDesign(designExcel);
-			Helper.saveReportDesign(designCSV);
+	@Override
+	public String getReportName() {
+		return "Generic Encounter Report";
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Generic Encounter Report.xls_".equals(rd.getName()) || "Generic Encounter Report.csv_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("Generic Encounter Report");
+
+	public void setup() throws Exception {
+		log.info("Setting up report: " + getReportName());
+		ReportDefinition rd =createReportDefinition();
+		ReportDesign designExcel = Helper.createExcelDesign(rd,"Generic Encounter Report.xls_",true);
+		ReportDesign designCSV = Helper.createCsvReportDesign(rd,"Generic Encounter Report.csv_");
+
+		Helper.saveReportDesign(designExcel);
+		Helper.saveReportDesign(designCSV);
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("Generic Encounter Report");	
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("startDate", "From Date", Date.class));	
 		reportDefinition.addParameter(new Parameter("endDate", "To Date", Date.class));
 		//reportDefinition.addParameter(new Parameter("location", "Health Facility", Location.class));

@@ -11,26 +11,21 @@ import org.openmrs.Concept;
 import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.ConsecutiveCombinedDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.WeekViewDataSetDefinition;
-import org.openmrs.module.rwandareports.definition.UpcomingChemotherapyCohortDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupOncologyOutpatientExpectedPatientList {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupOncologyOutpatientExpectedPatientList extends SingleSetupReport {
+
 	//properties retrieved from global variables
 	private Program oncologyProgram;
 
@@ -57,10 +52,14 @@ public class SetupOncologyOutpatientExpectedPatientList {
 	private List<Concept> visitDates=new ArrayList<Concept>();
 	
 	private List<Form> visitForms=new ArrayList<Form>();
-	
-	
+
+	@Override
+	public String getReportName() {
+		return "ONC-Oncology Expected Patient List - Outpatient Ward";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -77,23 +76,11 @@ public class SetupOncologyOutpatientExpectedPatientList {
 		Helper.saveReportDesign(design);
 		
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("OncologyOutpatientExpectedPatientList.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-			
-		}
-		Helper.purgeReportDefinition("ONC-Oncology Expected Patient List - Outpatient Ward");
-		
-	}
-	
+
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Oncology Expected Patient List - Outpatient Ward");
+		reportDefinition.setName(getReportName());
 					
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 	

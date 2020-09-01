@@ -13,24 +13,19 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.ProgramWorkflowState;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
-import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InverseCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
-import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
@@ -45,23 +40,19 @@ import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientPro
 import org.openmrs.module.rowperpatientreports.patientdata.definition.PatientRelationship;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.StateOfPatient;
-import org.openmrs.module.rwandareports.customcalculator.BMI;
 import org.openmrs.module.rwandareports.customcalculator.BMICalculation;
 import org.openmrs.module.rwandareports.customcalculator.DeclineHighestCD4;
 import org.openmrs.module.rwandareports.customcalculator.DifferenceBetweenLastTwoObs;
 import org.openmrs.module.rwandareports.filter.GroupStateFilter;
 import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
-import org.openmrs.module.rwandareports.filter.TreatmentStateFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupPMTCTCombinedClinicMotherMonthlyReport {
+public class SetupPMTCTCombinedClinicMotherMonthlyReport extends SingleSetupReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupPMTCTCombinedClinicMotherMonthlyReport.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	//Properties retrieved from global variables
 	private Program pmtctCombinedClinicMotherProgram;
 	
@@ -82,10 +73,14 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 	private Concept viralLoad;
 	
 	private List<EncounterType> clinicalEncoutersExcLab;
-		
-	
+
+	@Override
+	public String getReportName() {
+		return "HIV-PMTCT Combined Clinic Mother Report-Monthly";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -101,19 +96,9 @@ public class SetupPMTCTCombinedClinicMotherMonthlyReport {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PMTCTCCMotherTemplate".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("HIV-PMTCT Combined Clinic Mother Report-Monthly");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-PMTCT Combined Clinic Mother Report-Monthly");
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 		

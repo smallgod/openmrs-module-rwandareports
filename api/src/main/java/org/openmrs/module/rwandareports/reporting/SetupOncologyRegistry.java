@@ -1,12 +1,10 @@
 package org.openmrs.module.rwandareports.reporting;
 
 import org.openmrs.*;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -14,10 +12,8 @@ import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 import java.util.*;
 
-public class SetupOncologyRegistry {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupOncologyRegistry extends SingleSetupReport {
+
 	//properties retrieved from global variables
 	private Program oncologyProgram;
 	private ProgramWorkflow diagnosis;
@@ -58,15 +54,13 @@ public class SetupOncologyRegistry {
 
 	private Date endDate;
 
-
-
-
-
-
-	
+	@Override
+	public String getReportName() {
+		return "ONC-Registry";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -87,22 +81,10 @@ public class SetupOncologyRegistry {
 		
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("OncologyRegistry.xls_".equals(rd.getName()) || "OncologyRegistry.csv_".equals(rd.getName()) ) {
-				rs.purgeReportDesign(rd);
-			}
-			
-		}
-		Helper.purgeReportDefinition("ONC-Registry");
-		
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Registry");
+		reportDefinition.setName(getReportName());
 
 		reportDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
 		reportDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));

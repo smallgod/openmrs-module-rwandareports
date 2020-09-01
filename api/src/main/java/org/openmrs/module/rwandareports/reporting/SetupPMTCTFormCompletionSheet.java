@@ -8,7 +8,6 @@ import java.util.Properties;
 import org.openmrs.Concept;
 import org.openmrs.Form;
 import org.openmrs.Program;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
@@ -16,7 +15,6 @@ import org.openmrs.module.reporting.query.encounter.definition.EncounterQuery;
 import org.openmrs.module.reporting.query.encounter.definition.SqlEncounterQuery;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.indicator.EncounterIndicator;
@@ -26,10 +24,8 @@ import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupPMTCTFormCompletionSheet {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupPMTCTFormCompletionSheet extends SingleSetupReport {
+
 	private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
 	
 	private Program pmtctCombinedInfantProgram;
@@ -83,10 +79,14 @@ public class SetupPMTCTFormCompletionSheet {
 	private Concept pregnancyTestConcept;
 	
 	private Concept dateDelivery;
-	
-	
+
+	@Override
+	public String getReportName() {
+		return "DQ-HIV PMTCT Form Completion";
+	}
+
     public void setup() throws Exception {
-		
+	    log.info("Setting up report: " + getReportName());
 		setUpProperties();
 		
 		ReportDefinition rd = createCrossSiteReportDefinition();
@@ -98,17 +98,7 @@ public class SetupPMTCTFormCompletionSheet {
 		design.setProperties(props);
 		Helper.saveReportDesign(design);
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("PMTCT Form Completion Excel".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("DQ-HIV PMTCT Form Completion");
-	}
-	
+
 	private ReportDefinition createCrossSiteReportDefinition() {
 		
 		ReportDefinition rd = new ReportDefinition();
@@ -119,7 +109,7 @@ public class SetupPMTCTFormCompletionSheet {
 		properties.setProperty("hierarchyFields", "countyDistrict:District");
 		rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 		
-		rd.setName("DQ-HIV PMTCT Form Completion");
+		rd.setName(getReportName());
 		
 		rd.addDataSetDefinition(createDataSet(),
 		    ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));

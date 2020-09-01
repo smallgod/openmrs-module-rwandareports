@@ -9,7 +9,6 @@ import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
@@ -20,16 +19,13 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupOncologyTestPatientList {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+public class SetupOncologyTestPatientList extends SingleSetupReport {
+
 	//properties retrieved from global variables
 	private Program oncologyProgram;
 	
@@ -64,10 +60,14 @@ public class SetupOncologyTestPatientList {
 	private Concept otherOncologyTest;
 	
 	private Concept tissueBiospsy;
-	
+
+	@Override
+	public String getReportName() {
+		return "ONC-Biopsy Results/Tracking Contact List";
+	}
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -83,20 +83,10 @@ public class SetupOncologyTestPatientList {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("BiopsyResultsContactList.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("ONC-Biopsy Results/Tracking Contact List");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("ONC-Biopsy Results/Tracking Contact List");
+		reportDefinition.setName(getReportName());
 				
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));	
 		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));

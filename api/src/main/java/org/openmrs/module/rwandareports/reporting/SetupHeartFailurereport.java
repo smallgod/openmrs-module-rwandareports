@@ -13,7 +13,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
@@ -36,7 +35,6 @@ import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.definition.DrugsActiveCohortDefinition;
 import org.openmrs.module.rwandareports.indicator.MedianAgeIndicator;
@@ -47,12 +45,10 @@ import org.openmrs.module.rwandareports.util.RwandaReportsUtil;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupHeartFailurereport {
+public class SetupHeartFailurereport extends SingleSetupReport {
 	
 	protected final static Log log = LogFactory.getLog(SetupHeartFailurereport.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	//properties retrieved from global variables
 	private Program heartFailure;
 	
@@ -117,9 +113,14 @@ public class SetupHeartFailurereport {
 	List<EncounterType> encounterTypes;
 	
 	private List<String> onOrAfterOnOrBeforeParamterNames = new ArrayList<String>();
-	
+
+	@Override
+	public String getReportName() {
+		return "Heart Failure Report";
+	}
+
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
@@ -133,16 +134,6 @@ public class SetupHeartFailurereport {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Xlsheartfailurereporttemplate".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("Heart Failure Report");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition rd = new ReportDefinition();
@@ -152,7 +143,7 @@ public class SetupHeartFailurereport {
 		properties.setProperty("hierarchyFields", "countyDistrict:District");
 		rd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 		
-		rd.setName("Heart Failure Report");
+		rd.setName(getReportName());
 		
 		LocationHierachyIndicatorDataSetDefinition ldsd = new LocationHierachyIndicatorDataSetDefinition(
 		        createDataSetDefinition());

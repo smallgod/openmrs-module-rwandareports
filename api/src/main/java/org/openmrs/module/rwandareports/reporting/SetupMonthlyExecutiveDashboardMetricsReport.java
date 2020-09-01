@@ -1,7 +1,6 @@
 package org.openmrs.module.rwandareports.reporting;
 
 import org.openmrs.*;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.*;
 import org.openmrs.module.reporting.common.SetComparator;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
@@ -11,7 +10,6 @@ import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rwandareports.dataset.EncounterIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.util.Cohorts;
@@ -28,9 +26,7 @@ import java.util.Properties;
 /**
  * Created by josua on 10/22/18.
  */
-public class SetupMonthlyExecutiveDashboardMetricsReport {
-
-    GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupMonthlyExecutiveDashboardMetricsReport extends SingleSetupReport {
 
     // properties
     private List<String> onOrAfterOnOrBefore = new ArrayList<String>();
@@ -92,9 +88,13 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
     private Form exitform;
     private List<Form> exitforms = new ArrayList<Form>();
 
+    @Override
+    public String getReportName() {
+        return "Monthly Executive Dashboard Metrics Report";
+    }
 
     public void setup() throws Exception {
-
+        log.info("Setting up report: " + getReportName());
         setUpProperties();
 
         Properties properties = new Properties();
@@ -109,7 +109,7 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
 
         monthlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 
-        monthlyRd.setName("Monthly Executive Dashboard Metrics Report");
+        monthlyRd.setName(getReportName());
 
         monthlyRd.addDataSetDefinition(createMonthlyLocationDataSet(),
                 ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
@@ -134,18 +134,6 @@ public class SetupMonthlyExecutiveDashboardMetricsReport {
         Helper.saveReportDesign(monthlyDesign);
 
     }
-
-    public void delete() {
-        ReportService rs = Context.getService(ReportService.class);
-        for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-            if ("MonthlyExecutiveDashboardMetricsReport".equals(rd.getName())) {
-                rs.purgeReportDesign(rd);
-            }
-        }
-        Helper.purgeReportDefinition("Monthly Executive Dashboard Metrics Report");
-
-    }
-
 
     //Create Quarterly Encounter Data set
 

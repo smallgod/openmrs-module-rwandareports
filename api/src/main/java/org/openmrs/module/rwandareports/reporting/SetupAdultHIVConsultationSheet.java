@@ -16,16 +16,13 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.FirstDrugOrderStartedRestrictedByConceptSet;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounterOfType;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RecentEncounterType;
 import org.openmrs.module.rwandareports.customcalculator.BMI;
-import org.openmrs.module.rwandareports.customcalculator.DeclineHighestCD4;
 import org.openmrs.module.rwandareports.customcalculator.HIVAdultAlerts;
 import org.openmrs.module.rwandareports.filter.DrugNameFilter;
 import org.openmrs.module.rwandareports.filter.LastThreeObsFilter;
@@ -35,9 +32,7 @@ import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 
-public class SetupAdultHIVConsultationSheet implements SetupReport {
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupAdultHIVConsultationSheet extends SingleSetupReport {
 	
 	//properties retrieved from global variables
 	private Program hivProgram;
@@ -49,13 +44,15 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 	private Concept creatinine;
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
 		ReportDefinition rd = createReportDefinition();
 
-		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "AdultHIVConsultationSheetV2.xls",
-		    "AdultHIVConsultationSheet.xls_", null);
+		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd,
+				"AdultHIVConsultationSheetV2.xls",
+				"AdultHIVConsultationSheet.xls_", null
+		);
 		
 		Properties props = new Properties();
 		props.put("repeatingSections", "sheet:1,row:6,dataset:dataSet");
@@ -64,21 +61,16 @@ public class SetupAdultHIVConsultationSheet implements SetupReport {
 		
 		Helper.saveReportDesign(design);
 	}
-	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("AdultHIVConsultationSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("HIV-Adult Consultation Sheet");
+
+	@Override
+	public String getReportName() {
+		return "HIV-Adult Consultation Sheet";
 	}
-	
+
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-Adult Consultation Sheet");
+		reportDefinition.setName(getReportName());
 		
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 

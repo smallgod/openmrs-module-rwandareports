@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfWorkflowStateChange;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.RowPerPatientData;
 import org.openmrs.module.rwandareports.dataset.HIVARTRegisterDataSetDefinition2;
@@ -23,12 +23,12 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupHivArtRegisterReport {
-	
+public class SetupHivArtRegisterReport implements SetupReport {
+
+	protected final Log log = LogFactory.getLog(getClass());
+
 	private boolean pedi = false;
-	
-	private GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	//private HashMap<String, String> properties;
 	//properties
 	private Program adultHIVProgram;
@@ -99,24 +99,11 @@ public class SetupHivArtRegisterReport {
 	}
 	
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if (pedi) {
-				if ("PediHIVArtTemplate.xls_".equals(rd.getName())) {
-					rs.purgeReportDesign(rd);
-				}
-			} else {
-				if ("HIVArtTemplate.xls_".equals(rd.getName())) {
-					rs.purgeReportDesign(rd);
-				}
-			}
-		}
 		if (pedi) {
 			Helper.purgeReportDefinition("Pedi HIV ART Register");
 		} else {
 			Helper.purgeReportDefinition("Adult HIV ART Register");
 		}
-		
 	}
 	
 	private ReportDefinition createReportDefinition() {
@@ -228,6 +215,7 @@ public class SetupHivArtRegisterReport {
 	}
 	
 	private void setUpProperties() {
+		GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 		adultHIVProgram = gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
 		pediHIVProgram = gp.getProgram(GlobalPropertiesManagement.PEDI_HIV_PROGRAM);
 		

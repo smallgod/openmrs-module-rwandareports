@@ -9,12 +9,9 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.cohort.definition.DateObsCohortDefinition;
 import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
@@ -22,22 +19,25 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
-import org.openmrs.module.rwandareports.dataset.comparator.PMTCTDataSetRowComparator;
 import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupNCDConsultationSheet {
+public class SetupNCDConsultationSheet extends SingleSetupReport {
 	protected final static Log log = LogFactory.getLog(SetupNCDConsultationSheet.class);
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
-	
+
 	//properties retrieved from global variables
 	private List<Program> diseases;
+
+	@Override
+	public String getReportName() {
+		return "NCD Consult Sheet";
+	}
 		
 	public void setup() throws Exception {
+		log.info("Setting up report: " + getReportName());
 		setupPrograms();
 		ReportDefinition rd = createReportDefinition();	
 		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "NCDConsultationSheet.xls","NCDConsultationSheet.xls_", null);	
@@ -48,20 +48,10 @@ public class SetupNCDConsultationSheet {
 		Helper.saveReportDesign(design);
 	}
 	
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("NCDConsultationSheet.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD Consult Sheet");
-	}
-	
 	private ReportDefinition createReportDefinition() {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("NCD Consult Sheet");	
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));	
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),

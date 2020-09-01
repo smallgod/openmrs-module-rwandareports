@@ -10,13 +10,11 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.*;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
@@ -33,11 +31,9 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupHeartFailureLateVisit {
+public class SetupHeartFailureLateVisit extends SingleSetupReport {
 
-	protected final static Log log = LogFactory
-			.getLog(SetupHeartFailureLateVisit.class);
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+	protected final static Log log = LogFactory.getLog(SetupHeartFailureLateVisit.class);
 
 	// Properties retrieved from global variables
 	private Program heartFailureProgram;
@@ -49,8 +45,14 @@ public class SetupHeartFailureLateVisit {
     private Form followUpForm;
 	private List<Form> DDBAndRendezvousForms = new ArrayList<Form>();
 	private RelationshipType HBCP;
-	public void setup() throws Exception {
 
+	@Override
+	public String getReportName() {
+		return "NCD-Heart Failure Late Visit";
+	}
+
+	public void setup() throws Exception {
+		log.info("Setting up report: " + getReportName());
 		setupProperties();
 
 		ReportDefinition rd = createReportDefinition();
@@ -64,19 +66,9 @@ public class SetupHeartFailureLateVisit {
 		Helper.saveReportDesign(design);
 	}
 
-	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("XlsHeartFailureLateVisit.xls_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("NCD-Heart Failure Late Visit");
-	}
-
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("NCD-Heart Failure Late Visit");
+		reportDefinition.setName(getReportName());
 		reportDefinition.addParameter(new Parameter("location", "Location",
 				Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "End Date",

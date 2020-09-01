@@ -12,14 +12,11 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
-import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
-public class SetupGenericDrugReport {
-		
-	protected final static Log log = LogFactory.getLog(SetupGenericDrugReport.class);
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+public class SetupGenericDrugReport implements SetupReport {
 
-		
+	protected final Log log = LogFactory.getLog(getClass());
+
 	public void setup() throws Exception {		
 		 
 		ReportDefinition rd =createReportDefinitionByDate();		
@@ -33,24 +30,15 @@ public class SetupGenericDrugReport {
 		ReportDefinition rd3 =createReportDefinitionByProgramAndDates();		
 		ReportDesign designCSV3 = Helper.createCsvReportDesign(rd3,"Generic Drug Report.csv_");
 		Helper.saveReportDesign(designCSV3);
-			  	
-			
 	}
 	
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("Generic Drug Report.xls_".equals(rd.getName()) || "Generic Drug Report.csv_".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
 		Helper.purgeReportDefinition("Generic Drug Report by Dates");
 		Helper.purgeReportDefinition("Generic Drug Report by Dates and drug");
 		Helper.purgeReportDefinition("Generic Drug Report by Dates and program");
 	}
 	
 	private ReportDefinition createReportDefinitionByDate() {
-		
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("Generic Drug Report by Dates");	
 		reportDefinition.addParameter(new Parameter("startDate", "From:", Date.class));	

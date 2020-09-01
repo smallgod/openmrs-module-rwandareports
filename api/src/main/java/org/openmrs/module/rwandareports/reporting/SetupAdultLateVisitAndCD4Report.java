@@ -14,16 +14,21 @@ import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.module.reporting.cohort.definition.*;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
-import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.EncounterCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InStateCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.InverseCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.AllObservationValues;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
@@ -48,11 +53,9 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-public class SetupAdultLateVisitAndCD4Report {
+public class SetupAdultLateVisitAndCD4Report implements SetupReport {
 	
-	protected final static Log log = LogFactory.getLog(SetupAdultLateVisitAndCD4Report.class);
-	
-	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	//Properties retrieved from global variables
 	private Program hivProgram;
@@ -78,28 +81,28 @@ public class SetupAdultLateVisitAndCD4Report {
 	private Concept weight;
 	
 	private Concept viralLoad;
+
+	public static final String ART_REPORT = "HIV-Adult ART Report-Monthly";
+	public static final String PRE_ART_REPORT = "HIV-Adult Pre ART Report-Monthly";
 	
 	public void setup() throws Exception {
-		
+		log.info("Setting up reports in: " + getClass().getSimpleName());
 		setupProperties();
-		
+
+		log.info("Setting up: " + ART_REPORT);
 		ReportDefinition rd = createReportDefinition();
 		ReportDesign design = Helper.createRowPerPatientXlsOverviewReportDesign(rd, "AdultLateVisitAndCD4Template.xls",
 		    "XlsAdultLateVisitAndCD4Template", null);
-		
+
+		log.info("Setting up: " + PRE_ART_REPORT);
 		ReportDefinition rdp = createReportDefinitionPreArt();
 		ReportDesign designp = Helper.createRowPerPatientXlsOverviewReportDesign(rdp, "AdultLateVisitAndCD4PreARTTemplate.xls",
 		    "XlsAdultLateVisitAndCD4PreARTTemplate", null);
-		
-//		ReportDefinition artDecline = createReportDefinitionArtDecline();
-//		ReportDesign designa = h.createRowPerPatientXlsOverviewReportDesign(artDecline, "AdultLateVisitAndCD4DeclineTemplate.xls",
-//		    "XlsAdultLateVisitAndCD4DeclineTemplate", null);
-//		
+
 		createDataSetDefinition(rd, rdp);
 		
 		Helper.saveReportDefinition(rd);
 		Helper.saveReportDefinition(rdp);
-		//h.saveReportDefinition(artDecline);
 		
 		Properties props = new Properties();
 		props.put(
@@ -116,33 +119,16 @@ public class SetupAdultLateVisitAndCD4Report {
 		propsp.put("sortWeight","5000");
 		designp.setProperties(propsp);
 		Helper.saveReportDesign(designp);
-		
-//		Properties propsa = new Properties();
-//		propsa.put(
-//		    "repeatingSections",
-//		    "sheet:1,dataset:dataSet|sheet:1,row:7,dataset:decline50Perc|sheet:2,dataset:dataSet|sheet:2,row:7,dataset:decline50");
-//		
-//		designa.setProperties(propsa);
-//		h.saveReportDesign(designa);
-		
-		
 	}
 	
 	public void delete() {
-		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
-			if ("XlsAdultLateVisitAndCD4Template".equals(rd.getName()) || "XlsAdultLateVisitAndCD4PreARTTemplate".equals(rd.getName())) {
-				rs.purgeReportDesign(rd);
-			}
-		}
-		Helper.purgeReportDefinition("HIV-Adult ART Report-Monthly");
-		Helper.purgeReportDefinition("HIV-Adult Pre ART Report-Monthly");
-		//h.purgeReportDefinition("Monthly Adult Art Decline");
+		Helper.purgeReportDefinition(ART_REPORT);
+		Helper.purgeReportDefinition(PRE_ART_REPORT);
 	}
 	
 	private ReportDefinition createReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-Adult ART Report-Monthly");
+		reportDefinition.setName(ART_REPORT);
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 		
@@ -154,7 +140,7 @@ public class SetupAdultLateVisitAndCD4Report {
 	
 	private ReportDefinition createReportDefinitionPreArt() {
 		ReportDefinition reportDefinition = new ReportDefinition();
-		reportDefinition.setName("HIV-Adult Pre ART Report-Monthly");
+		reportDefinition.setName(PRE_ART_REPORT);
 		reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
 		
@@ -793,6 +779,7 @@ public class SetupAdultLateVisitAndCD4Report {
 	}
 	
 	private void setupProperties() {
+		GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 		hivProgram = gp.getProgram(GlobalPropertiesManagement.ADULT_HIV_PROGRAM);
 		
 		onART = gp.getProgramWorkflowState(GlobalPropertiesManagement.ON_ANTIRETROVIRALS_STATE,
