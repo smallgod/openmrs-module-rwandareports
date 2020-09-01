@@ -206,10 +206,10 @@ public class Cohorts {
 		        "select p.patient_id from patient p, obs o, orders ord  where p.voided = 0 and o.voided = 0 and p.patient_id"
 		                + "= o.person_id and ord.order_id = (select order_id from orders where voided = 0 and patient_id "
 		                + "= p.patient_id and concept_id in (select concept_id from concept_set where concept_set = "
-		                + drugOrderSet.getConceptId() + ") order by start_date asc limit 1) and o.concept_id = "
+		                + drugOrderSet.getConceptId() + ") order by date_activated asc limit 1) and o.concept_id = "
 		                + concept.getConceptId()
-		                + " and o.value_numeric is not null and o.obs_datetime >= DATE_SUB(ord.start_date,INTERVAL "
-		                + daysBefore + " DAY) and o.obs_datetime <= DATE_ADD(ord.start_date,INTERVAL " + daysAfter + " DAY)");
+		                + " and o.value_numeric is not null and o.obs_datetime >= DATE_SUB(ord.date_activated,INTERVAL "
+		                + daysBefore + " DAY) and o.obs_datetime <= DATE_ADD(ord.date_activated,INTERVAL " + daysAfter + " DAY)");
 		return patientsWithBaseLineObservation;
 	}
 	
@@ -219,14 +219,14 @@ public class Cohorts {
 		
 		SqlCohortDefinition patients = new SqlCohortDefinition(
 		        "select d.patient_id from ("
-		                + "select patient_id, start_date from orders where voided = 0 and concept_id in (select distinct concept_id from concept_set where concept_set = "
+		                + "select patient_id, date_activated from orders where voided = 0 and concept_id in (select distinct concept_id from concept_set where concept_set = "
 		                + conceptSet.getConceptId()
-		                + ") group by patient_id order by start_date asc)d "
+		                + ") group by patient_id order by date_activated asc)d "
 		                + "INNER JOIN "
 		                + "(select p.patient_id as patient_id, ps.start_date as start_date from patient p, patient_program pp, patient_state ps where "
 		                + "p.voided = 0 and pp.voided = 0 and ps.voided = 0 and ps.patient_program_id = pp.patient_program_id and pp.patient_id = p.patient_id and ps.state in ("
-		                + stateId + ") group by p.patient_id order by start_date asc)s " + "on s.patient_id = d.patient_id "
-		                + "where DATEDIFF( s.start_date, d.start_date ) >= 1");
+		                + stateId + ") group by p.patient_id order by date_activated asc)s " + "on s.patient_id = d.patient_id "
+		                + "where DATEDIFF( s.start_date, d.date_activated ) >= 1");
 		
 		return patients;
 	}
@@ -393,8 +393,8 @@ public class Cohorts {
 		SqlCohortDefinition onArtIn2weeks = new SqlCohortDefinition();
 		onArtIn2weeks.setQuery("select distinct o.patient_id from orders o, patient_program p where "
 		        + "concept_id in (select concept_id from concept_set where concept_set=" + artDrugConceptSet + ") "
-		        + "and p.date_enrolled < o.start_date and p.patient_id=o.patient_id "
-		        + "and DATEDIFF(o.start_date, p.date_enrolled) <= 14 and p.program_id=" + program.getProgramId()
+		        + "and p.date_enrolled < o.date_activated and p.patient_id=o.patient_id "
+		        + "and DATEDIFF(o.date_activated, p.date_enrolled) <= 14 and p.program_id=" + program.getProgramId()
 		        + " and o.voided=0  ");
 		
 		return onArtIn2weeks;
@@ -1479,7 +1479,7 @@ public class Cohorts {
 			i++;
 		}
 		
-		query.append(") and voided=0 and start_date <= :endDate and (discontinued=0 or discontinued_date > :endDate)");
+		query.append(") and voided=0 and date_activated <= :endDate and (date_stopped is null or date_stopped > :endDate)");
 		patientOnRegimen.setQuery(query.toString());
 		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientOnRegimen.setName(name);
@@ -1503,7 +1503,7 @@ public class Cohorts {
 			i++;
 		}
 		
-		query.append(") and voided=0 and start_date <= :endDate and (discontinued=0 or discontinued_date > :endDate) group by patient_id) as b where b.total_orders >="
+		query.append(") and voided=0 and date_activated <= :endDate and (date_stopped is null or date_stopped > :endDate) group by patient_id) as b where b.total_orders >="
 		        + number + "");
 		patientOnRegimen.setQuery(query.toString());
 		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1517,7 +1517,7 @@ public class Cohorts {
 		
 		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
 		query.append(concept.getId());
-		query.append(") and voided=0 and start_date <= :endDate and (discontinued=0 or discontinued_date > :endDate)");
+		query.append(") and voided=0 and date_activated <= :endDate and(date_stopped is null or  date_stopped > :endDate)");
 		patientOnRegimen.setQuery(query.toString());
 		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
 		patientOnRegimen.setName(name);
@@ -1530,7 +1530,7 @@ public class Cohorts {
 		
 		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
 		query.append(concept.getId());
-		query.append(") and voided=0 and start_date >= :startDate and start_date <= :endDate");
+		query.append(") and voided=0 and date_activated >= :startDate and date_activated <= :endDate");
 		patientOnRegimen.setQuery(query.toString());
 		patientOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1544,7 +1544,7 @@ public class Cohorts {
 		
 		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
 		query.append(concept.getId());
-		query.append(") and voided=0 and start_date >= :startDate and discontinued=0 and start_date <= :endDate");
+		query.append(") and voided=0 and date_activated >= :startDate and date_stopped is null and date_activated <= :endDate");
 		patientOnRegimen.setQuery(query.toString());
 		patientOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1558,7 +1558,7 @@ public class Cohorts {
 		
 		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
 		query.append(concept.getId());
-		query.append(") and voided=0 and start_date >= :startDate and discontinued=0 and start_date <= :endDate");
+		query.append(") and voided=0 and date_activated >= :startDate and date_stopped is null and date_activated <= :endDate");
 		patientOnRegimen.setQuery(query.toString());
 		patientOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1571,7 +1571,7 @@ public class Cohorts {
 
 		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (");
 		query.append(concept.getId());
-		query.append(") and voided=0 and start_date >= :startDate and discontinued=0 and start_date <= :endDate");
+		query.append(") and voided=0 and date_activated >= :startDate and date_stopped is null and date_activated <= :endDate");
 		patientWithLabOrders.setQuery(query.toString());
 		patientWithLabOrders.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientWithLabOrders.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1598,8 +1598,8 @@ public class Cohorts {
 		"select DISTINCT d.patient_id FROM (select DISTINCT * FROM  (select DISTINCT * FROM orders o "
 		        + "WHERE o.concept_id in (select DISTINCT concept_id FROM concept_set where concept_set="
 		        + ArtDrugOrderConceptSet.getConceptId() + " )"
-		        + "AND o.voided=0 and (discontinued=0 OR discontinued_date is null) ORDER BY o.start_date ASC) AS s "
-		        + "GROUP BY s.patient_id ) AS d WHERE d.start_date>= :onOrAfter AND d.start_date<= :onOrBefore");
+		        + "AND o.voided=0 and (date_stopped=0 OR date_stopped is null) ORDER BY o.date_activated ASC) AS s "
+		        + "GROUP BY s.patient_id ) AS d WHERE d.date_activated>= :onOrAfter AND d.date_activated<= :onOrBefore");
 		
 		firstOrder.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
 		firstOrder.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
@@ -1614,7 +1614,7 @@ public class Cohorts {
 
 		StringBuilder query = new StringBuilder("select distinct patient_id from orders where concept_id in (select DISTINCT concept_id FROM concept_set where concept_set=");
 		query.append(concept.getId());
-		query.append(") and voided=0 and start_date >= :startDate and start_date <= :endDate");
+		query.append(") and voided=0 and date_activated >= :startDate and date_activated <= :endDate");
 		patientOnRegimen.setQuery(query.toString());
 		patientOnRegimen.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientOnRegimen.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -1720,7 +1720,7 @@ public class Cohorts {
 		StringBuilder query = new StringBuilder(
 		        "select o.patient_id from orders o,(select * from (select * from encounter e where e.encounter_type="
 		                + encounterType.getId()
-		                + " and e.voided=0 order by e.encounter_datetime desc) as lastencbypatient group by lastencbypatient.patient_id) as lastenc where lastenc.patient_id=o.patient_id and lastenc.encounter_datetime>o.start_date and o.concept_id in ( ");
+		                + " and e.voided=0 order by e.encounter_datetime desc) as lastencbypatient group by lastencbypatient.patient_id) as lastenc where lastenc.patient_id=o.patient_id and lastenc.encounter_datetime>o.date_activated and o.concept_id in ( ");
 		
 		int i = 0;
 		
@@ -1730,7 +1730,7 @@ public class Cohorts {
 			query.append(concept.getId());
 			i++;
 		}
-		query.append(") and (o.discontinued=0 or discontinued_date >= lastenc.encounter_datetime) and o.voided=0 group by o.patient_id");
+		query.append(") and (o.date_stopped is null or date_stopped >= lastenc.encounter_datetime) and o.voided=0 group by o.patient_id");
 		regimenAtLastVist.setQuery(query.toString());
 		
 		return regimenAtLastVist;
@@ -1816,7 +1816,7 @@ public class Cohorts {
 		SqlCohortDefinition onARTDrugs = new SqlCohortDefinition();
 		onARTDrugs
 		        .setQuery("select distinct o.patient_id from orders o,concept c where o.concept_id=c.concept_id and c.concept_id in ("
-		                + stringOfIdsOfConcepts + ") and o.discontinued=0 and auto_expire_date is null and o.voided=0");
+		                + stringOfIdsOfConcepts + ") and o.date_stopped is null and auto_expire_date is null and o.voided=0");
 		onARTDrugs.setName(name);
 		
 		return onARTDrugs;
@@ -1828,7 +1828,7 @@ public class Cohorts {
 		onARTDrugs
 		        .setQuery("select distinct patient_id from orders where concept_id in (select concept_id from concept_set where concept_set="
 		                + artDrugsconceptSet.getConceptId()
-		                + ") and start_date<= :endDate and (discontinued_date>= :endDate or discontinued_date is null) and voided=0");
+		                + ") and date_activated<= :endDate and (date_stopped>= :endDate or date_stopped is null) and voided=0");
 		onARTDrugs.setName(name);
 		onARTDrugs.addParameter(new Parameter("endDate", "endDate", Date.class));
 		
@@ -1846,7 +1846,7 @@ public class Cohorts {
 		onTBDrugs
 		        .setQuery("select distinct o.patient_id from orders o,concept c where o.concept_id=c.concept_id and c.concept_id in ("
 		                + stringOfIdsOfTbDrugsConcepts
-		                + ") and o.discontinued=0 and (auto_expire_date is null or auto_expire_date > :now) and o.voided=0");
+		                + ") and o.date_stopped is null and (auto_expire_date is null or auto_expire_date > :now) and o.voided=0");
 		onTBDrugs.addParameter(new Parameter("now", "now", Date.class));
 		onTBDrugs.setName(name);
 		
@@ -1859,7 +1859,7 @@ public class Cohorts {
 		onTBDrugs
 		        .setQuery("select distinct patient_id from orders where concept_id in (select concept_id from concept_set where concept_set="
 		                + tbDrugsconceptSet.getConceptId()
-		                + ") and start_date>= :startDate and start_date<= :endDate and voided=0");
+		                + ") and date_activated>= :startDate and date_activated<= :endDate and voided=0");
 		onTBDrugs.setName(name);
 		onTBDrugs.addParameter(new Parameter("startDate", "startDate", Date.class));
 		onTBDrugs.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -2449,11 +2449,11 @@ public class Cohorts {
 		StringBuilder query = new StringBuilder(
 		        "select o.patient_id from orders o,(select * from (select * from encounter e where e.encounter_type="
 		                + encounterType.getId()
-		                + " and e.voided=0 order by e.encounter_datetime desc) as lastencbypatient group by lastencbypatient.patient_id) as lastenc where lastenc.patient_id=o.patient_id and lastenc.encounter_datetime>o.start_date and o.concept_id= ");
+		                + " and e.voided=0 order by e.encounter_datetime desc) as lastencbypatient group by lastencbypatient.patient_id) as lastenc where lastenc.patient_id=o.patient_id and lastenc.encounter_datetime>o.date_activated and o.concept_id= ");
 		
 		query.append(concept.getId());
 		
-		query.append(" and o.discontinued=0 and o.voided=0 group by o.patient_id");
+		query.append(" and o.date_stopped is null and o.voided=0 group by o.patient_id");
 		regimenAtLastVist.setQuery(query.toString());
 		
 		return regimenAtLastVist;

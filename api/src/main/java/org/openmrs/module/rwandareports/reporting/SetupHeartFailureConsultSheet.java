@@ -40,7 +40,9 @@ public class SetupHeartFailureConsultSheet {
 	//private Form followUpForm;
 	private Form postOpRDV;
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
-	private List<EncounterType> heartFailureEncounter;
+	private EncounterType heartFailureEncounter;
+	private EncounterType HFHTNCKDENCOUNTER;
+	private List<EncounterType> heartFailureencTypeList = new ArrayList<EncounterType>();
 	private RelationshipType HBCP;
 
 	public void setup() throws Exception {
@@ -124,7 +126,7 @@ public class SetupHeartFailureConsultSheet {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getGender("Sex"), new HashMap<String, Object>());		
 		
 		
-		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(heartFailureEncounter)),
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(heartFailureencTypeList)),
 				new HashMap<String, Object>());
 			
 				
@@ -188,7 +190,10 @@ public class SetupHeartFailureConsultSheet {
 		//DDBAndRendezvousForms.add(followUpForm);
 		//DDBAndRendezvousForms.add(postOpRDV);
 
-		heartFailureEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+		heartFailureEncounter = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+		HFHTNCKDENCOUNTER = gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+		heartFailureencTypeList.add(heartFailureEncounter);
+		heartFailureencTypeList.add(HFHTNCKDENCOUNTER);
 
 		HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 		
