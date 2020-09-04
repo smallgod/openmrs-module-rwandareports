@@ -474,7 +474,7 @@ public class SetupDataQualityIndicatorReport implements SetupReport {
 		SqlCohortDefinition onTBFirstLineDrugs = new SqlCohortDefinition(
 				"select distinct o.patient_id from orders o,concept c where o.concept_id=c.concept_id and c.concept_id in ("
 						+ tbFirstLineDrugsConceptIds
-						+ ") and o.discontinued=0 and (auto_expire_date is null) and o.voided=0");
+						+ ") and date_stopped is null and (auto_expire_date is null) and o.voided=0");
 		
 		String tbFirstSecondDrugsConceptIds = null;
 		for (Concept concept : tbSecondLineDrugsConcepts) {
@@ -485,7 +485,7 @@ public class SetupDataQualityIndicatorReport implements SetupReport {
 		SqlCohortDefinition onTBSecondLineDrugs = new SqlCohortDefinition(
 				"select distinct o.patient_id from orders o,concept c where o.concept_id=c.concept_id and c.concept_id in ("
 						+ tbFirstSecondDrugsConceptIds
-						+ ") and o.discontinued=0 and (auto_expire_date is null) and o.voided=0");
+						+ ") and o.date_stopped is null and (auto_expire_date is null) and o.voided=0");
 
 		CompositionCohortDefinition patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen = new CompositionCohortDefinition();
 		patientsInTBTooLongOnFirstLineRegimenNotSecondLineRegimen
@@ -735,11 +735,11 @@ public class SetupDataQualityIndicatorReport implements SetupReport {
 		patientsOnArtbeforeProgramEnrollmentDate
 				.setName("patientsOnArtbeforeProgramEnrollmentDate");
 		patientsOnArtbeforeProgramEnrollmentDate
-				.setQuery("select firstDrugOder.patient_id from patient_program pp,(select * from (select o.patient_id,o.start_date from orders o, order_type ot where o.order_type_id =ot.order_type_id and o.order_type_id="
+				.setQuery("select firstDrugOder.patient_id from patient_program pp,(select * from (select o.patient_id,o.date_activated from orders o, order_type ot where o.order_type_id =ot.order_type_id and o.order_type_id="
 						+ drugOrderType.getOrderTypeId()
 						+ " and o.concept_id in ("
 						+ allArtConceptDrugIds.toString()
-						+ ") and o.voided=0 and ot.retired=0 order by o.start_date) as orderedOrders group by orderedOrders.patient_id) as firstDrugOder where pp.patient_id=firstDrugOder.patient_id and firstDrugOder.start_date < pp.date_enrolled and pp.date_enrolled is not null and pp.date_completed is null and pp.voided=0");
+						+ ") and o.voided=0 and ot.retired=0 order by o.date_activated) as orderedOrders group by orderedOrders.patient_id) as firstDrugOder where pp.patient_id=firstDrugOder.patient_id and firstDrugOder.date_activated < pp.date_enrolled and pp.date_enrolled is not null and pp.date_completed is null and pp.voided=0");
 
 		StringBuilder allProgramsIdsWithOnAntiRetroviralState = new StringBuilder();
 		int k = 0;
