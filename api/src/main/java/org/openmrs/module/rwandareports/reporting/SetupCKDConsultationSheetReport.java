@@ -161,7 +161,8 @@ public class SetupCKDConsultationSheetReport extends SingleSetupReport {
         DDBAndRendezvousForms.add(CKDEnrollmentForm);
 
         //DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.CKD_DDB_FLOW_VISIT);
-        CKDEncounterType = gp.getEncounterTypeList(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE);
+        CKDEncounterType.add(gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE));
+        CKDEncounterType.add(gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE));
 
         HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 

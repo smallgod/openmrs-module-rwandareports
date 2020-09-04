@@ -41,7 +41,7 @@ public class SetupHypertensionConsultationSheet extends SingleSetupReport {
 	*/
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
 
-	List<EncounterType> hypertensionEncounter;
+	private List<EncounterType> hypertensionEncounter = new ArrayList<EncounterType>();
 
 	private RelationshipType HBCP;
 
@@ -171,7 +171,8 @@ public class SetupHypertensionConsultationSheet extends SingleSetupReport {
 		//DDBAndRendezvousForms.add(hypertensionDDBForm);
 		//DDBAndRendezvousForms.add(followUpForm);
 		DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.HYPERTENSION_DDB_FLOW_VISIT);
-		hypertensionEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER);
+		hypertensionEncounter.add(gp.getEncounterType(GlobalPropertiesManagement.HYPERTENSION_ENCOUNTER));
+		hypertensionEncounter.add(gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE));
 
 		HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 		

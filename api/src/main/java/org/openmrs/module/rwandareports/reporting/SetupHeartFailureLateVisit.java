@@ -196,7 +196,7 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 
 //        heartFailureVisit = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
 
-		heartFailureEncounters = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTERS);
+		heartFailureEncounters.add( gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
 
 		heartFailureRDVForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_FLOW_VISIT);
 		heartFailureDDBForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB);

@@ -2451,8 +2451,8 @@
 
 	<globalProperty>
 		<property>reports.HeartFailureEncounterType</property>
-		<defaultValue>Heart Failure,HF HTN CKD</defaultValue>
-		<description>Heart Failure,HTN,CKD encounter type ids or names </description>
+		<defaultValue>Heart Failure</defaultValue>
+		<description>Heart Failure encounter type id or name </description>
 	</globalProperty>
 
 	<globalProperty>

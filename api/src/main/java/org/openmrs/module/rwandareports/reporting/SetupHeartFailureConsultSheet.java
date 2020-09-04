@@ -36,7 +36,7 @@ public class SetupHeartFailureConsultSheet extends SingleSetupReport {
 	//private Form followUpForm;
 	private Form postOpRDV;
 	private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
-	private List<EncounterType> heartFailureEncounter = new ArrayList<EncounterType>();
+	private EncounterType heartFailureEncounter;
 	private EncounterType HFHTNCKDENCOUNTER;
 	private List<EncounterType> heartFailureencTypeList = new ArrayList<EncounterType>();
 	private RelationshipType HBCP;
@@ -182,12 +182,12 @@ public class SetupHeartFailureConsultSheet extends SingleSetupReport {
 		//DDBAndRendezvousForms.add(postOpRDV);
 
 
-//		heartFailureEncounter = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
-//		HFHTNCKDENCOUNTER = gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
-//		heartFailureencTypeList.add(heartFailureEncounter);
-//		heartFailureencTypeList.add(HFHTNCKDENCOUNTER);
+		heartFailureEncounter = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+		HFHTNCKDENCOUNTER = gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+		heartFailureencTypeList.add(heartFailureEncounter);
+		heartFailureencTypeList.add(HFHTNCKDENCOUNTER);
 
-		heartFailureEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTERS);
+//		heartFailureEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTERS);
 
 
 		HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);

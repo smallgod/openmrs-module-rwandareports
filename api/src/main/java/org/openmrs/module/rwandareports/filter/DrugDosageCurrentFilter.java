@@ -24,7 +24,8 @@ public class DrugDosageCurrentFilter implements ResultFilter {
 	GlobalPropertiesManagement gp=new GlobalPropertiesManagement();
 	
 	public DrugDosageCurrentFilter(List<EncounterType> heartFailureEncounter) {
-		heartFailureEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTERS,"");
+		heartFailureEncounter.add(gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
+		heartFailureEncounter.add(gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE));
 		this.heartFailureEncounter =heartFailureEncounter;
 		
 	}
