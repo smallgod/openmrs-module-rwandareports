@@ -2451,8 +2451,14 @@
 
 	<globalProperty>
 		<property>reports.HeartFailureEncounterType</property>
-		<defaultValue>Heart Failure</defaultValue>
-		<description>Heart Failure encounter type id or name </description>
+		<defaultValue>HEART FAILURE VISIT</defaultValue>
+		<description>Heart Failure,HTN,CKD encounter type ids or names </description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.HeartFailureEncounterTypes</property>
+		<defaultValue>HEART FAILURE VISIT,HF HTN CKD</defaultValue>
+		<description>Heart Failure,HTN,CKD encounter type ids or names </description>
 	</globalProperty>
 
 	<globalProperty>
@@ -4404,5 +4410,19 @@
 		<defaultValue>1409AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</defaultValue>
 		<description>Gestational age at birth in weeks concept</description>
 	</globalProperty>
+
+
+	<globalProperty>
+		<property>reports.healthFacilityAttributeTypeId</property>
+		<defaultValue>7</defaultValue>
+		<description>ID of the person attribute type to use for the health facility for a patient.</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.hospitalIds</property>
+		<defaultValue>43,44</defaultValue>
+		<description>IDs for Hospitals location separated by ','.</description>
+	</globalProperty>
+
 
 </module>

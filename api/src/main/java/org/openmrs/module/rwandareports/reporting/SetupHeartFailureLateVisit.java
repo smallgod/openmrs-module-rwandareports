@@ -42,7 +42,9 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 //	private List<EncounterType> heartFailureencTypeList = new ArrayList<EncounterType>();
 //	private EncounterType HFHTNCKDENCOUNTER;
 
-	private List<EncounterType> heartFailureEncounters;
+	private List<EncounterType> heartFailureEncounters = new ArrayList<EncounterType>();
+	private EncounterType heartFailureEncounter;
+	private EncounterType HFHTNCKDENCOUNTER;
 
     private Form heartFailureRDVForm;
     private Form heartFailureDDBForm;
@@ -196,7 +198,13 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 
 //        heartFailureVisit = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
 
-		heartFailureEncounters.add( gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
+//		heartFailureEncounters.add( gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
+
+
+		heartFailureEncounter = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
+		HFHTNCKDENCOUNTER = gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
+		heartFailureEncounters.add(heartFailureEncounter);
+		heartFailureEncounters.add(HFHTNCKDENCOUNTER);
 
 		heartFailureRDVForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_FLOW_VISIT);
 		heartFailureDDBForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB);
