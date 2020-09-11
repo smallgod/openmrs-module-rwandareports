@@ -39,7 +39,12 @@ public class DateFormatFilter implements ResultFilter {
 							SimpleDateFormat sdf2 = new SimpleDateFormat("dd MMMMM yyyy");
 							resultDate = sdf2.parse(result);
 						} catch (ParseException e3) {
-							e3.printStackTrace();
+							try {
+								SimpleDateFormat sdf4 = new SimpleDateFormat("yyyy-MM-dd");
+								resultDate = sdf4.parse(result);
+							} catch (ParseException e4) {
+								e4.printStackTrace();
+							}
 						}
 					}
 				}
