@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
+import org.openmrs.OrderGroup;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.orderextension.DrugRegimen;
@@ -59,8 +60,9 @@ public class RegimenHeaderPortletController extends PortletController {
 		compareDate.add(Calendar.DAY_OF_YEAR, -7);
 		
 		for (DrugOrder drugOrder : allDrugOrders) {
-			if (drugOrder.getOrderGroup() != null && drugOrder.getOrderGroup() instanceof DrugRegimen) {
-				DrugRegimen regimen = (DrugRegimen)drugOrder.getOrderGroup();
+			OrderGroup orderGroup = OrderEntryUtil.getOrderGroup(drugOrder);
+			if (orderGroup != null && orderGroup instanceof DrugRegimen) {
+				DrugRegimen regimen = (DrugRegimen)orderGroup;
 				if (!regimens.contains(regimen)) {
 					for (DrugOrder order: regimen.getMembers()) {
 						if (order.getEffectiveStartDate().after(compareDate.getTime()) &&
@@ -89,8 +91,9 @@ public class RegimenHeaderPortletController extends PortletController {
 		}
 
 		for (DrugOrder drugOrder : allDrugOrders) {
-			if (drugOrder.getOrderGroup() != null && drugOrder.getOrderGroup() instanceof DrugRegimen) {
-				DrugRegimen regimen = (DrugRegimen)drugOrder.getOrderGroup();
+			OrderGroup orderGroup = OrderEntryUtil.getOrderGroup(drugOrder);
+			if (orderGroup != null && orderGroup instanceof DrugRegimen) {
+				DrugRegimen regimen = (DrugRegimen) orderGroup;
 				if (!allRegimens.contains(regimen)) {
 					for (DrugOrder order: regimen.getMembers()) {
 						if (order.getOrderReason() != null && chemotherapy.equals(order.getOrderReason())) {
