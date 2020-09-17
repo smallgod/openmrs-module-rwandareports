@@ -221,6 +221,8 @@ public class SetupHeartFailurereport extends SingleSetupReport {
 		
 		MedianAgeIndicator medianAge = new MedianAgeIndicator();
 		medianAge.setName("medianAge");
+		medianAge.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		medianAge.addParameter(new Parameter("endDate", "End Date", Date.class));
 		medianAge.setCohortDefinition(new Mapped<CohortDefinition>(patientsInHFProgram,
 		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")
 		));
