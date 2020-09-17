@@ -97,26 +97,6 @@ $(document).ready(function(){
 <td colspan="2"><center>Action</center></td>
 </tr>
 <tr>
-<td rowspan="3" class="tabletd">PIH Reports</td>
-<td>PIH-Boston Indicators-Quarterly
-</td>
-<td>Central</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_quarterlyCrossDistrictIndicator.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_quarterlyCrossDistrictIndicator.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
-<td>PIH-Boston Viral Load Indicators-Quarterly</td>
-<td>Central</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_viralLoad.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_viralLoad.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
-<td>PIH-Eligible For Viral Load</td>
-<td>Central</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_eligibleForViralLoadReport.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_eligibleForViralLoadReport.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
 <tr>
 <!--<td rowspan="2" class="tabletd">Registers</td>
 <td>Adult HIV Art Register report</td>
@@ -137,18 +117,13 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_pmtctregister.form" onclick=msgrem(this)>Remove</a></td>
 </tr>-->
 <tr>
-<td rowspan="2" class="tabletd">Adult HIV Program</td>
+<td class="tabletd">Adult HIV Program</td>
 <td>HIV-Adult Consultation Sheet</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_adultHIVConsultationSheet.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_adultHIVConsultationSheet.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-<tr>
-<td>HIV-CROWN Reports</td>
-<td>Central</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CROWNReports.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CROWNReports.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
+
 <tr>
 <td class="tabletd">Pedi HIV Program</td>
 <td>Pedi HIV Consultation Sheet</td>
@@ -237,13 +212,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_IDProgramQuarterlyIndicators.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_IDProgramQuarterlyIndicators.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-<tr>
-<td class="tabletd">Primary Care</td>
-<td>PC-Rwanda Report</td>
-<td>Central</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_rwandaPrimaryCareReport.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_rwandaPrimaryCareReport.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
+
 <tr>
 <td rowspan="1" class="tabletd">Heart Failure</td>
 <td>Heart Failure Report</td>
@@ -278,25 +247,6 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_DataEntryQuantityReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="3" class="tabletd">Research</td>
-<td>DQ-HIV Research Data Quality</td>
-<td>Central</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_hivResearchDataQuality.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_hivResearchDataQuality.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
-<td>Research-Extraction Data for HIV Research</td>
-<td>Central</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_hivResearchDataExtraction.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_hivResearchDataExtraction.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
-<td>Research-Primary Care Registration Data</td>
-<td>Central</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_PrimaryCareRegistrationData.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_PrimaryCareRegistrationData.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
 <td rowspan="1" class="tabletd">HMIS Report</td>
 <td>HIV-HMIS Report</td>
 <td>At site</td>
@@ -312,7 +262,7 @@ $(document).ready(function(){
 </tr>
 <tr>
 <tr>
-<td rowspan="18" class="tabletd">NCD Reports</td>
+<td rowspan="16" class="tabletd">NCD Reports</td>
 <td>NCD-Diabetes Indicator Report</td>
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_DiabetesQuarterlyAndMonthReport.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -371,18 +321,6 @@ $(document).ready(function(){
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_hypertensionQuarterlyAndMonthlyReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_hypertensionQuarterlyAndMonthlyReport.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
-<td>NCD-Epilepsy Consultation Sheet</td>
-<td>At site</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_epilepsyConsultSheet.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_epilepsyConsultSheet.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
-<td>NCD-Epilepsy Late Visit</td>
-<td>At site</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_epilepsyLateVisit.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_epilepsyLateVisit.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
 <td>NCD-Heart Failure Consultation Sheet</td>
@@ -632,6 +570,45 @@ $(document).ready(function(){
 
 
 </table>
+
+<table>
+<tr>
+<th class="tabletd">Deprecated Reports</th>
+</tr>
+<tr>
+<td>PC-Rwanda Report</td>
+</tr>
+<tr>
+<td>NCD-Epilepsy Consultation Sheet</td>
+</tr>
+<tr>
+<td>NCD-Epilepsy Late Visit</td>
+</tr>
+<tr>
+<td>PIH-Boston Viral Load Indicators-Quarterly</td>
+</tr>
+<tr>
+<td>PIH-Eligible For Viral Load</td>
+</tr>
+<tr>
+<td>PIH-Boston Indicators-Quarterly
+</td>
+</tr>
+<tr>
+<td>HIV-CROWN Reports</td>
+</tr>
+<tr>
+<td>DQ-HIV Research Data Quality</td>
+</tr>
+<tr>
+<td>Research-Extraction Data for HIV Research</td>
+</tr>
+<tr>
+<td>Research-Primary Care Registration Data</td>
+</tr>
+</table>
+
+
 <%@ include file="/WEB-INF/template/footer.jsp"%>
 
 

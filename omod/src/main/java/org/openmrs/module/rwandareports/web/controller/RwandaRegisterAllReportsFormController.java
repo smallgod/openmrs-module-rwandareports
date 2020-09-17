@@ -14,7 +14,6 @@ public class RwandaRegisterAllReportsFormController {
 		ReportSetup.registerNCDReports();
 		ReportSetup.registerCentralReports();
 		ReportSetup.registerSiteReports();
-		ReportSetup.registerPCReports();
 		ReportSetup.registerCHWReports();
 		ReportSetup.registerOncologyReports();
 		ReportSetup.registerPDCReports();
@@ -48,12 +47,6 @@ public class RwandaRegisterAllReportsFormController {
 	@RequestMapping("/module/rwandareports/register_allOncologyReport")
 	public ModelAndView registerAllOncologyReports() throws Exception{
 		ReportSetup.registerOncologyReports();
-		return new ModelAndView(new RedirectView("rwandareports.form"));
-	}
-	
-	@RequestMapping("/module/rwandareports/register_allPCReport")
-	public ModelAndView registerAllPCReports() throws Exception{
-		ReportSetup.registerPCReports();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 	

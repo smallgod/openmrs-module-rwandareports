@@ -81,11 +81,11 @@ public class SetupGenericDrugReport implements SetupReport {
 	private void createDataSetDefinitionByDate(ReportDefinition reportDefinition) {
 		
 		SqlDataSetDefinition sqldsd=new SqlDataSetDefinition();
-		sqldsd.setSqlQuery("select o.patient_id,d.name,dro.dose,d.units,o.start_date,o.discontinued_date,o.auto_expire_date,d.route,o.voided from orders o " +
+		sqldsd.setSqlQuery("select o.patient_id,d.name,dro.dose,d.strength,o.date_activated,o.date_stopped,o.auto_expire_date,d.route,o.voided from orders o " +
 				"inner join drug_order dro on o.order_id=dro.order_id " +
 				"left join drug d on dro.drug_inventory_id=d.drug_id " +
 				"left join patient P on o.patient_id=P.patient_id" +
-				" where o.start_date>=:startDate and o.start_date<=:endDate and P.voided=0 and o.voided=0");
+				" where o.date_activated>=:startDate and o.date_activated<=:endDate and P.voided=0 and o.voided=0");
 		sqldsd.addParameter(new Parameter("startDate", "From:", Date.class));
 		sqldsd.addParameter(new Parameter("endDate", "To:", Date.class));		
 		
@@ -102,12 +102,11 @@ private void createDataSetDefinitionByDrugAndDates(ReportDefinition reportDefini
 	reportDefinition.addParameter(drug);	
 	
 	SqlDataSetDefinition sqldsd=new SqlDataSetDefinition();
-		sqldsd.setSqlQuery("select o.patient_id,d.name,dro.dose,d.units,o.start_date,o.discontinued_date,o.auto_expire_date,d.route,o.voided from orders o " +
+		sqldsd.setSqlQuery("select o.patient_id,d.name,dro.dose,d.strength,o.date_activated,o.date_stopped,o.auto_expire_date,d.route,o.voided from orders o " +
 				"inner join drug_order dro on o.order_id=dro.order_id " +
 				"left join drug d on dro.drug_inventory_id=d.drug_id " +
 				"left join patient P on o.patient_id=P.patient_id" +
-				" where o.start_date>=:startDate and o.start_date<=:endDate and d.drug_id= :Drug" +
-				"and P.voided=0 and o.voided=0");
+				" where o.date_activated>=:startDate and o.date_activated<=:endDate and d.drug_id=:Drug and P.voided=0 and o.voided=0");
 		sqldsd.addParameter(new Parameter("startDate", "From:", Date.class));
 		sqldsd.addParameter(new Parameter("endDate", "To:", Date.class));		
 		sqldsd.addParameter(drug);		
@@ -126,12 +125,12 @@ private void createDataSetDefinitionByProgramAndDates(ReportDefinition reportDef
 	reportDefinition.addParameter(prog);
 	
 	SqlDataSetDefinition sqldsd=new SqlDataSetDefinition();
-		sqldsd.setSqlQuery("select o.patient_id,d.name,dro.dose,d.units,o.start_date,o.discontinued_date,o.auto_expire_date,d.route,o.voided from orders o " +
+		sqldsd.setSqlQuery("select o.patient_id,d.name,dro.dose,d.strength,o.date_activated,o.date_stopped,o.auto_expire_date,d.route,o.voided from orders o " +
 				"inner join drug_order dro on o.order_id=dro.order_id " +
 				"inner join patient_program pp on o.patient_id=pp.patient_id " +
 				"left join drug d on dro.drug_inventory_id=d.drug_id " +
 				"left join patient P on o.patient_id=P.patient_id" +
-				" where o.start_date>=:startDate and o.start_date<=:endDate and pp.program_id=:programs " +
+				" where o.date_activated>=:startDate and o.date_activated<=:endDate and pp.program_id=:programs " +
 				"and P.voided=0 and o.voided=0");
 		sqldsd.addParameter(new Parameter("startDate", "From:", Date.class));
 		sqldsd.addParameter(new Parameter("endDate", "To:", Date.class));		

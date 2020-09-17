@@ -31,7 +31,6 @@ import org.openmrs.module.rwandareports.reporting.SetupAsthmaQuarterlyAndMonthRe
 import org.openmrs.module.rwandareports.reporting.SetupCKDConsultationSheetReport;
 import org.openmrs.module.rwandareports.reporting.SetupCKDMissedvisitReport;
 import org.openmrs.module.rwandareports.reporting.SetupCKDQuarterlyAndMonthlyReport;
-import org.openmrs.module.rwandareports.reporting.SetupCROWNReports;
 import org.openmrs.module.rwandareports.reporting.SetupChemotherapyDailyExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupChemotherapyExpectedPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupCombinedHFCSPConsultationReport;
@@ -40,15 +39,10 @@ import org.openmrs.module.rwandareports.reporting.SetupDataEntryQuantityReport;
 import org.openmrs.module.rwandareports.reporting.SetupDataQualityIndicatorReport;
 import org.openmrs.module.rwandareports.reporting.SetupDiabetesConsultAndLTFU;
 import org.openmrs.module.rwandareports.reporting.SetupDiabetesQuarterlyAndMonthReport;
-import org.openmrs.module.rwandareports.reporting.SetupEligibleForViralLoadReport;
-import org.openmrs.module.rwandareports.reporting.SetupEpilepsyConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupEpilepsyLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupExposedClinicInfantMonthly;
 import org.openmrs.module.rwandareports.reporting.SetupGenericDrugReport;
 import org.openmrs.module.rwandareports.reporting.SetupGenericEncounterReport;
 import org.openmrs.module.rwandareports.reporting.SetupGenericPatientByProgramReport;
-import org.openmrs.module.rwandareports.reporting.SetupHIVResearchDataQualitySheet;
-import org.openmrs.module.rwandareports.reporting.SetupHIVResearchExtractionSheet;
 import org.openmrs.module.rwandareports.reporting.SetupHMISIndicatorMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupHMISRwandaReportBySite;
 import org.openmrs.module.rwandareports.reporting.SetupHeartFailureConsultSheet;
@@ -83,10 +77,7 @@ import org.openmrs.module.rwandareports.reporting.SetupPMTCTCombinedClinicMother
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTPregnancyConsultationReport;
 import org.openmrs.module.rwandareports.reporting.SetupPMTCTPregnancyMonthlyReport;
 import org.openmrs.module.rwandareports.reporting.SetupPediHIVConsultationSheet;
-import org.openmrs.module.rwandareports.reporting.SetupQuarterlyCrossSiteIndicatorByDistrictReport;
-import org.openmrs.module.rwandareports.reporting.SetupQuarterlyViralLoadReport;
 import org.openmrs.module.rwandareports.reporting.SetupReport;
-import org.openmrs.module.rwandareports.reporting.SetupRwandaPrimaryCareReport;
 import org.openmrs.module.rwandareports.reporting.SetupTBConsultationSheet;
 import org.openmrs.module.rwandareports.reporting.SingleSetupReport;
 
@@ -144,9 +135,9 @@ public class ReportSetup {
 				registerOncologyReports();
 			else if (category.equalsIgnoreCase("CHW"))
 				registerCHWReports();
-			else if (category.equalsIgnoreCase("PC")) {
-				registerPCReports();
-			} else if (category.equalsIgnoreCase("PDC")) {
+//			else if (category.equalsIgnoreCase("PC")) {
+//				registerPCReports();
+			else if (category.equalsIgnoreCase("PDC")) {
 				registerPDCReports();
 			}
 		}
@@ -178,8 +169,7 @@ public class ReportSetup {
 		//new SetupPBFReport()
 		new SetupPMTCTCombinedClinicMotherMonthlyReport(),
 		new SetupPMTCTPregnancyMonthlyReport(),
-		new SetupExposedClinicInfantMonthly(),
-		new SetupCROWNReports()
+		new SetupExposedClinicInfantMonthly()
 	);
 
 	public static void registerHIVReports() {
@@ -194,8 +184,6 @@ public class ReportSetup {
 		new SetupDiabetesQuarterlyAndMonthReport(),
 		new SetupAsthmaQuarterlyAndMonthReport(),
 		new SetupAsthmaLateVisit(),
-		new SetupEpilepsyConsultationSheet(),
-		new SetupEpilepsyLateVisit(),
 		new SetupHypertensionConsultationSheet(),
 		new SetupHypertensionLateVisit(),
 		new SetupHypertensionQuarterlyAndMonthlyReport(),
@@ -216,15 +204,11 @@ public class ReportSetup {
 	}
 
 	public static List<SetupReport> CENTRAL_REPORTS = Arrays.asList(
-		new SetupHIVResearchDataQualitySheet(),
-		new SetupHIVResearchExtractionSheet(),
+
 		new SetupIDProgramQuarterlyIndicatorReport(),
 		//new SetupMonthlyCD4DeclineReport(),
 		//new SetupMissingCD4Report(),
-		new SetupQuarterlyCrossSiteIndicatorByDistrictReport(),
-		new SetupQuarterlyViralLoadReport(),
 		//new SetupPMTCTFormCompletionSheet(),
-		new SetupEligibleForViralLoadReport(),
 		new SetupDataEntryQuantityReport(),
 		//new SetupHMISMOHReport(),
 		new SetupHMISIndicatorMonthlyReport(),
@@ -277,9 +261,9 @@ public class ReportSetup {
 	public static void registerCHWReports() {
 	}
 
-	public static void registerPCReports() {
-		setupReport(new SetupRwandaPrimaryCareReport());
-	}
+//	public static void registerPCReports() {
+//		setupReport(new SetupRwandaPrimaryCareReport());
+//	}
 
 	public static List<SingleSetupReport> PDC_REPORTS = Arrays.asList(
 		new SetupPDCWeeklyAlert(),

@@ -38,17 +38,10 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 	// Properties retrieved from global variables
 	private Program heartFailureProgram;
 	private EncounterType heartFailureVisit;
-
-//	private List<EncounterType> heartFailureencTypeList = new ArrayList<EncounterType>();
-//	private EncounterType HFHTNCKDENCOUNTER;
-
-	private List<EncounterType> heartFailureEncounters = new ArrayList<EncounterType>();
-	private EncounterType heartFailureEncounter;
-	private EncounterType HFHTNCKDENCOUNTER;
-
-    private Form heartFailureRDVForm;
-    private Form heartFailureDDBForm;
-    private Form followUpForm;
+	private List<EncounterType> heartFailureEncounters;
+	private Form heartFailureRDVForm;
+	private Form heartFailureDDBForm;
+	private Form followUpForm;
 	private List<Form> DDBAndRendezvousForms = new ArrayList<Form>();
 	private RelationshipType HBCP;
 
@@ -189,23 +182,10 @@ public class SetupHeartFailureLateVisit extends SingleSetupReport {
 
 	private void setupProperties() {
 
-        heartFailureProgram = gp.getProgram(GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
-
-//        heartFailureVisit = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
-//		HFHTNCKDENCOUNTER = gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
-//		heartFailureencTypeList.add(heartFailureVisit);
-//		heartFailureencTypeList.add(HFHTNCKDENCOUNTER);
-
+		heartFailureProgram = gp.getProgram(GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
 //        heartFailureVisit = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
 
-//		heartFailureEncounters.add( gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER));
-
-
-		heartFailureEncounter = gp.getEncounterType(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTER);
-		HFHTNCKDENCOUNTER = gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE);
-		heartFailureEncounters.add(heartFailureEncounter);
-		heartFailureEncounters.add(HFHTNCKDENCOUNTER);
-
+		heartFailureEncounters = gp.getEncounterTypeList(GlobalPropertiesManagement.HEART_FAILURE_ENCOUNTERS);
 		heartFailureRDVForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_FLOW_VISIT);
 		heartFailureDDBForm=gp.getForm(GlobalPropertiesManagement.HEARTFAILURE_DDB);
 		//followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);

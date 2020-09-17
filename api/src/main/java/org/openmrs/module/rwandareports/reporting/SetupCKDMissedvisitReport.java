@@ -106,7 +106,7 @@ public class SetupCKDMissedvisitReport extends SingleSetupReport {
 
         dataSetDefinition1.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in " + CKDProgram.getName(), CKDProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
 
-        dataSetDefinition1.addFilter(Cohorts.createPatientsLateForVisit(CKDForms, CKDflowsheet), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+        dataSetDefinition1.addFilter(Cohorts.createPatientsLateForVisitINDifferentEncounterTypes(CKDForms, CKDencounterTypes), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 
         //==================================================================
         //                 Columns of report settings
@@ -130,11 +130,11 @@ public class SetupCKDMissedvisitReport extends SingleSetupReport {
         PatientProperty age = RowPerPatientColumns.getAge("Age");
         dataSetDefinition1.addColumn(age, new HashMap<String, Object>());
 
-        dataSetDefinition1.addColumn(RowPerPatientColumns.getNextVisitInMostRecentEncounterOfTypes("nextVisit", CKDflowsheet,
+        dataSetDefinition1.addColumn(RowPerPatientColumns.getNextVisitMostRecentEncounterOfTheTypes("nextVisit", CKDencounterTypes,
                 new ObservationInMostRecentEncounterOfType(),null),new HashMap<String, Object>());
 
         CustomCalculationBasedOnMultiplePatientDataDefinitions numberofdaysLate = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
-        numberofdaysLate.addPatientDataToBeEvaluated(RowPerPatientColumns.getNextVisitInMostRecentEncounterOfTypes("nextVisit", CKDflowsheet,
+        numberofdaysLate.addPatientDataToBeEvaluated(RowPerPatientColumns.getNextVisitMostRecentEncounterOfTheTypes("nextVisit", CKDencounterTypes,
                 new ObservationInMostRecentEncounterOfType(),dateFilter),new HashMap<String, Object>());
         numberofdaysLate.setName("numberofdaysLate");
         numberofdaysLate.setCalculator(new DaysLate());
