@@ -66,9 +66,9 @@ public class Helper {
 	public static ReportDesign createRowPerPatientXlsOverviewReportDesign(ReportDefinition rd, String resourceName, String name,
 	                                                               Map<? extends Object, ? extends Object> properties)
 	    throws IOException {
-		
+
 		ReportService rs = Context.getService(ReportService.class);
-		for (ReportDesign rdd : rs.getAllReportDesigns(false)) {
+		for (ReportDesign rdd : rs.getReportDesigns(rd, null, true)) {
 			if (name.equals(rdd.getName())) {
 				rs.purgeReportDesign(rdd);
 			}
