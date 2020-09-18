@@ -27,17 +27,22 @@ import org.openmrs.module.reporting.cohort.definition.ProgramEnrollmentCohortDef
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.common.SetComparator;
+import org.openmrs.module.reporting.data.converter.AgeConverter;
+import org.openmrs.module.reporting.data.patient.definition.ConvertedPatientDataDefinition;
+import org.openmrs.module.reporting.data.patient.definition.PatientDataDefinition;
+import org.openmrs.module.reporting.data.patient.definition.PersonToPatientDataDefinition;
+import org.openmrs.module.reporting.data.person.definition.AgeDataDefinition;
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.indicator.CohortIndicator;
+import org.openmrs.module.reporting.indicator.aggregation.MedianAggregator;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.rwandareports.dataset.LocationHierachyIndicatorDataSetDefinition;
 import org.openmrs.module.rwandareports.definition.DrugsActiveCohortDefinition;
-import org.openmrs.module.rwandareports.indicator.MedianAgeIndicator;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.Indicators;
@@ -219,13 +224,18 @@ public class SetupHeartFailurereport extends SingleSetupReport {
 		//      1.2.   median age
 		//=========================================================================================
 		
-		MedianAgeIndicator medianAge = new MedianAgeIndicator();
+		CohortIndicator medianAge = new CohortIndicator();
 		medianAge.setName("medianAge");
 		medianAge.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		medianAge.addParameter(new Parameter("endDate", "End Date", Date.class));
 		medianAge.setCohortDefinition(new Mapped<CohortDefinition>(patientsInHFProgram,
 		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")
 		));
+		medianAge.setAggregator(MedianAggregator.class);
+
+		PatientDataDefinition ageData = new PersonToPatientDataDefinition(new AgeDataDefinition());
+		PatientDataDefinition ageYearsData = new ConvertedPatientDataDefinition(ageData, new AgeConverter("{y}"));
+		medianAge.setDataToAggregate(Mapped.noMappings(ageYearsData));
 		
 		//=========================================================================================
 		//      1.3.   Patients enrolled
