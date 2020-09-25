@@ -232,6 +232,7 @@ public class SetupHeartFailurereport extends SingleSetupReport {
 		    ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}")
 		));
 		medianAge.setAggregator(MedianAggregator.class);
+		medianAge.setType(CohortIndicator.IndicatorType.LOGIC);
 
 		PatientDataDefinition ageData = new PersonToPatientDataDefinition(new AgeDataDefinition());
 		PatientDataDefinition ageYearsData = new ConvertedPatientDataDefinition(ageData, new AgeConverter("{y}"));
