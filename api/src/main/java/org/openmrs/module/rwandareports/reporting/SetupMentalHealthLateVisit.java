@@ -171,7 +171,7 @@ public class SetupMentalHealthLateVisit extends SingleSetupReport {
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getAllObsValuesByRemovingUnwantedEncounters("Diagnoses", mentalHealthDiagnosis, MentalHealthDiagnosisStoppingReasonConcept, MHDiagnosisformList), new HashMap<String, Object>());
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", new DrugDosageCurrentFilter(mentalHealthEncounterTypeList)),
+        dataSetDefinition.addColumn(RowPerPatientColumns.getPatientCurrentlyActiveOnDrugOrder("Regimen", null),
                 new HashMap<String, Object>());
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("CurrentMedicalDiagnosis",currentMedicalDiagnosis,null,null,null ), new HashMap<String, Object>());

@@ -11,8 +11,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
+import org.openmrs.Order;
+import org.openmrs.OrderGroup;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.module.orderextension.DrugRegimen;
 import org.openmrs.module.orderextension.api.OrderExtensionService;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
@@ -58,22 +61,20 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 			
 			List<DrugOrder> drugOrders = Context.getService(OrderExtensionService.class).getDrugOrders(
 			    pd.getPatient(), pd.getIndication(), pd.getAsOfDate(), pd.getUntilDate());
-			
-			
+
 			for (DrugOrder eo : drugOrders) {
 				if (eo.getOrderGroup() != null) {
-					if (eo.getOrderGroup() instanceof DrugRegimen) {
-						DrugRegimen reg = (DrugRegimen) eo.getOrderGroup();
-						
+					OrderGroup orderGroup = HibernateUtil.getRealObjectFromProxy(eo.getOrderGroup());
+					if (orderGroup instanceof DrugRegimen) {
+						DrugRegimen reg = (DrugRegimen) orderGroup;
 						if(regimen == null || reg.getFirstDrugOrderStartDate().after(regimen.getFirstDrugOrderStartDate()))
 						{
-							regimen = (DrugRegimen) eo.getOrderGroup();
+							regimen = (DrugRegimen) orderGroup;
 						}
 					}
 				}
 			}
 		}
-		
 		if (regimen != null) {
 			StringBuilder result = new StringBuilder();
 			if (regimen.isCyclical()) {
@@ -97,9 +98,9 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 				@Override
                 public int compare(DrugOrder o1, DrugOrder o2) {
 	                return o1.getDrug().getName().compareTo(o2.getDrug().getName());
-                }
-				
-			});
+					}
+
+				});
 			
 			Date startDate = null;
 			for (DrugOrder order : members) {
@@ -148,7 +149,7 @@ public class DrugRegimenInformationEvaluator implements RowPerPatientDataEvaluat
 				result.append("");
 				result.append(drugs);
 			}
-			
+
 			par.setValue(result.toString());
 		}
 		return par;

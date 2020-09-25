@@ -7,8 +7,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
+import org.openmrs.OrderGroup;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.module.orderextension.DrugRegimen;
 import org.openmrs.module.orderextension.api.OrderExtensionService;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
@@ -46,11 +48,12 @@ public class RegimenDateEvaluator implements RowPerPatientDataEvaluator {
 			
 			for (DrugOrder eo : drugOrders) {
 				if (eo.getOrderGroup() != null) {
-					if (eo.getOrderGroup() instanceof DrugRegimen) {
-						DrugRegimen reg = (DrugRegimen) eo.getOrderGroup();
+					OrderGroup orderGroup = HibernateUtil.getRealObjectFromProxy(eo.getOrderGroup());
+					if (orderGroup instanceof DrugRegimen) {
+						DrugRegimen reg = (DrugRegimen) orderGroup;
 						
 						if (regimen == null || reg.getFirstDrugOrderStartDate().after(regimen.getFirstDrugOrderStartDate())) {
-							regimen = (DrugRegimen) eo.getOrderGroup();
+							regimen = (DrugRegimen) orderGroup;
 						}
 					}
 				}
