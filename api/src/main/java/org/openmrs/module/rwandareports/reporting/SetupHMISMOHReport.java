@@ -1203,7 +1203,7 @@ public class SetupHMISMOHReport extends SingleSetupReport {
 
 
         SqlCohortDefinition patientsInitiatedTBDrugs = new SqlCohortDefinition();
-        patientsInitiatedTBDrugs.setQuery("select patient_id from orders where concept_id in (" + answers.toString() + ") and start_date>= :onOrAfter and start_date<= :onOrBefore and voided=0");
+        patientsInitiatedTBDrugs.setQuery("select patient_id from orders where concept_id in (" + answers.toString() + ") and date_activated >= :onOrAfter and date_activated <= :onOrBefore and voided=0");
         patientsInitiatedTBDrugs.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
         patientsInitiatedTBDrugs.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 
@@ -2924,7 +2924,7 @@ public class SetupHMISMOHReport extends SingleSetupReport {
 
         SqlCohortDefinition patientsWhoStartedCotrimoAt6Weeks = new SqlCohortDefinition();
         patientsWhoStartedCotrimoAt6Weeks.setName("patientsWhoStartedCotrimoAt6Weeks");
-        patientsWhoStartedCotrimoAt6Weeks.setQuery("select p.person_id from person p,orders o where DATEDIFF(:onOrAfter,p.birthdate)<42 and DATEDIFF(:onOrBefore,p.birthdate)>=42 and p.voided=0 and p.person_id=o.patient_id and DATEDIFF(o.start_date,p.birthdate)>=42 and DATEDIFF(o.start_date,p.birthdate)<49 and o.concept_id=" + cotrimo.getConceptId() + " and o.voided");
+        patientsWhoStartedCotrimoAt6Weeks.setQuery("select p.person_id from person p,orders o where DATEDIFF(:onOrAfter,p.birthdate)<42 and DATEDIFF(:onOrBefore,p.birthdate)>=42 and p.voided=0 and p.person_id=o.patient_id and DATEDIFF(o.date_activated,p.birthdate)>=42 and DATEDIFF(o.date_activated,p.birthdate)<49 and o.concept_id=" + cotrimo.getConceptId() + " and o.voided");
         patientsWhoStartedCotrimoAt6Weeks.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
         patientsWhoStartedCotrimoAt6Weeks.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
 
