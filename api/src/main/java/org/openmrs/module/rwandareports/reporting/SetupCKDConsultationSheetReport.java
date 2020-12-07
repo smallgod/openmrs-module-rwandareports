@@ -34,7 +34,6 @@ public class SetupCKDConsultationSheetReport extends SingleSetupReport {
     private Form CKDEnrollmentForm;
 
     private List<Form> DDBAndRendezvousForms=new ArrayList<Form>();
-    private List<EncounterType> CKDEncounterType;
 
     private RelationshipType HBCP;
 
@@ -156,13 +155,10 @@ public class SetupCKDConsultationSheetReport extends SingleSetupReport {
 
         CKDEnrollmentForm =gp.getForm(GlobalPropertiesManagement.CKD_ENROLLMENT_FORM);
 
-
         DDBAndRendezvousForms.add(rendevousForm);
         DDBAndRendezvousForms.add(CKDEnrollmentForm);
 
         //DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.CKD_DDB_FLOW_VISIT);
-        CKDEncounterType.add(gp.getEncounterType(GlobalPropertiesManagement.CKD_ENCOUNTER_TYPE));
-        CKDEncounterType.add(gp.getEncounterType(GlobalPropertiesManagement.HF_HTN_CKD_ENCOUNTER_TYPE));
 
         HBCP=gp.getRelationshipType(GlobalPropertiesManagement.HBCP_RELATIONSHIP);
 
