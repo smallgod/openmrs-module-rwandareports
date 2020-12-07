@@ -57,7 +57,6 @@ import org.openmrs.module.rwandareports.reporting.SetupMentalHealthIndicatorRepo
 import org.openmrs.module.rwandareports.reporting.SetupMentalHealthLateVisit;
 import org.openmrs.module.rwandareports.reporting.SetupMissedChemotherapyPatientList;
 import org.openmrs.module.rwandareports.reporting.SetupMonthlyExecutiveDashboardMetricsReport;
-import org.openmrs.module.rwandareports.reporting.SetupOncologyDailyDrugList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyExternalBiopsyContactList;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyInpatientClinicMissedVisit;
 import org.openmrs.module.rwandareports.reporting.SetupOncologyOutpatientAppointmentList;
@@ -241,7 +240,6 @@ public class ReportSetup {
 		new SetupOncologyOutpatientExpectedPatientList(),
 		new SetupChemotherapyDailyExpectedPatientList(),
 		new SetupOncologyInpatientClinicMissedVisit(),
-		new SetupOncologyDailyDrugList(),
 		new SetupMissedChemotherapyPatientList(),
 		new SetupOncologyOutpatientClinicPatientList(),
 		new SetupOncologyOutpatientClinicMissedVisit(),
