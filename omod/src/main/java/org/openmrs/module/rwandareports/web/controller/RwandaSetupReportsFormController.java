@@ -428,18 +428,6 @@ public class RwandaSetupReportsFormController {
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
-	@RequestMapping("/module/rwandareports/register_chemotherapyDailyDrugList")
-	public ModelAndView registerChemotherapyDailyDrugList() throws Exception {
-		new SetupOncologyDailyDrugList().setup();
-		return new ModelAndView(new RedirectView("rwandareports.form"));
-	}
-
-	@RequestMapping("/module/rwandareports/remove_chemotherapyDailyDrugList")
-	public ModelAndView removeChemotherapyDailyDrugList() throws Exception {
-		new SetupOncologyDailyDrugList().delete();
-		return new ModelAndView(new RedirectView("rwandareports.form"));
-	}
-
 	@RequestMapping("/module/rwandareports/register_oncologyBiopsyList")
 	public ModelAndView registerOncologyBiopsyList() throws Exception {
 		new SetupOncologyTestPatientList().setup();
