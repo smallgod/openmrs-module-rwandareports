@@ -359,7 +359,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CKDIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="16" class="tabletd">Oncology</td>
+<td rowspan="17" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -463,6 +463,13 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_HMISCancerScreeningIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_HMISCancerScreeningIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
+<tr>
+<td>ONC - Cancer Screening Consultation sheet and Missed visit Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+
 <tr>
 <td rowspan="5" class="tabletd">PDC Reports</td>
 <td>PDC-Weekly and daily Consulation sheet</td>
