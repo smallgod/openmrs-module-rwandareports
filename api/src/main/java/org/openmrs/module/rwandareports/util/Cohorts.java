@@ -1980,6 +1980,34 @@ int i=0;
 		return cohortquery;
 	}
 	
+	public static SqlCohortDefinition getPatientReturnVisitByStartDateAndEndDate(String name,List<EncounterType> encounterTypes) {
+
+		SqlCohortDefinition cohortquery = new SqlCohortDefinition();
+		cohortquery.setName(name);
+		Concept returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+		StringBuilder encountertypeIds = new StringBuilder();
+		int i = 0;
+		for (EncounterType form : encounterTypes) {
+			if (i == 0) {
+				encountertypeIds.append(form.getEncounterTypeId());
+			} else {
+				encountertypeIds.append(",");
+				encountertypeIds.append(form.getEncounterTypeId());
+			}
+			i++;
+		}
+
+		cohortquery
+				.setQuery("select o.person_id from obs o, encounter e where e.encounter_type in ("
+						+ encountertypeIds.toString()
+						+ ")  and o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 and o.concept_id="
+						+ returnVisitDate.getConceptId()
+						+ " and o.value_datetime>= :startDate and o.value_datetime<= :endDate");
+		cohortquery.addParameter(new Parameter("startDate", "startDate", Date.class));
+		cohortquery.addParameter(new Parameter("endDate", "endDate", Date.class));
+		return cohortquery;
+	}
+	
 	public static SqlCohortDefinition getMondayToSundayPatientReturnVisitAndFollowUp(List<Form> forms) {
 		
 		SqlCohortDefinition cohortquery = new SqlCohortDefinition();		
