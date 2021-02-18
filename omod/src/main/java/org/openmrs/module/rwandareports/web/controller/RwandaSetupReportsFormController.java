@@ -904,4 +904,15 @@ public class RwandaSetupReportsFormController {
 		new SetupHMISCancerScreeningMonthlyIndicatorReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+		@RequestMapping("/module/rwandareports/register_CancerScreeningConsultationSheetAndMissedVisitReport")
+	public ModelAndView registerCancerScreeningConsultationSheetAndMissedVisitReport() throws Exception {
+		new SetupCancerScreeningConsultAndMissedVisit().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_CancerScreeningConsultationSheetAndMissedVisitReport")
+	public ModelAndView removeCancerScreeningConsultationSheetAndMissedVisitReport() throws Exception {
+		new SetupCancerScreeningConsultAndMissedVisit().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 }
