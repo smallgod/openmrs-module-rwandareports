@@ -44,6 +44,22 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 	private  List<EncounterType> cervicalScreeningEncounterTypes=new ArrayList<EncounterType>();
 	private Concept reasonsForReferral;
 	private Concept referredTo;
+	private List<Concept> breastDiagnosisList = new ArrayList<Concept>();
+	private Concept breastDiagnosis;
+	private Concept breastPain;
+	private Concept breastInfection;
+	private Concept MASTITIS;
+	private Concept ABSCESS;
+	private Concept ECZEMA;
+	private Concept breastMass;
+	private Concept OTHERNONCODED;
+	private Concept otherInfection;
+
+	private Concept HPVPositiveType;
+	private Concept HPV16;
+	private Concept HPV18;
+	private Concept otherHRHPV;
+	private List<Concept> cervicalDiagnosisList = new ArrayList<Concept>();
 
 
 
@@ -222,6 +238,35 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		referredTo= Context.getConceptService().getConceptByUuid("3a84ab37-f75c-48ad-8bcf-322c927f36bb");
 
+		breastDiagnosis = Context.getConceptService().getConceptByUuid("1ed543c7-36ff-4444-bc99-0f01eede9937");
+		breastPain = Context.getConceptService().getConceptByUuid("89f78558-aa31-48f1-956f-74427640ec26");
+		breastInfection = Context.getConceptService().getConceptByUuid("56ac82d2-547d-4a28-9148-11659b15a459");
+		MASTITIS = Context.getConceptService().getConceptByUuid("3ccd029e-26fe-102b-80cb-0017a47871b2");
+		ABSCESS = Context.getConceptService().getConceptByUuid("3ccd2666-26fe-102b-80cb-0017a47871b2");
+		ECZEMA = Context.getConceptService().getConceptByUuid("3cd47e3e-26fe-102b-80cb-0017a47871b2");
+		breastMass = Context.getConceptService().getConceptByUuid("09e3246a-5968-4ab4-960a-6b324517dc64");
+		OTHERNONCODED = Context.getConceptService().getConceptByUuid("3cee7fb4-26fe-102b-80cb-0017a47871b2");
+		otherInfection = Context.getConceptService().getConceptByUuid("e5155801-8d61-43c9-ac7d-dcb886a36f46");
+
+		breastDiagnosisList.add(breastPain);
+		breastDiagnosisList.add(breastInfection);
+		breastDiagnosisList.add(MASTITIS);
+		breastDiagnosisList.add(ABSCESS);
+		breastDiagnosisList.add(ECZEMA);
+		breastDiagnosisList.add(breastMass);
+		breastDiagnosisList.add(OTHERNONCODED);
+		breastDiagnosisList.add(otherInfection);
+
+		HPVPositiveType = Context.getConceptService().getConceptByUuid("1b4a5f67-6106-4a4d-a389-2f430be543e4");
+		HPV16 = Context.getConceptService().getConceptByUuid("059fddd3-711f-47ab-818f-087984aeecc3");
+		HPV18 = Context.getConceptService().getConceptByUuid("b672c3ff-96c9-41cd-9ae6-aa0811ce347f");
+		otherHRHPV = Context.getConceptService().getConceptByUuid("6c3428c6-f406-4ef9-b2dd-4fe5a79f3432");
+
+		cervicalDiagnosisList.add(HPVPositiveType);
+		cervicalDiagnosisList.add(HPV16);
+		cervicalDiagnosisList.add(HPV18);
+		cervicalDiagnosisList.add(otherHRHPV);
+
 	}
 	
 	//Add common columns for the two datasets
@@ -235,6 +280,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
      	
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 
+
 	/*	dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounterOfTheTypes("lastEncounterLocation",gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),breastAndCervicalScreeningEncounterTypes,new LocationObsFilter()), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounterOfTheTypes("lastEncounter",gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
 */
@@ -242,6 +288,10 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getRecentEncounter("recentencounterdate", null,breastAndCervicalScreeningEncounterTypes,"dd/MM/yyyy", null), new HashMap<String, Object>());
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getRecentEncounter("recentencounterLocation", null,breastAndCervicalScreeningEncounterTypes,"dd/MM/yyyy", new LocationEncounterFilter()), new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPhoneNumber("phoneNumber"), new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getContactPersonPhoneNumber("contactPersonPhonenumber"), new HashMap<String, Object>());
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("nextScheduledDate",gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),null,breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
 
@@ -251,7 +301,8 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredBreast",reasonsForReferral,null,breastScreeningEncounterTypes,null), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredCervical",reasonsForReferral,null,cervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredTo",referredTo,null,breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
-
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("breastDiagnosis",breastDiagnosis,breastDiagnosisList,null,null,null),new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("cervicalDiagnosis",HPVPositiveType,cervicalDiagnosisList,null,null,null),new HashMap<String, Object>());
 
 	}
 	
