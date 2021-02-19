@@ -2154,5 +2154,19 @@ public class RowPerPatientColumns {
 		}
 		return mostRecentEncounter;
 	}
+	
+		public static PatientAttribute getPhoneNumber(String name) {
+		PatientAttribute phoneNumber = new PatientAttribute();
+		phoneNumber.setAttribute("Phone number");
+		phoneNumber.setName(name);
+		return phoneNumber;
+	}
+
+	public static PatientAttribute getContactPersonPhoneNumber(String name) {
+		PatientAttribute ContactPersonPhoneNumber = new PatientAttribute();
+		ContactPersonPhoneNumber.setAttribute("Contact Person's Phone Number");
+		ContactPersonPhoneNumber.setName(name);
+		return ContactPersonPhoneNumber;
+	}
 
 }
