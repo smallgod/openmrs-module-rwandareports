@@ -37,7 +37,6 @@ import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirth;
-import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
 import org.openmrs.module.rwandareports.definition.DrugsActiveCohortDefinition;
 import org.openmrs.module.rwandareports.definition.PatientCohortDefinition;
 
@@ -1998,7 +1997,7 @@ int i=0;
 		}
 
 		cohortquery
-				.setQuery("select o.person_id from obs o, encounter e where e.encounter_type in ("
+				.setQuery("select distinct o.person_id from obs o, encounter e where e.encounter_type in ("
 						+ encountertypeIds.toString()
 						+ ")  and o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 and o.concept_id="
 						+ returnVisitDate.getConceptId()

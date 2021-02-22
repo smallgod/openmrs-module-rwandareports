@@ -4,9 +4,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.*;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.common.SortCriteria.SortDirection;
+import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -111,10 +114,28 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 		reportDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
 		reportDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
 
-		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
-			    ParameterizableUtil.createParameterMappings("location=${location}"));
+		CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.setName("activePatientsInPatientDiedState");
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("location", "Health Center", Location.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("startDate", "startDate", Date.class));
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+				"1",
+				new Mapped<CohortDefinition>(Cohorts.createParameterizedLocationCohort("At Location"),
+					    ParameterizableUtil.createParameterMappings("location=${location}")));
+		
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+				"2",
+				new Mapped<CohortDefinition>(Cohorts.getPatientReturnVisitByStartDateAndEndDate("patientsWithVisitInPeriod",breastAndCervicalScreeningEncounterTypes), ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 
+		activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND 2");
+		
+		reportDefinition.setBaseCohortDefinition(activePatientsInPatientDiedStateOrNCDRelatedDeath,
+			    ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate},startDate=${startDate}"));
+		
 		createConsultDataSetDefinition (reportDefinition);
 		Helper.saveReportDefinition(reportDefinition);
 
