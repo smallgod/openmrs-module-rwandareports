@@ -116,24 +116,24 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		reportDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));
 		
 
-		CompositionCohortDefinition activePatientsInPatientDiedStateOrNCDRelatedDeath = new CompositionCohortDefinition();
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.setName("activePatientsInPatientDiedState");
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("location", "Health Center", Location.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("startDate", "startDate", Date.class));
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.addParameter(new Parameter("endDate", "endDate", Date.class));
+		CompositionCohortDefinition consultationSheetBaseCohort = new CompositionCohortDefinition();
+		consultationSheetBaseCohort.setName("consultationSheetBaseCohort");
+		consultationSheetBaseCohort.addParameter(new Parameter("location", "Health Center", Location.class));
+		consultationSheetBaseCohort.addParameter(new Parameter("startDate", "startDate", Date.class));
+		consultationSheetBaseCohort.addParameter(new Parameter("endDate", "endDate", Date.class));
 		
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+		consultationSheetBaseCohort.getSearches().put(
 				"1",
 				new Mapped<CohortDefinition>(Cohorts.createParameterizedLocationCohort("At Location"),
 					    ParameterizableUtil.createParameterMappings("location=${location}")));
 		
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.getSearches().put(
+		consultationSheetBaseCohort.getSearches().put(
 				"2",
 				new Mapped<CohortDefinition>(Cohorts.getPatientReturnVisitByStartDateAndEndDate("patientsWithVisitInPeriod",breastAndCervicalScreeningEncounterTypes), ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 
-		activePatientsInPatientDiedStateOrNCDRelatedDeath.setCompositionString("1 AND 2");
+		consultationSheetBaseCohort.setCompositionString("1 AND 2");
 		
-		reportDefinition.setBaseCohortDefinition(activePatientsInPatientDiedStateOrNCDRelatedDeath,
+		reportDefinition.setBaseCohortDefinition(consultationSheetBaseCohort,
 			    ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate},startDate=${startDate}"));
 		
 		createConsultDataSetDefinition (reportDefinition);
@@ -149,9 +149,32 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
+		
+		//patients with late visits
 
-		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
-				ParameterizableUtil.createParameterMappings("location=${location}"));
+		// !!!!!!! Follow up form ??????
+		
+		SqlCohortDefinition missedVisit=new SqlCohortDefinition("select o.person_id from obs o,encounter e where o.encounter_id=e.encounter_id and e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+") and o.voided=0 and o.concept_id="+gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE).getConceptId()+" and datediff(:endDate,o.value_datetime)<400 and datediff(:endDate,o.value_datetime)>7 and o.value_datetime< :endDate and o.person_id not in (select patient_id from encounter where encounter_datetime>o.value_datetime and encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")) and o.person_id not in (select person_id from person where dead=1)");
+		missedVisit.addParameter(new Parameter("endDate", "enDate", Date.class));
+
+		CompositionCohortDefinition missedVisitBaseCohort = new CompositionCohortDefinition();
+		missedVisitBaseCohort.setName("missedVisitBaseCohort");
+		missedVisitBaseCohort.addParameter(new Parameter("location", "Health Center", Location.class));
+		missedVisitBaseCohort.addParameter(new Parameter("endDate", "endDate", Date.class));
+		
+		missedVisitBaseCohort.getSearches().put(
+				"1",
+				new Mapped<CohortDefinition>(Cohorts.createParameterizedLocationCohort("At Location"),
+					    ParameterizableUtil.createParameterMappings("location=${location}")));
+		
+		missedVisitBaseCohort.getSearches().put(
+				"2",
+				new Mapped<CohortDefinition>(missedVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+
+		missedVisitBaseCohort.setCompositionString("1 AND 2");
+		
+		reportDefinition.setBaseCohortDefinition(missedVisitBaseCohort,
+			    ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate}"));
 
 		createMissedVisitDataSetDefinition(reportDefinition);
 
@@ -167,11 +190,6 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		dataSetDef.addParameter(new Parameter("location", "location", Date.class));
 		dataSetDef.addParameter(new Parameter("startDate", "startDate", Date.class));
 		dataSetDef.addParameter(new Parameter("endDate", "endDate", Date.class));
-
-		//Add filters
-
-		//dataSetDef.addFilter(Cohorts.getPatientReturnVisitByStartDateAndEndDate("patientsWithVisitInPeriod",breastAndCervicalScreeningEncounterTypes), ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
-
 
 		//Add Columns
          
@@ -201,18 +219,6 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDV", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
-		
-		//patients with late visits
-
-		// !!!!!!! Follow up form ??????
-
-		SqlCohortDefinition missedVisit=new SqlCohortDefinition("select o.person_id from obs o,encounter e where o.encounter_id=e.encounter_id and e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+") and o.voided=0 and o.concept_id="+gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE).getConceptId()+" and datediff(:endDate,o.value_datetime)<400 and datediff(:endDate,o.value_datetime)>7 and o.value_datetime< :endDate and o.person_id not in (select patient_id from encounter where encounter_datetime>o.value_datetime and encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")) and o.person_id not in (select person_id from person where dead=1)");
-		missedVisit.addParameter(new Parameter("endDate", "enDate", Date.class));
-
-		//dataSetDefinition.addFilter(missedVisit,ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-
-
-
 
 		//Add Columns
 		addCommonColumns(dataSetDefinition);
