@@ -10,8 +10,10 @@ import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculationBasedOnMultiplePatientDataDefinitions;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.MostRecentObservation;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.ObservationInMostRecentEncounter;
 import org.openmrs.module.rwandareports.customcalculator.CancerScreenSMSAlert;
 import org.openmrs.module.rwandareports.util.Cohorts;
+import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 import java.util.*;
@@ -20,6 +22,7 @@ import java.util.*;
 public class SetupCancerScreeningSMSReport {
 	
 	//properties retrieved from global variables
+	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
 	private Concept hivStatus;
 
@@ -28,6 +31,19 @@ public class SetupCancerScreeningSMSReport {
 	private Concept testResult;
 	private Concept HPVpositive;
 	private Concept HPVNegative;
+
+	private Form oncologyBreastScreeningExamination;
+
+	private Form oncologyCervicalScreeningExamination;
+
+	private  List<EncounterType> breastScreeningEncounterTypes=new ArrayList<EncounterType>();
+	private  List<EncounterType> cervicalScreeningEncounterTypes=new ArrayList<EncounterType>();
+
+	private Concept hasPatientBeenReferred_cervical;
+	private Concept nextStep;
+	private Concept reasonsForReferral;
+	private Concept referredTo;
+
 
 	public void setup() throws Exception {
 		setupProperties();
@@ -102,11 +118,31 @@ public class SetupCancerScreeningSMSReport {
 
 		MostRecentObservation mostRecenthivStatus = RowPerPatientColumns.getMostRecent("hivResultTest",hivStatus, null);
 
+		ObservationInMostRecentEncounter cervicalNextScheduledDate = RowPerPatientColumns.getObservationInMostRecentEncounter("cervicalNextScheduledDate",gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),null,cervicalScreeningEncounterTypes,null);
+		ObservationInMostRecentEncounter breastNextScheduledDate = RowPerPatientColumns.getObservationInMostRecentEncounter("breastNextScheduledDate",gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),null,breastScreeningEncounterTypes,null);
+
+
+		ObservationInMostRecentEncounter referred_Cervical = RowPerPatientColumns.getObservationInMostRecentEncounter("referred_Cervical",hasPatientBeenReferred_cervical,null,cervicalScreeningEncounterTypes,null);
+		ObservationInMostRecentEncounter referred_Breast = RowPerPatientColumns.getObservationInMostRecentEncounter("referred_Breast",nextStep,null,breastScreeningEncounterTypes,null);
+
+
+
+		ObservationInMostRecentEncounter referredReasonBreast = RowPerPatientColumns.getObservationInMostRecentEncounter("referredBreast",reasonsForReferral,null,breastScreeningEncounterTypes,null);
+		ObservationInMostRecentEncounter referredReasonCervical = RowPerPatientColumns.getObservationInMostRecentEncounter("referredCervical",reasonsForReferral,null,cervicalScreeningEncounterTypes,null);
+		ObservationInMostRecentEncounter cervicalReferredTo = RowPerPatientColumns.getObservationInMostRecentEncounter("cervicalReferredTo",referredTo,null,cervicalScreeningEncounterTypes,null);
+		ObservationInMostRecentEncounter beastReferredTo = RowPerPatientColumns.getObservationInMostRecentEncounter("breastReferredTo",referredTo,null,breastScreeningEncounterTypes,null);
+
 
 		CustomCalculationBasedOnMultiplePatientDataDefinitions sms = new CustomCalculationBasedOnMultiplePatientDataDefinitions();
 		sms.setName("sms");
 		sms.addPatientDataToBeEvaluated(mostRecentHPVResultTest, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 		sms.addPatientDataToBeEvaluated(mostRecenthivStatus, new HashMap<String, Object>());
+		sms.addPatientDataToBeEvaluated(cervicalNextScheduledDate, new HashMap<String, Object>());
+		sms.addPatientDataToBeEvaluated(cervicalReferredTo, new HashMap<String, Object>());
+		sms.addPatientDataToBeEvaluated(breastNextScheduledDate, new HashMap<String, Object>());
+		sms.addPatientDataToBeEvaluated(beastReferredTo, new HashMap<String, Object>());
+
+
 
 
 		sms.setCalculator(new CancerScreenSMSAlert());
@@ -132,5 +168,16 @@ public class SetupCancerScreeningSMSReport {
 		testResult=Context.getConceptService().getConceptByUuid("bfb3eb1e-db98-4846-9915-0168511c6298");
 		HPVpositive=Context.getConceptService().getConceptByUuid("1b4a5f67-6106-4a4d-a389-2f430be543e4");
 		HPVNegative =Context.getConceptService().getConceptByUuid("64c23192-54e4-4750-9155-2ed0b736a0db");
+
+		oncologyBreastScreeningExamination=gp.getForm(GlobalPropertiesManagement.ONCOLOGY_BREAST_SCREENING_EXAMINATION);
+		oncologyCervicalScreeningExamination=gp.getForm(GlobalPropertiesManagement.ONCOLOGY_CERVICAL_SCREENING_EXAMINATION);
+
+		breastScreeningEncounterTypes.add(oncologyBreastScreeningExamination.getEncounterType());
+		cervicalScreeningEncounterTypes.add(oncologyCervicalScreeningExamination.getEncounterType());
+		hasPatientBeenReferred_cervical=Context.getConceptService().getConceptByUuid("805f40f2-4720-4474-b761-5880c9d3870e");
+        nextStep=Context.getConceptService().getConceptByUuid("69b9671b-d8b1-461b-bb7d-adb151775a57");
+		reasonsForReferral = Context.getConceptService().getConceptByUuid("1aa373f4-4db5-4b01-bce0-c10a636bb931");
+		referredTo= Context.getConceptService().getConceptByUuid("3a84ab37-f75c-48ad-8bcf-322c927f36bb");
+
 	}
 }
