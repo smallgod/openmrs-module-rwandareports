@@ -2,19 +2,12 @@ package org.openmrs.module.rwandareports.customcalculator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.DrugOrder;
-import org.openmrs.Obs;
-import org.openmrs.Order;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.orderextension.util.OrderEntryUtil;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculation;
 import org.openmrs.module.rowperpatientreports.patientdata.result.*;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
-import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +18,10 @@ public class CancerScreenSMSAlert implements CustomCalculation{
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
 	String hivStatus="";
+	ObservationResult cervicalReferredToObsResult =null;
+	ObservationResult breastReferredToObsResult =null;
+
+
 
 
 	public PatientDataResult calculateResult(List<PatientDataResult> results, EvaluationContext context) {
@@ -41,13 +38,29 @@ public class CancerScreenSMSAlert implements CustomCalculation{
 				ObservationResult hivResultTest = (ObservationResult)result;
 				if(hivResultTest != null) {
 					hivStatus = hivResultTest.getValue();
-					System.out.println("HIV STATUS:  "+hivStatus);
-					break;
+				}
+			}
+			if(result.getName().equals("cervicalReferredTo"))
+			{
+				ObservationResult obs = (ObservationResult)result;
+				if(obs != null) {
+					cervicalReferredToObsResult =obs;
+				}
+			}
+			if(result.getName().equals("breastReferredTo"))
+			{
+				ObservationResult obs = (ObservationResult)result;
+				if(obs != null) {
+					breastReferredToObsResult =obs;
 				}
 			}
 		}
 
-		
+
+
+		Date startDate=(Date) context.getParameterValue("startDate");
+		Date endDate=(Date) context.getParameterValue("endDate");
+
 		for(PatientDataResult result: results)
 		{
 			String patientFullName=result.getPatientData().getPatient().getFamilyName()+" "+result.getPatientData().getPatient().getGivenName();
@@ -55,10 +68,6 @@ public class CancerScreenSMSAlert implements CustomCalculation{
 			if(result.getName().equals("hpvResultTest"))
 			{
 				ObservationResult hpvResultTest = (ObservationResult)result;
-
-				Date startDate=(Date) context.getParameterValue("startDate");
-				Date endDate=(Date) context.getParameterValue("endDate");
-
 
 				if(hpvResultTest != null && hpvResultTest.getValue()!=null)
 				{
@@ -73,16 +82,57 @@ public class CancerScreenSMSAlert implements CustomCalculation{
 					if (hpvResultTest.getValue().equals("HPV positive Type") && obsDate.after(startDate) && obsDate.before(endDate))
 						alerts.append(""+patientFullName+", Your  HPV test result is available, you are requested to come  to "+healthFacility+" for medical follow up."+"\n");
 
-
-					//alerts.append("HPV Result is:"+ hpvResultTest.getValue()+"\n");
 				}
 
 			}
+			if(result.getName().equals("cervicalNextScheduledDate"))
+			{
+				ObservationResult cervicalNextScheduledDateObs = (ObservationResult)result;
+				if(cervicalNextScheduledDateObs != null && cervicalReferredToObsResult!=null)
+					{
+						Date valueDate=null;
+						if (cervicalNextScheduledDateObs.getObs()!=null)
+						valueDate=cervicalNextScheduledDateObs.getObs().getValueDate();
+						if (valueDate!=null && valueDate.after(endDate) && cervicalReferredToObsResult.getValue()!=null && !cervicalReferredToObsResult.getValue().equals("") && valueDate.after(endDate) && cervicalNextScheduledDateObs.getObs().getEncounter().getEncounterId()==cervicalReferredToObsResult.getObs().getEncounter().getEncounterId())
+						alerts.append(""+patientFullName+", you have an appointment for cervical cancer screening follow up on "+cervicalNextScheduledDateObs.getValue()+" . Please go to "+cervicalReferredToObsResult.getValue()+" to continue this care."+"\n");
+				}
+				if(cervicalNextScheduledDateObs != null)
+				{
+					Date valueDate=null;
+					if (cervicalNextScheduledDateObs.getObs()!=null)
+						valueDate=cervicalNextScheduledDateObs.getObs().getValueDate();
+					if (valueDate!=null && valueDate.after(endDate) && cervicalReferredToObsResult.getValue()==null)
+						alerts.append(""+patientFullName+", you have an appointment for cervical cancer screening follow up on "+cervicalNextScheduledDateObs.getValue()+" . Please go to "+cervicalNextScheduledDateObs.getObs().getLocation().getName()+" to continue this care."+"\n");
+				}
+			}
 
+
+			if(result.getName().equals("breastNextScheduledDate"))
+			{
+				ObservationResult breastlNextScheduledDateObs = (ObservationResult)result;
+				if(breastlNextScheduledDateObs != null && breastReferredToObsResult!=null)
+				{
+					Date valueDate=null;
+					if (breastlNextScheduledDateObs.getObs()!=null)
+						valueDate=breastlNextScheduledDateObs.getObs().getValueDate();
+					if (valueDate!=null && valueDate.after(endDate) && breastReferredToObsResult.getValue()!=null && !breastReferredToObsResult.getValue().equals("") && valueDate.after(endDate) && breastlNextScheduledDateObs.getObs().getEncounter().getEncounterId()==breastReferredToObsResult.getObs().getEncounter().getEncounterId())
+						alerts.append(""+patientFullName+", you have an appointment for breast cancer screening follow up on "+breastlNextScheduledDateObs.getValue()+" . Please go to "+breastReferredToObsResult.getValue()+" to continue this care."+"\n");
+
+
+				}
+				if(breastlNextScheduledDateObs != null)
+				{
+					Date valueDate=null;
+					if (breastlNextScheduledDateObs.getObs()!=null) {
+						valueDate = breastlNextScheduledDateObs.getObs().getValueDate();
+					}
+					if (valueDate!=null && valueDate.after(endDate) && breastReferredToObsResult.getValue() == null) {
+						alerts.append("" + patientFullName + ", you have an appointment for breast cancer screening follow up on " + breastlNextScheduledDateObs.getValue() + " . Please go to " + breastlNextScheduledDateObs.getObs().getLocation().getName() + " to continue this care." + "\n");
+					}
+				}
+			}
 
 		}
-		
-
 		
 		alert.setValue(alerts.toString().trim());
 		return alert;
