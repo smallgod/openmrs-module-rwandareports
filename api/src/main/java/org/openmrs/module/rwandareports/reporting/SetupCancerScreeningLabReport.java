@@ -89,7 +89,7 @@ public class SetupCancerScreeningLabReport {
         reportDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));
 
 
-        SqlCohortDefinition HPVLabResults=new SqlCohortDefinition("select distinct distinct patient_id as person_id from encounter where form_id in ("+muzimaLabResultsform.getFormId()+","+openmrsLabResultsform.getFormId()+") and  encounter_datetime<= :endDate and encounter_datetime>= :startDate and voided=0");
+        SqlCohortDefinition HPVLabResults=new SqlCohortDefinition("select distinct patient_id as person_id from encounter where form_id in ("+muzimaLabResultsform.getFormId()+","+openmrsLabResultsform.getFormId()+") and  encounter_datetime<= :endDate and encounter_datetime>= :startDate and voided=0");
         HPVLabResults.addParameter(new Parameter("endDate", "endDate", Date.class));
         HPVLabResults.addParameter(new Parameter("startDate", "startDate", Date.class));
 
