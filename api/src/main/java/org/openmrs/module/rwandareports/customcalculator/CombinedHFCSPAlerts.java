@@ -66,7 +66,7 @@ public class CombinedHFCSPAlerts implements CustomCalculation{
 							if(diff > 12){
 								alerts.append("Late VL(" + diff + " months ago).\n");
 							}
-							int viraloadObs=Integer.parseInt(obsId);
+							double viraloadObs=Double.parseDouble(obsId);
 							if(viraload.getValue().size() > 0 && viraloadObs > 1000)
 							{
 								alerts.append("VL Failure "+viraloadObs+".\n");
