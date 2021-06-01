@@ -35,6 +35,8 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 	private Form mUzimaBreastScreening;
 
 	private Form mUzimaCervicalScreening;
+	private Form oncologyCervicalScreeningfollowup;
+	private Form mUzimaCervicalcancerscreeningfollowup;
 
 
 	private  List<EncounterType> breastAndCervicalScreeningEncounterTypes=new ArrayList<EncounterType>();
@@ -45,6 +47,8 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 	private  List<EncounterType> breastScreeningEncounterTypes=new ArrayList<EncounterType>();
 	private  List<EncounterType> cervicalScreeningEncounterTypes=new ArrayList<EncounterType>();
+	private  List<Form> breastCancerforms = new ArrayList<Form>();
+	private  List<Form> cervalCancerforms = new ArrayList<Form>();
 	private Concept reasonsForReferral;
 	private Concept referredTo;
 	private List<Concept> breastDiagnosisList = new ArrayList<Concept>();
@@ -78,7 +82,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		ReportDesign missedVisitReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(missedVisitReportDefinition, "OncologyCancerScreeningMissedVisitSheet.xls","OncologyCancerScreeningMissedVisitSheet.xls_", null);
 		
 		Properties consultProps = new Properties();
-		consultProps.put("repeatingSections", "sheet:1,row:9,dataset:dataset1");
+		consultProps.put("repeatingSections", "sheet:1,row:10,dataset:dataset1");
 		consultProps.put("sortWeight","5000");
 		
 		Properties missedVisitProps = new Properties();
@@ -225,7 +229,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentReturnVisitDate("nextRDV", "yyyy/MM/dd", null), new HashMap<String, Object>());
 
-		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, false, false), new HashMap<String, Object>());
+//		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true), new HashMap<String, Object>());
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getDateOfBirth("Date of Birth", null, null), new HashMap<String, Object>());
 
@@ -244,14 +248,24 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 	private void setupPrograms() {
 		oncologyBreastScreeningExamination=gp.getForm(GlobalPropertiesManagement.ONCOLOGY_BREAST_SCREENING_EXAMINATION);
 		oncologyCervicalScreeningExamination=gp.getForm(GlobalPropertiesManagement.ONCOLOGY_CERVICAL_SCREENING_EXAMINATION);
+		oncologyCervicalScreeningfollowup = Context.getFormService().getForm("Oncology Cervical Screening follow up");
 
 		mUzimaBreastScreening=Context.getFormService().getForm("mUzima Breast cancer screening");
 		mUzimaCervicalScreening=Context.getFormService().getForm("mUzima Cervical cancer screening");
+		mUzimaCervicalcancerscreeningfollowup = Context.getFormService().getForm("mUzima Cervical cancer screening follow up");
 
 		screeningExaminationForms.add(oncologyBreastScreeningExamination);
 		screeningExaminationForms.add(oncologyCervicalScreeningExamination);
 		screeningExaminationForms.add(mUzimaBreastScreening);
 		screeningExaminationForms.add(mUzimaCervicalScreening);
+
+		breastCancerforms.add(mUzimaBreastScreening);
+		breastCancerforms.add(oncologyBreastScreeningExamination);
+
+		cervalCancerforms.add(oncologyCervicalScreeningExamination);
+		cervalCancerforms.add(oncologyCervicalScreeningfollowup);
+		cervalCancerforms.add(mUzimaCervicalcancerscreeningfollowup);
+
 
 		breastAndCervicalScreeningEncounterTypes.add(oncologyBreastScreeningExamination.getEncounterType());
 		breastAndCervicalScreeningEncounterTypes.add(oncologyCervicalScreeningExamination.getEncounterType());
@@ -324,9 +338,10 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		// hasPatientBeenReferred_cervical. Breast use different concept
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referred",hasPatientBeenReferred_cervical,null,breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true), new HashMap<String, Object>());
 
-		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredBreast",reasonsForReferral,null,breastScreeningEncounterTypes,null), new HashMap<String, Object>());
-		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredCervical",reasonsForReferral,null,cervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredBreast",reasonsForReferral,breastCancerforms,breastScreeningEncounterTypes,null), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredCervical",reasonsForReferral,cervalCancerforms,cervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredTo",referredTo,null,breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("breastDiagnosis",breastDiagnosis,breastDiagnosisList,null,null,null),new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("cervicalDiagnosis",HPVPositiveType,cervicalDiagnosisList,null,null,null),new HashMap<String, Object>());
