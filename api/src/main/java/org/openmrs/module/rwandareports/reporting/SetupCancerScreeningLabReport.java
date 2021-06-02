@@ -50,6 +50,8 @@ public class SetupCancerScreeningLabReport {
 
     private List<Form> resultFormsList = new ArrayList<Form>();
     private Concept specimenCode;
+    private Concept screeningThrough;
+    private Concept otherLabTestResult;
 
     private List<EncounterType> LabEncounterTypes = new ArrayList<EncounterType>();
 
@@ -84,12 +86,22 @@ public class SetupCancerScreeningLabReport {
 
         ReportDefinition reportDefinition = new ReportDefinition();
         reportDefinition.setName("ONC-Cancer Screening Lab report sheet");
-        reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
+       // reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
         reportDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
         reportDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));
 
+        Parameter location = new Parameter("location", "Health Facility", Location.class);
+        location.setRequired(false);
 
-        SqlCohortDefinition HPVLabResults=new SqlCohortDefinition("select distinct patient_id as person_id from encounter where form_id in ("+muzimaLabResultsform.getFormId()+","+openmrsLabResultsform.getFormId()+") and  encounter_datetime<= :endDate and encounter_datetime>= :startDate and voided=0");
+        reportDefinition.addParameter(location);
+
+
+        SqlCohortDefinition locationDefinition = new SqlCohortDefinition();
+        locationDefinition.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and (:location is null or pa.value = :location)");
+        locationDefinition.setName("locationDefinition");
+        locationDefinition.addParameter(location);
+
+        SqlCohortDefinition HPVLabResults=new SqlCohortDefinition("select distinct distinct patient_id as person_id from encounter where form_id in ("+muzimaLabResultsform.getFormId()+","+openmrsLabResultsform.getFormId()+") and  encounter_datetime<= :endDate and encounter_datetime>= :startDate and voided=0");
         HPVLabResults.addParameter(new Parameter("endDate", "endDate", Date.class));
         HPVLabResults.addParameter(new Parameter("startDate", "startDate", Date.class));
 
@@ -105,7 +117,7 @@ public class SetupCancerScreeningLabReport {
 
         labReportSheetBaseCohort.getSearches().put(
                 "1",
-                new Mapped<CohortDefinition>(Cohorts.createParameterizedLocationCohort("At Location"),
+                new Mapped<CohortDefinition>(locationDefinition,
                         ParameterizableUtil.createParameterMappings("location=${location}")));
 
         labReportSheetBaseCohort.getSearches().put(
@@ -154,13 +166,19 @@ public class SetupCancerScreeningLabReport {
 
         dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", false,true,true, true, false, false), new HashMap<String, Object>());
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("HIVStatus",HIVstatus,HIVstatusList,null,null,"yyyy/MM/dd"),new HashMap<String, Object>());
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("testResult",testResults,testResultsList,null,null,"yyyy/MM/dd"),new HashMap<String, Object>());
+        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("HIVStatus",HIVstatus,HIVstatusList,null,null,"dd/MM/yyyy"),new HashMap<String, Object>());
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getRecentEncounter("recentencounterLocation", resultFormsList,LabEncounterTypes,"yyyy/MM/dd", new LocationEncounterFilter()), new HashMap<String, Object>());
+        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInPeriod("testType",screeningThrough,null,null,"dd/MM/yyyy"),ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValues("specimenCode",specimenCode,"yyyy/MM/dd",null,null),new HashMap<String, Object>());
+        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("testResult",testResults,testResultsList,null,null,"dd/MM/yyyy"),new HashMap<String, Object>());
+
+        dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInPeriod("otherLabTestResult",otherLabTestResult,null,null,"dd/MM/yyyy"),ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dataSetDefinition.addColumn(RowPerPatientColumns.getRecentEncounter("recentencounterLocation", resultFormsList,LabEncounterTypes,"dd/MM/yyyy", new LocationEncounterFilter()), new HashMap<String, Object>());
+
+        dataSetDefinition.addColumn(RowPerPatientColumns.getAllObservationValuesAfterStartDateAndBeforeEndDate("specimenCode",specimenCode,"dd/MM/yyyy",null,null),ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 
 
 //        dataSetDefinition.addColumn(RowPerPatientColumns);
@@ -217,6 +235,8 @@ public class SetupCancerScreeningLabReport {
         HPVNegative = Context.getConceptService().getConceptByUuid("64c23192-54e4-4750-9155-2ed0b736a0db");
         HPVFailedResults = Context.getConceptService().getConceptByUuid("3b989534-ca6b-4bef-b99c-cd8397b1cdbe");
         specimenCode = Context.getConceptService().getConceptByUuid("16cd65e3-45af-4291-88fd-fe4d91847e4f");
+        screeningThrough = Context.getConceptService().getConceptByUuid("7e4e6554-d6c5-4ca3-b371-49806a754992");
+        otherLabTestResult = Context.getConceptService().getConceptByUuid("3ce1ca8a-26fe-102b-80cb-0017a47871b2");
 
         testResultsList.add(HPVPositive);
         testResultsList.add(HPVNegative);
