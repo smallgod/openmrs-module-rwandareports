@@ -25,7 +25,7 @@ import java.util.*;
 
 public class SetupCancerScreeningConsultAndMissedVisit {
 	protected final static Log log = LogFactory.getLog(SetupCancerScreeningConsultAndMissedVisit.class);
-	
+
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
 	private Form oncologyBreastScreeningExamination;
@@ -74,28 +74,28 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 	public void setup() throws Exception {
 		setupPrograms();
-		
-		ReportDefinition consultReportDefinition = createConsultReportDefinition();	
+
+		ReportDefinition consultReportDefinition = createConsultReportDefinition();
 		ReportDefinition missedVisitReportDefinition = createMissedVisitReportDefinition();
-		
+
 		ReportDesign consultReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(consultReportDefinition, "OncologyCancerScreeningConsultSheet.xls","OncologyCancerScreeningConsultSheet.xls_", null);
 		ReportDesign missedVisitReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(missedVisitReportDefinition, "OncologyCancerScreeningMissedVisitSheet.xls","OncologyCancerScreeningMissedVisitSheet.xls_", null);
-		
+
 		Properties consultProps = new Properties();
 		consultProps.put("repeatingSections", "sheet:1,row:10,dataset:dataset1");
 		consultProps.put("sortWeight","5000");
-		
+
 		Properties missedVisitProps = new Properties();
 		missedVisitProps.put("repeatingSections", "sheet:1,row:8,dataset:dataset2");
 		missedVisitProps.put("sortWeight","5000");
-		
+
 		consultReporDesign.setProperties(consultProps);
 		missedVisitReporDesign.setProperties(missedVisitProps);
-		
+
 		Helper.saveReportDesign(consultReporDesign);
 		Helper.saveReportDesign(missedVisitReporDesign);
 	}
-	
+
 	public void delete() {
 		ReportService rs = Context.getService(ReportService.class);
 		for (ReportDesign rd : rs.getAllReportDesigns(false)) {
@@ -108,56 +108,78 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		}
 		Helper.purgeReportDefinition("ONC-Cancer Screening Consultation Sheet");
 		Helper.purgeReportDefinition("ONC-Cancer Screening Missed Visit");
-		
+
 	}
-	
+
 	private ReportDefinition createConsultReportDefinition() {
 
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("ONC-Cancer Screening Consultation Sheet");
-		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
+		//reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 		reportDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
 		reportDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
+
+		Parameter location = new Parameter("location", "Health Facility", Location.class);
+		location.setRequired(false);
+
+		reportDefinition.addParameter(location);
+
+
+		SqlCohortDefinition locationDefinition = new SqlCohortDefinition();
+		locationDefinition.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and (:location is null or pa.value = :location)");
+		locationDefinition.setName("locationDefinition");
+		locationDefinition.addParameter(location);
 
 		CompositionCohortDefinition consultationSheetBaseCohort = new CompositionCohortDefinition();
 		consultationSheetBaseCohort.setName("consultationSheetBaseCohort");
 		consultationSheetBaseCohort.addParameter(new Parameter("location", "Health Center", Location.class));
 		consultationSheetBaseCohort.addParameter(new Parameter("startDate", "startDate", Date.class));
 		consultationSheetBaseCohort.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
+
 		consultationSheetBaseCohort.getSearches().put(
 				"1",
-				new Mapped<CohortDefinition>(Cohorts.createParameterizedLocationCohort("At Location"),
-					    ParameterizableUtil.createParameterMappings("location=${location}")));
-		
+				new Mapped<CohortDefinition>(locationDefinition,
+						ParameterizableUtil.createParameterMappings("location=${location}")));
+
 		consultationSheetBaseCohort.getSearches().put(
 				"2",
 				new Mapped<CohortDefinition>(Cohorts.getPatientReturnVisitByStartDateAndEndDate("patientsWithVisitInPeriod",breastAndCervicalScreeningEncounterTypes), ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
 
 		consultationSheetBaseCohort.setCompositionString("1 AND 2");
-		
+
 		reportDefinition.setBaseCohortDefinition(consultationSheetBaseCohort,
-			    ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate},startDate=${startDate}"));
-		
+				ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate},startDate=${startDate}"));
+
 		createConsultDataSetDefinition (reportDefinition);
 		Helper.saveReportDefinition(reportDefinition);
 
 		return reportDefinition;
 	}
-	
+
 	private ReportDefinition createMissedVisitReportDefinition() {
 
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("ONC-Cancer Screening Missed Visit");
-		reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
+		//reportDefinition.addParameter(new Parameter("location", "Health Center", Location.class));
 
 		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
-		
+
+
+		Parameter location = new Parameter("location", "Health Facility", Location.class);
+		location.setRequired(false);
+
+		reportDefinition.addParameter(location);
+
+
+		SqlCohortDefinition locationDefinition = new SqlCohortDefinition();
+		locationDefinition.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and (:location is null or pa.value = :location)");
+		locationDefinition.setName("locationDefinition");
+		locationDefinition.addParameter(location);
+
 		//patients with late visits
 
 		// !!!!!!! Follow up form ??????
-		
+
 		SqlCohortDefinition missedVisit=new SqlCohortDefinition("select o.person_id from obs o,encounter e where o.encounter_id=e.encounter_id and e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+") and o.voided=0 and o.concept_id="+gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE).getConceptId()+" and datediff(:endDate,o.value_datetime)<400 and datediff(:endDate,o.value_datetime)>7 and o.value_datetime< :endDate and o.person_id not in (select patient_id from encounter where encounter_datetime>o.value_datetime and encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")) and o.person_id not in (select person_id from person where dead=1)");
 		missedVisit.addParameter(new Parameter("endDate", "enDate", Date.class));
 
@@ -165,20 +187,20 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		missedVisitBaseCohort.setName("missedVisitBaseCohort");
 		missedVisitBaseCohort.addParameter(new Parameter("location", "Health Center", Location.class));
 		missedVisitBaseCohort.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
+
 		missedVisitBaseCohort.getSearches().put(
 				"1",
-				new Mapped<CohortDefinition>(Cohorts.createParameterizedLocationCohort("At Location"),
-					    ParameterizableUtil.createParameterMappings("location=${location}")));
-		
+				new Mapped<CohortDefinition>(locationDefinition,
+						ParameterizableUtil.createParameterMappings("location=${location}")));
+
 		missedVisitBaseCohort.getSearches().put(
 				"2",
 				new Mapped<CohortDefinition>(missedVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
 
 		missedVisitBaseCohort.setCompositionString("1 AND 2");
-		
+
 		reportDefinition.setBaseCohortDefinition(missedVisitBaseCohort,
-			    ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate}"));
+				ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate}"));
 
 		createMissedVisitDataSetDefinition(reportDefinition);
 
@@ -186,9 +208,9 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		return reportDefinition;
 	}
-	
+
 	private void createConsultDataSetDefinition(ReportDefinition reportDefinition) {
-		// Create new dataset definition 
+		// Create new dataset definition
 		RowPerPatientDataSetDefinition dataSetDef = new RowPerPatientDataSetDefinition();
 		dataSetDef.setName("Consult Data set");
 		dataSetDef.addParameter(new Parameter("location", "location", Date.class));
@@ -196,8 +218,8 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		dataSetDef.addParameter(new Parameter("endDate", "endDate", Date.class));
 
 		//Add Columns
-         
-        addCommonColumns(dataSetDef);
+
+		addCommonColumns(dataSetDef);
 		dataSetDef.addColumn(RowPerPatientColumns.getMostRecentReturnVisitDate("nextVisit", "dd-MMM-yyyy", null), new HashMap<String, Object>());
 
 
@@ -209,24 +231,24 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 
 		reportDefinition.addDataSetDefinition("dataset1", dataSetDef, mappings);
-		
-		
+
+
 	}
-	
+
 	private void createMissedVisitDataSetDefinition(ReportDefinition reportDefinition) {
-		// Create new dataset definition 
+		// Create new dataset definition
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("Missed visit Data set");
 		dataSetDefinition.addParameter(new Parameter("location", "Location", Location.class));
 		dataSetDefinition.addParameter(new Parameter("endDate", "enDate", Date.class));
-		
+
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDV", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 
 		//Add Columns
 		addCommonColumns(dataSetDefinition);
-		
+
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentReturnVisitDate("nextRDV", "yyyy/MM/dd", null), new HashMap<String, Object>());
 
 //		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true), new HashMap<String, Object>());
@@ -235,13 +257,13 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 
 
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("location", "${location}");
 		mappings.put("endDate", "${endDate}");
-		
+
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition, mappings);
-		
+
 	}
 
 
@@ -309,16 +331,16 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		cervicalDiagnosisList.add(otherHRHPV);
 
 	}
-	
+
 	//Add common columns for the two datasets
 	private void addCommonColumns(RowPerPatientDataSetDefinition dataSetDefinition){
-		
-        dataSetDefinition.addColumn(RowPerPatientColumns.getArchivingId("Id"), new HashMap<String, Object>());
 
-        dataSetDefinition.addColumn(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getArchivingId("Id"), new HashMap<String, Object>());
+
+		dataSetDefinition.addColumn(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
-     	
+
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
 
 
@@ -347,5 +369,5 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("cervicalDiagnosis",HPVPositiveType,cervicalDiagnosisList,null,null,null),new HashMap<String, Object>());
 
 	}
-	
+
 }
