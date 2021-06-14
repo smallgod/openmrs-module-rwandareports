@@ -170,6 +170,11 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		reportDefinition.addParameter(location);
 
+		Parameter encounterTypes = new Parameter("encounterTypes", "Encounter", EncounterType.class);
+		encounterTypes.setRequired(false);
+		reportDefinition.addParameter(location);
+		reportDefinition.addParameter(encounterTypes);
+
 
 		SqlCohortDefinition locationDefinition = new SqlCohortDefinition();
 		locationDefinition.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and (:location is null or pa.value = :location)");
@@ -179,14 +184,20 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		//patients with late visits
 
 		// !!!!!!! Follow up form ??????
+// and (:encounterType is null or e.encounter_type=:encounterType)
+		//SqlCohortDefinition missedVisit=new SqlCohortDefinition("select o.person_id from obs o,encounter e where o.encounter_id=e.encounter_id and e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+") and o.voided=0 and o.concept_id="+gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE).getConceptId()+" and datediff(:endDate,o.value_datetime)<400 and datediff(:endDate,o.value_datetime)>7 and o.value_datetime< :endDate and o.person_id not in (select patient_id from encounter where encounter_datetime>o.value_datetime and encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")) and o.person_id not in (select person_id from person where dead=1)");
+		SqlCohortDefinition missedVisit=new SqlCohortDefinition("select o.person_id from obs o,encounter e where o.encounter_id=e.encounter_id and (:encounterTypes is null or e.encounter_type= :encounterTypes) and o.voided=0 and o.concept_id="+gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE).getConceptId()+" and datediff(:endDate,o.value_datetime)<400 and datediff(:endDate,o.value_datetime)>7 and o.value_datetime< :endDate and o.person_id not in (select patient_id from encounter where encounter_datetime>o.value_datetime and encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")) and o.person_id not in (select person_id from person where dead=1)");
+		//SqlCohortDefinition missedVisit=new SqlCohortDefinition("select o.person_id from obs o,encounter e where o.encounter_id=e.encounter_id and (:encounterTypes is null or e.encounter_type= :encounterTypes) and o.voided=0 and o.concept_id="+gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE).getConceptId()+" and datediff(:endDate,o.value_datetime)<400 and datediff(:endDate,o.value_datetime)>7 and o.value_datetime< :endDate and o.person_id not in (select patient_id from encounter where encounter_datetime>o.value_datetime) and o.person_id not in (select person_id from person where dead=1)");
+		//SqlCohortDefinition missedVisit=new SqlCohortDefinition("select e.patient_id from encounter e where (:encounterTypes is null or e.encounter_type= :encounterTypes) and e.voided=0");
+     	missedVisit.addParameter(new Parameter("endDate", "enDate", Date.class));
+		missedVisit.addParameter(encounterTypes);
 
-		SqlCohortDefinition missedVisit=new SqlCohortDefinition("select o.person_id from obs o,encounter e where o.encounter_id=e.encounter_id and e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+") and o.voided=0 and o.concept_id="+gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE).getConceptId()+" and datediff(:endDate,o.value_datetime)<400 and datediff(:endDate,o.value_datetime)>7 and o.value_datetime< :endDate and o.person_id not in (select patient_id from encounter where encounter_datetime>o.value_datetime and encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")) and o.person_id not in (select person_id from person where dead=1)");
-		missedVisit.addParameter(new Parameter("endDate", "enDate", Date.class));
 
 		CompositionCohortDefinition missedVisitBaseCohort = new CompositionCohortDefinition();
 		missedVisitBaseCohort.setName("missedVisitBaseCohort");
 		missedVisitBaseCohort.addParameter(new Parameter("location", "Health Center", Location.class));
 		missedVisitBaseCohort.addParameter(new Parameter("endDate", "endDate", Date.class));
+		missedVisitBaseCohort.addParameter(encounterTypes);
 
 		missedVisitBaseCohort.getSearches().put(
 				"1",
@@ -195,12 +206,12 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		missedVisitBaseCohort.getSearches().put(
 				"2",
-				new Mapped<CohortDefinition>(missedVisit, ParameterizableUtil.createParameterMappings("endDate=${endDate}")));
+				new Mapped<CohortDefinition>(missedVisit, ParameterizableUtil.createParameterMappings("encounterTypes={encounterTypes},endDate=${endDate}")));
 
 		missedVisitBaseCohort.setCompositionString("1 AND 2");
 
 		reportDefinition.setBaseCohortDefinition(missedVisitBaseCohort,
-				ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate}"));
+				ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate},encounterTypes={encounterTypes}"));
 
 		createMissedVisitDataSetDefinition(reportDefinition);
 
