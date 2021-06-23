@@ -2,6 +2,7 @@ package org.openmrs.module.rwandareports.customcalculator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.PersonAttribute;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.CustomCalculation;
@@ -64,7 +65,11 @@ public class CancerScreenSMSAlert implements CustomCalculation{
 		for(PatientDataResult result: results)
 		{
 			String patientFullName=result.getPatientData().getPatient().getFamilyName()+" "+result.getPatientData().getPatient().getGivenName();
-			String healthFacility=Context .getLocationService().getLocation(Integer.parseInt(result.getPatientData().getPatient().getAttribute("Health Facility").getValue())).getName();
+			PersonAttribute healthCenterAttribute = result.getPatientData().getPatient().getAttribute("Health Facility");
+			String healthFacility = "your health center/hospital";
+			if(healthCenterAttribute != null) {
+				healthFacility = Context .getLocationService().getLocation(Integer.parseInt(healthCenterAttribute.getValue())).getName();
+			}
 			if(result.getName().equals("hpvResultTest"))
 			{
 				ObservationResult hpvResultTest = (ObservationResult)result;
