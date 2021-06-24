@@ -16,6 +16,7 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientDataSetDefinition;
+import org.openmrs.module.rwandareports.filter.DateFormatFilter;
 import org.openmrs.module.rwandareports.filter.LocationEncounterFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
@@ -124,18 +125,32 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		reportDefinition.addParameter(location);
 
+		Parameter encounterTypes = new Parameter("encounterTypes", "Encounter", EncounterType.class);
+		encounterTypes.setRequired(false);
+		reportDefinition.addParameter(encounterTypes);
+
 
 		SqlCohortDefinition locationDefinition = new SqlCohortDefinition();
 		locationDefinition.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and (:location is null or pa.value = :location)");
 		locationDefinition.setName("locationDefinition");
 		locationDefinition.addParameter(location);
 
+		Concept returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
+		SqlCohortDefinition patientsWithVisitInPeriod=new SqlCohortDefinition();
+		patientsWithVisitInPeriod.setQuery("select distinct o.person_id from obs o, encounter e where (:encounterTypes is null or e.encounter_type= :encounterTypes) and e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")  and o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 and o.concept_id="
+				+ returnVisitDate.getConceptId()
+				+ " and o.value_datetime>= :startDate and o.value_datetime<= :endDate");
+		patientsWithVisitInPeriod.addParameter(new Parameter("startDate", "startDate", Date.class));
+		patientsWithVisitInPeriod.addParameter(new Parameter("endDate", "endDate", Date.class));
+		patientsWithVisitInPeriod.addParameter(encounterTypes);
+
+
 		CompositionCohortDefinition consultationSheetBaseCohort = new CompositionCohortDefinition();
 		consultationSheetBaseCohort.setName("consultationSheetBaseCohort");
 		consultationSheetBaseCohort.addParameter(new Parameter("location", "Health Center", Location.class));
 		consultationSheetBaseCohort.addParameter(new Parameter("startDate", "startDate", Date.class));
 		consultationSheetBaseCohort.addParameter(new Parameter("endDate", "endDate", Date.class));
-
+		consultationSheetBaseCohort.addParameter(encounterTypes);
 		consultationSheetBaseCohort.getSearches().put(
 				"1",
 				new Mapped<CohortDefinition>(locationDefinition,
@@ -143,12 +158,12 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		consultationSheetBaseCohort.getSearches().put(
 				"2",
-				new Mapped<CohortDefinition>(Cohorts.getPatientReturnVisitByStartDateAndEndDate("patientsWithVisitInPeriod",breastAndCervicalScreeningEncounterTypes), ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")));
+				new Mapped<CohortDefinition>(patientsWithVisitInPeriod, ParameterizableUtil.createParameterMappings("encounterTypes=${encounterTypes},endDate=${endDate},startDate=${startDate}")));
 
 		consultationSheetBaseCohort.setCompositionString("1 AND 2");
 
 		reportDefinition.setBaseCohortDefinition(consultationSheetBaseCohort,
-				ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate},startDate=${startDate}"));
+				ParameterizableUtil.createParameterMappings("location=${location},encounterTypes=${encounterTypes},endDate=${endDate},startDate=${startDate}"));
 
 		createConsultDataSetDefinition (reportDefinition);
 		Helper.saveReportDefinition(reportDefinition);
@@ -172,7 +187,6 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		Parameter encounterTypes = new Parameter("encounterTypes", "Encounter", EncounterType.class);
 		encounterTypes.setRequired(false);
-		reportDefinition.addParameter(location);
 		reportDefinition.addParameter(encounterTypes);
 
 
@@ -206,12 +220,12 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		missedVisitBaseCohort.getSearches().put(
 				"2",
-				new Mapped<CohortDefinition>(missedVisit, ParameterizableUtil.createParameterMappings("encounterTypes={encounterTypes},endDate=${endDate}")));
+				new Mapped<CohortDefinition>(missedVisit, ParameterizableUtil.createParameterMappings("encounterTypes=${encounterTypes},endDate=${endDate}")));
 
 		missedVisitBaseCohort.setCompositionString("1 AND 2");
 
 		reportDefinition.setBaseCohortDefinition(missedVisitBaseCohort,
-				ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate},encounterTypes={encounterTypes}"));
+				ParameterizableUtil.createParameterMappings("location=${location},endDate=${endDate},encounterTypes=${encounterTypes}"));
 
 		createMissedVisitDataSetDefinition(reportDefinition);
 
@@ -370,7 +384,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("nextScheduledDate",gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),null,breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
 
 		// hasPatientBeenReferred_cervical. Breast use different concept
-		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referred",hasPatientBeenReferred_cervical,null,breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referred",hasPatientBeenReferred_cervical,null,breastAndCervicalScreeningEncounterTypes,new DateFormatFilter()), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true), new HashMap<String, Object>());
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredBreast",reasonsForReferral,breastCancerforms,breastScreeningEncounterTypes,null), new HashMap<String, Object>());
