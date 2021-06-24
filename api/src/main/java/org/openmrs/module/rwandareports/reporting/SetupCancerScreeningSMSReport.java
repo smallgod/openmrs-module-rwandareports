@@ -2,6 +2,7 @@ package org.openmrs.module.rwandareports.reporting;
 
 import org.openmrs.*;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -82,11 +83,19 @@ public class SetupCancerScreeningSMSReport {
 
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("ONC-Cancer Screening SMS Report");
-		reportDefinition.addParameter(new Parameter("location", "Health Facility", Location.class));
+		Parameter location = new Parameter("location", "Health Facility", Location.class);
+		location.setRequired(false);
+		reportDefinition.addParameter(location);
+		//reportDefinition.addParameter(new Parameter("location", "Health Facility", Location.class));
 		reportDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
 		reportDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));
 
-		reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
+		SqlCohortDefinition locationDefinition = new SqlCohortDefinition();
+		locationDefinition.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and (:location is null or pa.value = :location)");
+		locationDefinition.setName("locationDefinition");
+		locationDefinition.addParameter(location);
+
+		reportDefinition.setBaseCohortDefinition(locationDefinition,
 				ParameterizableUtil.createParameterMappings("location=${location}"));
 
 		createsmsDataSetDefinition (reportDefinition);
@@ -101,7 +110,10 @@ public class SetupCancerScreeningSMSReport {
 		// Create new dataset definition
 		RowPerPatientDataSetDefinition dataSetDef = new RowPerPatientDataSetDefinition();
 		dataSetDef.setName("SMS Data set");
-		dataSetDef.addParameter(new Parameter("location", "location", Date.class));
+		Parameter location = new Parameter("location", "Health Facility", Location.class);
+		location.setRequired(false);
+		dataSetDef.addParameter(location);
+		//dataSetDef.addParameter(new Parameter("location", "location", Date.class));
 		dataSetDef.addParameter(new Parameter("startDate", "startDate", Date.class));
 		dataSetDef.addParameter(new Parameter("endDate", "endDate", Date.class));
 
