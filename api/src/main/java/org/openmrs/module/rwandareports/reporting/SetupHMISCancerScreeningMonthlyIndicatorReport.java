@@ -48,6 +48,8 @@ public class SetupHMISCancerScreeningMonthlyIndicatorReport {
 
     private  List<Form> screeningExaminationForms =new ArrayList<Form>();
 
+    private  List<Form> screeningCervicalForms = new ArrayList<Form>();
+
     private  List<String> parameterNames=new ArrayList<String>();
 
     private Concept screeningType;
@@ -246,7 +248,7 @@ public class SetupHMISCancerScreeningMonthlyIndicatorReport {
 
     private void createMonthlyIndicators(CohortIndicatorDataSetDefinition dsd) {
 
-SqlCohortDefinition screenedForCervicalCancerWithHPV=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithHPV",screeningExaminationForms,screeningType,HPV);
+SqlCohortDefinition screenedForCervicalCancerWithHPV=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithHPV",screeningCervicalForms,screeningType,HPV);
 
 GenderCohortDefinition female=Cohorts.createFemaleCohortDefinition("female");
 
@@ -304,7 +306,7 @@ dsd.addColumn("C1", "Number of women  screened for cervical cancer with HPV", ne
                 hivNegaveFemaleScreenedForCervicalCancerWithHPVIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 //============================================== C2 =============================================
-SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithHPVResult",oncologyScreeningLabResultsForms,testResult,testResults);
+SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithHPVResult",oncologyScreeningLabResultsForms,testResult,testResults);
 
         CompositionCohortDefinition femaleScreenedForCervicalCancerWithHPVResult=new CompositionCohortDefinition();
         femaleScreenedForCervicalCancerWithHPVResult.setName("femaleScreenedForCervicalCancerWithHPVResult");
@@ -355,7 +357,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
                 hivNegavefemaleScreenedForCervicalCancerWithHPVResultIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 //===================================== c3 ======================================
-        SqlCohortDefinition screenedForCervicalCancerWithPositiveHPVResult=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithHPVResult",oncologyScreeningLabResultsForms,testResult,positiveTestResults);
+        SqlCohortDefinition screenedForCervicalCancerWithPositiveHPVResult=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithHPVResult",oncologyScreeningLabResultsForms,testResult,positiveTestResults);
         CompositionCohortDefinition femaleScreenedForCervicalCancerWithPositiveHPVResult=new CompositionCohortDefinition();
         femaleScreenedForCervicalCancerWithPositiveHPVResult.setName("femaleScreenedForCervicalCancerWithPositiveHPVResult");
         femaleScreenedForCervicalCancerWithPositiveHPVResult.addParameter(new Parameter("startDate", "startDate", Date.class));
@@ -407,7 +409,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         //============================ c4 =========================================================
 
-        SqlCohortDefinition screenedForCervicalCancerWithPositiveHPVResultWithVIATriage=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithPositiveHPVResultWithVIATriage",cervicalCancerScreeningFollowupAndExaminationForms,typeOfVIAPerformed,VIATriageInList);
+        SqlCohortDefinition screenedForCervicalCancerWithPositiveHPVResultWithVIATriage=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithPositiveHPVResultWithVIATriage",cervicalCancerScreeningFollowupAndExaminationForms,typeOfVIAPerformed,VIATriageInList);
         CompositionCohortDefinition femalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage=new CompositionCohortDefinition();
         femalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.setName("femalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage");
         femalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.addParameter(new Parameter("startDate", "startDate", Date.class));
@@ -458,7 +460,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
 
 //========================================= 5 =============================================================
-        SqlCohortDefinition screenedForCervicalCancerWithVIATriageAndVIAAndElligibleResult=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult",cervicalCancerScreeningFollowupAndExaminationForms,VIAResults,VIAAndEligibleResults);
+        SqlCohortDefinition screenedForCervicalCancerWithVIATriageAndVIAAndElligibleResult=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult",cervicalCancerScreeningFollowupAndExaminationForms,VIAResults,VIAAndEligibleResults);
 
         CompositionCohortDefinition femalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult=new CompositionCohortDefinition();
         femalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult.setName("femalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult");
@@ -475,6 +477,21 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         dsd.addColumn("C5", "Number of women  tested HPV positive and VIA Triage positive: With Result VIA+ Eligible for Thermal ablation OR VIA+ Eligible for LEEP", new Mapped(
                 femalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResultIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
+        CompositionCohortDefinition hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult=new CompositionCohortDefinition();
+        hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult.setName("hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult");
+        hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult.addParameter(new Parameter("startDate", "startDate", Date.class));
+        hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult.addParameter(new Parameter("endDate", "endDate", Date.class));
+        hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult.getSearches().put("1",new Mapped<CohortDefinition>(femalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithVIATriageAndVIAAndElligibleResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult.getSearches().put("3",new Mapped<CohortDefinition>(hivPositivePatient, null));
+        hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult.setCompositionString("1 and 2 and 3");
+
+        CohortIndicator hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResultIndicator = Indicators.newCountIndicator("hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResultIndicator",
+                hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("C5P", "HIV Positive Number of women  tested HPV positive and VIA Triage positive: With Result VIA+ Eligible for Thermal ablation OR VIA+ Eligible for LEEP", new Mapped(
+                hivPositiveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResultIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 
         CompositionCohortDefinition hivNegaveFemalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult=new CompositionCohortDefinition();
@@ -495,7 +512,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
 
         //================================================ c6 ===================================================================
-        SqlCohortDefinition screenedForCervicalCancerWithVIANegativeResult=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIANegativeResult",cervicalCancerScreeningFollowupAndExaminationForms,VIAResults, VIANegativeInList);
+        SqlCohortDefinition screenedForCervicalCancerWithVIANegativeResult=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIANegativeResult",cervicalCancerScreeningFollowupAndExaminationForms,VIAResults, VIANegativeInList);
 
         CompositionCohortDefinition femalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIANegativeResult=new CompositionCohortDefinition();
         femalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIANegativeResult.setName("femalesscreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIAAndElligibleResult");
@@ -546,7 +563,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
                 hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriageAndVIANegativeResultIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
         //============================================== c7 ======================================================
-        SqlCohortDefinition screenedForCervicalCancerWithVIAScreen=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithPositiveHPVResultWithVIATriage",cervicalCancerScreeningFollowupAndExaminationForms,typeOfVIAPerformed,VIAScreenInList);
+        SqlCohortDefinition screenedForCervicalCancerWithVIAScreen=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithPositiveHPVResultWithVIATriage",cervicalCancerScreeningFollowupAndExaminationForms,typeOfVIAPerformed,VIAScreenInList);
 
         CompositionCohortDefinition femalescreenedForCervicalCancerWithVIAScreen=new CompositionCohortDefinition();
         femalescreenedForCervicalCancerWithVIAScreen.setName("femalescreenedForCervicalCancerWithVIAScreen");
@@ -700,7 +717,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
 // ============================================================ c10 ==============================================================
 
-        SqlCohortDefinition screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithThermalAblationAndLEEPTreatmentType",cervicalCancerScreeningFollowupAndExaminationForms,typeOfTreatmentPerformed, thermalAblationAndCryotherapyList);
+        SqlCohortDefinition screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithThermalAblationAndLEEPTreatmentType",cervicalCancerScreeningFollowupAndExaminationForms,typeOfTreatmentPerformed, thermalAblationAndCryotherapyList);
 
         CompositionCohortDefinition femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
         femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.setName("femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType");
@@ -752,7 +769,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
                 hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
         //=========================================================== c11 =====================================================================
-        SqlCohortDefinition screenedForCervicalCancerWithLEEPAsReasonsForReferral=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",cervicalCancerScreeningFollowupAndExaminationForms,reasonsForReferral, LEEPAndColposcopy);
+        SqlCohortDefinition screenedForCervicalCancerWithLEEPAsReasonsForReferral=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",cervicalCancerScreeningFollowupAndExaminationForms,reasonsForReferral, LEEPAndColposcopy);
 
         CompositionCohortDefinition femalescreenedForCervicalCancerWithLEEPAsReasonsForReferral=new CompositionCohortDefinition();
         femalescreenedForCervicalCancerWithLEEPAsReasonsForReferral.setName("femalescreenedForCervicalCancerWithLEEPAsReasonsForReferral");
@@ -803,7 +820,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
                 hivNegaveFemalescreenedForCervicalCancerWithLEEPAsReasonsForReferralIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 //============================================================= c12 =================================
-        SqlCohortDefinition screenedForCervicalCancerWithVIASuspectedCancer=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithVIASuspectedCancer",cervicalCancerScreeningFollowupAndExaminationForms,VIAResults, suspectedCancerInList);
+        SqlCohortDefinition screenedForCervicalCancerWithVIASuspectedCancer=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithVIASuspectedCancer",cervicalCancerScreeningFollowupAndExaminationForms,VIAResults, suspectedCancerInList);
         CompositionCohortDefinition femalescreenedForCervicalCancerWithVIASuspectedCancer=new CompositionCohortDefinition();
         femalescreenedForCervicalCancerWithVIASuspectedCancer.setName("femalescreenedForCervicalCancerWithVIASuspectedCancer");
         femalescreenedForCervicalCancerWithVIASuspectedCancer.addParameter(new Parameter("startDate", "startDate", Date.class));
@@ -854,7 +871,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
 
 //=================================================== c14 =========================================
-        SqlCohortDefinition screenedForCervicalCancerWithSuspectedCancerAsReasonsForReferral=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",cervicalCancerScreeningFollowupAndExaminationForms,reasonsForReferral, suspectedCancerInList);
+        SqlCohortDefinition screenedForCervicalCancerWithSuspectedCancerAsReasonsForReferral=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",cervicalCancerScreeningFollowupAndExaminationForms,reasonsForReferral, suspectedCancerInList);
 
         CompositionCohortDefinition femalescreenedForCervicalCancerWithSuspectedCancerAsReasonsForReferral=new CompositionCohortDefinition();
         femalescreenedForCervicalCancerWithSuspectedCancerAsReasonsForReferral.setName("femalescreenedForCervicalCancerWithSuspectedCancerAsReasonsForReferral");
@@ -908,7 +925,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 // ========================================================= c18 ======================================================
 
 
-        SqlCohortDefinition screenedForCervicalCancerWithLEEPAsTreatmentPerformed=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",cervicalCancerScreeningFollowupAndExaminationForms,typeOfTreatmentPerformed, loopElectrosurgicalExcisionProcedureInList);
+        SqlCohortDefinition screenedForCervicalCancerWithLEEPAsTreatmentPerformed=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",cervicalCancerScreeningFollowupAndExaminationForms,typeOfTreatmentPerformed, loopElectrosurgicalExcisionProcedureInList);
 
         CompositionCohortDefinition femalescreenedForCervicalCancerWithLEEPAsTreatmentPerformed=new CompositionCohortDefinition();
         femalescreenedForCervicalCancerWithLEEPAsTreatmentPerformed.setName("femalescreenedForCervicalCancerWithLEEPAsTreatmentPerformed");
@@ -960,7 +977,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
 
         //========================================================= c19 =================================================
-        SqlCohortDefinition screenedForCervicalCancerWithBiobsyPerformed=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",cervicalCancerScreeningFollowupAndExaminationForms,biopsyperformed, yesInList);
+        SqlCohortDefinition screenedForCervicalCancerWithBiobsyPerformed=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",cervicalCancerScreeningFollowupAndExaminationForms,biopsyperformed, yesInList);
 
         CompositionCohortDefinition femalescreenedForCervicalCancerWithBiobsyPerformed=new CompositionCohortDefinition();
         femalescreenedForCervicalCancerWithBiobsyPerformed.setName("femalescreenedForCervicalCancerWithBiobsyPerformed");
@@ -1016,7 +1033,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
 
 
-        SqlCohortDefinition screenedForCervicalCancerWithLEEPAndColscopyAsReasonsForReferral=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",screeningExaminationForms,reasonsForReferralIn, LEEPAndColposcopy);
+        SqlCohortDefinition screenedForCervicalCancerWithLEEPAndColscopyAsReasonsForReferral=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",screeningCervicalForms,reasonsForReferralIn, LEEPAndColposcopy);
 
 
         CompositionCohortDefinition screenedForCervicalCancerWithLEEPAndColscopyAsReasonsForReferralRecevedAtHospital=new CompositionCohortDefinition();
@@ -1074,7 +1091,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
 //========================================================================== c17 ===============================================
 
-        SqlCohortDefinition screenedForCervicalCancerWithSuspectedCancerAsReasonsForReferralInTransferIn=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",screeningExaminationForms,reasonsForReferralIn, suspectedCancerInList);
+        SqlCohortDefinition screenedForCervicalCancerWithSuspectedCancerAsReasonsForReferralInTransferIn=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",screeningCervicalForms,reasonsForReferralIn, suspectedCancerInList);
 
 
         CompositionCohortDefinition screenedForCervicalCancerWithSuspectedCancerAsReasonsForReferralRecevedAtHospital=new CompositionCohortDefinition();
@@ -1144,7 +1161,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         AgeCohortDefinition above50y = Cohorts.createAboveAgeCohort("50YearAndAbove", 50, DurationUnit.YEARS);
 
 
-        SqlCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms",breastCancerScreeningForms,reasonForBreastExam,breastSymptoms);
+        SqlCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms",breastCancerScreeningForms,reasonForBreastExam,breastSymptoms);
 
         CompositionCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition=new CompositionCohortDefinition();
         screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition.setName("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition");
@@ -1219,7 +1236,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         // B2. Number of people  not reporting breast symptoms received screening with clinical breast exam
 
 
-        SqlCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsScreeningNoSymptoms=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithReasonForBreastExamAsScreeningNoSymptoms",breastCancerScreeningForms,reasonForBreastExam,screening);
+        SqlCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsScreeningNoSymptoms=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithReasonForBreastExamAsScreeningNoSymptoms",breastCancerScreeningForms,reasonForBreastExam,screening);
 
         CompositionCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsScreeningNoSymptomsComposition=new CompositionCohortDefinition();
         screenedForBreastCancerWithReasonForBreastExamAsScreeningNoSymptomsComposition.setName("screenedForBreastCancerWithReasonForBreastExamAsScreeningNoSymptomsComposition");
@@ -1295,7 +1312,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         // B3. Number of people reporting symptoms whose clinical breast exam shows abnormal breast findings
 
-        SqlCohortDefinition screenedForBreastCancerWithAbnormalBreastFindings=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithAbnormalBreastFindings",breastCancerScreeningForms,breastExamination,ABNORMAL);
+        SqlCohortDefinition screenedForBreastCancerWithAbnormalBreastFindings=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithAbnormalBreastFindings",breastCancerScreeningForms,breastExamination,ABNORMAL);
 
         CompositionCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition=new CompositionCohortDefinition();
         screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition.setName("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition");
@@ -1458,11 +1475,11 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         // B5. Number of people treated for breast concerns without requiring referral
 
-        SqlCohortDefinition screenedForBreastCancerWithReferral=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithRefferal",breastCancerScreeningForms,nextStep,referredTo);
-        SqlCohortDefinition screenedForBreastCancerWithReasonForReferralAsFurtherManagement=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsFurtherManagement",breastCancerScreeningForms,reasonsForReferral,furtherManagement);
-        SqlCohortDefinition screenedForBreastCancerWithReasonForReferralAsImaging=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsImaging",breastCancerScreeningForms,reasonsForReferral,medicalImaging);
-        SqlCohortDefinition screenedForBreastCancerWithReasonForReferralAsBiopsy=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsBiopsy",breastCancerScreeningForms,reasonsForReferral,BIOPSY);
-        SqlCohortDefinition screenedForBreastCancerWithOtherReason=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithOtherReason",breastCancerScreeningForms,reasonsForReferral,OTHERNONCODED);
+        SqlCohortDefinition screenedForBreastCancerWithReferral=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithRefferal",breastCancerScreeningForms,nextStep,referredTo);
+        SqlCohortDefinition screenedForBreastCancerWithReasonForReferralAsFurtherManagement=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsFurtherManagement",breastCancerScreeningForms,reasonsForReferral,furtherManagement);
+        SqlCohortDefinition screenedForBreastCancerWithReasonForReferralAsImaging=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsImaging",breastCancerScreeningForms,reasonsForReferral,medicalImaging);
+        SqlCohortDefinition screenedForBreastCancerWithReasonForReferralAsBiopsy=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsBiopsy",breastCancerScreeningForms,reasonsForReferral,BIOPSY);
+        SqlCohortDefinition screenedForBreastCancerWithOtherReason=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithOtherReason",breastCancerScreeningForms,reasonsForReferral,OTHERNONCODED);
 
 
         CompositionCohortDefinition numberOfPeopleTreatedForBreastConcernsWithoutRequiringReferralComposition=new CompositionCohortDefinition();
@@ -1658,10 +1675,10 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         // B7. Number of people referred from Health center  to the hospital for abnormal breast findings received by the hospital
 
-        SqlCohortDefinition tranferInForBreastCancerWithReasonForReferralAsFurtherManagement=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsFurtherManagement",breastCancerScreeningForms,reasonsForReferralIn,furtherManagement);
-        SqlCohortDefinition tranferInForBreastCancerWithReasonForReferralAsImaging=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsImaging",breastCancerScreeningForms,reasonsForReferralIn,medicalImaging);
-        SqlCohortDefinition tranferInForBreastCancerWithReasonForReferralAsBiopsy=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsBiopsy",breastCancerScreeningForms,reasonsForReferralIn,BIOPSY);
-        SqlCohortDefinition tranferInForBreastCancerWithOtherReason=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForBreastCancerWithOtherReason",breastCancerScreeningForms,reasonsForReferralIn,OTHERNONCODED);
+        SqlCohortDefinition tranferInForBreastCancerWithReasonForReferralAsFurtherManagement=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsFurtherManagement",breastCancerScreeningForms,reasonsForReferralIn,furtherManagement);
+        SqlCohortDefinition tranferInForBreastCancerWithReasonForReferralAsImaging=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsImaging",breastCancerScreeningForms,reasonsForReferralIn,medicalImaging);
+        SqlCohortDefinition tranferInForBreastCancerWithReasonForReferralAsBiopsy=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithReasonForReferralAsBiopsy",breastCancerScreeningForms,reasonsForReferralIn,BIOPSY);
+        SqlCohortDefinition tranferInForBreastCancerWithOtherReason=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithOtherReason",breastCancerScreeningForms,reasonsForReferralIn,OTHERNONCODED);
 
         CompositionCohortDefinition transferedInForAbnormalBreastfindingsAndReachedTheHospital=new CompositionCohortDefinition();
         transferedInForAbnormalBreastfindingsAndReachedTheHospital.setName("transferedInForAbnormalBreastfindingsAndReachedTheHospital");
@@ -1757,7 +1774,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         // B8. Number of people receiving diagnostic with  breast ultrasound
 
-        SqlCohortDefinition numberofPeopleReceivingDiagnosticWithBreastUltrasound=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("numberofPeopleReceivingDiagnosticWithBreastUltrasound",breastCancerScreeningForms,breastUltrasound,YES);
+        SqlCohortDefinition numberofPeopleReceivingDiagnosticWithBreastUltrasound=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberofPeopleReceivingDiagnosticWithBreastUltrasound",breastCancerScreeningForms,breastUltrasound,YES);
 
 
         CompositionCohortDefinition numberofPeopleReceivingDiagnosticWithBreastUltrasoundComposition=new CompositionCohortDefinition();
@@ -1833,8 +1850,8 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         // B9. Number of  screened people with suspected breast cancer at breast ultrasound
 
-        SqlCohortDefinition numberOfScreenedPeopleWithIntermediateSolidMass=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("numberOfScreenedPeopleWithIntermediateSolidMass",breastCancerScreeningForms,solidMass,intermediate);
-        SqlCohortDefinition numberOfScreenedPeopleWithHighSuspiciousForMalignancySolidMass=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("numberOfScreenedPeopleWithHighSuspiciousForMalignancySolidMass",breastCancerScreeningForms,solidMass,highSuspiciousForMalignancy);
+        SqlCohortDefinition numberOfScreenedPeopleWithIntermediateSolidMass=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfScreenedPeopleWithIntermediateSolidMass",breastCancerScreeningForms,solidMass,intermediate);
+        SqlCohortDefinition numberOfScreenedPeopleWithHighSuspiciousForMalignancySolidMass=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfScreenedPeopleWithHighSuspiciousForMalignancySolidMass",breastCancerScreeningForms,solidMass,highSuspiciousForMalignancy);
 
         CompositionCohortDefinition numberOfScreenedPeopleWithSuspectedBreastCancerAtBreastUltrasoundComposition=new CompositionCohortDefinition();
         numberOfScreenedPeopleWithSuspectedBreastCancerAtBreastUltrasoundComposition.setName("numberOfScreenedPeopleWithSuspectedBreastCancerAtBreastUltrasoundComposition");
@@ -1917,7 +1934,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         // B10. Number of  women with breast biopsy performed
 
-        SqlCohortDefinition numberOfPatientWithBreastBiopsyPerformed=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("numberOfWomenWithBreastBiopsyPerformed",breastCancerScreeningForms,proceduresDone,BIOPSY);
+        SqlCohortDefinition numberOfPatientWithBreastBiopsyPerformed=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfWomenWithBreastBiopsyPerformed",breastCancerScreeningForms,proceduresDone,BIOPSY);
 
         CompositionCohortDefinition numberOfWomenWithBreastBiopsyPerformedComposition=new CompositionCohortDefinition();
         numberOfWomenWithBreastBiopsyPerformedComposition.setName("numberOfWomenWithBreastBiopsyPerformedComposition");
@@ -1999,7 +2016,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         //B12. Number of women screened for cervical cancer with  Papsmear/cytology
 
-        SqlCohortDefinition screenedForCervicalCancerWithPapSmear=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithPapSmear",screeningExaminationForms,screeningType,PAPANICOLAOUSMEAR);
+        SqlCohortDefinition screenedForCervicalCancerWithPapSmear=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithPapSmear",screeningExaminationForms,screeningType,PAPANICOLAOUSMEAR);
 
         CompositionCohortDefinition femaleScreenedForCervicalCancerWithPapSmear=new CompositionCohortDefinition();
         femaleScreenedForCervicalCancerWithPapSmear.setName("femaleScreenedForCervicalCancerWithPapSmear");
@@ -2076,7 +2093,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         //B13. Number of women  screened  with Papsmear with abnomal papsmear result
 
-        SqlCohortDefinition screenedForCervicalCancerWithAbnormalPapSmearResults=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithAbnormalPapSmearResults",screeningExaminationForms,PAPANICOLAOUSMEAR,ABNORMAL);
+        SqlCohortDefinition screenedForCervicalCancerWithAbnormalPapSmearResults=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithAbnormalPapSmearResults",screeningExaminationForms,PAPANICOLAOUSMEAR,ABNORMAL);
 
         CompositionCohortDefinition femaleScreenedForCervicalCancerWithAbnormalPapSmearResults=new CompositionCohortDefinition();
         femaleScreenedForCervicalCancerWithAbnormalPapSmearResults.setName("femaleScreenedForCervicalCancerWithAbnormalPapSmearResults");
@@ -2158,7 +2175,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         //B14. Number of women  screened  with Papsmear with normal papsmear result
 
-        SqlCohortDefinition screenedForCervicalCancerWithNormalPapSmearResults=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("screenedForCervicalCancerWithNormalPapSmearResults",screeningExaminationForms,PAPANICOLAOUSMEAR,NORMAL);
+        SqlCohortDefinition screenedForCervicalCancerWithNormalPapSmearResults=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithNormalPapSmearResults",screeningExaminationForms,PAPANICOLAOUSMEAR,NORMAL);
 
         CompositionCohortDefinition femaleScreenedForCervicalCancerWithNormalPapSmearResults=new CompositionCohortDefinition();
         femaleScreenedForCervicalCancerWithNormalPapSmearResults.setName("femaleScreenedForCervicalCancerWithNormalPapSmearResults");
@@ -2240,8 +2257,8 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         //B15. Number of  biopsy confirmed cervical cancer
 
-        SqlCohortDefinition numberOfConfirmedCancer=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("numberOfConfirmedCancer",diagnosisScreeningForms,CONFIRMEDDIAGNOSIS,YES);
-        SqlCohortDefinition numberOfCervicalCancerDiagnised=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("numberOfCervicalCancerDiagnised",diagnosisScreeningForms,confirmedCancerDiagnosis,cervicalCancer);
+        SqlCohortDefinition numberOfConfirmedCancer=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfConfirmedCancer",diagnosisScreeningForms,CONFIRMEDDIAGNOSIS,YES);
+        SqlCohortDefinition numberOfCervicalCancerDiagnised=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfCervicalCancerDiagnised",diagnosisScreeningForms,confirmedCancerDiagnosis,cervicalCancer);
 
         CompositionCohortDefinition numberOfBiopsyConfirmedCervicalCancer=new CompositionCohortDefinition();
         numberOfBiopsyConfirmedCervicalCancer.setName("numberOfBiopsyConfirmedCervicalCancer");
@@ -2319,7 +2336,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         //B16. Number of people with biopsy confimed Breast cancer
 
-        SqlCohortDefinition numberOfBreastCancerDiagnised=Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("numberOfBreastCancerDiagnised",diagnosisScreeningForms,confirmedCancerDiagnosis,breastCancer);
+        SqlCohortDefinition numberOfBreastCancerDiagnised=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfBreastCancerDiagnised",diagnosisScreeningForms,confirmedCancerDiagnosis,breastCancer);
 
         CompositionCohortDefinition numberOfBiopsyConfirmedBreastCancer=new CompositionCohortDefinition();
         numberOfBiopsyConfirmedBreastCancer.setName("numberOfBiopsyConfirmedBreastCancer");
@@ -2405,10 +2422,25 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         parameterNames.add("onOrBefore");
         parameterNames.add("onOrAfter");
 
+        mUzimaCervicalCancerScreeningFollowup=Context.getFormService().getFormByUuid("94470633-8a84-4430-9910-10dcd628a0a2");
+        OncologyCervicalScreeningFollowUp=Context.getFormService().getFormByUuid("9de98350-bc86-4012-a559-fcce13fc10c5");
+
+
         screeningExaminationForms.add(oncologyBreastScreeningExamination);
         screeningExaminationForms.add(oncologyCervicalScreeningExamination);
         screeningExaminationForms.add(mUzimaBreastScreening);
         screeningExaminationForms.add(mUzimaCervicalScreening);
+        screeningExaminationForms.add(mUzimaCervicalCancerScreeningFollowup);
+        screeningExaminationForms.add(OncologyCervicalScreeningFollowUp);
+
+        screeningCervicalForms.add(oncologyCervicalScreeningExamination);
+        screeningCervicalForms.add(mUzimaBreastScreening);
+        screeningCervicalForms.add(mUzimaCervicalScreening);
+        screeningCervicalForms.add(mUzimaCervicalCancerScreeningFollowup);
+        screeningCervicalForms.add(OncologyCervicalScreeningFollowUp);
+
+
+
         screeningType=Context.getConceptService().getConceptByUuid("7e4e6554-d6c5-4ca3-b371-49806a754992");
         HPV=Context.getConceptService().getConceptByUuid("f7c2d59d-2043-42ce-b04d-08564d54b0c7");
 
@@ -2418,6 +2450,11 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         oncologyScreeningLabResultsForms.add(oncologyScreeningLabResultsForm);
         oncologyScreeningLabResultsForms.add(muzimaOncologyScreeningLabResults);
+       /* oncologyScreeningLabResultsForms.add(mUzimaCervicalCancerScreeningFollowup);
+        oncologyScreeningLabResultsForms.add(OncologyCervicalScreeningFollowUp);
+        oncologyScreeningLabResultsForms.add(oncologyCervicalScreeningExamination);
+        oncologyScreeningLabResultsForms.add(mUzimaCervicalScreening);*/
+
 
         testResult=Context.getConceptService().getConceptByUuid("bfb3eb1e-db98-4846-9915-0168511c6298");
         HPVpositive=Context.getConceptService().getConceptByUuid("1b4a5f67-6106-4a4d-a389-2f430be543e4");
@@ -2426,8 +2463,6 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         testResults.add(HPVNegative);
         positiveTestResults.add(HPVpositive);
 
-        mUzimaCervicalCancerScreeningFollowup=Context.getFormService().getFormByUuid("94470633-8a84-4430-9910-10dcd628a0a2");
-        OncologyCervicalScreeningFollowUp=Context.getFormService().getFormByUuid("9de98350-bc86-4012-a559-fcce13fc10c5");
 
         cervicalCancerScreeningFollowupAndExaminationForms.add(mUzimaCervicalCancerScreeningFollowup);
         cervicalCancerScreeningFollowupAndExaminationForms.add(OncologyCervicalScreeningFollowUp);
@@ -2435,7 +2470,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         cervicalCancerScreeningFollowupAndExaminationForms.add(mUzimaCervicalScreening);
 
         typeOfVIAPerformed=Context.getConceptService().getConceptByUuid("820b0e37-5d3e-46c6-9462-a8e7adaff954");
-        VIATriage=Context.getConceptService().getConceptByUuid("69a0ca97-2fee-4c4a-9d84-4f2c25f70c93");
+        VIATriage=Context.getConceptService().getConceptByUuid("690d8a13-a1ac-4fd7-97a4-f3964b97f049");
         VIATriageInList.add(VIATriage);
 
         VIAResults = Context.getConceptService().getConceptByUuid("a37a937a-a2a6-4c22-975f-986fb3599ea3");
@@ -2448,7 +2483,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         VIANegative = Context.getConceptService().getConceptByUuid("a7b08a37-0380-49dd-8f12-c2c2c76c8b13");
         VIANegativeInList.add(VIANegative);
 
-        VIAScreen = Context.getConceptService().getConceptByUuid("690d8a13-a1ac-4fd7-97a4-f3964b97f049");
+        VIAScreen = Context.getConceptService().getConceptByUuid("69a0ca97-2fee-4c4a-9d84-4f2c25f70c93");
         VIAScreenInList.add(VIAScreen);
 
 
