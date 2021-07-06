@@ -2709,5 +2709,66 @@ int i=0;
 
 		return birthdate;
 	}
+		public static SqlCohortDefinition getPatientsWithObservationInEncounterBetweenStartAndEndDate(String name, List<Form> forms,Concept concept,List<Concept> obsAnswers) {
+		SqlCohortDefinition query = new SqlCohortDefinition();
+		StringBuilder queryStr = new StringBuilder();
+		queryStr.append("select e.patient_id from encounter e, obs o where e.form_id in(");
+
+		int i = 0;
+		for (Form f : forms) {
+			if (i > 0) {
+				queryStr.append(",");
+			}
+			queryStr.append(f.getId());
+
+			i++;
+		}
+
+		queryStr.append(") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and e.voided=0 and e.encounter_id=o.encounter_id and o.voided=0 and o.concept_id=");
+		queryStr.append(concept.getId());
+		queryStr.append(" and o.value_coded in (");
+
+		int y = 0;
+		for (Concept c : obsAnswers) {
+			if (y > 0) {
+				queryStr.append(",");
+			}
+			queryStr.append(c.getId());
+
+			y++;
+		}
+		queryStr.append(")");
+		query.setQuery(queryStr.toString());
+		query.setName(name);
+		query.addParameter(new Parameter("startDate", "startDate", Date.class));
+		query.addParameter(new Parameter("endDate", "endDate", Date.class));
+		return query;
+	}
+	public static SqlCohortDefinition getPatientsWithObservationInEncounterBetweenStartAndEndDate(String name, List<Form> forms,Concept concept,Concept obsAnswer) {
+		SqlCohortDefinition query = new SqlCohortDefinition();
+		StringBuilder queryStr = new StringBuilder();
+		queryStr.append("select e.patient_id from encounter e, obs o where e.form_id in(");
+
+		int i = 0;
+		for (Form f : forms) {
+			if (i > 0) {
+				queryStr.append(",");
+			}
+			queryStr.append(f.getId());
+
+			i++;
+		}
+
+		queryStr.append(") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and e.voided=0 and e.encounter_id=o.encounter_id and o.voided=0 and o.concept_id=");
+		queryStr.append(concept.getId());
+		queryStr.append(" and o.value_coded=");
+		queryStr.append(obsAnswer.getId());
+		query.setQuery(queryStr.toString());
+		query.setName(name);
+		query.addParameter(new Parameter("startDate", "startDate", Date.class));
+		query.addParameter(new Parameter("endDate", "endDate", Date.class));
+		return query;
+	}
+
 
 }
