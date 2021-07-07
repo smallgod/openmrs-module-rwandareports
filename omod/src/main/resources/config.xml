@@ -2708,6 +2708,12 @@
 	</globalProperty>
 	
 	<globalProperty>
+		<property>reports.HMISDataSetToSend</property>
+		<defaultValue>Encounter HMIS Cancer Screening Data Set</defaultValue>
+		<description>The name of the dataset to send to DHIS2</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>reports.LocationsToOrgUnitsMapping</property>
 		<defaultValue>{ "Muhoza (Ruhengeri) CS": "X3VDRgqWC8F", "Muhoza (Ruhengeri) MU": "q7jPDaJrn0p", "Muhura": "t5RmUHwTqoY", "Muhura CS": "djGdJzEZZpL" }</defaultValue>
 		<description>Mapping of OpenMRS Locations to DHIS2 Organization Units</description>
