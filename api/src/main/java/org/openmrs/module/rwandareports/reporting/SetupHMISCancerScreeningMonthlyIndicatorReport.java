@@ -357,7 +357,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
                 hivNegavefemaleScreenedForCervicalCancerWithHPVResultIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 //===================================== c3 ======================================
-        SqlCohortDefinition screenedForCervicalCancerWithPositiveHPVResult=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithHPVResult",oncologyScreeningLabResultsForms,testResult,positiveTestResults);
+        SqlCohortDefinition screenedForCervicalCancerWithPositiveHPVResult=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithHPVResult",cervicalCancerScreeningFollowupAndExaminationForms,testResult,positiveTestResults);
         CompositionCohortDefinition femaleScreenedForCervicalCancerWithPositiveHPVResult=new CompositionCohortDefinition();
         femaleScreenedForCervicalCancerWithPositiveHPVResult.setName("femaleScreenedForCervicalCancerWithPositiveHPVResult");
         femaleScreenedForCervicalCancerWithPositiveHPVResult.addParameter(new Parameter("startDate", "startDate", Date.class));
@@ -430,7 +430,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         hivFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.setName("hivFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage");
         hivFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.addParameter(new Parameter("startDate", "startDate", Date.class));
         hivFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.addParameter(new Parameter("endDate", "endDate", Date.class));
-        hivFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.getSearches().put("1",new Mapped<CohortDefinition>(femaleScreenedForCervicalCancerWithPositiveHPVResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.getSearches().put("1",new Mapped<CohortDefinition>(femalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         hivFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithPositiveHPVResultWithVIATriage, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         hivFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.getSearches().put("3",new Mapped<CohortDefinition>(hivPositivePatient, null));
         hivFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.setCompositionString("1 and 2 and 3");
@@ -446,7 +446,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.setName("hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage");
         hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.addParameter(new Parameter("startDate", "startDate", Date.class));
         hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.addParameter(new Parameter("endDate", "endDate", Date.class));
-        hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.getSearches().put("1",new Mapped<CohortDefinition>(femaleScreenedForCervicalCancerWithPositiveHPVResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.getSearches().put("1",new Mapped<CohortDefinition>(femalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithPositiveHPVResultWithVIATriage, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.getSearches().put("3",new Mapped<CohortDefinition>(hivPositivePatient, null));
         hivNegaveFemalescreenedForCervicalCancerWithPositiveHPVResultWithVIATriage.setCompositionString("1 and 2 and (not 3)");
@@ -2422,7 +2422,8 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         parameterNames.add("onOrBefore");
         parameterNames.add("onOrAfter");
 
-        mUzimaCervicalCancerScreeningFollowup=Context.getFormService().getFormByUuid("94470633-8a84-4430-9910-10dcd628a0a2");
+        //mUzimaCervicalCancerScreeningFollowup=Context.getFormService().getFormByUuid("94470633-8a84-4430-9910-10dcd628a0a2");
+        mUzimaCervicalCancerScreeningFollowup=Context.getFormService().getForm("mUzima Cervical cancer screening follow up");
         OncologyCervicalScreeningFollowUp=Context.getFormService().getFormByUuid("9de98350-bc86-4012-a559-fcce13fc10c5");
 
 
@@ -2470,7 +2471,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         cervicalCancerScreeningFollowupAndExaminationForms.add(mUzimaCervicalScreening);
 
         typeOfVIAPerformed=Context.getConceptService().getConceptByUuid("820b0e37-5d3e-46c6-9462-a8e7adaff954");
-        VIATriage=Context.getConceptService().getConceptByUuid("690d8a13-a1ac-4fd7-97a4-f3964b97f049");
+        VIATriage=Context.getConceptService().getConceptByUuid("69a0ca97-2fee-4c4a-9d84-4f2c25f70c93");
         VIATriageInList.add(VIATriage);
 
         VIAResults = Context.getConceptService().getConceptByUuid("a37a937a-a2a6-4c22-975f-986fb3599ea3");
@@ -2483,7 +2484,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         VIANegative = Context.getConceptService().getConceptByUuid("a7b08a37-0380-49dd-8f12-c2c2c76c8b13");
         VIANegativeInList.add(VIANegative);
 
-        VIAScreen = Context.getConceptService().getConceptByUuid("69a0ca97-2fee-4c4a-9d84-4f2c25f70c93");
+        VIAScreen = Context.getConceptService().getConceptByUuid("690d8a13-a1ac-4fd7-97a4-f3964b97f049");
         VIAScreenInList.add(VIAScreen);
 
 
