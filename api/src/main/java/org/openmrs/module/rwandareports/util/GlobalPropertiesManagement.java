@@ -1306,5 +1306,12 @@ public class GlobalPropertiesManagement {
 	public final static String ASTHMA_ENROLLMENT_FORM = "reports.asthmaENROLLformId";
 	public final static String GESTATIONALAGEATBIRTHINWEEKS="reports.gestationalAgeAtBirthInWeeks";
 
+	public final static String PATHOLOGYENCOUNTERTYPE = "reports.pathologyReport.pathologyEncounterType";
+	public final static String PATHOLOGYREQUESTFORM =  "reports.pathologyReport.pathologyRequestForm";
+	public final static String PERSONATTRIBUTEPHONENUMBER = "reports.pathologyReport.personAttributePhoneNumber";
+	public final static String REFERRALSTATUSCONCEPT =	"reports.pathologyReport.referralStatusConcept";
+	public final static String SAMPLEDROPOFFCONCEPT = "reports.pathologyReport.sampleDropOffConcept";
+	public final static String SAMPLESTATUSCONCEPT = "reports.pathologyReport.sampleStatusConceptName";
+	public final static String  PATHOLOGYREQUESTENCOUNTERUUID =  "reports.pathologyReport.pathologyRequestEncounterUUID";
 
 }

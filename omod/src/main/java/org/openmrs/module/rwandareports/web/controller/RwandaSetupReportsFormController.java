@@ -893,4 +893,16 @@ public class RwandaSetupReportsFormController {
 		new SetupLabResultReports().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+
+	@RequestMapping("/module/rwandareports/register_PathologyRequestReport")
+	public ModelAndView registerPathologyRequestReport() throws Exception {
+		new SetupPathologyRequestReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_PathologyRequestReport")
+	public ModelAndView removePathologyRequestReport() throws Exception {
+		new SetupPathologyRequestReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 }

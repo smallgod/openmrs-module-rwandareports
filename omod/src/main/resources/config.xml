@@ -4424,5 +4424,47 @@
 		<description>IDs for Hospitals location separated by ','.</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.pathologyReport.pathologyEncounterType</property>
+		<defaultValue>ADULT RETURN VISIT</defaultValue>
+		<description>Pathology Encounter Type</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.pathologyReport.pathologyRequestForm</property>
+		<defaultValue>PROGRAMME ADULTE VIH - RENDEZ-VOUS - Rwanda Burera</defaultValue>
+		<description>Pathology Request Form</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.pathologyReport.personAttributePhoneNumber</property>
+		<defaultValue>Mobile phone</defaultValue>
+		<description>phone number person attribute</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.pathologyReport.referralStatusConcept</property>
+		<defaultValue>TUBERCULOSIS TREATMENT PLAN</defaultValue>
+		<description>concept: Referral status</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.pathologyReport.sampleDropOffConcept</property>
+		<defaultValue>HIV TEST</defaultValue>
+		<description>concept: Sample Drop Off Concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.pathologyReport.sampleStatusConceptName</property>
+		<defaultValue>WELL FOLLOWED BY COMMUNITY HEALTH WORKER</defaultValue>
+		<description>concept: Sample status</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.pathologyReport.pathologyRequestEncounterUUID</property>
+		<defaultValue>pathology request encounter UUID</defaultValue>
+		<description>concept: pathology request encounter UUID</description>
+	</globalProperty>
+
 
 </module>
