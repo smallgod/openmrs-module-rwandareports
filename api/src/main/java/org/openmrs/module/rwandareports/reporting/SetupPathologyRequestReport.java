@@ -65,63 +65,42 @@ public class SetupPathologyRequestReport implements SetupReport {
         sqldsd.setSqlQuery("select \n" +
                 "\tp.person_id as personId,\n" +
                 "\tp.uuid as patientUuid,\n" +
-                "\tpn.family_name,\n" +
-                "    pn.family_name2,\n" +
-                "    pn.middle_name,\n" +
-                "    pn.given_name,  \n" +
-                "    phone.value_text as patientPhoneNumber,\n" +
+                "\t(select family_name from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as family_name,\n" +
+                "    (select family_name2 from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as family_name2,\n" +
+                "    (select middle_name from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as middle_name,\n" +
+                "    (select given_name from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as given_name,  \n" +
+                "    (select value_text from obs  where concept_id= " + telephoneNumberConcept.getConceptId() + " and voided=0 and enc.patient_id = person_id order by obs_id desc limit 1) as patientPhoneNumber,\n" +
                 "    healthcenter.name as patientHealthCenter,\n" +
                 "    enc.encounter_id as encounterId,\n" +
                 "    enc.uuid as encounterUuid,\n" +
                 "    enc.encounter_datetime as encounterDatetime, \n" +
-                "    SAMPLESTATUS.name as sampleStatusObs, \n" +
-                "    SAMPLESTATUS.uuid as sampleStatusObsUuid,\n" +
-                "    REFERRALSTATUS.name as referralStatusObs, \n" +
-                "    REFERRALSTATUS.uuid as referralStatusObsUuid, \n" +
-                "    SAMPLEDROPOFF.name as sampleDropoffObs, \n" +
-                "    SAMPLEDROPOFF.uuid as sampleDropoffObsUuid, \n" +
-                "    requestUUIDObs.encounter_id as resultsEncounterId " +
+                "    (select cn.name from obs o left join concept_name cn on o.value_coded=cn.concept_id  \n" +
+                "\t\t\t\t\twhere o.concept_id= " + sampleStatusConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\" and o.encounter_id = enc.encounter_id order by obs_id desc limit 1 ) as sampleStatusObs, \n" +
+                "    (select o.uuid from obs o left join concept_name cn on o.value_coded=cn.concept_id  \n" +
+                "\t\t\twhere o.concept_id= " + sampleStatusConcept.getConceptId() + "  and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\" and o.encounter_id = enc.encounter_id order by obs_id desc limit 1 ) as sampleStatusObsUuid,\n" +
+                "    (select cn.name from obs o left join concept_name cn on o.value_coded=cn.concept_id  \n" +
+                "\t\t\t\t\twhere o.concept_id= " + referralStatusConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\" and o.encounter_id = enc.encounter_id order by obs_id desc limit 1 ) as referralStatusObs, \n" +
+                "    (select o.uuid from obs o left join concept_name cn on o.value_coded=cn.concept_id  \n" +
+                "\t\t\t\twhere o.concept_id= " + referralStatusConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\" and o.encounter_id = enc.encounter_id order by obs_id desc limit 1 ) as referralStatusObsUuid, \n" +
+                "    (select cn.name from obs o left join concept_name cn on o.value_coded=cn.concept_id  \n" +
+                "\t\t\t\t\twhere o.concept_id= " + sampleDropOffConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\" and o.encounter_id = enc.encounter_id order by obs_id desc limit 1 ) as sampleDropoffObs, \n" +
+                "    (select o.uuid from obs o left join concept_name cn on o.value_coded=cn.concept_id  \n" +
+                "\t\t\t\t\twhere o.concept_id= " + sampleDropOffConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\" and o.encounter_id = enc.encounter_id order by obs_id desc limit 1 ) as sampleDropoffObsUuid, \n" +
+                "    (select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text) as resultsEncounterId " +
 
                 "from encounter enc \n" +
                 "\tleft join person p on enc.patient_id=p.person_id\n" +
-                " left join patient patient on patient.patient_id = p.person_id " +
-                "    left join (select person_id,given_name,middle_name,family_name,family_name2 from person_name where preferred=1 and voided=0 group by person_id) pn on enc.patient_id=pn.person_id\n" +
                 "    left join (select person_id,name,location_id,retired from person_attribute pat left join location l on pat.value=l.location_id where person_attribute_type_id= "+ healthCenterPersonAttributeType.getPersonAttributeTypeId() +" and pat.voided=0 group by person_id) \n" +
                 "\t\t\t\thealthcenter on enc.patient_id=healthcenter.person_id\n" +
-                " left join (\n" +
-                "\t\t\t\tselect o.encounter_id,o.value_text,o.person_id\n" +
-                "\t\t\t\t\tfrom obs o \n" +
-                "\t\t\t\t\twhere o.concept_id= " + telephoneNumberConcept.getConceptId() + " and o.voided=0 order by obs_id desc) phone on enc.patient_id=phone.person_id" +
-                "    left join (\n" +
-                "\t\t\t\tselect o.encounter_id,cn.name,o.uuid \n" +
-                "\t\t\t\t\tfrom obs o \n" +
-                "\t\t\t\t\tleft join concept_name cn on o.value_coded=cn.concept_id  \n" +
-                "\t\t\t\t\twhere o.concept_id= " + sampleStatusConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\"\n" +
-                "                    ) SAMPLESTATUS on enc.encounter_id=SAMPLESTATUS.encounter_id\n" +
-                "\tleft join (\n" +
-                "\t\t\t\tselect o.encounter_id,cn.name,o.uuid \n" +
-                "\t\t\t\t\tfrom obs o \n" +
-                "\t\t\t\t\tleft join concept_name cn on o.value_coded=cn.concept_id  \n" +
-                "\t\t\t\t\twhere o.concept_id= " + referralStatusConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\"\n" +
-                "                    ) REFERRALSTATUS on enc.encounter_id=REFERRALSTATUS.encounter_id\n" +
-                "\tleft join (\n" +
-                "\t\t\t\tselect o.encounter_id,cn.name,o.uuid \n" +
-                "\t\t\t\t\tfrom obs o \n" +
-                "\t\t\t\t\tleft join concept_name cn on o.value_coded=cn.concept_id  \n" +
-                "\t\t\t\t\twhere o.concept_id= " + sampleDropOffConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\"\n" +
-                "                    ) SAMPLEDROPOFF on enc.encounter_id=SAMPLEDROPOFF.encounter_id\n" +
-                " \tleft join (\n" +
-                "\t\t\t\tselect encounter_id,value_text from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0\n" +
-                "                    ) requestUUIDObs on enc.uuid=requestUUIDObs.value_text " +
+
                 "where \n" +
                 "\t enc.voided=0 " +
                 "\tand p.voided=0 " +
                 "    and enc.form_id= " + pathologyRequestForm.getFormId() +
                 " and p.dead=0" +
-                " and patient.voided=0 " +
                 " and IF( :location IS NULL, true, healthcenter.location_id= :location) " +
-                " group by enc.encounter_id " +
-                " order by enc.encounter_id ");
+
+                " order by enc.encounter_id desc ");
 
         sqldsd.addParameter(new Parameter("location", "Location", Location.class));
 
