@@ -359,7 +359,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CKDIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="16" class="tabletd">Oncology</td>
+<td rowspan="15" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -403,13 +403,6 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_missedChemotherapyPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_missedChemotherapyPatientList.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-<tr>
-<td>ONC-Chemotherapy Daily Drug List</td>
-<td>At site</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_chemotherapyDailyDrugList.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_chemotherapyDailyDrugList.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
 <td>ONC-Oncology Outpatient Clinic Patient List</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientClinicPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -611,6 +604,9 @@ $(document).ready(function(){
 </tr>
 <tr>
 <td>Research-Primary Care Registration Data</td>
+</tr>
+<tr>
+<td>ONC-Chemotherapy Daily Drug List</td>
 </tr>
 </table>
 
