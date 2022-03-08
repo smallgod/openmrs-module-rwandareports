@@ -18,13 +18,14 @@ public class SetupPathologyRequestReport implements SetupReport {
 
     private EncounterType pathologyEncounterType;
     private PersonAttributeType healthCenterPersonAttributeType;
-    private PersonAttributeType phoneNumberPersonAttributeType;
+//    private PersonAttributeType phoneNumberPersonAttributeType;
     private Form pathologyRequestForm;
     private Concept sampleStatusConcept;
     private Concept referralStatusConcept;
     private Concept sampleDropOffConcept;
     private Concept pathologyRequestEncounterUUID;
     private Concept telephoneNumberConcept;
+    private Concept PATHOLOGYREQUESTRESULTSAPPROVED;
 
 
     public void setup() throws Exception {
@@ -86,10 +87,18 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "\t\t\t\t\twhere o.concept_id= " + sampleDropOffConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\" and o.encounter_id = enc.encounter_id order by obs_id desc limit 1 ) as sampleDropoffObs, \n" +
                 "    (select o.uuid from obs o left join concept_name cn on o.value_coded=cn.concept_id  \n" +
                 "\t\t\t\t\twhere o.concept_id= " + sampleDropOffConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\" and o.encounter_id = enc.encounter_id order by obs_id desc limit 1 ) as sampleDropoffObsUuid, \n" +
-                "    (select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text) as resultsEncounterId " +
+                "    (select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1) as resultsEncounterId, " +
+                "    (select resultsEnc.uuid  from obs o left join encounter resultsEnc on o.encounter_id=resultsEnc.encounter_id \n" +
+                "\t        where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and o.value_text=enc.uuid order by obs_id desc limit 1) as resultsEncounterUuid, " +
+                "    (select Concat( pn.given_name,\"  \",pn.family_name, \" On: \", DATE_FORMAT(approvalObs.date_created, \"%d/%m/%Y\") ) from obs approvalObs left join users user on approvalObs.creator=user.user_id left join person_name pn on user.person_id=pn.person_id where  encounter_id = ( \n" +
+                "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
+                "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0) as approvedBy,  " +
+                "    (select approvalObs.uuid from obs approvalObs where  encounter_id = ( \n" +
+                "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
+                "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0) as approvalObsUuid  " +
 
-                "from encounter enc \n" +
-                "\tleft join person p on enc.patient_id=p.person_id\n" +
+                " from encounter enc \n" +
+                "\t left join person p on enc.patient_id=p.person_id\n" +
                 "    left join (select person_id,name,location_id,retired from person_attribute pat left join location l on pat.value=l.location_id where person_attribute_type_id= "+ healthCenterPersonAttributeType.getPersonAttributeTypeId() +" and pat.voided=0 group by person_id) \n" +
                 "\t\t\t\thealthcenter on enc.patient_id=healthcenter.person_id\n" +
 
@@ -124,10 +133,11 @@ public class SetupPathologyRequestReport implements SetupReport {
         referralStatusConcept = gp.getConcept(GlobalPropertiesManagement.REFERRALSTATUSCONCEPT);
         sampleDropOffConcept = gp.getConcept(GlobalPropertiesManagement.SAMPLEDROPOFFCONCEPT);
         pathologyEncounterType  = gp.getEncounterType(GlobalPropertiesManagement.PATHOLOGYENCOUNTERTYPE);
-        phoneNumberPersonAttributeType =gp.getPersonAttributeType(GlobalPropertiesManagement.PERSONATTRIBUTEPHONENUMBER);
+//        phoneNumberPersonAttributeType =gp.getPersonAttributeType(GlobalPropertiesManagement.PERSONATTRIBUTEPHONENUMBER);
         healthCenterPersonAttributeType = gp.getPersonAttributeType(GlobalPropertiesManagement.FACILITY_PERSON_ATTRIBUTE_TYPE_ID);
         pathologyRequestEncounterUUID =  gp.getConcept(GlobalPropertiesManagement.PATHOLOGYREQUESTENCOUNTERUUID);
         telephoneNumberConcept = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
+        PATHOLOGYREQUESTRESULTSAPPROVED = gp.getConcept(GlobalPropertiesManagement.PATHOLOGYREQUESTRESULTSAPPROVED);
     }
 
 }

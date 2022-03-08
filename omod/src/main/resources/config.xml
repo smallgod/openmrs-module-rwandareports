@@ -4466,5 +4466,11 @@
 		<description>concept: pathology request encounter UUID</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.pathologyReport.pathologyResultApproved</property>
+		<defaultValue>pathology result approved</defaultValue>
+		<description>concept: pathology result approved</description>
+	</globalProperty>
+
 
 </module>

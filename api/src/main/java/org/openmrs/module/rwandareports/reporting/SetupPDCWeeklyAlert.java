@@ -18,6 +18,8 @@ import org.openmrs.module.rowperpatientreports.dataset.definition.RowPerPatientD
 import org.openmrs.module.rowperpatientreports.patientdata.definition.*;
 import org.openmrs.module.rwandareports.customcalculator.PDCAlerts;
 import org.openmrs.module.rwandareports.filter.LastEncounterFilter;
+import org.openmrs.module.rwandareports.filter.LastTwoObsFilter;
+import org.openmrs.module.rwandareports.filter.ObservationFilter;
 import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
@@ -107,6 +109,8 @@ public class SetupPDCWeeklyAlert extends SingleSetupReport {
 		dataSetDefinition1.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("Id"), new HashMap<String, Object>());
 		dataSetDefinition1.addColumn(RowPerPatientColumns.getIMBId("Id"), new HashMap<String, Object>());
+
+
 		
 		PatientAgeInMonths ageinMonths=RowPerPatientColumns.getAgeInMonths("age");
 		dataSetDefinition.addColumn(ageinMonths, new HashMap<String, Object>());
@@ -127,6 +131,10 @@ public class SetupPDCWeeklyAlert extends SingleSetupReport {
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getGender("Sex"), new HashMap<String, Object>());
 		dataSetDefinition1.addColumn(RowPerPatientColumns.getGender("Sex"), new HashMap<String, Object>());
+
+		MostRecentObservation mostRecentWeight = RowPerPatientColumns.getMostRecentWeight("weight", null);
+		dataSetDefinition.addColumn(mostRecentWeight, new HashMap<String, Object>());
+		dataSetDefinition1.addColumn(mostRecentWeight, new HashMap<String, Object>());
 		
 		MostRecentObservation intervalgrowth = RowPerPatientColumns.getMostRecentIntervalGrowth("intervalgrowth", "@ddMMMyy");
 		dataSetDefinition.addColumn(intervalgrowth, new HashMap<String, Object>());
@@ -184,6 +192,8 @@ public class SetupPDCWeeklyAlert extends SingleSetupReport {
 		RecentEncounter lastpdcIntake = RowPerPatientColumns.getRecentEncounter("lastintake",intakeForm, pdcEncounters,"dd-MMM-yyyy", null);
 		dataSetDefinition.addColumn(lastpdcIntake, new HashMap<String, Object>());
 		dataSetDefinition1.addColumn(lastpdcIntake, new HashMap<String, Object>());
+
+
 		
 		RecentEncounterType lastEncounterType = RowPerPatientColumns.getRecentEncounterType("LastVisit",pdcEncounters, "dd-MMM-yyyy", new LastEncounterFilter());
 		dataSetDefinition.addColumn(lastEncounterType, new HashMap<String, Object>());

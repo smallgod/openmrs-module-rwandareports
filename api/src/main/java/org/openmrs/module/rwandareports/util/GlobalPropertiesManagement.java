@@ -1312,6 +1312,7 @@ public class GlobalPropertiesManagement {
 	public final static String REFERRALSTATUSCONCEPT =	"reports.pathologyReport.referralStatusConcept";
 	public final static String SAMPLEDROPOFFCONCEPT = "reports.pathologyReport.sampleDropOffConcept";
 	public final static String SAMPLESTATUSCONCEPT = "reports.pathologyReport.sampleStatusConceptName";
-	public final static String  PATHOLOGYREQUESTENCOUNTERUUID =  "reports.pathologyReport.pathologyRequestEncounterUUID";
+	public final static String PATHOLOGYREQUESTENCOUNTERUUID =  "reports.pathologyReport.pathologyRequestEncounterUUID";
+	public final static String PATHOLOGYREQUESTRESULTSAPPROVED = "reports.pathologyReport.pathologyResultApproved";
 
 }
