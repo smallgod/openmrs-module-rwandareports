@@ -26,6 +26,7 @@ public class SetupPathologyRequestReport implements SetupReport {
     private Concept pathologyRequestEncounterUUID;
     private Concept telephoneNumberConcept;
     private Concept PATHOLOGYREQUESTRESULTSAPPROVED;
+    private Concept pathologicDiagnoisis;
 
 
     public void setup() throws Exception {
@@ -66,6 +67,8 @@ public class SetupPathologyRequestReport implements SetupReport {
         sqldsd.setSqlQuery("select \n" +
                 "\tp.person_id as personId,\n" +
                 "\tp.uuid as patientUuid,\n" +
+                "\tp.birthdate as personBirthdate,\n" +
+                "\tp.gender as personGender,\n" +
                 "\t(select family_name from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as family_name,\n" +
                 "    (select family_name2 from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as family_name2,\n" +
                 "    (select middle_name from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as middle_name,\n" +
@@ -95,7 +98,11 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0) as approvedBy,  " +
                 "    (select approvalObs.uuid from obs approvalObs where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
-                "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0) as approvalObsUuid  " +
+                "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0) as approvalObsUuid,  " +
+                "    (select cn.name from obs pathologicDiagnosis left join concept_name cn on pathologicDiagnosis.value_coded=cn.concept_id where  encounter_id = ( \n" +
+                "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
+                "\t     ) and pathologicDiagnosis.concept_id="+pathologicDiagnoisis.getConceptId()+" and pathologicDiagnosis.voided=0 and cn.concept_name_type=\"FULLY_SPECIFIED\" and cn.voided=0 and locale=\"en\") as pathologicDiagnosisObs  " +
+
 
                 " from encounter enc \n" +
                 "\t left join person p on enc.patient_id=p.person_id\n" +
@@ -138,6 +145,7 @@ public class SetupPathologyRequestReport implements SetupReport {
         pathologyRequestEncounterUUID =  gp.getConcept(GlobalPropertiesManagement.PATHOLOGYREQUESTENCOUNTERUUID);
         telephoneNumberConcept = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
         PATHOLOGYREQUESTRESULTSAPPROVED = gp.getConcept(GlobalPropertiesManagement.PATHOLOGYREQUESTRESULTSAPPROVED);
+        pathologicDiagnoisis =  gp.getConcept(GlobalPropertiesManagement.PATHOLOGICDIAGNOSIS);
     }
 
 }

@@ -1314,5 +1314,6 @@ public class GlobalPropertiesManagement {
 	public final static String SAMPLESTATUSCONCEPT = "reports.pathologyReport.sampleStatusConceptName";
 	public final static String PATHOLOGYREQUESTENCOUNTERUUID =  "reports.pathologyReport.pathologyRequestEncounterUUID";
 	public final static String PATHOLOGYREQUESTRESULTSAPPROVED = "reports.pathologyReport.pathologyResultApproved";
+	public final static String PATHOLOGICDIAGNOSIS = "reports.pathologyReport.pathologicDiagnosis";
 
 }
