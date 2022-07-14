@@ -39,6 +39,8 @@ public class SetupOncologyInpatientClinicMissedVisit extends SingleSetupReport {
 	private Concept confirmedDiagnosis;
 	
 	private Form OncologyScheduleAppointmentForm;
+
+	private Form outpatientClinicVisitsDataOfficerEntryForm;
 	    
 	private Form outpatientClinicVisitsForm;
 	
@@ -140,7 +142,8 @@ public class SetupOncologyInpatientClinicMissedVisit extends SingleSetupReport {
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("address", true, true, true, true),
 		    new HashMap<String, Object>());
-		
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", ChemotherapyInpatientWardVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
+
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAccompRelationship("accompagnateur"), new HashMap<String, Object>());
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
@@ -161,15 +164,18 @@ public class SetupOncologyInpatientClinicMissedVisit extends SingleSetupReport {
 		
 		OncologyScheduleAppointmentForm=gp.getForm(GlobalPropertiesManagement.ONCOLOGY_SCHEDULE_APPOINTMENT_FORM);
 		
-		outpatientClinicVisitsForm=gp.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_FORM);		
+		outpatientClinicVisitsForm=gp.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_FORM);
+
+		outpatientClinicVisitsDataOfficerEntryForm=gp.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_DATA_OFFICER_ENTRY_FORM);
 		
 
 		BSAForm=gp.getForm(GlobalPropertiesManagement.BSA_VISITS_FORM);
-		
+
 		preventedForms.add(outpatientClinicVisitsForm);
-		preventedForms.add(BSAForm);		
+		preventedForms.add(BSAForm);
+		preventedForms.add(outpatientClinicVisitsDataOfficerEntryForm);
 		
-		ChemotherapyInpatientWardVisit=gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY_INPATIENT_WARD_VISIT_DATE);		
+		ChemotherapyInpatientWardVisit=gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY_INPATIENT_WARD_VISIT_DATE);
 		
 		visitForms.add(OncologyScheduleAppointmentForm);
 		

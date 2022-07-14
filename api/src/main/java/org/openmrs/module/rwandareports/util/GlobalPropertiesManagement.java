@@ -1054,6 +1054,8 @@ public class GlobalPropertiesManagement {
 	public final static String DST_FORM="reports.dstPlanForm";
 	
 	public final static String OUTPATIENT_CLINIC_VISITS_FORM="reports.outpatientClinicVisitsForm";
+
+	public final static String OUTPATIENT_CLINIC_VISITS_DATA_OFFICER_ENTRY_FORM="reports.outpatientClinicVisitsDataOfficerEntryForm";
 	
 	public final static String BSA_VISITS_FORM="reports.BSAVisitsForm";
 	
