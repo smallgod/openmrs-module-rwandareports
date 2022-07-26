@@ -95,10 +95,10 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "\t        where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and o.value_text=enc.uuid order by obs_id desc limit 1) as resultsEncounterUuid, " +
                 "    (select Concat( pn.given_name,\"  \",pn.family_name, \" On: \", DATE_FORMAT(approvalObs.date_created, \"%d/%m/%Y\") ) from obs approvalObs left join users user on approvalObs.creator=user.user_id left join person_name pn on user.person_id=pn.person_id where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
-                "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0) as approvedBy,  " +
+                "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0 order by obs_id DESC LIMIT 1) as approvedBy,  " +
                 "    (select approvalObs.uuid from obs approvalObs where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
-                "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0) as approvalObsUuid,  " +
+                "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0 order by obs_id DESC LIMIT 1) as approvalObsUuid,  " +
                 "    (select cn.name from obs pathologicDiagnosis left join concept_name cn on pathologicDiagnosis.value_coded=cn.concept_id where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
                 "\t     ) and pathologicDiagnosis.concept_id="+pathologicDiagnoisis.getConceptId()+" and pathologicDiagnosis.voided=0 and cn.concept_name_type=\"FULLY_SPECIFIED\" and cn.voided=0 and locale=\"en\") as pathologicDiagnosisObs  " +
