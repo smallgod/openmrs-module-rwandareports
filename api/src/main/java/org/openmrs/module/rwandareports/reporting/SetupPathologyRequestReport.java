@@ -99,7 +99,7 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "    (select approvalObs.uuid from obs approvalObs where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
                 "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0 order by obs_id DESC LIMIT 1) as approvalObsUuid,  " +
-                "    (select cn.name from obs pathologicDiagnosis left join concept_name cn on pathologicDiagnosis.value_coded=cn.concept_id where  encounter_id = ( \n" +
+                "    (select group_concat(distinct cn.name) from obs pathologicDiagnosis left join concept_name cn on pathologicDiagnosis.value_coded=cn.concept_id where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
                 "\t     ) and pathologicDiagnosis.concept_id="+pathologicDiagnoisis.getConceptId()+" and pathologicDiagnosis.voided=0 and cn.concept_name_type=\"FULLY_SPECIFIED\" and cn.voided=0 and locale=\"en\") as pathologicDiagnosisObs  " +
 
