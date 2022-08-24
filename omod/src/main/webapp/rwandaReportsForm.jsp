@@ -359,7 +359,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CKDIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="15" class="tabletd">Oncology</td>
+<td rowspan="20" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -451,12 +451,45 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyRegistry.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
+
+<td>ONC - HMIS Cancer Screening Monthly Indicator Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_HMISCancerScreeningIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_HMISCancerScreeningIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC - Cancer Screening Program Indicator Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CancerScreeningProgramIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningProgramIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC - Cancer Screening Consultation sheet and Missed visit Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC - Cancer Screening SMS Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CancerScreeningSMSReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningSMSReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC - Cancer Screening Lab Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_SetupCancerScreeningLabReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningLabReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+	
+
 <td>ONC-Pathology Request Report</td>
 <td>central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_PathologyRequestReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_PathologyRequestReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
+
 <tr>
 <td rowspan="5" class="tabletd">PDC Reports</td>
 <td>PDC-Weekly and daily Consulation sheet</td>

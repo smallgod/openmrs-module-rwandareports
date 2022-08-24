@@ -894,6 +894,59 @@ public class RwandaSetupReportsFormController {
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 
+		@RequestMapping("/module/rwandareports/register_HMISCancerScreeningIndicatorReport")
+	public ModelAndView registerHMISCancerScreeningIndicatorReport() throws Exception {
+		new SetupHMISCancerScreeningMonthlyIndicatorReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_HMISCancerScreeningIndicatorReport")
+	public ModelAndView removeHMISCancerScreeningIndicatorReport() throws Exception {
+		new SetupHMISCancerScreeningMonthlyIndicatorReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+		@RequestMapping("/module/rwandareports/register_CancerScreeningConsultationSheetAndMissedVisitReport")
+	public ModelAndView registerCancerScreeningConsultationSheetAndMissedVisitReport() throws Exception {
+		new SetupCancerScreeningConsultAndMissedVisit().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_CancerScreeningConsultationSheetAndMissedVisitReport")
+	public ModelAndView removeCancerScreeningConsultationSheetAndMissedVisitReport() throws Exception {
+		new SetupCancerScreeningConsultAndMissedVisit().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+		@RequestMapping("/module/rwandareports/register_CancerScreeningSMSReport")
+	public ModelAndView registerCancerScreeningSMSReport() throws Exception {
+		new SetupCancerScreeningSMSReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_CancerScreeningSMSReport")
+	public ModelAndView removeCancerScreeningSMSReport() throws Exception {
+		new SetupCancerScreeningSMSReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_SetupCancerScreeningLabReport")
+	public ModelAndView registerCancerScreeningLabReport() throws Exception {
+		new SetupCancerScreeningLabReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_CancerScreeningLabReport")
+	public ModelAndView removeCancerScreeningLabReport() throws Exception {
+		new SetupCancerScreeningLabReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_CancerScreeningProgramIndicatorReport")
+	public ModelAndView registerCancerScreeningProgramIndicatorReport() throws Exception {
+		new SetupCancerScreeningProgramIndicatorReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_CancerScreeningProgramIndicatorReport")
+	public ModelAndView removeCancerScreeningProgramIndicatorReport() throws Exception {
+		new SetupCancerScreeningProgramIndicatorReport().delete();
+
+
 	@RequestMapping("/module/rwandareports/register_PathologyRequestReport")
 	public ModelAndView registerPathologyRequestReport() throws Exception {
 		new SetupPathologyRequestReport().setup();
@@ -903,6 +956,7 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_PathologyRequestReport")
 	public ModelAndView removePathologyRequestReport() throws Exception {
 		new SetupPathologyRequestReport().delete();
+
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 }
