@@ -108,15 +108,15 @@ public class SetupLabResultReports {
 				"(select identifier from patient_identifier where patient_id=o.person_id limit 1) as 'Identifier'," +
 				"(select family_name from person_name where person_id=o.person_id and voided=0 limit 1) as 'Family name'," +
 				"(select given_name from person_name where person_id=o.person_id and voided=0 limit 1) as 'Given name'," +
-				"(select (TIMESTAMPDIFF(YEAR,birthdate,ods.start_date)) from person where person_id=o.person_id and voided=0) as 'Age'," +
+				"(select (TIMESTAMPDIFF(YEAR,birthdate,ods.date_activated)) from person where person_id=o.person_id and voided=0) as 'Age'," +
 				"(select gender from person where person_id=o.person_id and voided=0) as 'Gender'," +
 				"(select l.name from person_attribute pa, location l where person_attribute_type_id="+healthFacilityAttributeType.getPersonAttributeTypeId()+" and  voided=0 and pa.value=l.location_id and pa.person_id=o.person_id limit 1) as 'Patient Location', " +
 				"(select name from location where location_id=o.location_id) as 'Result done at', " +
-				"ods.start_date as 'Sample date'," +
+				"ods.date_activated as 'Sample date'," +
 				"ods.accession_number as 'Sample Code'," +
 				"o.obs_datetime as 'Date of result' ," +
 				"(select name from concept_name where concept_id=ods.concept_id limit 1) as 'Name'," +
-				"CONCAT_WS(',',o.value_boolean,(select name from concept_name where concept_id=o.value_coded limit 1),o.value_numeric,o.value_text) as 'Result'" +
+				"CONCAT_WS(',',(select name from concept_name where concept_id=o.value_coded limit 1),o.value_numeric,o.value_text) as 'Result'" +
 				"from orders ods,obs o " +
 				"where ods.order_id=o.order_id and ods.order_type_id="+labOrder.getOrderTypeId()+" and o.obs_datetime >= :startDate and o.obs_datetime <= :endDate and o.voided=0 and (:location is null or o.location_id=:location) and (:concept is null or ods.concept_id=:concept) and ods.concept_id not in (select concept_set from concept_set)");
 		sqldsd.addParameter(new Parameter("startDate", "From:", Date.class));
@@ -152,18 +152,18 @@ public class SetupLabResultReports {
 				"(select identifier from patient_identifier where patient_id=ods.patient_id limit 1) as 'Identifier'," +
 				"(select family_name from person_name where person_id=ods.patient_id and voided=0 limit 1) as 'Family name'," +
 				"(select given_name from person_name where person_id=ods.patient_id and voided=0 limit 1) as 'Given name'," +
-				"(select (TIMESTAMPDIFF(YEAR,birthdate,ods.start_date)) from person where person_id=ods.patient_id and voided=0) as 'Age'," +
+				"(select (TIMESTAMPDIFF(YEAR,birthdate,ods.date_activated)) from person where person_id=ods.patient_id and voided=0) as 'Age'," +
 				"(select gender from person where person_id=ods.patient_id and voided=0) as 'Gender'," +
 				"(select l.name from person_attribute pa, location l where person_attribute_type_id="+healthFacilityAttributeType.getPersonAttributeTypeId()+" and  voided=0 and pa.value=l.location_id and pa.person_id=ods.patient_id limit 1) as 'Patient Location', " +
 				"(select name from location where location_id=o.location_id) as 'Result done at', " +
-				"ods.start_date as 'Sample date'," +
+				"ods.date_activated as 'Sample date'," +
 				"ods.accession_number as 'Sample Code'," +
 				"o.obs_datetime as 'Date of result' ," +
 				"(select name from concept_name where concept_id=ods.concept_id limit 1) as 'Name'," +
-				"CONCAT_WS(',',o.value_boolean,(select name from concept_name where concept_id=o.value_coded limit 1),o.value_numeric,o.value_text) as 'Result'" +
+				"CONCAT_WS(',',(select name from concept_name where concept_id=o.value_coded limit 1),o.value_numeric,o.value_text) as 'Result'" +
 				"from orders ods " +
 				"left join obs o on o.order_id=ods.order_id and o.concept_id=ods.concept_id and o.voided=0 " +
-				"where ods.order_type_id="+labOrder.getOrderTypeId()+" and ods.start_date >= :startDate and ods.start_date <= :endDate and ods.voided=0 and (:location is null or (ods.patient_id in (select person_id from person_attribute where person_attribute_type_id="+healthFacilityAttributeType.getPersonAttributeTypeId()+" and  voided=0 and value=:location ))) and (:concept is null or ods.concept_id=:concept) and ods.concept_id not in (select concept_set from concept_set)");
+				"where ods.order_type_id="+labOrder.getOrderTypeId()+" and ods.date_activated >= :startDate and ods.date_activated <= :endDate and ods.voided=0 and (:location is null or (ods.patient_id in (select person_id from person_attribute where person_attribute_type_id="+healthFacilityAttributeType.getPersonAttributeTypeId()+" and  voided=0 and value=:location ))) and (:concept is null or ods.concept_id=:concept) and ods.concept_id not in (select concept_set from concept_set)");
 		sqldsd.addParameter(new Parameter("startDate", "From:", Date.class));
 		sqldsd.addParameter(new Parameter("endDate", "To:", Date.class));
 		sqldsd.addParameter(location);

@@ -2037,9 +2037,9 @@ int i=0;
 		}
 		//cohortquery.setQuery("select o.person_id from obs o,(select * from (select * from encounter where (form_id="+asthmaDDBFormId+" or encounter_type="+flowsheetAsthmas.getEncounterTypeId()+") order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="+returnVisitDate.getConceptId()+" and o.value_datetime>=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)),'%Y-%m-%d')) and o.value_datetime<=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)+6),'%Y-%m-%d')) order by o.value_datetime");
 		cohortquery
-		        .setQuery("select o.person_id from obs o,(select * from (select * from encounter where form_id in ("
+		        .setQuery("select distinct(o.person_id) from obs o,(select * from (select * from encounter where form_id in ("
 		                + formIds.toString()
-		                + ")order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="
+		                + ")order by encounter_datetime desc) as ordred_enc ) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="
 		                + returnVisitDate.getConceptId()
 		                + " and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
@@ -2323,31 +2323,54 @@ int i=0;
 
 
 	public static CompositionCohortDefinition createPatientsLateForVisit(List<Concept> concepts, List<Form> forms) {
-		
-		StringBuilder sql = new StringBuilder();
-		sql.append("select lastObs.person_id from (select * from (select * from obs where voided = 0 and concept_id in (");
-		boolean second = true;
-		for (Concept c : concepts) {
-			if (!second) {
-				sql.append(",");
-			}
-			
-			sql.append(c.getConceptId());
-			second = false;
-		}
-		sql.append(") order by value_datetime desc) as o group by o.person_id) as lastObs, (select * from (select * from encounter where form_id in (");
+
+		StringBuilder formIdList=new StringBuilder();
 		boolean first = true;
 		for (Form f : forms) {
 			if (!first) {
-				sql.append(",");
+				formIdList.append(",");
 			}
-			
-			sql.append(f.getFormId());
+
+			formIdList.append(f.getFormId());
 			first = false;
 		}
-		sql.append(")  and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where ");
+
+		StringBuilder conceptIdList=new StringBuilder();
+		boolean second = true;
+		for (Concept f : concepts) {
+			if (!second) {
+				conceptIdList.append(",");
+			}
+
+			conceptIdList.append(f.getConceptId());
+			second = false;
+		}
+
+
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("select lastObs.person_id from (select obs_id, value_datetime, obs.person_id from obs inner join (select person_id, max(value_datetime) as MostRecentDate from obs where voided = 0 and concept_id=");
+
+		sql.append(conceptIdList);
+
+		sql.append(" group by person_id ) maxTable ON maxTable.person_id = obs.person_id and maxTable.MostRecentDate = obs.value_datetime where concept_id = " );
+
+		sql.append(conceptIdList);
+
+		sql.append(" and voided = 0) as lastObs, (SELECT  encounter_id, encounter_datetime, encounter.patient_id FROM encounter");
+		sql.append(" INNER JOIN ( SELECT patient_id, max(encounter_datetime) as LastVisit from encounter where form_id IN (");
+
+		sql.append(formIdList);
+
+		sql.append(" )  AND voided = 0 group by patient_id) Last_Encounter ON encounter.patient_id = Last_Encounter.patient_id AND Last_Encounter.LastVisit = encounter.encounter_datetime WHERE form_id IN (");
+
+		sql.append(formIdList);
+
+		sql.append(" ) AND voided = 0) as last_Visit WHERE ");
+
 		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)>6 and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
-		
+
+
 		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
 		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
 		
@@ -2391,23 +2414,39 @@ int i=0;
 	}
 	
 	public static CompositionCohortDefinition createPatientsLateForVisit(Concept concept, List<Form> forms) {
-		
-		StringBuilder sql = new StringBuilder();
-		sql.append("select lastObs.person_id from (select * from (select * from obs where voided = 0 and concept_id=");
-		
-		sql.append(concept.getConceptId());
-		
-		sql.append(" order by value_datetime desc) as o group by o.person_id) as lastObs, (select * from (select * from encounter where form_id in (");
+		StringBuilder formIdList=new StringBuilder();
 		boolean first = true;
 		for (Form f : forms) {
 			if (!first) {
-				sql.append(",");
+				formIdList.append(",");
 			}
-			
-			sql.append(f.getFormId());
+
+			formIdList.append(f.getFormId());
 			first = false;
 		}
-		sql.append(")  and voided=0 order by encounter_datetime desc) as e group by e.patient_id) as last_Visit where ");
+
+
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("select lastObs.person_id from (select obs_id, value_datetime, obs.person_id from obs inner join (select person_id, max(value_datetime) as MostRecentDate from obs where voided = 0 and concept_id=");
+		
+		sql.append(concept.getConceptId());
+		
+		sql.append(" group by person_id ) maxTable ON maxTable.person_id = obs.person_id and maxTable.MostRecentDate = obs.value_datetime where concept_id = " );
+
+		sql.append(concept.getConceptId());
+
+		sql.append(" and voided = 0) as lastObs, (SELECT  encounter_id, encounter_datetime, encounter.patient_id FROM encounter");
+		sql.append(" INNER JOIN ( SELECT patient_id, max(encounter_datetime) as LastVisit from encounter where form_id IN (");
+
+		sql.append(formIdList);
+
+		sql.append(" )  AND voided = 0 group by patient_id) Last_Encounter ON encounter.patient_id = Last_Encounter.patient_id AND Last_Encounter.LastVisit = encounter.encounter_datetime WHERE form_id IN (");
+
+		sql.append(formIdList);
+
+		sql.append(" ) AND voided = 0) as last_Visit WHERE ");
+
 		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)>6 and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
 		
 		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());

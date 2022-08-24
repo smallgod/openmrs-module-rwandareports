@@ -1054,6 +1054,8 @@ public class GlobalPropertiesManagement {
 	public final static String DST_FORM="reports.dstPlanForm";
 	
 	public final static String OUTPATIENT_CLINIC_VISITS_FORM="reports.outpatientClinicVisitsForm";
+
+	public final static String OUTPATIENT_CLINIC_VISITS_DATA_OFFICER_ENTRY_FORM="reports.outpatientClinicVisitsDataOfficerEntryForm";
 	
 	public final static String BSA_VISITS_FORM="reports.BSAVisitsForm";
 	
@@ -1309,5 +1311,15 @@ public class GlobalPropertiesManagement {
 	public final static String ONCOLOGY_BREAST_SCREENING_EXAMINATION="reports.oncologyBreastScreeningExamination";
 	public final static String ONCOLOGY_CERVICAL_SCREENING_EXAMINATION="reports.oncologyCervicalScreeningExamination";
 
+
+	public final static String PATHOLOGYENCOUNTERTYPE = "reports.pathologyReport.pathologyEncounterType";
+	public final static String PATHOLOGYREQUESTFORM =  "reports.pathologyReport.pathologyRequestForm";
+	public final static String PERSONATTRIBUTEPHONENUMBER = "reports.pathologyReport.personAttributePhoneNumber";
+	public final static String REFERRALSTATUSCONCEPT =	"reports.pathologyReport.referralStatusConcept";
+	public final static String SAMPLEDROPOFFCONCEPT = "reports.pathologyReport.sampleDropOffConcept";
+	public final static String SAMPLESTATUSCONCEPT = "reports.pathologyReport.sampleStatusConceptName";
+	public final static String PATHOLOGYREQUESTENCOUNTERUUID =  "reports.pathologyReport.pathologyRequestEncounterUUID";
+	public final static String PATHOLOGYREQUESTRESULTSAPPROVED = "reports.pathologyReport.pathologyResultApproved";
+	public final static String PATHOLOGICDIAGNOSIS = "reports.pathologyReport.pathologicDiagnosis";
 
 }

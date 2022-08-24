@@ -893,6 +893,7 @@ public class RwandaSetupReportsFormController {
 		new SetupLabResultReports().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+
 		@RequestMapping("/module/rwandareports/register_HMISCancerScreeningIndicatorReport")
 	public ModelAndView registerHMISCancerScreeningIndicatorReport() throws Exception {
 		new SetupHMISCancerScreeningMonthlyIndicatorReport().setup();
@@ -944,6 +945,18 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_CancerScreeningProgramIndicatorReport")
 	public ModelAndView removeCancerScreeningProgramIndicatorReport() throws Exception {
 		new SetupCancerScreeningProgramIndicatorReport().delete();
+
+
+	@RequestMapping("/module/rwandareports/register_PathologyRequestReport")
+	public ModelAndView registerPathologyRequestReport() throws Exception {
+		new SetupPathologyRequestReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/remove_PathologyRequestReport")
+	public ModelAndView removePathologyRequestReport() throws Exception {
+		new SetupPathologyRequestReport().delete();
+
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 }

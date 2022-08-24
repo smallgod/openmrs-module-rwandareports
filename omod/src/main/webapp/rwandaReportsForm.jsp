@@ -403,13 +403,6 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_missedChemotherapyPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_missedChemotherapyPatientList.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-<tr>
-<td>ONC-Chemotherapy Daily Drug List</td>
-<td>At site</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_chemotherapyDailyDrugList.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_chemotherapyDailyDrugList.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
 <td>ONC-Oncology Outpatient Clinic Patient List</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientClinicPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -458,6 +451,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyRegistry.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
+
 <td>ONC - HMIS Cancer Screening Monthly Indicator Report</td>
 <td>central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_HMISCancerScreeningIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -488,6 +482,14 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningLabReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 	
+
+<td>ONC-Pathology Request Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_PathologyRequestReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_PathologyRequestReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+
 <tr>
 <td rowspan="5" class="tabletd">PDC Reports</td>
 <td>PDC-Weekly and daily Consulation sheet</td>
@@ -635,6 +637,9 @@ $(document).ready(function(){
 </tr>
 <tr>
 <td>Research-Primary Care Registration Data</td>
+</tr>
+<tr>
+<td>ONC-Chemotherapy Daily Drug List</td>
 </tr>
 </table>
 
