@@ -262,7 +262,7 @@ $(document).ready(function(){
 </tr>
 <tr>
 <tr>
-<td rowspan="17" class="tabletd">NCD Reports</td>
+<td rowspan="16" class="tabletd">NCD Reports</td>
 <td>NCD-Diabetes Indicator Report</td>
 <td>Central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_DiabetesQuarterlyAndMonthReport.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -359,26 +359,18 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CKDIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td>NCD- HMIS Indicator Report</td>
-<td>At site</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_NCDsHMISReport.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_NCDsHMISReport.form" onclick=msgrem(this)>Remove</a></td>
-</tr>
-<tr>
-<td rowspan="14" class="tabletd">Oncology</td>
+<td rowspan="21" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_treatmentAdministrationPlan.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-
 <tr>
 <td>ONC-Oncology Expected Patient List - Inpatient ward and Infusion center</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_chemotherapyPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_chemotherapyPatientList.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-
 <tr>
 <td>ONC-Oncology Expected Patient List - Outpatient Ward</td>
 <td>At site</td>
@@ -428,22 +420,18 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientAppointment.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyOutpatientAppointment.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-<%--
 <tr>
 <td>ONC-Biopsy Results/Tracking Contact List</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyBiopsyList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyBiopsyList.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
---%>
-<%--
 <tr>
 <td>ONC-External Biopsy Results/Tracking Contact List</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyExternalBiopsyList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyExternalBiopsyList.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
---%>
 <tr>
 <td>ONC-Data extraction sheet</td>
 <td>At site</td>
@@ -463,19 +451,50 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyRegistry.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
+
+<td>ONC - HMIS Cancer Screening Monthly Indicator Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_HMISCancerScreeningIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_HMISCancerScreeningIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC - Cancer Screening Program Indicator Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CancerScreeningProgramIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningProgramIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC - Cancer Screening Consultation sheet and Missed visit Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC - Cancer Screening SMS Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CancerScreeningSMSReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningSMSReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC - Cancer Screening Lab Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_SetupCancerScreeningLabReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningLabReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+	
+
 <td>ONC-Pathology Request Report</td>
 <td>central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_PathologyRequestReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_PathologyRequestReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-
+<tr>
 <tr>
 <td>ONC-Oncology Inpatient Clinic Appointment List</td>
 <td>central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_OncologyInpatientAppointmentList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyInpatientAppointmentList.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-
 <tr>
 <td rowspan="5" class="tabletd">PDC Reports</td>
 <td>PDC-Weekly and daily Consulation sheet</td>
@@ -626,15 +645,6 @@ $(document).ready(function(){
 </tr>
 <tr>
 <td>ONC-Chemotherapy Daily Drug List</td>
-</tr>
-<tr>
-<td>ONC-Biopsy Results/Tracking Contact List</td>
-</tr>
-<tr>
-<td>ONC-Chemotherapy Daily Drug</td>
-</tr>
-<tr>
-<td>ONC-Externnal Biopsy Results/Tracking Contact List</td>
 </tr>
 </table>
 
