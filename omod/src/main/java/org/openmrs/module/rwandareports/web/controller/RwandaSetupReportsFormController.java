@@ -945,7 +945,8 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_CancerScreeningProgramIndicatorReport")
 	public ModelAndView removeCancerScreeningProgramIndicatorReport() throws Exception {
 		new SetupCancerScreeningProgramIndicatorReport().delete();
-
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 
 	@RequestMapping("/module/rwandareports/register_PathologyRequestReport")
 	public ModelAndView registerPathologyRequestReport() throws Exception {
