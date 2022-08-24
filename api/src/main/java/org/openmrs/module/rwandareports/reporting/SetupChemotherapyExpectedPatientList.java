@@ -172,57 +172,57 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 }
 	
 	private void createInfusionDataSetDefinition(ReportDefinition reportDefinition) {
-		// Create new dataset definition 
+		// Create new dataset definition
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("Chemotherapy Patient List");
-		
+
 		RowPerPatientDataSetDefinition baseSetDefinition = new RowPerPatientDataSetDefinition();
 		baseSetDefinition.setName("Chemotherapy Base Patient List");
-		
-		
+
+
 		//dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
         dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
         baseSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(visitForms,ChemotherapyInfusionCenterVisit), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
-		
-		
-		
+
+
+
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 		dataSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-		
+
 		SortCriteria baseSortCriteria = new SortCriteria();
 		baseSortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
 		baseSetDefinition.setSortCriteria(baseSortCriteria);
 		baseSetDefinition.addParameter(new Parameter("endDate", "Monday", Date.class));
-		
-		
+
+
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", ChemotherapyInpatientWardVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
-		
+
 		addCommonColumns(dataSetDefinition, baseSetDefinition);
-		
+
 		ConsecutiveCombinedDataSetDefinition consecutiveDataSetDefinition = new ConsecutiveCombinedDataSetDefinition();
 		consecutiveDataSetDefinition.setName("consecutiveDataSetDefinition");
 		consecutiveDataSetDefinition.setBaseDefinition(dataSetDefinition);
 		consecutiveDataSetDefinition.setNumberOfIterations(1);
 		consecutiveDataSetDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
-		
+
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("startDate", "${endDate}");
-		
+
 		reportDefinition.addDataSetDefinition("dataset2", consecutiveDataSetDefinition, mappings);
-		
+
 		WeekViewDataSetDefinition weekDataSetDefinition = new WeekViewDataSetDefinition();
 		weekDataSetDefinition.setName("weekDataSetDefinition");
 		weekDataSetDefinition.setBaseDefinition(baseSetDefinition);
 		weekDataSetDefinition.addParameter(new Parameter("startDate", "startDate", Date.class));
-		
+
 		Map<String, Object> baseMappings = new HashMap<String, Object>();
 		baseMappings.put("startDate", "${endDate}");
-		
+
 		reportDefinition.addDataSetDefinition("dataset2d", weekDataSetDefinition, baseMappings);
-		
+
 	}
 	
 	private void setupProperties() {
@@ -241,7 +241,7 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		
 		ChemotherapyInfusionCenterVisit=gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY_INFUSION_CENTER_VISIT_DATE);
 		
-		visitForms.add(OncologyScheduleAppointmentForm);
+//		visitForms.add(OncologyScheduleAppointmentForm);
 		
 		confirmedDiagnosis=gp.getConcept(GlobalPropertiesManagement.CONFIRMED_DIAGNOSIS_CONCEPT);
 		/*height=gp.getConcept(GlobalPropertiesManagement.HEIGHT_CONCEPT);

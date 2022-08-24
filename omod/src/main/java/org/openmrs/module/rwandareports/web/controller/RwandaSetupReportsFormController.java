@@ -2,6 +2,7 @@ package org.openmrs.module.rwandareports.web.controller;
 
 import org.openmrs.module.rwandareports.reporting.*;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -903,6 +904,28 @@ public class RwandaSetupReportsFormController {
 	@RequestMapping("/module/rwandareports/remove_PathologyRequestReport")
 	public ModelAndView removePathologyRequestReport() throws Exception {
 		new SetupPathologyRequestReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/register_NCDsHMISReport")
+	public ModelAndView registerNCDsHMISReport() throws Exception{
+		new SetupNCDsHMISReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_NCDsHMISReport")
+	public ModelAndView removeNCDsHMISReport() throws Exception{
+		new SetupNCDsHMISReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/register_OncologyInpatientAppointmentList")
+	public ModelAndView registerOncologyInpatientAppointmentList() throws Exception{
+		new SetupOncologyInpatientAppointmentList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_OncologyInpatientAppointmentList")
+	public ModelAndView removeOncologyInpatientAppointmentList() throws Exception{
+		new SetupOncologyInpatientAppointmentList().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
 }

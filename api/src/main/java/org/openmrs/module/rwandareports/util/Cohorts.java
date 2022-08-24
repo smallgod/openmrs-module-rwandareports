@@ -1983,7 +1983,7 @@ public class Cohorts {
 		
 	}
 	
-	public static SqlCohortDefinition getMondayToSundayPatientReturnVisit(List<Form> forms, Concept visitDate) {
+	public static SqlCohortDefinition getMondayToSundayPatientReturnVisit( List<Form> forms, Concept visitDate) {
 		
 		SqlCohortDefinition cohortquery = new SqlCohortDefinition();
 		//Concept returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
@@ -2000,9 +2000,7 @@ public class Cohorts {
 		}
 		//cohortquery.setQuery("select o.person_id from obs o,(select * from (select * from encounter where (form_id="+asthmaDDBFormId+" or encounter_type="+flowsheetAsthmas.getEncounterTypeId()+") order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="+returnVisitDate.getConceptId()+" and o.value_datetime>=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)),'%Y-%m-%d')) and o.value_datetime<=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)+6),'%Y-%m-%d')) order by o.value_datetime");
 		cohortquery
-		        .setQuery("select o.person_id from obs o,(select * from (select * from encounter where form_id in ("
-		                + formIds.toString()
-		                + ")order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="
+		        .setQuery("select o.person_id from obs o where o.voided=0 and o.concept_id="
 		                + visitDate.getConceptId()
 		                + " and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
@@ -2039,9 +2037,7 @@ public class Cohorts {
 		}
 		//cohortquery.setQuery("select o.person_id from obs o,(select * from (select * from encounter where (form_id="+asthmaDDBFormId+" or encounter_type="+flowsheetAsthmas.getEncounterTypeId()+") order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="+returnVisitDate.getConceptId()+" and o.value_datetime>=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)),'%Y-%m-%d')) and o.value_datetime<=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)+6),'%Y-%m-%d')) order by o.value_datetime");
 		cohortquery
-		        .setQuery("select o.person_id from obs o,(select * from (select * from encounter where form_id in ("
-		                + formIds.toString()
-		                + ")order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id in ("
+		        .setQuery("select o.person_id from obs o where o.voided=0 and o.concept_id in ("
 		                + conceptIds.toString()
 		                + ") and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
