@@ -37,6 +37,7 @@ import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirth;
+import org.openmrs.module.rowperpatientreports.patientdata.definition.DateOfBirthShowingEstimation;
 import org.openmrs.module.rwandareports.definition.DrugsActiveCohortDefinition;
 import org.openmrs.module.rwandareports.definition.PatientCohortDefinition;
 
@@ -1311,74 +1312,6 @@ public class Cohorts {
 		query.addParameter(new Parameter("endDate", "endDate", Date.class));
 		return query;
 	}
-	public static SqlCohortDefinition getPatientsWithObservationInEncounterBetweenStartAndEndDate(String name, List<Form> forms,
-																							 Concept concept,
-																							 List<Concept> obsAnswers) {
-		SqlCohortDefinition query = new SqlCohortDefinition();
-		StringBuilder queryStr = new StringBuilder();
-		queryStr.append("select e.patient_id from encounter e, obs o where e.form_id in(");
-
-		int i = 0;
-		for (Form f : forms) {
-			if (i > 0) {
-				queryStr.append(",");
-			}
-			queryStr.append(f.getId());
-
-			i++;
-		}
-
-		queryStr.append(") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and e.voided=0 and e.encounter_id=o.encounter_id and o.voided=0 and o.concept_id=");
-		queryStr.append(concept.getId());
-		queryStr.append(" and o.value_coded in (");
-
-		int y = 0;
-		for (Concept c : obsAnswers) {
-			if (y > 0) {
-				queryStr.append(",");
-			}
-			queryStr.append(c.getId());
-
-			y++;
-		}
-		queryStr.append(")");
-		query.setQuery(queryStr.toString());
-		query.setName(name);
-		query.addParameter(new Parameter("startDate", "startDate", Date.class));
-		query.addParameter(new Parameter("endDate", "endDate", Date.class));
-		return query;
-	}
-
-
-
-
-	public static SqlCohortDefinition getPatientsWithObservationInEncounterBetweenStartAndEndDate(String name, List<Form> forms,
-																								  Concept concept,
-																								  Concept obsAnswer) {
-		SqlCohortDefinition query = new SqlCohortDefinition();
-		StringBuilder queryStr = new StringBuilder();
-		queryStr.append("select e.patient_id from encounter e, obs o where e.form_id in(");
-
-		int i = 0;
-		for (Form f : forms) {
-			if (i > 0) {
-				queryStr.append(",");
-			}
-			queryStr.append(f.getId());
-
-			i++;
-		}
-
-		queryStr.append(") and e.encounter_datetime >= :startDate and e.encounter_datetime <= :endDate and e.voided=0 and e.encounter_id=o.encounter_id and o.voided=0 and o.concept_id=");
-		queryStr.append(concept.getId());
-		queryStr.append(" and o.value_coded=");
-		queryStr.append(obsAnswer.getId());
-		query.setQuery(queryStr.toString());
-		query.setName(name);
-		query.addParameter(new Parameter("startDate", "startDate", Date.class));
-		query.addParameter(new Parameter("endDate", "endDate", Date.class));
-		return query;
-	}
 	
 	public static SqlCohortDefinition getPatientsWithObservationInFormBetweenStartAndEndDate(String name, List<Form> forms,
 	                                                                                         List<Concept> concepts) {
@@ -1965,46 +1898,6 @@ public class Cohorts {
 		return lateVisit;
 		
 	}
-	public static SqlCohortDefinition getPatientsWithLateVisitBasedOnReturnDateConcept(String name,
-																					   List<EncounterType> encounterTypes) {
-		Concept returnVisit = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
-
-		StringBuilder query = new StringBuilder(
-				"select p.patient_id from patient p, obs o, encounter e where p.voided = 0 and o.obs_id = (select obs_id o2 from obs o2, encounter e2 where o2.voided = 0 and p.patient_id = o2.person_id and o2.concept_id = ");
-		query.append(returnVisit.getId());
-		query.append(" and o2.value_datetime is not null and o2.encounter_id = e2.encounter_id and e2.encounter_type in (");
-int i=0;
-		for (EncounterType enc:encounterTypes) {
-			if(i==0){
-				query.append(enc.getEncounterTypeId());
-				query.append(",");
-				i++;
-			}else {
-				query.append(",");
-				query.append(enc.getEncounterTypeId());
-			}
-		}
-
-		query.append(") order by o2.obs_datetime desc LIMIT 1) and e.encounter_id = (select encounter_id from encounter where encounter_type in (");
-		int j=0;
-		for (EncounterType enc:encounterTypes) {
-			if(j==0){
-				query.append(enc.getEncounterTypeId());
-				query.append(",");
-				j++;
-			}else {
-				query.append(",");
-				query.append(enc.getEncounterTypeId());
-			}
-		}		query.append(") and patient_id = p.patient_id order by encounter_datetime desc LIMIT 1) and e.patient_id = o.person_id and p.patient_id = e.patient_id and o.value_datetime > e.encounter_datetime  and o.value_datetime < :endDate");
-
-		SqlCohortDefinition lateVisit = new SqlCohortDefinition(query.toString());
-		lateVisit.setName(name);
-		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
-
-		return lateVisit;
-
-	}
 	
 	public static DateObsCohortDefinition createDateObsCohortDefinition(Concept concept, RangeComparator operator1,
 	                                                                    RangeComparator operator2, TimeModifier timeModifier) {
@@ -2044,34 +1937,6 @@ int i=0;
 		                + " and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
 		cohortquery.addParameter(new Parameter("end", "end", Date.class));
-		return cohortquery;
-	}
-	
-	public static SqlCohortDefinition getPatientReturnVisitByStartDateAndEndDate(String name,List<EncounterType> encounterTypes) {
-
-		SqlCohortDefinition cohortquery = new SqlCohortDefinition();
-		cohortquery.setName(name);
-		Concept returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
-		StringBuilder encountertypeIds = new StringBuilder();
-		int i = 0;
-		for (EncounterType form : encounterTypes) {
-			if (i == 0) {
-				encountertypeIds.append(form.getEncounterTypeId());
-			} else {
-				encountertypeIds.append(",");
-				encountertypeIds.append(form.getEncounterTypeId());
-			}
-			i++;
-		}
-
-		cohortquery
-				.setQuery("select distinct o.person_id from obs o, encounter e where e.encounter_type in ("
-						+ encountertypeIds.toString()
-						+ ")  and o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 and o.concept_id="
-						+ returnVisitDate.getConceptId()
-						+ " and o.value_datetime>= :startDate and o.value_datetime<= :endDate");
-		cohortquery.addParameter(new Parameter("startDate", "startDate", Date.class));
-		cohortquery.addParameter(new Parameter("endDate", "endDate", Date.class));
 		return cohortquery;
 	}
 	
@@ -2118,7 +1983,7 @@ int i=0;
 		
 	}
 	
-	public static SqlCohortDefinition getMondayToSundayPatientReturnVisit(List<Form> forms, Concept visitDate) {
+	public static SqlCohortDefinition getMondayToSundayPatientReturnVisit( List<Form> forms, Concept visitDate) {
 		
 		SqlCohortDefinition cohortquery = new SqlCohortDefinition();
 		//Concept returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
@@ -2135,9 +2000,7 @@ int i=0;
 		}
 		//cohortquery.setQuery("select o.person_id from obs o,(select * from (select * from encounter where (form_id="+asthmaDDBFormId+" or encounter_type="+flowsheetAsthmas.getEncounterTypeId()+") order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="+returnVisitDate.getConceptId()+" and o.value_datetime>=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)),'%Y-%m-%d')) and o.value_datetime<=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)+6),'%Y-%m-%d')) order by o.value_datetime");
 		cohortquery
-		        .setQuery("select o.person_id from obs o,(select * from (select * from encounter where form_id in ("
-		                + formIds.toString()
-		                + ")order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="
+		        .setQuery("select o.person_id from obs o where o.voided=0 and o.concept_id="
 		                + visitDate.getConceptId()
 		                + " and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
@@ -2174,9 +2037,7 @@ int i=0;
 		}
 		//cohortquery.setQuery("select o.person_id from obs o,(select * from (select * from encounter where (form_id="+asthmaDDBFormId+" or encounter_type="+flowsheetAsthmas.getEncounterTypeId()+") order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="+returnVisitDate.getConceptId()+" and o.value_datetime>=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)),'%Y-%m-%d')) and o.value_datetime<=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)+6),'%Y-%m-%d')) order by o.value_datetime");
 		cohortquery
-		        .setQuery("select o.person_id from obs o,(select * from (select * from encounter where form_id in ("
-		                + formIds.toString()
-		                + ")order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id in ("
+		        .setQuery("select o.person_id from obs o where o.voided=0 and o.concept_id in ("
 		                + conceptIds.toString()
 		                + ") and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));

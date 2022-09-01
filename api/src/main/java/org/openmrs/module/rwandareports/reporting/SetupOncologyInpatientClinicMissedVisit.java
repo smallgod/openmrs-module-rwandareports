@@ -171,14 +171,14 @@ public class SetupOncologyInpatientClinicMissedVisit extends SingleSetupReport {
 
 		BSAForm=gp.getForm(GlobalPropertiesManagement.BSA_VISITS_FORM);
 
-		preventedForms.add(outpatientClinicVisitsForm);
-		preventedForms.add(BSAForm);
-		preventedForms.add(outpatientClinicVisitsDataOfficerEntryForm);
+		visitForms.add(outpatientClinicVisitsForm);
+		visitForms.add(BSAForm);
+		visitForms.add(outpatientClinicVisitsDataOfficerEntryForm);
 		
 		ChemotherapyInpatientWardVisit=gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY_INPATIENT_WARD_VISIT_DATE);
 		
 		visitForms.add(OncologyScheduleAppointmentForm);
-		
+
 		visitDates.add(ChemotherapyInpatientWardVisit);
 				
 		onOrAfterOnOrBefore.add("onOrAfter");

@@ -45,6 +45,7 @@ public class SetupOncologyOutpatientClinicMissedVisit extends SingleSetupReport 
 	private Form OncologyScheduleAppointmentForm;
 	    
 	private Form outpatientClinicVisitsForm;
+	private Form outpatientClinicVisitsDataOfficerEntryForm;
 	    
 	   
 		private List<Concept> visitDates=new ArrayList<Concept>();
@@ -116,6 +117,7 @@ public class SetupOncologyOutpatientClinicMissedVisit extends SingleSetupReport 
 		dataSetDefinition2.addFilter(Cohorts.createPatientsLateForVisit(biopsyResultVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition3.addFilter(Cohorts.createPatientsLateForVisit(specialVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
 		dataSetDefinition4.addFilter(Cohorts.createPatientsLateForVisit(visitDates, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+
 		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", scheduledVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
@@ -221,11 +223,13 @@ public class SetupOncologyOutpatientClinicMissedVisit extends SingleSetupReport 
 		
 		OncologyScheduleAppointmentForm=gp.getForm(GlobalPropertiesManagement.ONCOLOGY_SCHEDULE_APPOINTMENT_FORM);
 		
-		outpatientClinicVisitsForm=gp.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_FORM);		
-		
+		outpatientClinicVisitsForm=gp.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_FORM);
+
+		outpatientClinicVisitsDataOfficerEntryForm=gp.getForm(GlobalPropertiesManagement.OUTPATIENT_CLINIC_VISITS_DATA_OFFICER_ENTRY_FORM);
 		
 		visitForms.add(OncologyScheduleAppointmentForm);
 		visitForms.add(outpatientClinicVisitsForm);
+		visitForms.add(outpatientClinicVisitsDataOfficerEntryForm);
 		
 		visitDates.add(scheduledVisit);
 		visitDates.add(biopsyResultVisit);

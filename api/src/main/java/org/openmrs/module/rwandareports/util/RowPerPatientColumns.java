@@ -985,15 +985,6 @@ public class RowPerPatientColumns {
 		allObs.setMinResultsOutput(minResults);
 		return allObs;
 	}
-	public static AllObservationValues getAllObservationValuesAfterStartDateAndBeforeEndDate(
-			String name, Concept concept, String dateFormat,
-			ResultFilter resultFilter, ResultFilter outputFilter) {
-		AllObservationValues allObs = getAllObservationValues(name, concept,
-				dateFormat, resultFilter, outputFilter);
-		allObs.addParameter(new Parameter("startDate", "startDate", Date.class));
-		allObs.addParameter(new Parameter("endDate", "endDate", Date.class));
-		return allObs;
-	}
 	public static ObservationInMostRecentEncounterOfType getObservationInMostRecentEncounterOfType(
 			String name, Concept concept, EncounterType encounterType,
 			ResultFilter resultFilter) {
@@ -2162,27 +2153,6 @@ public class RowPerPatientColumns {
 			mostRecentEncounter.setDateFormat(dateFormat);
 		}
 		return mostRecentEncounter;
-	}
-	
-		public static PatientAttribute getPhoneNumber(String name) {
-		PatientAttribute phoneNumber = new PatientAttribute();
-		phoneNumber.setAttribute("Phone number");
-		phoneNumber.setName(name);
-		return phoneNumber;
-	}
-
-	public static PatientAttribute getContactPersonPhoneNumber(String name) {
-		PatientAttribute ContactPersonPhoneNumber = new PatientAttribute();
-		ContactPersonPhoneNumber.setAttribute("Contact Person's Phone Number");
-		ContactPersonPhoneNumber.setName(name);
-		return ContactPersonPhoneNumber;
-	}
-
-	public static MostRecentEncounterOfType getMostRecentEncounter(String name,List<EncounterType> encounterTypes) {
-		MostRecentEncounterOfType mostRecentEncounterOfType = new MostRecentEncounterOfType();
-		mostRecentEncounterOfType.setName(name);
-		mostRecentEncounterOfType.setEncounterTypes(encounterTypes);
-		return mostRecentEncounterOfType;
 	}
 
 }

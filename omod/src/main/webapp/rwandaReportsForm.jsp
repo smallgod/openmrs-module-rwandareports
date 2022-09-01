@@ -359,7 +359,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CKDIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="20" class="tabletd">Oncology</td>
+<td rowspan="21" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -489,7 +489,12 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_PathologyRequestReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-
+<tr>
+<td>ONC-Oncology Inpatient Clinic Appointment List</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_OncologyInpatientAppointmentList.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyInpatientAppointmentList.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
 <tr>
 <td rowspan="5" class="tabletd">PDC Reports</td>
 <td>PDC-Weekly and daily Consulation sheet</td>

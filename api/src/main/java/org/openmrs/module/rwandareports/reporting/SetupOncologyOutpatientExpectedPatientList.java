@@ -34,9 +34,12 @@ public class SetupOncologyOutpatientExpectedPatientList extends SingleSetupRepor
 	private Concept scheduledVisit;
 	
 	private Concept biopsyResultVisit;
+
+	private Concept pathologyResultVisit;
 	
 	private Concept specialVisit;
-	
+
+
 	private Concept telephone;
 	
 	private Concept telephone2;
@@ -117,8 +120,9 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 	
 	//Add Columns
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDateScheduledVisit", scheduledVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
-	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDateBiopsyResultVisit", biopsyResultVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
+	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDatePathologyResultVisit", pathologyResultVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
 	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDateSpecialVisit", specialVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
+	dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDateBiopsyResultVisit", biopsyResultVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
 	
 	addCommonColumns(dataSetDefinition, baseSetDefinition);
 	
@@ -161,16 +165,19 @@ private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		
 		scheduledVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
 		
-		biopsyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_PATHOLOGY_RESULT_VISIT);
+		pathologyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_PATHOLOGY_RESULT_VISIT);
 		
 		specialVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SPECIAL_VISIT);
+
+		biopsyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_BIOPSY_RESULT_VISIT);
 		
-		visitForms.add(OncologyScheduleAppointmentForm);
-		visitForms.add(outpatientClinicVisitsForm);
+//		visitForms.add(OncologyScheduleAppointmentForm);
+//		visitForms.add(outpatientClinicVisitsForm);
 		
 		visitDates.add(scheduledVisit);
 		visitDates.add(biopsyResultVisit);
 		visitDates.add(specialVisit);
+		visitDates.add(pathologyResultVisit);
 		
 		confirmedDiagnosis=gp.getConcept(GlobalPropertiesManagement.CONFIRMED_DIAGNOSIS_CONCEPT);		
 		
