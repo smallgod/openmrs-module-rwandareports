@@ -1310,7 +1310,13 @@ public class GlobalPropertiesManagement {
 
 	public final static String ONCOLOGY_BREAST_SCREENING_EXAMINATION="reports.oncologyBreastScreeningExamination";
 	public final static String ONCOLOGY_CERVICAL_SCREENING_EXAMINATION="reports.oncologyCervicalScreeningExamination";
+	public final static String TYPE_OF_ATTEMPT = "reports.typeOfAttempt";
+	public final static String CHW_VISIT = "reports.CHWVisit";
+	public final static String RESULT_OF_CALL = "reports.resultOfCall";
+	public final static String  REFERRED_TO_CODED= "reports.referredToCoded";
 
+	public final static String  TEST_RESULT= "reports.testResult";
+	public final static String 	HPV_POSITIVE_TYPE = "reports.HPVPositiveType";
 
 	public final static String PATHOLOGYENCOUNTERTYPE = "reports.pathologyReport.pathologyEncounterType";
 	public final static String PATHOLOGYREQUESTFORM =  "reports.pathologyReport.pathologyRequestForm";
