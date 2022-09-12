@@ -1310,6 +1310,10 @@ public class GlobalPropertiesManagement {
 	public final static String ASTHMA_ENROLLMENT_FORM = "reports.asthmaENROLLformId";
 	public final static String GESTATIONALAGEATBIRTHINWEEKS="reports.gestationalAgeAtBirthInWeeks";
 
+	public final static String ONCOLOGY_BREAST_SCREENING_EXAMINATION="reports.oncologyBreastScreeningExamination";
+	public final static String ONCOLOGY_CERVICAL_SCREENING_EXAMINATION="reports.oncologyCervicalScreeningExamination";
+
+
 	public final static String PATHOLOGYENCOUNTERTYPE = "reports.pathologyReport.pathologyEncounterType";
 	public final static String PATHOLOGYREQUESTFORM =  "reports.pathologyReport.pathologyRequestForm";
 	public final static String PERSONATTRIBUTEPHONENUMBER = "reports.pathologyReport.personAttributePhoneNumber";

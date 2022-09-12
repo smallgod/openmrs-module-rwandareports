@@ -17,6 +17,14 @@ public class SetupGenericDrugReport implements SetupReport {
 
 	protected final Log log = LogFactory.getLog(getClass());
 
+	/**
+	 * @return 
+	 */
+	@Override
+	public String getReportName() {
+		return null;
+	}
+
 	public void setup() throws Exception {		
 		 
 		ReportDefinition rd =createReportDefinitionByDate();		

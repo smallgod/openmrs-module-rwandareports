@@ -29,6 +29,14 @@ public class SetupPathologyRequestReport implements SetupReport {
     private Concept pathologicDiagnoisis;
 
 
+    /**
+     * @return 
+     */
+    @Override
+    public String getReportName() {
+        return null;
+    }
+
     public void setup() throws Exception {
 
         setupProperties();

@@ -67,7 +67,15 @@ public class SetupHivArtRegisterReport implements SetupReport {
 		
 		this.pedi = pedi;
 	}
-	
+
+	/**
+	 * @return 
+	 */
+	@Override
+	public String getReportName() {
+		return null;
+	}
+
 	public void setup() throws Exception {
 		
 		delete();

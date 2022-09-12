@@ -1,5 +1,10 @@
 package org.openmrs.module.rwandareports.reporting;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
@@ -16,10 +21,6 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
 
@@ -38,9 +39,9 @@ public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
 		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
-		ReportDefinition rd = createReportDefinition();
+		ReportDefinition dr = createReportDefinition();
 		
-		createCustomWebRenderer(rd);
+		createCustomWebRenderer(dr);
 	}
 
 	private ReportDefinition createReportDefinition() {
@@ -87,6 +88,7 @@ public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMiddleNameColumn("middleName"), new HashMap<String, Object>());
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("date", ChemoAdultInpatientVisit, "yyyy-MM-dd"),
 		    new HashMap<String, Object>());
@@ -108,10 +110,10 @@ public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
 
 	}
 	
-	private void createCustomWebRenderer(ReportDefinition rd) throws IOException {
+	private void createCustomWebRenderer(ReportDefinition dr) throws IOException {
 		final ReportDesign design = new ReportDesign();
 		design.setName("Calendar");
-		design.setReportDefinition(rd);
+		design.setReportDefinition(dr);
 		design.setRendererType(CalendarWebRenderer.class);
 		
 		Helper.saveReportDesign(design);

@@ -45,7 +45,7 @@ public class SetupOncologyOutpatientAppointmentList extends SingleSetupReport {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-		createCustomWebRenderer(rd);
+//		createCustomWebRenderer(rd);
 	}
 
 	private ReportDefinition createReportDefinition() {
@@ -76,7 +76,7 @@ public class SetupOncologyOutpatientAppointmentList extends SingleSetupReport {
 		
 		RowPerPatientDataSetDefinition dataSetDefinition4 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition4.setName("Biopsy to be performed");
-		
+
 		dataSetDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));
 		dataSetDefinition2.addParameter(new Parameter("endDate", "endDate", Date.class));
 		dataSetDefinition3.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -170,8 +170,8 @@ public class SetupOncologyOutpatientAppointmentList extends SingleSetupReport {
 		design.setName("Calendar");
 		design.setReportDefinition(rd);
 		design.setRendererType(CalendarWebRenderer.class);
-		
+
 		Helper.saveReportDesign(design);
-		
+
 	}
 }

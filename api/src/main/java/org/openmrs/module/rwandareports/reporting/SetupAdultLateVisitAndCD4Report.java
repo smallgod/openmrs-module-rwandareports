@@ -84,7 +84,15 @@ public class SetupAdultLateVisitAndCD4Report implements SetupReport {
 
 	public static final String ART_REPORT = "HIV-Adult ART Report-Monthly";
 	public static final String PRE_ART_REPORT = "HIV-Adult Pre ART Report-Monthly";
-	
+
+	/**
+	 * @return 
+	 */
+	@Override
+	public String getReportName() {
+		return null;
+	}
+
 	public void setup() throws Exception {
 		log.info("Setting up reports in: " + getClass().getSimpleName());
 		setupProperties();

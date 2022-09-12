@@ -52,6 +52,14 @@ public class SetupDiabetesConsultAndLTFU implements SetupReport {
 
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 
+	/**
+	 * @return 
+	 */
+	@Override
+	public String getReportName() {
+		return null;
+	}
+
 	public void setup() throws Exception {
 		setupPrograms();
 		

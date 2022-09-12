@@ -74,7 +74,15 @@ public class SetupMonthlyCD4DeclineReport implements SetupReport {
 	private List<EncounterType> clinicalEncoutersExcLab;
 	
 	private Concept cd4;
-	
+
+	/**
+	 * @return 
+	 */
+	@Override
+	public String getReportName() {
+		return null;
+	}
+
 	public void setup() throws Exception {
 		
 		setupProperties();

@@ -51,8 +51,16 @@ public class SetupChemotherapyExpectedPatientList implements SetupReport {
 	
 	//private Concept weight;
 	//private Concept height;
-	
-	
+
+
+	/**
+	 * @return 
+	 */
+	@Override
+	public String getReportName() {
+		return null;
+	}
+
 	public void setup() throws Exception {
 
 		setupProperties();
