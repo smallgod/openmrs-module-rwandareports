@@ -366,14 +366,14 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_NCDsHMISReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="23" class="tabletd">Oncology</td>
+<td rowspan="26" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_treatmentAdministrationPlan.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td>ONC-Oncology Expected Patient List - Inpatient ward and Infusion center</td>
+<td>ONC-Oncology Expected Patient List - Inpatient ward</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_chemotherapyPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_chemotherapyPatientList.form" onclick=msgrem(this)>Remove</a></td>
@@ -384,7 +384,18 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyOutpatientExpectedPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyOutpatientExpectedPatientList.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-
+<tr>
+<td>ONC-Oncology Expected Patient List - Pediatric Ward</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyPediatricExpectedPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyPediatricExpectedPatientList.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC-Oncology Expected Patient List - Rwanda Cancer Center</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyCancerCenterExpectedPatientList.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyCancerCenterExpectedPatientList.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
 <tr>
 <td>ONC-Oncology Missed Visit Patient List - Outpatient Ward</td>
 <td>At site</td>
@@ -397,6 +408,18 @@ $(document).ready(function(){
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyInpatientClinicMissedVisit.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyInpatientClinicMissedVisit.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC-Oncology Missed Visit Patient List - Pediatric Visit</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyPediatricClinicMissedVisit.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyPediatricClinicMissedVisit.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC-Oncology Missed Visit Patient List - Rwanda Cancer Center Visit</td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_oncologyRwandaCancerCenterClinicMissedVisit.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_oncologyRwandaCancerCenterClinicMissedVisit.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
 <td>ONC-Chemotherapy Daily Expected Patient List</td>
@@ -501,6 +524,18 @@ $(document).ready(function(){
 <td>central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_OncologyInpatientAppointmentList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyInpatientAppointmentList.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC-Oncology Pediatric Clinic Appointment List</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_OncologyPediatricAppointmentList.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyPediatricAppointmentList.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC-Oncology Rwanda Cancer Center Clinic Appointment List</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_OncologyCancerCenterAppointmentList.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyCancerCenterAppointmentList.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
 <tr>

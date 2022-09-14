@@ -4537,4 +4537,15 @@
 		<description>concept: Pathologic diagnosis</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.inpatientDischargeForm</property>
+		<defaultValue>785a9256-ae1d-4a02-87d8-a046a77e81ab</defaultValue>
+		<description>Oncology - Inpatient Discharge Form id</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.oncologyBiopsyResultVisit</property>
+		<defaultValue>ea843dde-d33b-4687-88cb-5cd76111b48b</defaultValue>
+		<description>Concept: Scheduled Oncology Biopsy Visit date</description>
+	</globalProperty>
+
 </module>

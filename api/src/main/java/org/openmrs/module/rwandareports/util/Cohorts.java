@@ -2175,6 +2175,7 @@ int i=0;
 		        .setQuery("select o.person_id from obs o where o.voided=0 and o.concept_id in ("
 		                + conceptIds.toString()
 		                + ") and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
+//		System.out.println("Ndeberaaaaaaaaaa" + cohortquery);
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
 		cohortquery.addParameter(new Parameter("end", "end", Date.class));
 		return cohortquery;
