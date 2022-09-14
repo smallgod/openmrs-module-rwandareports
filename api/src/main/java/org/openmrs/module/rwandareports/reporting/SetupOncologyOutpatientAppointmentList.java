@@ -45,7 +45,7 @@ public class SetupOncologyOutpatientAppointmentList extends SingleSetupReport {
 		
 		ReportDefinition rd = createReportDefinition();
 		
-//		createCustomWebRenderer(rd);
+		createCustomWebRenderer(rd);
 	}
 
 	private ReportDefinition createReportDefinition() {

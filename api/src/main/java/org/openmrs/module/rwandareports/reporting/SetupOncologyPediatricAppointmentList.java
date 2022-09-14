@@ -41,9 +41,9 @@ public class SetupOncologyPediatricAppointmentList extends SingleSetupReport {
 		log.info("Setting up report: " + getReportName());
 		setupProperties();
 		
-		ReportDefinition dr = createReportDefinition();
+		ReportDefinition rd = createReportDefinition();
 		
-		createCustomWebRenderer(dr);
+		createCustomWebRenderer(rd);
 	}
 
 	private ReportDefinition createReportDefinition() {
@@ -119,10 +119,10 @@ public class SetupOncologyPediatricAppointmentList extends SingleSetupReport {
 
 	}
 	
-	private void createCustomWebRenderer(ReportDefinition dr) throws IOException {
+	private void createCustomWebRenderer(ReportDefinition rd) throws IOException {
 		final ReportDesign design = new ReportDesign();
 		design.setName("Calendar");
-		design.setReportDefinition(dr);
+		design.setReportDefinition(rd);
 		design.setRendererType(CalendarWebRenderer.class);
 		
 		Helper.saveReportDesign(design);
