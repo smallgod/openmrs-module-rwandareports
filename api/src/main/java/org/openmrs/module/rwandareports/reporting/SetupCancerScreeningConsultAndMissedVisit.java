@@ -206,11 +206,11 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		location.setRequired(false);
 		reportDefinition.addParameter(location);
 
-		Properties properties = new Properties();
-		properties.setProperty("conceptQuestion", referredToCoded.getName().toString());
-		Parameter referredTo =new Parameter("referredTo", "referredTo", ConceptAnswers.class, properties);
-		referredTo.setRequired(false);
-		reportDefinition.addParameter(referredTo);
+//		Properties properties = new Properties();
+//		properties.setProperty("conceptQuestion", referredToCoded.getName().toString());
+//		Parameter referredTo =new Parameter("referredTo", "referredTo", ConceptAnswers.class, properties);
+//		referredTo.setRequired(false);
+//		reportDefinition.addParameter(referredTo);
 
 		Parameter encounterTypes = new Parameter("encounterTypes", "Encounter", EncounterType.class);
 		encounterTypes.setRequired(false);
@@ -275,7 +275,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 //		locationDefinition.setQuery(sql.toString());
 		locationDefinition.setName("locationDefinition");
 		locationDefinition.addParameter(location);
-		locationDefinition.addParameter(referredTo);
+//		locationDefinition.addParameter(referredTo);
 
 
 		//patients with late visits
@@ -351,7 +351,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		mappings.put("location", "${location}");
 		mappings.put("endDate", "${endDate}");
 		mappings.put("startDate", "${startDate}");
-		mappings.put("referredTo", "${referredTo}");
+//		mappings.put("referredTo", "${referredTo}");
 
 		reportDefinition.addDataSetDefinition("dataset1", dataSetDef, mappings);
 
