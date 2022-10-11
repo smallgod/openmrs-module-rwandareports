@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Form;
+import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.AgeCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
@@ -184,10 +185,34 @@ public class SetupNCDsHMISReport implements SetupReport {
         ReportDefinition reportDefinition = new ReportDefinition();
         reportDefinition.addParameter(new Parameter("startDate","From",Date.class));
         reportDefinition.addParameter(new Parameter("endDate","To",Date.class));
-        reportDefinition.addParameter(new Parameter("location","Health Facility", AllLocation.class, properties));
+        reportDefinition.addParameter(new Parameter("location","Health Facility", Location.class, properties));
+
+        SqlCohortDefinition location = new SqlCohortDefinition();
+        location.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and pa.value = :location");
+        System.out.println("Locationnnnnnnnn" + location.getQuery());
+        location.setName("Location");
+        location.addParameter(new Parameter("location", "location", Location.class));
+
+        reportDefinition.setBaseCohortDefinition(location, ParameterizableUtil.createParameterMappings("location=${location}"));
+        reportDefinition.addDataSetDefinition(createCohortMonthlyBaseDataSet(), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
         reportDefinition.setName(name);
         return reportDefinition;
     }
+
+//    private ReportDefinition createReportDefinition() {
+//        ReportDefinition reportDefinition = new ReportDefinition();
+//        reportDefinition.setName(getReportName());
+//        reportDefinition.addParameter(new Parameter("location", "Location", Location.class));
+//        reportDefinition.addParameter(new Parameter("endDate", "End Date", Date.class));
+//
+//        reportDefinition.setBaseCohortDefinition(Cohorts.createParameterizedLocationCohort("At Location"),
+//                ParameterizableUtil.createParameterMappings("location=${location}"));
+//
+//        createDataSetDefinition(reportDefinition);
+//        Helper.saveReportDefinition(reportDefinition);
+//
+//        return reportDefinition;
+//    }
 
     @Override
     public void delete() {
@@ -202,6 +227,7 @@ public class SetupNCDsHMISReport implements SetupReport {
         dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
         dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
         dsd.addParameter(new Parameter("location", "District", LocationHierarchy.class));
+
         createCohortMonthlyIndicators(dsd);
         return dsd;
     }
@@ -384,62 +410,62 @@ public class SetupNCDsHMISReport implements SetupReport {
 
         conceptAsthma.add(ICD11Concepts);
         conceptAsthma.add(respiratoryDiseaseAsthma);
-        conceptAsthma.add(primaryICDDiagnosis);
-        conceptAsthma.add(secondaryICDDiagnosis);
+//        conceptAsthma.add(primaryICDDiagnosis);
+//        conceptAsthma.add(secondaryICDDiagnosis);
 
         conceptDiabetesType.add(typesOfDiabetes);
         conceptDiabetesType.add(ICD11Concepts);
-        conceptDiabetesType.add(primaryICDDiagnosis);
-        conceptDiabetesType.add(secondaryICDDiagnosis);
+//        conceptDiabetesType.add(primaryICDDiagnosis);
+//        conceptDiabetesType.add(secondaryICDDiagnosis);
 
         conceptCardiomyophaties.add(heartFailureDiagnosis);
         conceptCardiomyophaties.add(ICD11Concepts);
-        conceptCardiomyophaties.add(primaryICDDiagnosis);
-        conceptCardiomyophaties.add(secondaryICDDiagnosis);
+//        conceptCardiomyophaties.add(primaryICDDiagnosis);
+//        conceptCardiomyophaties.add(secondaryICDDiagnosis);
 
         conceptPericardialDisease.add(heartFailureDiagnosis);
         conceptPericardialDisease.add(ICD11Concepts);
-        conceptPericardialDisease.add(primaryICDDiagnosis);
-        conceptPericardialDisease.add(secondaryICDDiagnosis);
+//        conceptPericardialDisease.add(primaryICDDiagnosis);
+//        conceptPericardialDisease.add(secondaryICDDiagnosis);
 
         conceptHeartFailure.add(chronicCareDiagnosis);
         conceptHeartFailure.add(ICD11Concepts);
-        conceptHeartFailure.add(primaryICDDiagnosis);
-        conceptHeartFailure.add(secondaryICDDiagnosis);
+//        conceptHeartFailure.add(primaryICDDiagnosis);
+//        conceptHeartFailure.add(secondaryICDDiagnosis);
 
         conceptStroke.add(patientChronicDiseaseHistory);
         conceptStroke.add(ICD11Concepts);
-        conceptStroke.add(primaryICDDiagnosis);
-        conceptStroke.add(secondaryICDDiagnosis);
+//        conceptStroke.add(primaryICDDiagnosis);
+//        conceptStroke.add(secondaryICDDiagnosis);
 
         conceptRheumaticHeart.add(heartFailureDiagnosis);
         conceptRheumaticHeart.add(ICD11Concepts);
-        conceptRheumaticHeart.add(primaryICDDiagnosis);
-        conceptRheumaticHeart.add(secondaryICDDiagnosis);
+//        conceptRheumaticHeart.add(primaryICDDiagnosis);
+//        conceptRheumaticHeart.add(secondaryICDDiagnosis);
 
         conceptCongenitalHeart.add(heartFailureDiagnosis);
         conceptCongenitalHeart.add(ICD11Concepts);
-        conceptCongenitalHeart.add(primaryICDDiagnosis);
-        conceptCongenitalHeart.add(secondaryICDDiagnosis);
+//        conceptCongenitalHeart.add(primaryICDDiagnosis);
+//        conceptCongenitalHeart.add(secondaryICDDiagnosis);
 
         conceptOtherCardiovasculardiseases.add(heartFailureDiagnosis);
         conceptOtherCardiovasculardiseases.add(ICD11Concepts);
-        conceptOtherCardiovasculardiseases.add(primaryICDDiagnosis);
-        conceptOtherCardiovasculardiseases.add(secondaryICDDiagnosis);
+//        conceptOtherCardiovasculardiseases.add(primaryICDDiagnosis);
+//        conceptOtherCardiovasculardiseases.add(secondaryICDDiagnosis);
 
         conceptRenalFailure.add(chronicCareDiagnosis);
         conceptRenalFailure.add(ICD11Concepts);
-        conceptRenalFailure.add(primaryICDDiagnosis);
-        conceptRenalFailure.add(secondaryICDDiagnosis);
+//        conceptRenalFailure.add(primaryICDDiagnosis);
+//        conceptRenalFailure.add(secondaryICDDiagnosis);
 
         conceptOtherChronicKidneyDisease.add(patientChronicDiseaseHistory);
         conceptOtherChronicKidneyDisease.add(ICD11Concepts);
-        conceptOtherChronicKidneyDisease.add(primaryICDDiagnosis);
-        conceptOtherChronicKidneyDisease.add(secondaryICDDiagnosis);
+//        conceptOtherChronicKidneyDisease.add(primaryICDDiagnosis);
+//        conceptOtherChronicKidneyDisease.add(secondaryICDDiagnosis);
 
         conceptHypertension.add(ICD11Concepts);
-        conceptHypertension.add(primaryICDDiagnosis);
-        conceptHypertension.add(secondaryICDDiagnosis);
+//        conceptHypertension.add(primaryICDDiagnosis);
+//        conceptHypertension.add(secondaryICDDiagnosis);
 
 
     }
@@ -3737,7 +3763,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
                 " JOIN patient_program pp on pp.patient_id=o.person_id" +
                 " where o.voided= 0 and o.concept_id = "+NcdDiagnosis.getConceptId()+" " +
                 " and o.value_coded = "+NcdAnswer.getConceptId()+" " +
-                " and pp.voided=0" +
+                " and pp.voided=0 and pp.date_completed is null" +
                 " and pp.date_enrolled>= :startDate " +
                 " and pp.date_enrolled<= :endDate");
         patientWithIDCObs.setName("patientWithIDCObs");
@@ -3753,7 +3779,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
                 " JOIN patient_program pp on pp.patient_id=o.person_id" +
                 " where o.voided=0 and o.concept_id ="+NcdDiagnosis.getConceptId()+" " +
                 " and o.value_coded="+NcdAnswer.getConceptId()+" " +
-                " and pp.voided=0" +
+                " and pp.voided=0 and pp.date_completed is null" +
                 " and pp.date_enrolled< :startDate");
         patientWithIDCObs.setName("patientWithIDCObs");
         patientWithIDCObs.addParameter(new Parameter("startDate", "startDate", Date.class));
@@ -3794,7 +3820,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
                 qStr.append(ncdDia);
                 qStr.append(") and o.value_coded in (");
                 qStr.append(ncdAns);
-                qStr.append(") and pp.voided=0 and pp.date_enrolled>=:startDate and pp.date_enrolled<=:endDate");
+                qStr.append(") and pp.voided=0 and pp.date_completed is null and pp.date_enrolled>=:startDate and pp.date_enrolled<=:endDate");
                 System.out.println("Queryyyyyy: "+qStr);
         patientWithNCDsObs.setQuery(qStr.toString());
         patientWithNCDsObs.setName("patientWithNCDsObs");
@@ -3836,7 +3862,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         qStr.append(ncdDia);
         qStr.append(") and o.value_coded in (");
         qStr.append(ncdAns);
-        qStr.append(") and pp.voided=0 and pp.date_enrolled< :startDate group by person_id");
+        qStr.append(") and pp.voided=0 and pp.date_completed is null and pp.date_enrolled< :startDate group by person_id");
 
         patientWithIDCObs.setQuery(qStr.toString());
         patientWithIDCObs.setName("patientWithIDCObs");
