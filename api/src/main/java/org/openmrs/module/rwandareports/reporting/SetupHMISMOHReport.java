@@ -5897,8 +5897,10 @@ public class SetupHMISMOHReport extends SingleSetupReport {
         femalePatientsAbove50YearTestedAndReceivedResultsThroughPIT.setCompositionString("2 and 3 and 4 and (not 1)");
 
         CohortIndicator femalePatientsAbove50YearTestedAndReceivedResultsThroughPITIndicator = Indicators.newCohortIndicator("femalePatientsAbove50YearTestedAndReceivedResultsThroughPITIndicator",
-                femalePatientsAbove50YearTestedAndReceivedResultsThroughPIT, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},effectiveDate=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}"));
-        dsd.addColumn("K35", "Female Number of clients who received HIV results through PIT this month", new Mapped(femalePatientsAbove50YearTestedAndReceivedResultsThroughPITIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")), "");
+                femalePatientsAbove50YearTestedAndReceivedResultsThroughPIT, ParameterizableUtil.createParameterMappings
+                        ("enrolledOnOrAfter=${startDate},enrolledOnOrBefore=${endDate},effectiveDate=${endDate},onOrAfter=${startDate},onOrBefore=${endDate}"));
+        dsd.addColumn("K35", "Female Number of clients who received HIV results through PIT this month",
+                new Mapped(femalePatientsAbove50YearTestedAndReceivedResultsThroughPITIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}")), "");
 
         //=====================================================
         // K36: Number of clients tested HIV positive through PIT this month

@@ -706,6 +706,9 @@ public class GlobalPropertiesManagement {
 	public final static String DEATH_UNKNOWN_REASON="reports.deathunknownreason";
 	
 	public final static String CHEMOTHERAPY_INPATIENT_WARD_VISIT_DATE="reports.ChemotherapyInpatientWardVisit";
+
+	public final static String CHEMOTHERAPY_PEDIATRIC_WARD_VISIT_DATE="reports.ChemotherapyPediatricWardVisit";
+	public final static String NON_CHEMOTHERAPY_PEDIATRIC_WARD_VISIT_DATE="reports.NonChemotherapyPediatricWardVisit";
 	
 	public final static String CHEMOTHERAPY_INFUSION_CENTER_VISIT_DATE="reports.ChemotherapyInfusionCenterVisit";
 	
@@ -1056,7 +1059,8 @@ public class GlobalPropertiesManagement {
 	public final static String OUTPATIENT_CLINIC_VISITS_FORM="reports.outpatientClinicVisitsForm";
 
 	public final static String OUTPATIENT_CLINIC_VISITS_DATA_OFFICER_ENTRY_FORM="reports.outpatientClinicVisitsDataOfficerEntryForm";
-	
+	public final static String INPATIENT_DISCHARGE_FORM="reports.inpatientDischargeForm";
+
 	public final static String BSA_VISITS_FORM="reports.BSAVisitsForm";
 	
 	public final static String ONCOLOGY_EXIT_FORM="reports.oncologyExitForm";
@@ -1310,6 +1314,7 @@ public class GlobalPropertiesManagement {
 
 	public final static String ONCOLOGY_BREAST_SCREENING_EXAMINATION="reports.oncologyBreastScreeningExamination";
 	public final static String ONCOLOGY_CERVICAL_SCREENING_EXAMINATION="reports.oncologyCervicalScreeningExamination";
+
 	public final static String TYPE_OF_ATTEMPT = "reports.typeOfAttempt";
 	public final static String CHW_VISIT = "reports.CHWVisit";
 	public final static String RESULT_OF_CALL = "reports.resultOfCall";
@@ -1317,6 +1322,7 @@ public class GlobalPropertiesManagement {
 
 	public final static String  TEST_RESULT= "reports.testResult";
 	public final static String 	HPV_POSITIVE_TYPE = "reports.HPVPositiveType";
+
 
 	public final static String PATHOLOGYENCOUNTERTYPE = "reports.pathologyReport.pathologyEncounterType";
 	public final static String PATHOLOGYREQUESTFORM =  "reports.pathologyReport.pathologyRequestForm";

@@ -25,6 +25,8 @@ import org.openmrs.module.rwandareports.util.MetadataLookup;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.ConceptAnswers;
+import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
+
 
 import java.util.*;
 
@@ -69,6 +71,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 	private Concept HPVPositiveType;
 	private Concept testResult;
+
 	private Concept HPV16;
 	private Concept HPV18;
 	private Concept otherHRHPV;
@@ -83,12 +86,17 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 
 
+
 	public void setup() throws Exception {
 		setupPrograms();
 
 		ReportDefinition consultReportDefinition = createConsultReportDefinition();
+
 		EvaluationContext context = new EvaluationContext();
-		ReportDefinition missedVisitReportDefinition = createMissedVisitReportDefinition(context);
+//		ReportDefinition missedVisitReportDefinition = createMissedVisitReportDefinition(context);
+
+		ReportDefinition missedVisitReportDefinition = createMissedVisitReportDefinition();
+
 
 		ReportDesign consultReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(consultReportDefinition, "OncologyCancerScreeningConsultSheet.xls","OncologyCancerScreeningConsultSheet.xls_", null);
 		ReportDesign missedVisitReporDesign = Helper.createRowPerPatientXlsOverviewReportDesign(missedVisitReportDefinition, "OncologyCancerScreeningMissedVisitSheet.xls","OncologyCancerScreeningMissedVisitSheet.xls_", null);
@@ -133,6 +141,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		Parameter location = new Parameter("location", "Health Facility", Location.class);
 		location.setRequired(false);
+
 		reportDefinition.addParameter(location);
 
 		Parameter encounterTypes = new Parameter("encounterTypes", "Encounter", EncounterType.class);
@@ -144,6 +153,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		locationDefinition.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and (:location is null or pa.value = :location)");
 		locationDefinition.setName("locationDefinition");
 		locationDefinition.addParameter(location);
+
 //		String[] locationMarching = null;
 //
 //		if (location.getHierarchy() != null) {
@@ -157,6 +167,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 //			if (config.length > 0) {
 //				hDisplay = config[1];
 //			}
+
 		Concept returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
 		SqlCohortDefinition patientsWithVisitInPeriod=new SqlCohortDefinition();
 		patientsWithVisitInPeriod.setQuery("select distinct o.person_id from obs o, encounter e where (:encounterTypes is null or e.encounter_type= :encounterTypes) and e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")  and o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 and o.concept_id="
@@ -193,7 +204,11 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		return reportDefinition;
 	}
 
-	private ReportDefinition createMissedVisitReportDefinition(EvaluationContext context) {
+
+//	private ReportDefinition createMissedVisitReportDefinition(EvaluationContext context) {
+
+	private ReportDefinition createMissedVisitReportDefinition() {
+
 
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName("ONC-Cancer Screening Missed Visit");
@@ -204,6 +219,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		Parameter location = new Parameter("location", "Health Facility", Location.class);
 		location.setRequired(false);
+
 		reportDefinition.addParameter(location);
 
 //		Properties properties = new Properties();
@@ -211,6 +227,8 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 //		Parameter referredTo =new Parameter("referredTo", "referredTo", ConceptAnswers.class, properties);
 //		referredTo.setRequired(false);
 //		reportDefinition.addParameter(referredTo);
+
+		reportDefinition.addParameter(location);
 
 		Parameter encounterTypes = new Parameter("encounterTypes", "Encounter", EncounterType.class);
 		encounterTypes.setRequired(false);
@@ -278,6 +296,11 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 //		locationDefinition.addParameter(referredTo);
 
 
+//		SqlCohortDefinition locationDefinition = new SqlCohortDefinition();
+//		locationDefinition.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and (:location is null or pa.value = :location)");
+//		locationDefinition.setName("locationDefinition");
+//		locationDefinition.addParameter(location);
+
 		//patients with late visits
 
 		// !!!!!!! Follow up form ??????
@@ -299,6 +322,8 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 				" and o.person_id not in (select person_id from obs CHWO where CHWO.concept_id="+ typeOfAttempt.getConceptId() +" and CHWO.value_coded="+ CHWVisit.getConceptId() +" and CHWO.obs_datetime >= o.value_datetime and CHWO.voided=0) " +
 				" and o.person_id not in (select person_id from obs where concept_id="+ resultOfCall.getConceptId() +" and obs_datetime >= o.value_datetime and voided=0) " +
 				" and datediff(o.value_datetime,e.encounter_datetime)<=400 )) ");
+
+//		SqlCohortDefinition missedVisit=new SqlCohortDefinition("select o.person_id from obs o,encounter e where o.encounter_id=e.encounter_id and (:encounterTypes is null or e.encounter_type= :encounterTypes) and o.voided=0 and o.concept_id="+gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE).getConceptId()+" and datediff(:endDate,o.value_datetime)<400 and datediff(:endDate,o.value_datetime)>7 and o.value_datetime< :endDate and o.person_id not in (select patient_id from encounter where encounter_datetime>o.value_datetime and encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")) and o.person_id not in (select person_id from person where dead=1)");
 		//SqlCohortDefinition missedVisit=new SqlCohortDefinition("select o.person_id from obs o,encounter e where o.encounter_id=e.encounter_id and (:encounterTypes is null or e.encounter_type= :encounterTypes) and o.voided=0 and o.concept_id="+gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE).getConceptId()+" and datediff(:endDate,o.value_datetime)<400 and datediff(:endDate,o.value_datetime)>7 and o.value_datetime< :endDate and o.person_id not in (select patient_id from encounter where encounter_datetime>o.value_datetime) and o.person_id not in (select person_id from person where dead=1)");
 		//SqlCohortDefinition missedVisit=new SqlCohortDefinition("select e.patient_id from encounter e where (:encounterTypes is null or e.encounter_type= :encounterTypes) and e.voided=0");
      	missedVisit.addParameter(new Parameter("endDate", "enDate", Date.class));
@@ -367,6 +392,8 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextScheduledDate", SortDirection.DESC);
+
+//		sortCriteria.addSortElement("nextRDV", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 
 		//Add Columns
@@ -452,6 +479,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		cervicalDiagnosisList.add(HPV16);
 		cervicalDiagnosisList.add(HPV18);
 		cervicalDiagnosisList.add(otherHRHPV);
+
 		typeOfAttempt = gp.getConcept(GlobalPropertiesManagement.TYPE_OF_ATTEMPT);
 		CHWVisit = gp.getConcept(GlobalPropertiesManagement.CHW_VISIT);
 		resultOfCall = gp.getConcept(GlobalPropertiesManagement.RESULT_OF_CALL);
@@ -472,6 +500,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 				throw new IllegalArgumentException("Unable to convert " + match + " into a usable Concept and location", e);
 			}
 		}
+
 
 
 
@@ -503,8 +532,11 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getContactPersonPhoneNumber("contactPersonPhonenumber"), new HashMap<String, Object>());
 
+
 //		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("nextScheduledDate",gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),null,breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentReturnVisitDate("nextScheduledDate", "dd/MM/yyyy", null), new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("nextScheduledDate",gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE),null,breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
+
 		// hasPatientBeenReferred_cervical. Breast use different concept
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referred",hasPatientBeenReferred_cervical,null,breastAndCervicalScreeningEncounterTypes,new DateFormatFilter()), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("Address", true, true, true, true), new HashMap<String, Object>());
@@ -514,6 +546,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getObservationInMostRecentEncounter("referredTo",referredTo,null,breastAndCervicalScreeningEncounterTypes,null), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("breastDiagnosis",breastDiagnosis,breastDiagnosisList,null,null,null),new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("cervicalDiagnosis",HPVPositiveType,cervicalDiagnosisList,null,null,"dd/MM/yyyy"),new HashMap<String, Object>());
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecentInperiodHavingCodedAnswers("cervicalDiagnosis",HPVPositiveType,cervicalDiagnosisList,null,null,null),new HashMap<String, Object>());
 
 	}
 

@@ -960,4 +960,87 @@ public class RwandaSetupReportsFormController {
 
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+
+	@RequestMapping("/module/rwandareports/register_NCDsHMISReport")
+	public ModelAndView registerNCDsHMISReport() throws Exception{
+		new SetupNCDsHMISReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_NCDsHMISReport")
+	public ModelAndView removeNCDsHMISReport() throws Exception{
+		new SetupNCDsHMISReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
+	@RequestMapping("/module/rwandareports/register_OncologyInpatientAppointmentList")
+	public ModelAndView registerOncologyInpatientAppointmentList() throws Exception{
+		new SetupOncologyInpatientAppointmentList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_OncologyInpatientAppointmentList")
+	public ModelAndView removeOncologyInpatientAppointmentList() throws Exception{
+		new SetupOncologyInpatientAppointmentList().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_OncologyCancerCenterAppointmentList")
+	public ModelAndView registerOncologyCancerCenterAppointmentList() throws Exception{
+		new SetupOncologyRwandaCancerCenterAppointmentList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_OncologyCancerCenterAppointmentList")
+	public ModelAndView removeOncologyCancerCenterAppointmentList() throws Exception{
+		new SetupOncologyRwandaCancerCenterAppointmentList().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_OncologyPediatricAppointmentList")
+	public ModelAndView registerOncologyPediatricAppointmentList() throws Exception{
+		new SetupOncologyPediatricAppointmentList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_OncologyPediatricAppointmentList")
+	public ModelAndView removeOncologyPediatricAppointmentList() throws Exception{
+		new SetupOncologyPediatricAppointmentList().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_oncologyPediatricExpectedPatientList")
+	public ModelAndView registeroncologyPediatricExpectedPatientList() throws Exception{
+		new SetupChemotherapyPediatricExpectedPatientList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_oncologyPediatricExpectedPatientList")
+	public ModelAndView removeoncologyPediatricExpectedPatientList() throws Exception{
+		new SetupChemotherapyPediatricExpectedPatientList().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_oncologyCancerCenterExpectedPatientList")
+	public ModelAndView registeroncologyCancerCenterExpectedPatientList() throws Exception{
+		new SetupChemotherapyCancerCenterExpectedPatientList().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_oncologyCancerCenterExpectedPatientList")
+	public ModelAndView removeoncologyCancerCenterExpectedPatientList() throws Exception{
+		new SetupChemotherapyCancerCenterExpectedPatientList().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_oncologyPediatricClinicMissedVisit")
+	public ModelAndView registeroncologyPediatricClinicMissedVisit() throws Exception{
+		new SetupOncologyPediatricClinicMissedVisit().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_oncologyPediatricClinicMissedVisit")
+	public ModelAndView removeoncologyPediatricClinicMissedVisit() throws Exception{
+		new SetupOncologyCancerCenterClinicMissedVisit().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/register_oncologyRwandaCancerCenterClinicMissedVisit")
+	public ModelAndView registeroncologyRwandaCancerCenterClinicMissedVisit() throws Exception{
+		new SetupOncologyCancerCenterClinicMissedVisit().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_oncologyRwandaCancerCenterClinicMissedVisit")
+	public ModelAndView removeoncologyRwandaCancerCenterClinicMissedVisit() throws Exception{
+		new SetupOncologyCancerCenterClinicMissedVisit().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+
 }

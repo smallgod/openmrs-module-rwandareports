@@ -76,7 +76,15 @@ public class SetupHMISIndicatorMonthlyReport implements SetupReport {
 
 	Properties properties = new Properties();
 
-	public void setup() throws Exception {
+    /**
+     * @return 
+     */
+    @Override
+    public String getReportName() {
+        return null;
+    }
+
+    public void setup() throws Exception {
 		
 		setUpProperties();
 
@@ -431,6 +439,7 @@ public class SetupHMISIndicatorMonthlyReport implements SetupReport {
 		dsd.setName("Monthly Cohort Data Set");
 		dsd.addParameter(new Parameter("startDate", "Start Date", Date.class));
 		dsd.addParameter(new Parameter("endDate", "End Date", Date.class));
+
 		createCohortMonthlyIndicatorsVII(dsd);
 		return dsd;
 	}
@@ -16416,7 +16425,7 @@ String insurance_card_no="CONCAT('%', ip.insurance_card_no ,'%')";
 
 	}
 
-	private SqlCohortDefinition diedPatientWithICDCodesObsByStartDateAndEndDate(String ICDCodes){
+	private SqlCohortDefinition  diedPatientWithICDCodesObsByStartDateAndEndDate(String ICDCodes){
 
 		String icdTencodes[] =ICDCodes.split(",");
 

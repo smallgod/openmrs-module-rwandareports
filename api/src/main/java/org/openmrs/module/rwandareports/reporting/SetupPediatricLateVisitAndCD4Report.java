@@ -78,6 +78,14 @@ public class SetupPediatricLateVisitAndCD4Report implements SetupReport {
 	
 	private Concept cd4Percent;
 
+	/**
+	 * @return
+	 */
+	@Override
+	public String getReportName() {
+		return null;
+	}
+
 	public void setup() throws Exception {
 		
 		setupProperties();

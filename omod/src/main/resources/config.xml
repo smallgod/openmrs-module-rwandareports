@@ -2677,7 +2677,54 @@
 		<description>Mental Health missed visit encounter forms uuid
 		</description>
 	</globalProperty>
+	<globalProperty>
+		<property>reports.DHIS2PostURL</property>
+		<defaultValue>https://his.rbc.gov.rw/cancer/api/dataValueSets</defaultValue>
+		<description>DHIS2 URL to post reports data to</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.DHIS2AuthorizationUsername</property>
+		<defaultValue>bailly</defaultValue>
+		<description>DHIS2 Authentication Username</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.DHIS2AuthorizationPassword</property>
+		<defaultValue>Bailly@2021</defaultValue>
+		<description>DHIS2 Authentication Password</description>
+	</globalProperty>
 
+	<globalProperty>
+		<property>reports.HMISReportDefinitionUUID</property>
+		<defaultValue></defaultValue>
+		<description>UUID for the HMIS report definition</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.HMISDataSetId</property>
+		<defaultValue>RP7tXIpGeU5</defaultValue>
+		<description>DHIS2 Dataset to be mapped to HMIS Report</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.HMISDataSetToSend</property>
+		<defaultValue>Encounter HMIS Cancer Screening Data Set</defaultValue>
+		<description>The name of the dataset to send to DHIS2</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.LocationsToOrgUnitsMapping</property>
+		<defaultValue>{ "Muhoza (Ruhengeri) CS": "X3VDRgqWC8F", "Muhoza (Ruhengeri) MU": "q7jPDaJrn0p", "Muhura": "t5RmUHwTqoY", "Muhura CS": "djGdJzEZZpL" }</defaultValue>
+		<description>Mapping of OpenMRS Locations to DHIS2 Organization Units</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>reports.HMISIndicatorToDataElementsMapping</property>
+		<defaultValue>{ "C1P": { "dataElement": "PtcrHYo3m4h", "categoryOptionCombo": "jjOEu6JXwo4" }, "C1N": { "dataElement": "PtcrHYo3m4h", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C2P": { "dataElement": "grs172Ec3W1", "categoryOptionCombo": "jjOEu6JXwo4" }, "C2N": { "dataElement": "grs172Ec3W1", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C3P": { "dataElement": "wTzyWT7IE63", "categoryOptionCombo": "jjOEu6JXwo4" }, "C3N": { "dataElement": "wTzyWT7IE63", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C4P": { "dataElement": "tyfxyCI7CJZ", "categoryOptionCombo": "jjOEu6JXwo4" }, "C4N": { "dataElement": "tyfxyCI7CJZ", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C5P": { "dataElement": "JSV4b8Uf9ja", "categoryOptionCombo": "jjOEu6JXwo4" }, "C5N": { "dataElement": "JSV4b8Uf9ja", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C6P": { "dataElement": "Zc3EvAV8X81", "categoryOptionCombo": "jjOEu6JXwo4" }, "C6N": { "dataElement": "Zc3EvAV8X81", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C7P": { "dataElement": "QhqGKd2tLGy", "categoryOptionCombo": "jjOEu6JXwo4" }, "C7N": { "dataElement": "QhqGKd2tLGy", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C8P": { "dataElement": "xJLrrOokka4", "categoryOptionCombo": "jjOEu6JXwo4" }, "C8N": { "dataElement": "xJLrrOokka4", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C9P": { "dataElement": "HH3sQ8g0iQl", "categoryOptionCombo": "jjOEu6JXwo4" }, "C9N": { "dataElement": "HH3sQ8g0iQl", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C10P": { "dataElement": "zUPU7es3xvg", "categoryOptionCombo": "jjOEu6JXwo4" }, "C10N": { "dataElement": "zUPU7es3xvg", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C11P": { "dataElement": "pGDsm7O1Bv5", "categoryOptionCombo": "jjOEu6JXwo4" }, "C11N": { "dataElement": "pGDsm7O1Bv5", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C12P": { "dataElement": "aSSDgMMQmzi", "categoryOptionCombo": "jjOEu6JXwo4" }, "C12N": { "dataElement": "aSSDgMMQmzi", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C14P": { "dataElement": "oncYpBLauWB", "categoryOptionCombo": "jjOEu6JXwo4" }, "C14N": { "dataElement": "oncYpBLauWB", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C16P": { "dataElement": "dG6Dcx5C32Q", "categoryOptionCombo": "jjOEu6JXwo4" }, "C16N": { "dataElement": "dG6Dcx5C32Q", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C17P": { "dataElement": "La2rpEXBi2f", "categoryOptionCombo": "jjOEu6JXwo4" }, "C17N": { "dataElement": "La2rpEXBi2f", "categoryOptionCombo": "FZ74Iu2qmMP" }, "C18P": { "dataElement": "tb4EsrPOmAF", "categoryOptionCombo": "jjOEu6JXwo4" }, "B130": { "dataElement": "xCWiuWgT3T2", "categoryOptionCombo": "t8ClBDLJVrB" }, "B13049": { "dataElement": "eF0MMZ1AsNP", "categoryOptionCombo": "jjOEu6JXwo4" }, "B150": { "dataElement": "IWrdkhhl2MB", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B230": { "dataElement": "JWqn4jZAM5U", "categoryOptionCombo": "t8ClBDLJVrB" }, "B23049": { "dataElement": "JWqn4jZAM5U", "categoryOptionCombo": "jjOEu6JXwo4" }, "B250": { "dataElement": "JWqn4jZAM5U", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B330": { "dataElement": "RWxSueI6Jew", "categoryOptionCombo": "t8ClBDLJVrB" }, "B33049": { "dataElement": "RWxSueI6Jew", "categoryOptionCombo": "jjOEu6JXwo4" }, "B350": { "dataElement": "RWxSueI6Jew", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B430": { "dataElement": "Y19VaEqiYhr", "categoryOptionCombo": "t8ClBDLJVrB" }, "B43049": { "dataElement": "Y19VaEqiYhr", "categoryOptionCombo": "jjOEu6JXwo4" }, "B450": { "dataElement": "Y19VaEqiYhr", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B530": { "dataElement": "SXzm9lAFfsk", "categoryOptionCombo": "t8ClBDLJVrB" }, "B53049": { "dataElement": "SXzm9lAFfsk", "categoryOptionCombo": "jjOEu6JXwo4" }, "B550": { "dataElement": "SXzm9lAFfsk", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B630": { "dataElement": "QZAzUpZmvk9", "categoryOptionCombo": "t8ClBDLJVrB" }, "B63049": { "dataElement": "QZAzUpZmvk9", "categoryOptionCombo": "jjOEu6JXwo4" }, "B650": { "dataElement": "QZAzUpZmvk9", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B730": { "dataElement": "Irzbm5NuCPz", "categoryOptionCombo": "t8ClBDLJVrB" }, "B73049": { "dataElement": "Irzbm5NuCPz", "categoryOptionCombo": "jjOEu6JXwo4" }, "B750": { "dataElement": "Irzbm5NuCPz", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B830": { "dataElement": "J4AdduVFR58", "categoryOptionCombo": "t8ClBDLJVrB" }, "B83049": { "dataElement": "J4AdduVFR58", "categoryOptionCombo": "jjOEu6JXwo4" }, "B850": { "dataElement": "J4AdduVFR58", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B930": { "dataElement": "lhJYhYFWzn8", "categoryOptionCombo": "t8ClBDLJVrB" }, "B93049": { "dataElement": "lhJYhYFWzn8", "categoryOptionCombo": "jjOEu6JXwo4" }, "B950": { "dataElement": "lhJYhYFWzn8", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B1030": { "dataElement": "ZrY1KDIMuUg", "categoryOptionCombo": "t8ClBDLJVrB" }, "B103049": { "dataElement": "ZrY1KDIMuUg", "categoryOptionCombo": "jjOEu6JXwo4" }, "B1050": { "dataElement": "ZrY1KDIMuUg", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B1230": { "dataElement": "iIZDCLIlSDS", "categoryOptionCombo": "t8ClBDLJVrB" }, "B123049": { "dataElement": "iIZDCLIlSDS", "categoryOptionCombo": "jjOEu6JXwo4" }, "B1250": { "dataElement": "iIZDCLIlSDS", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B1330": { "dataElement": "MIFZcH6z68Z", "categoryOptionCombo": "t8ClBDLJVrB" }, "B133049": { "dataElement": "MIFZcH6z68Z", "categoryOptionCombo": "jjOEu6JXwo4" }, "B1350": { "dataElement": "MIFZcH6z68Z", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B1430": { "dataElement": "j1Tcifko8Zj", "categoryOptionCombo": "t8ClBDLJVrB" }, "B143049": { "dataElement": "j1Tcifko8Zj", "categoryOptionCombo": "jjOEu6JXwo4" }, "B1450": { "dataElement": "j1Tcifko8Zj", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B1530": { "dataElement": "MVyYIFXlDY2", "categoryOptionCombo": "t8ClBDLJVrB" }, "B153049": { "dataElement": "MVyYIFXlDY2", "categoryOptionCombo": "jjOEu6JXwo4" }, "B1550": { "dataElement": "MVyYIFXlDY2", "categoryOptionCombo": "FZ74Iu2qmMP" }, "B1630": { "dataElement": "ySt717fg787", "categoryOptionCombo": "t8ClBDLJVrB" }, "B163049": { "dataElement": "ySt717fg787", "categoryOptionCombo": "jjOEu6JXwo4" }, "B1650": { "dataElement": "ySt717fg787", "categoryOptionCombo": "FZ74Iu2qmMP" } }</defaultValue>
+		<description>Mapping of OpenMRS indicators to DHIS2 Data Elements and Category Combo</description>
+	</globalProperty>
+	
 	<globalProperty>
 		<property>reports.AsthmaVisitForm</property>
 		<defaultValue>832d1420-bb75-4a2d-acf4-e6abe765adcf</defaultValue>
@@ -4423,6 +4470,18 @@
 		<defaultValue>43,44</defaultValue>
 		<description>IDs for Hospitals location separated by ','.</description>
 	</globalProperty>
+	
+	<!-- Oncology Screening -->
+	<globalProperty>
+		<property>reports.oncologyBreastScreeningExamination</property>
+		<defaultValue>Oncology Breast Screening Examination</defaultValue>
+		<description>Oncology Breast Screening Examination form</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.oncologyCervicalScreeningExamination</property>
+		<defaultValue>Oncology Cervical Screening Examination</defaultValue>
+		<description>Oncology Cervical Screening Examination form</description>
+	</globalProperty>
 
 	<globalProperty>
 		<property>reports.typeOfAttempt</property>
@@ -4521,5 +4580,15 @@
 		<description>concept: Pathologic diagnosis</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.inpatientDischargeForm</property>
+		<defaultValue>785a9256-ae1d-4a02-87d8-a046a77e81ab</defaultValue>
+		<description>Oncology - Inpatient Discharge Form id</description>
+	</globalProperty>
+	<globalProperty>
+		<property>reports.oncologyBiopsyResultVisit</property>
+		<defaultValue>ea843dde-d33b-4687-88cb-5cd76111b48b</defaultValue>
+		<description>Concept: Scheduled Oncology Biopsy Visit date</description>
+	</globalProperty>
 
 </module>

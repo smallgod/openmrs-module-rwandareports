@@ -30,6 +30,14 @@ public class SetupPathologyRequestReport implements SetupReport {
     private PatientIdentifierType patientIMBPrimaryCareId;
 
 
+    /**
+     * @return 
+     */
+    @Override
+    public String getReportName() {
+        return null;
+    }
+
     public void setup() throws Exception {
 
         setupProperties();

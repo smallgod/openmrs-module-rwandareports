@@ -1,12 +1,8 @@
 package org.openmrs.module.rwandareports.reporting;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.openmrs.Concept;
 import org.openmrs.Program;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.module.reporting.common.RangeComparator;
 import org.openmrs.module.reporting.common.SortCriteria;
@@ -21,18 +17,22 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
+
+public class SetupOncologyRwandaCancerCenterAppointmentList extends SingleSetupReport {
 
 	//properties retrieved from global variables
 	private Program oncologyProgram;
 	
-	private Concept ChemoAdultInpatientVisit;
-
+	private Concept rwandaCancerCenterChemotherapy;
 
 	@Override
 	public String getReportName() {
-		return "ONC-Oncology Inpatient Clinic Appointment List";
+		return "ONC-Oncology Rwanda Cancer Center Appointment List";
 	}
 
 	public void setup() throws Exception {
@@ -62,7 +62,7 @@ public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
 		// Create new dataset definition 
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
-		dataSetDefinition.setName("Chemotherapy – Adult Inpatient Ward");
+		dataSetDefinition.setName("Chemotherapy – Rwanda Cancer Center Visit  ");
 		
 
 		dataSetDefinition.addParameter(new Parameter("endDate", "endDate", Date.class));
@@ -73,11 +73,11 @@ public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
 
 		
 		//Add filters
-		dataSetDefinition.addFilter(Cohorts.createDateObsCohortDefinition(ChemoAdultInpatientVisit, RangeComparator.GREATER_EQUAL,
-		    RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil
-		        .createParameterMappings("value2=${endDate+6M},value1=${endDate-14d}"));
+		dataSetDefinition.addFilter(Cohorts.createDateObsCohortDefinition(rwandaCancerCenterChemotherapy, RangeComparator.GREATER_EQUAL,
+				RangeComparator.LESS_EQUAL, TimeModifier.LAST), ParameterizableUtil
+				.createParameterMappings("value2=${endDate+6M},value1=${endDate-14d}"));
 
-		
+
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getSystemId("id"), new HashMap<String, Object>());
 
@@ -90,7 +90,7 @@ public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFamilyNameColumn("familyName"), new HashMap<String, Object>());
 		dataSetDefinition.addColumn(RowPerPatientColumns.getAge("age"), new HashMap<String, Object>());
 
-		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("date", ChemoAdultInpatientVisit, "yyyy-MM-dd"),
+		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("date", rwandaCancerCenterChemotherapy, "yyyy-MM-dd"),
 		    new HashMap<String, Object>());
 
 		dataSetDefinition.addColumn(RowPerPatientColumns.getIMBId("imbId"), new HashMap<String, Object>());
@@ -98,7 +98,7 @@ public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
 		
-		reportDefinition.addDataSetDefinition("Chemotherapy – Adult Inpatient Ward", dataSetDefinition, mappings);
+		reportDefinition.addDataSetDefinition("Chemotherapy – Rwanda Cancer Center Visit", dataSetDefinition, mappings);
 
 	}
 	
@@ -106,7 +106,8 @@ public class SetupOncologyInpatientAppointmentList extends SingleSetupReport {
 		
 		oncologyProgram = gp.getProgram(GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
 		
-		ChemoAdultInpatientVisit = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY_INPATIENT_WARD_VISIT_DATE);
+		rwandaCancerCenterChemotherapy = Context.getConceptService().getConceptByUuid("8eba01f9-2ea0-49d0-b61b-8d6001e2ff7b");
+
 
 	}
 	
