@@ -27,6 +27,7 @@ public class SetupPathologyRequestReport implements SetupReport {
     private Concept telephoneNumberConcept;
     private Concept PATHOLOGYREQUESTRESULTSAPPROVED;
     private Concept pathologicDiagnoisis;
+    private PatientIdentifierType patientIMBPrimaryCareId;
 
 
     public void setup() throws Exception {
@@ -73,6 +74,7 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "    (select family_name2 from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as family_name2,\n" +
                 "    (select middle_name from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as middle_name,\n" +
                 "    (select given_name from person_name where preferred=1 and voided=0 and  enc.patient_id=person_id order by person_name_id limit 1 ) as given_name,  \n" +
+                "     (SELECT identifier FROM patient_identifier where patient_id=enc.patient_id and voided = 0 and identifier_type in (select patient_identifier_type_id from patient_identifier_type where name='IMB Primary Care Registration ID') limit 1) as IMBPrimaryCare, \n" +
                 "    (select value_text from obs  where concept_id= " + telephoneNumberConcept.getConceptId() + " and voided=0 and enc.patient_id = person_id order by obs_id desc limit 1) as patientPhoneNumber,\n" +
                 "    healthcenter.name as patientHealthCenter,\n" +
                 "    enc.encounter_id as encounterId,\n" +
@@ -99,6 +101,9 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "    (select approvalObs.uuid from obs approvalObs where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
                 "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0 order by obs_id DESC LIMIT 1) as approvalObsUuid,  " +
+                "    (select approvalObs.date_created  from obs approvalObs left join users user on approvalObs.creator=user.user_id left join person_name pn on user.person_id=pn.person_id where  encounter_id = ( \n" +
+                "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
+                "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0 order by obs_id DESC LIMIT 1) as approvedDate,  " +
                 "    (select group_concat(distinct cn.name) from obs pathologicDiagnosis left join concept_name cn on pathologicDiagnosis.value_coded=cn.concept_id where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
                 "\t     ) and pathologicDiagnosis.concept_id="+pathologicDiagnoisis.getConceptId()+" and pathologicDiagnosis.voided=0 and cn.concept_name_type=\"FULLY_SPECIFIED\" and cn.voided=0 and locale=\"en\") as pathologicDiagnosisObs  " +
@@ -146,6 +151,7 @@ public class SetupPathologyRequestReport implements SetupReport {
         telephoneNumberConcept = gp.getConcept(GlobalPropertiesManagement.TELEPHONE_NUMBER_CONCEPT);
         PATHOLOGYREQUESTRESULTSAPPROVED = gp.getConcept(GlobalPropertiesManagement.PATHOLOGYREQUESTRESULTSAPPROVED);
         pathologicDiagnoisis =  gp.getConcept(GlobalPropertiesManagement.PATHOLOGICDIAGNOSIS);
+//        patientIMBPrimaryCareId = gp.getPatientIdentifier(GlobalPropertiesManagement.PC_IDENTIFIER);
     }
 
 }
