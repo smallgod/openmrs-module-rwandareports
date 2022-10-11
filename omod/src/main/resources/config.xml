@@ -4484,6 +4484,49 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>reports.typeOfAttempt</property>
+		<defaultValue>98672ac7-510e-4871-a0a1-81de095cf326</defaultValue>
+		<description>Type of Attempt concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.CHWVisit</property>
+		<defaultValue>355b7292-69af-414e-8985-086ec802e017</defaultValue>
+		<description>CHW Visit concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.resultOfCall</property>
+		<defaultValue>f89b3523-c37a-4d50-ace7-cc50f2292d77</defaultValue>
+		<description>Result of Call concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.referredToCoded</property>
+		<defaultValue>3a84ab37-f75c-48ad-8bcf-322c927f36bb</defaultValue>
+		<description>referred to (coded) concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.locationToLocationConceptMatch</property>
+		<defaultValue>6601:997,105984:128,6603:172</defaultValue>
+		<description>Match of Locations to Location Concepts</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.testResult</property>
+		<defaultValue>bfb3eb1e-db98-4846-9915-0168511c6298</defaultValue>
+		<description>Test Result concept</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>reports.HPVPositiveType</property>
+		<defaultValue>1b4a5f67-6106-4a4d-a389-2f430be543e4</defaultValue>
+		<description>HPV positive Type concept</description>
+	</globalProperty>
+
+
+	<globalProperty>
 		<property>reports.pathologyReport.pathologyEncounterType</property>
 		<defaultValue>ADULT RETURN VISIT</defaultValue>
 		<description>Pathology Encounter Type</description>
