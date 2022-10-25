@@ -577,7 +577,7 @@ public class GlobalPropertiesManagement {
 	public final static String ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT = "reports.oncologyOutpatientScheduledVisit";
 	
 	public final static String ONCOLOGY_SCHEDULED_TEST_VISIT = "reports.oncologyTestScheduledVisit";
-	
+	public  final static String ONCOLOGY_BIOPSY_RESULT_VISIT = "reports.oncologyBiopsyResultVisit";
 	public final static String ONCOLOGY_PATHOLOGY_RESULT_VISIT = "reports.oncologyPathologyResultVisit";
 	
 	public final static String ONCOLOGY_SPECIAL_VISIT = "reports.oncologySpecialVisit";
@@ -615,11 +615,6 @@ public class GlobalPropertiesManagement {
 	public final static String RADIATIONSTATUS = "reports.RadiationStatus";
 	public final static String TREATMENTINTENT = "reports.treatmentIntent";
 	public final static String PATIENTREFERREDTOWHERE = "reports.Patientreferredtowhere";
-
-
-
-
-
 
     public final static String TELEPHONE_NUMBER_OF_CONTACT = "reports.telephoneNumberOfContact"; //this is mapped wrongly
 

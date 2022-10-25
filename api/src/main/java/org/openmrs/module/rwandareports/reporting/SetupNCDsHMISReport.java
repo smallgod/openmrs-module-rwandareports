@@ -189,7 +189,6 @@ public class SetupNCDsHMISReport implements SetupReport {
 
         SqlCohortDefinition location = new SqlCohortDefinition();
         location.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and pa.value = :location");
-        System.out.println("Locationnnnnnnnn" + location.getQuery());
         location.setName("Location");
         location.addParameter(new Parameter("location", "location", Location.class));
 
@@ -464,6 +463,7 @@ public class SetupNCDsHMISReport implements SetupReport {
 //        conceptOtherChronicKidneyDisease.add(secondaryICDDiagnosis);
 
         conceptHypertension.add(ICD11Concepts);
+        conceptHypertension.add(chronicCareDiagnosis);
 //        conceptHypertension.add(primaryICDDiagnosis);
 //        conceptHypertension.add(secondaryICDDiagnosis);
 
@@ -1543,7 +1543,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
 
 
-        SqlCohortDefinition newPatientWithHypertension= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptHypertension,combinedHypertension);
+        SqlCohortDefinition newPatientWithHypertension= newPatientWithNCDDiagnosisObsByStartDateAndEndDateHypertension(combinedHypertension);
 
 // 0-39
 
@@ -1628,7 +1628,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with Hypertension
 
-        SqlCohortDefinition oldHypertension=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptHypertension,combinedHypertension);
+        SqlCohortDefinition oldHypertension=oldPatientWithNCDDiagnosisObsByStartDateAndEndDateHypertension(combinedHypertension);
 
 
 // 0-39
@@ -3771,6 +3771,59 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         patientWithIDCObs.addParameter(new Parameter("endDate", "endDate", Date.class));
 
         return patientWithIDCObs;
+
+    }
+    private SqlCohortDefinition newPatientWithNCDDiagnosisObsByStartDateAndEndDateHypertension(List<Concept> NcdDiagnosis){
+
+        StringBuilder ncdDia = new StringBuilder();
+        int y = 0;
+        for (Concept c : NcdDiagnosis) {
+            if (y > 0) {
+                ncdDia.append(",");
+            }
+            ncdDia.append(c.getConceptId());
+
+            y++;
+        }
+        StringBuilder qStr = new StringBuilder();
+        SqlCohortDefinition patientWithNCDsObs=new SqlCohortDefinition();
+        qStr.append("select o.person_id from obs o inner JOIN patient_program pp on pp.patient_id=o.person_id");
+        qStr.append(" where o.voided= 0 and o.concept_id in (");
+        qStr.append(ncdDia);
+        qStr.append(") and pp.voided=0 and pp.date_completed is null and pp.date_enrolled>=:startDate and pp.date_enrolled<=:endDate");
+        System.out.println("Queryyyyyy: "+qStr);
+        patientWithNCDsObs.setQuery(qStr.toString());
+        patientWithNCDsObs.setName("patientWithNCDsObs");
+        patientWithNCDsObs.addParameter(new Parameter("startDate", "startDate", Date.class));
+        patientWithNCDsObs.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+        return patientWithNCDsObs;
+
+    }
+    private SqlCohortDefinition oldPatientWithNCDDiagnosisObsByStartDateAndEndDateHypertension(List<Concept> NcdDiagnosis){
+        StringBuilder ncdDia = new StringBuilder();
+        int y = 0;
+        for (Concept c : NcdDiagnosis) {
+            if (y > 0) {
+                ncdDia.append(",");
+            }
+            ncdDia.append(c.getConceptId());
+
+            y++;
+        }
+        StringBuilder qStr = new StringBuilder();
+        SqlCohortDefinition patientWithNCDsObs=new SqlCohortDefinition();
+        qStr.append("select o.person_id from obs o inner JOIN patient_program pp on pp.patient_id=o.person_id");
+        qStr.append(" where o.voided= 0 and o.concept_id in (");
+        qStr.append(ncdDia);
+        qStr.append(") and pp.voided=0 and pp.date_completed is null and pp.date_enrolled<:startDate");
+        System.out.println("Queryyyyyy: "+qStr);
+        patientWithNCDsObs.setQuery(qStr.toString());
+        patientWithNCDsObs.setName("patientWithNCDsObs");
+        patientWithNCDsObs.addParameter(new Parameter("startDate", "startDate", Date.class));
+        patientWithNCDsObs.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+        return patientWithNCDsObs;
 
     }
     private SqlCohortDefinition oldPatientWithNCDDiagnosisObsByStartDateAndEndDate(Concept NcdDiagnosis, Concept NcdAnswer){
