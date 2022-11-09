@@ -23,9 +23,9 @@ import org.openmrs.module.rwandareports.util.Cohorts;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 import org.openmrs.module.rwandareports.util.MetadataLookup;
 import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
-import org.openmrs.module.rwandareports.widget.AllLocation;
-import org.openmrs.module.rwandareports.widget.ConceptAnswers;
-import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
+//import org.openmrs.module.rwandareports.widget.AllLocation;
+//import org.openmrs.module.rwandareports.widget.ConceptAnswers;
+//import org.openmrs.module.rwandareports.util.RowPerPatientColumns;
 
 
 import java.util.*;
