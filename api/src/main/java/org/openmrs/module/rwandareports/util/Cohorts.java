@@ -1775,7 +1775,7 @@ public class Cohorts {
 	public static SqlCohortDefinition getPatientsWithCodedObservationsBetweenStartDateAndEndDate(String name, Concept conceptQuestion,Concept conceptAnswer) {
 		SqlCohortDefinition obsBetweenStartDateAndEndDate = new SqlCohortDefinition();
 
-		StringBuilder query = new StringBuilder("select distinct o.person_id from obs o where o.concept_id= ");
+		StringBuilder query = new StringBuilder("select o.person_id from obs o where o.concept_id= ");
 
 		query.append(conceptQuestion.getConceptId());
 
@@ -2037,11 +2037,12 @@ int i=0;
 		}
 		//cohortquery.setQuery("select o.person_id from obs o,(select * from (select * from encounter where (form_id="+asthmaDDBFormId+" or encounter_type="+flowsheetAsthmas.getEncounterTypeId()+") order by encounter_datetime desc) as ordred_enc group by ordred_enc.patient_id) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="+returnVisitDate.getConceptId()+" and o.value_datetime>=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)),'%Y-%m-%d')) and o.value_datetime<=(select DATE_FORMAT(CURDATE()+(- (select IF(DAYOFWEEK(CURDATE())=1,6,DAYOFWEEK(CURDATE())-2) as sun)+6),'%Y-%m-%d')) order by o.value_datetime");
 		cohortquery
-		        .setQuery("select distinct(o.person_id) from obs o,(select * from (select * from encounter where form_id in ("
+		        .setQuery("select o.person_id from obs o,(select * from (select * from encounter where form_id in ("
 		                + formIds.toString()
 		                + ")order by encounter_datetime desc) as ordred_enc ) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="
 		                + returnVisitDate.getConceptId()
 		                + " and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
+		System.out.println("resultttttttttttttttttttt"+cohortquery);
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
 		cohortquery.addParameter(new Parameter("end", "end", Date.class));
 		return cohortquery;
