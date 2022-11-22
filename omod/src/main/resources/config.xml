@@ -4534,7 +4534,7 @@
 
 	<globalProperty>
 		<property>reports.pathologyReport.pathologyRequestForm</property>
-		<defaultValue>PROGRAMME ADULTE VIH - RENDEZ-VOUS - Rwanda Burera</defaultValue>
+		<defaultValue>26e4edde-7ac1-4f44-ab9f-036659d66fc1</defaultValue>
 		<description>Pathology Request Form</description>
 	</globalProperty>
 
