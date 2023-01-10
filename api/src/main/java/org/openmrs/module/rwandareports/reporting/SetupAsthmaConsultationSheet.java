@@ -135,7 +135,7 @@ public class SetupAsthmaConsultationSheet extends SingleSetupReport {
 
 
 		AllObservationValues asthmaClassification = RowPerPatientColumns.getAllAsthmaClassificationValues("asthmaClassification", null, new LastTwoObsFilter(),
-		    null);
+				null);
 		
 		
 				
@@ -157,8 +157,8 @@ public class SetupAsthmaConsultationSheet extends SingleSetupReport {
 	private void setupProperties() {
 		asthmaProgram = gp.getProgram(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_PROGRAM);
 		asthmaEncounter = gp.getEncounterTypeList(GlobalPropertiesManagement.ASTHMA_VISIT);
-		rendevousForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_RENDEVOUS_VISIT_FORM);
-		asthmaDDBForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
+		//rendevousForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_RENDEVOUS_VISIT_FORM);
+		//asthmaDDBForm=gp.getForm(GlobalPropertiesManagement.ASTHMA_DDB);
 		//followUpForm=gp.getForm(GlobalPropertiesManagement.NCD_FOLLOWUP_FORM);
 		DDBAndRendezvousForms=gp.getFormList(GlobalPropertiesManagement.ASTHMA_DDB_RENDEVOUS_VISIT_FORMS);
 		//DDBAndRendezvousForms.add(rendevousForm);

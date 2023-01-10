@@ -82,9 +82,11 @@ public class SetupOncologyInpatientClinicMissedVisit extends SingleSetupReport {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName(getReportName());
-				
-		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));	
-		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+
+		reportDefinition.addParameter(new Parameter("startDate", "From ", Date.class));
+		reportDefinition.addParameter(new Parameter("endDate", "To", Date.class));
+
+		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByStartEndDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}"));
 		createDataSetDefinition(reportDefinition);
 		
 		Helper.saveReportDefinition(reportDefinition);
@@ -96,29 +98,29 @@ public class SetupOncologyInpatientClinicMissedVisit extends SingleSetupReport {
 		// Create new dataset definition 
 		RowPerPatientDataSetDefinition dataSetDefinition = new RowPerPatientDataSetDefinition();
 		dataSetDefinition.setName("Inpatient Missed List");
-		
-		
-		dataSetDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
-		
+
+
+		dataSetDefinition.addParameter(new Parameter("startDate", "From ", Date.class));
+		dataSetDefinition.addParameter(new Parameter("endDate", "To", Date.class));
+
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
 		dataSetDefinition.setSortCriteria(sortCriteria);
 		
 		//Add filters
-		dataSetDefinition.addFilter(Cohorts.createPatientsLateForVisit(ChemotherapyInpatientWardVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition.addFilter(Cohorts.createPatientsMissedVisit(ChemotherapyInpatientWardVisit, visitForms), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 		
 		
 		// who do not have a recorded visit (outpatient, BSA) since the scheduled visit date
 		
-		dataSetDefinition.addFilter(new InverseCohortDefinition(Cohorts.createEncounterBasedOnForms("patientsWithFlowFormAndBSA",onOrAfterOnOrBefore,preventedForms)), ParameterizableUtil.createParameterMappings("onOrAfter=${endDate-6d},onOrBefore=${endDate}"));
+		dataSetDefinition.addFilter(new InverseCohortDefinition(Cohorts.createEncounterBasedOnForms("patientsWithFlowFormAndBSA",onOrAfterOnOrBefore,preventedForms)), ParameterizableUtil.createParameterMappings("onOrAfter=${startDate},onOrBefore=${endDate}"));
 
 		
 		
 		
 		//Add Columns
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDV", ChemotherapyInpatientWardVisit, "dd/MMM/yyyy"), new HashMap<String, Object>());
-		
-		
+
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("nextRDVDate", ChemotherapyInpatientWardVisit, "yyyy/MM/dd"), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getFirstNameColumn("givenName"), new HashMap<String, Object>());
@@ -136,8 +138,7 @@ public class SetupOncologyInpatientClinicMissedVisit extends SingleSetupReport {
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("diagnosisNew", confirmedDiagnosis, null), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone", telephone, null), new HashMap<String, Object>());
-		
-		
+
 		dataSetDefinition.addColumn(RowPerPatientColumns.getMostRecent("telephone2", telephone2, null), new HashMap<String, Object>());
 		
 		dataSetDefinition.addColumn(RowPerPatientColumns.getPatientAddress("address", true, true, true, true),
@@ -148,7 +149,10 @@ public class SetupOncologyInpatientClinicMissedVisit extends SingleSetupReport {
 		
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
-		
+		mappings.put("startDate", "${startDate}");
+
+
+
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		}
 	

@@ -79,9 +79,11 @@ public class SetupOncologyOutpatientClinicMissedVisit extends SingleSetupReport 
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName(getReportName());
-				
-		reportDefinition.addParameter(new Parameter("endDate", "Date", Date.class));	
-		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
+
+		reportDefinition.addParameter(new Parameter("startDate", "From ", Date.class));
+		reportDefinition.addParameter(new Parameter("endDate", "To", Date.class));
+
+		reportDefinition.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByStartEndDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("onOrBefore=${endDate},onOrAfter=${startDate}"));
 		createDataSetDefinition(reportDefinition);
 		
 		Helper.saveReportDefinition(reportDefinition);
@@ -101,13 +103,18 @@ public class SetupOncologyOutpatientClinicMissedVisit extends SingleSetupReport 
 		dataSetDefinition3.setName("Outpatient Pathology Results Lists");
 		RowPerPatientDataSetDefinition dataSetDefinition5 = new RowPerPatientDataSetDefinition();
 		dataSetDefinition3.setName("Outpatient All Lists");
-		
-		
-		dataSetDefinition.addParameter(new Parameter("endDate", "Date", Date.class));
-		dataSetDefinition2.addParameter(new Parameter("endDate", "Date", Date.class));
-		dataSetDefinition3.addParameter(new Parameter("endDate", "Date", Date.class));
-		dataSetDefinition4.addParameter(new Parameter("endDate", "Date", Date.class));
-		dataSetDefinition5.addParameter(new Parameter("endDate", "Date", Date.class));
+
+
+		dataSetDefinition.addParameter(new Parameter("startDate", "From ", Date.class));
+		dataSetDefinition.addParameter(new Parameter("endDate", "To", Date.class));
+		dataSetDefinition2.addParameter(new Parameter("startDate", "From ", Date.class));
+		dataSetDefinition2.addParameter(new Parameter("endDate", "To", Date.class));
+		dataSetDefinition3.addParameter(new Parameter("startDate", "From ", Date.class));
+		dataSetDefinition3.addParameter(new Parameter("endDate", "To", Date.class));
+		dataSetDefinition4.addParameter(new Parameter("startDate", "From ", Date.class));
+		dataSetDefinition4.addParameter(new Parameter("endDate", "To", Date.class));
+		dataSetDefinition5.addParameter(new Parameter("startDate", "From ", Date.class));
+		dataSetDefinition5.addParameter(new Parameter("endDate", "To", Date.class));
 
 		SortCriteria sortCriteria = new SortCriteria();
 		sortCriteria.addSortElement("nextRDVDate", SortDirection.ASC);
@@ -119,11 +126,11 @@ public class SetupOncologyOutpatientClinicMissedVisit extends SingleSetupReport 
 
 
 		//Add filters
-		dataSetDefinition.addFilter(Cohorts.createPatientsLateForVisit(scheduledVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		dataSetDefinition2.addFilter(Cohorts.createPatientsLateForVisit(biopsyResultVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		dataSetDefinition3.addFilter(Cohorts.createPatientsLateForVisit(specialVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		dataSetDefinition4.addFilter(Cohorts.createPatientsLateForVisit(pathologyResultVisit, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
-		dataSetDefinition5.addFilter(Cohorts.createPatientsLateForVisit(visitDates, visitForms), ParameterizableUtil.createParameterMappings("endDate=${endDate}"));
+		dataSetDefinition.addFilter(Cohorts.createPatientsMissedVisit(scheduledVisit, visitForms), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dataSetDefinition2.addFilter(Cohorts.createPatientsMissedVisit(biopsyResultVisit, visitForms), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dataSetDefinition3.addFilter(Cohorts.createPatientsMissedVisit(specialVisit, visitForms), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dataSetDefinition4.addFilter(Cohorts.createPatientsMissedVisit(pathologyResultVisit, visitForms), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		dataSetDefinition5.addFilter(Cohorts.createPatientsMissedVisit(visitDates, visitForms), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 
 		
 		//Add Columns
@@ -219,6 +226,7 @@ public class SetupOncologyOutpatientClinicMissedVisit extends SingleSetupReport 
 
 		Map<String, Object> mappings = new HashMap<String, Object>();
 		mappings.put("endDate", "${endDate}");
+		mappings.put("startDate", "${startDate}");
 		
 		reportDefinition.addDataSetDefinition("dataset", dataSetDefinition, mappings);
 		reportDefinition.addDataSetDefinition("dataset2", dataSetDefinition2, mappings);

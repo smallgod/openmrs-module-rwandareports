@@ -2139,6 +2139,7 @@ int i=0;
 		        .setQuery("select o.person_id from obs o where o.voided=0 and o.concept_id="
 		                + visitDate.getConceptId()
 		                + " and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
+		System.out.println("Checkkkkkkkkkkkkkkkkkkkkk"+ cohortquery );
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
 		cohortquery.addParameter(new Parameter("end", "end", Date.class));
 		return cohortquery;
@@ -2176,7 +2177,7 @@ int i=0;
 		        .setQuery("select o.person_id from obs o where o.voided=0 and o.concept_id in ("
 		                + conceptIds.toString()
 		                + ") and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
-//		System.out.println("Ndeberaaaaaaaaaa" + cohortquery);
+		System.out.println("Ndeberaaaaaaaaaa" + cohortquery);
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
 		cohortquery.addParameter(new Parameter("end", "end", Date.class));
 		return cohortquery;
@@ -2410,7 +2411,99 @@ int i=0;
 		
 		return visit;
 	}
-	
+	public static CompositionCohortDefinition createPatientsMissedVisit(List<Concept> concepts, List<Form> forms) {
+
+		StringBuilder formIdList=new StringBuilder();
+		boolean first = true;
+		for (Form f : forms) {
+			if (!first) {
+				formIdList.append(",");
+			}
+
+			formIdList.append(f.getFormId());
+			first = false;
+		}
+
+		StringBuilder conceptIdList=new StringBuilder();
+		boolean second = true;
+		for (Concept f : concepts) {
+			if (!second) {
+				conceptIdList.append(",");
+			}
+
+			conceptIdList.append(f.getConceptId());
+			second = false;
+		}
+
+
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("select lastObs.person_id from (select obs_id, value_datetime, obs.person_id from obs inner join (select person_id, max(value_datetime) as MostRecentDate from obs where voided = 0 and concept_id=");
+
+		sql.append(conceptIdList);
+
+		sql.append(" group by person_id ) maxTable ON maxTable.person_id = obs.person_id and maxTable.MostRecentDate = obs.value_datetime where concept_id = " );
+
+		sql.append(conceptIdList);
+
+		sql.append(" and voided = 0) as lastObs, (SELECT  encounter_id, encounter_datetime, encounter.patient_id FROM encounter");
+		sql.append(" INNER JOIN ( SELECT patient_id, max(encounter_datetime) as LastVisit from encounter where form_id IN (");
+
+		sql.append(formIdList);
+
+		sql.append(" )  AND voided = 0 group by patient_id) Last_Encounter ON encounter.patient_id = Last_Encounter.patient_id AND Last_Encounter.LastVisit = encounter.encounter_datetime WHERE form_id IN (");
+
+		sql.append(formIdList);
+
+		sql.append(" ) AND voided = 0) as last_Visit WHERE ");
+
+		sql.append(" lastObs.value_datetime>=:startDate and lastObs.value_datetime<=:endDate and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
+
+
+		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
+		lateVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
+		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		StringBuilder sql2 = new StringBuilder();
+		sql2.append("select o.person_id from obs o where o.voided=0 and o.concept_id in (");
+		boolean third = true;
+		for (Concept c : concepts) {
+			if (!third) {
+				sql2.append(",");
+			}
+
+			sql2.append(c.getConceptId());
+			third = false;
+		}
+		sql2.append(") and o.value_datetime>=:startDate and o.value_datetime<=:endDate and o.person_id not in(select patient_id from encounter where form_id in (");
+		boolean fourth = true;
+		for (Form f : forms) {
+			if (!fourth) {
+				sql2.append(",");
+			}
+
+			sql2.append(f.getFormId());
+			fourth = false;
+		}
+		sql2.append(") and voided = 0)");
+
+		SqlCohortDefinition lateVisitNoEncounter = new SqlCohortDefinition(sql2.toString());
+		lateVisitNoEncounter.addParameter(new Parameter("startDate", "startDate", Date.class));
+		lateVisitNoEncounter.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		CompositionCohortDefinition visit = new CompositionCohortDefinition();
+		visit.addParameter(new Parameter("startDate", "startDate", Date.class));
+		visit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		visit.getSearches().put("1",
+				new Mapped<CohortDefinition>(lateVisit, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		visit.getSearches().put(
+				"2",
+				new Mapped<CohortDefinition>(lateVisitNoEncounter, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		visit.setCompositionString("1 OR 2");
+
+		return visit;
+	}
 	public static CompositionCohortDefinition createPatientsLateForVisit(Concept concept, List<Form> forms) {
 		StringBuilder formIdList=new StringBuilder();
 		boolean first = true;
@@ -2446,10 +2539,13 @@ int i=0;
 		sql.append(" ) AND voided = 0) as last_Visit WHERE ");
 
 		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)>6 and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
-		
+
+//		System.out.println("Missedddddddddddddd"+sql);
+
 		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
 		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
-		
+
+
 		StringBuilder sql2 = new StringBuilder();
 		sql2.append("select o.person_id from obs o where o.voided=0 and o.concept_id=");
 		sql2.append(concept.getConceptId());
@@ -2480,7 +2576,81 @@ int i=0;
 		
 		return visit;
 	}
-	
+	public static CompositionCohortDefinition createPatientsMissedVisit(Concept concept, List<Form> forms) {
+		StringBuilder formIdList=new StringBuilder();
+		boolean first = true;
+		for (Form f : forms) {
+			if (!first) {
+				formIdList.append(",");
+			}
+
+			formIdList.append(f.getFormId());
+			first = false;
+		}
+
+
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("select lastObs.person_id from (select obs_id, value_datetime, obs.person_id from obs inner join (select person_id, max(value_datetime) as MostRecentDate from obs where voided = 0 and concept_id=");
+
+		sql.append(concept.getConceptId());
+
+		sql.append(" group by person_id ) maxTable ON maxTable.person_id = obs.person_id and maxTable.MostRecentDate = obs.value_datetime where concept_id = " );
+
+		sql.append(concept.getConceptId());
+
+		sql.append(" and voided = 0) as lastObs, (SELECT  encounter_id, encounter_datetime, encounter.patient_id FROM encounter");
+		sql.append(" INNER JOIN ( SELECT patient_id, max(encounter_datetime) as LastVisit from encounter where form_id IN (");
+
+		sql.append(formIdList);
+
+		sql.append(" )  AND voided = 0 group by patient_id) Last_Encounter ON encounter.patient_id = Last_Encounter.patient_id AND Last_Encounter.LastVisit = encounter.encounter_datetime WHERE form_id IN (");
+
+		sql.append(formIdList);
+
+		sql.append(" ) AND voided = 0) as last_Visit WHERE ");
+
+		sql.append(" lastObs.value_datetime>=:startDate and lastObs.value_datetime<=:endDate and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
+
+		System.out.println("Missedddddddddddddd"+sql);
+
+		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
+		lateVisit.addParameter(new Parameter("startDate", "startDate", Date.class));
+		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+
+		StringBuilder sql2 = new StringBuilder();
+		sql2.append("select o.person_id from obs o where o.voided=0 and o.concept_id=");
+		sql2.append(concept.getConceptId());
+		sql2.append(" and o.value_datetime>=:startDate and o.value_datetime<=:endDate and o.person_id not in(select patient_id from encounter where form_id in (");
+		boolean fourth = true;
+		for (Form f : forms) {
+			if (!fourth) {
+				sql2.append(",");
+			}
+
+			sql2.append(f.getFormId());
+			fourth = false;
+		}
+		sql2.append(") and voided = 0)");
+
+		SqlCohortDefinition lateVisitNoEncounter = new SqlCohortDefinition(sql2.toString());
+		lateVisitNoEncounter.addParameter(new Parameter("startDate", "startDate", Date.class));
+		lateVisitNoEncounter.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		CompositionCohortDefinition visit = new CompositionCohortDefinition();
+		visit.addParameter(new Parameter("startDate", "startDate", Date.class));
+		visit.addParameter(new Parameter("endDate", "endDate", Date.class));
+		visit.getSearches().put("1",
+				new Mapped<CohortDefinition>(lateVisit, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		visit.getSearches().put(
+				"2",
+				new Mapped<CohortDefinition>(lateVisitNoEncounter, ParameterizableUtil
+						.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+		visit.setCompositionString("1 OR 2");
+
+		return visit;
+	}
 	public static CompositionCohortDefinition createPatientsWhereMostRecentEncounterIsForm(Form form, Concept concept) {
 		
 		StringBuilder sql = new StringBuilder();

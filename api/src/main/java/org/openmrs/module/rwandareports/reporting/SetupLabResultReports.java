@@ -164,6 +164,7 @@ public class SetupLabResultReports {
 				"from orders ods " +
 				"left join obs o on o.order_id=ods.order_id and o.concept_id=ods.concept_id and o.voided=0 " +
 				"where ods.order_type_id="+labOrder.getOrderTypeId()+" and ods.date_activated >= :startDate and ods.date_activated <= :endDate and ods.voided=0 and (:location is null or (ods.patient_id in (select person_id from person_attribute where person_attribute_type_id="+healthFacilityAttributeType.getPersonAttributeTypeId()+" and  voided=0 and value=:location ))) and (:concept is null or ods.concept_id=:concept) and ods.concept_id not in (select concept_set from concept_set)");
+		System.out.println("checkkkkkkkkkkkkkkk" + sqldsd.getSqlQuery());
 		sqldsd.addParameter(new Parameter("startDate", "From:", Date.class));
 		sqldsd.addParameter(new Parameter("endDate", "To:", Date.class));
 		sqldsd.addParameter(location);
