@@ -1042,5 +1042,15 @@ public class RwandaSetupReportsFormController {
 		new SetupOncologyCancerCenterClinicMissedVisit().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
+	@RequestMapping("/module/rwandareports/register_OncologyLostToFollowUpIndicatorReport")
+	public ModelAndView registerOncologyLostToFollowUpIndicatorReport() throws Exception{
+		new SetupOncologyLostToFollowUpIndicatorReport().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_OncologyLostToFollowUpIndicatorReport")
+	public ModelAndView removeOncologyLostToFollowUpIndicatorReport() throws Exception{
+		new SetupOncologyLostToFollowUpIndicatorReport().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 
 }
