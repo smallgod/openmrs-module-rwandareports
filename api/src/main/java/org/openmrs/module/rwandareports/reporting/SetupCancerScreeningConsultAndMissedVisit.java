@@ -148,27 +148,30 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		encounterTypes.setRequired(false);
 		reportDefinition.addParameter(encounterTypes);
 
+		Parameter concept = new Parameter("concept", "Referred To:", Concept.class);
+		concept.setRequired(false);
+		reportDefinition.addParameter(concept);
+
+		Concept returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
 
 		SqlCohortDefinition locationDefinition = new SqlCohortDefinition();
 		locationDefinition.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and (:location is null or pa.value = :location)");
 		locationDefinition.setName("locationDefinition");
 		locationDefinition.addParameter(location);
 
-//		String[] locationMarching = null;
-//
-//		if (location.getHierarchy() != null) {
-//			hierarchyToCheck = location.getHierarchy().split(",");
-//		}
-//
-//		for (String h : hierarchyToCheck) {
-//			String[] config = h.split(":");
-//			String hVal = config[0];
-//			String hDisplay = config[0];
-//			if (config.length > 0) {
-//				hDisplay = config[1];
-//			}
+		SqlCohortDefinition referredTo = new SqlCohortDefinition();
+		/*referredTo.setQuery("select ob.person_id from obs ob where (:concept is null or ob.value_coded= :concept) and  ob.person_id in (select distinct o.person_id from obs o, encounter e where e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")  and o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 and o.concept_id="
+				+ returnVisitDate.getConceptId() +
+				" and o.value_datetime>= :startDate and o.value_datetime<= :endDate)");*/
+		referredTo.setQuery("select ob.person_id from obs ob where (:concept is null or ob.value_coded= :concept) and  ob.person_id in (select distinct o.person_id from obs o, encounter e where e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")  and o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 and o.concept_id="
+				+ returnVisitDate.getConceptId() +
+				" and o.value_datetime>= :startDate and o.value_datetime<= :endDate) and ob.encounter_id in (select distinct o.encounter_id from obs o, encounter e where e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")  and o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 and o.concept_id=" +
+				+ returnVisitDate.getConceptId() +" and o.value_datetime>= :startDate and o.value_datetime<= :endDate)");
+		referredTo.setName("referredTo");
+		referredTo.addParameter(concept);
+		referredTo.addParameter(new Parameter("startDate", "startDate", Date.class));
+		referredTo.addParameter(new Parameter("endDate", "endDate", Date.class));
 
-		Concept returnVisitDate = gp.getConcept(GlobalPropertiesManagement.RETURN_VISIT_DATE);
 		SqlCohortDefinition patientsWithVisitInPeriod=new SqlCohortDefinition();
 		patientsWithVisitInPeriod.setQuery("select distinct o.person_id from obs o, encounter e where (:encounterTypes is null or e.encounter_type= :encounterTypes) and e.encounter_type in ("+oncologyBreastScreeningExamination.getEncounterType().getEncounterTypeId()+","+oncologyCervicalScreeningExamination.getEncounterType().getEncounterTypeId()+")  and o.encounter_id=e.encounter_id and e.voided=0 and o.voided=0 and o.concept_id="
 				+ returnVisitDate.getConceptId()
@@ -183,6 +186,7 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		consultationSheetBaseCohort.addParameter(new Parameter("location", "Health Center", Location.class));
 		consultationSheetBaseCohort.addParameter(new Parameter("startDate", "startDate", Date.class));
 		consultationSheetBaseCohort.addParameter(new Parameter("endDate", "endDate", Date.class));
+		consultationSheetBaseCohort.addParameter(concept);
 		consultationSheetBaseCohort.addParameter(encounterTypes);
 		consultationSheetBaseCohort.getSearches().put(
 				"1",
@@ -192,11 +196,14 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		consultationSheetBaseCohort.getSearches().put(
 				"2",
 				new Mapped<CohortDefinition>(patientsWithVisitInPeriod, ParameterizableUtil.createParameterMappings("encounterTypes=${encounterTypes},endDate=${endDate},startDate=${startDate}")));
+		consultationSheetBaseCohort.getSearches().put(
+				"3",
+				new Mapped<CohortDefinition>(referredTo, ParameterizableUtil.createParameterMappings("concept=${concept},endDate=${endDate},startDate=${startDate}")));
 
-		consultationSheetBaseCohort.setCompositionString("1 AND 2");
+		consultationSheetBaseCohort.setCompositionString("(1 OR 3) AND 2");
 
 		reportDefinition.setBaseCohortDefinition(consultationSheetBaseCohort,
-				ParameterizableUtil.createParameterMappings("location=${location},encounterTypes=${encounterTypes},endDate=${endDate},startDate=${startDate}"));
+				ParameterizableUtil.createParameterMappings("location=${location},concept=${concept},encounterTypes=${encounterTypes},endDate=${endDate},startDate=${startDate}"));
 
 		createConsultDataSetDefinition (reportDefinition);
 		Helper.saveReportDefinition(reportDefinition);
@@ -221,6 +228,9 @@ public class SetupCancerScreeningConsultAndMissedVisit {
 		location.setRequired(false);
 
 		reportDefinition.addParameter(location);
+		Parameter concept = new Parameter("concept", "Referred To:", Concept.class);
+		concept.setRequired(false);
+		reportDefinition.addParameter(concept);
 
 //		Properties properties = new Properties();
 //		properties.setProperty("conceptQuestion", referredToCoded.getName().toString());
