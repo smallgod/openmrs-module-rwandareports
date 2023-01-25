@@ -140,6 +140,7 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		SqlCohortDefinition patientWithOncologyVisitDatesDeno =getpatientWithOncologyVisitsRDV(visitDates);
 
 
+
 		CompositionCohortDefinition patientWithOncologyVisitDatesAll = new CompositionCohortDefinition();
 		patientWithOncologyVisitDatesAll.setName("patientWithOncologyVisitDatesAll");
 		patientWithOncologyVisitDatesAll.addParameter(new Parameter("startDate", "startDate", Date.class));
@@ -147,8 +148,8 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		patientWithOncologyVisitDatesAll.getSearches().put("1", new Mapped<CohortDefinition>(patientWithOncologyVisitDatesDeno, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 		patientWithOncologyVisitDatesAll.setCompositionString("1");
 
-		CohortIndicator patientWithOncologyVisitDatesIndicatorNumerator = Indicators.newCountIndicator("Total Patients who have RDV(Appointments) within the review period", patientWithOncologyVisitDatesAll,
-				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+		CohortIndicator patientWithOncologyVisitDatesIndicatorNumerator = Indicators.newCountIndicator("Total Patients who have RDV(Appointments) within the review period", patientWithOncologyVisitDatesDeno,
+				ParameterizableUtil.createParameterMappings("endDate=${endDate-6m},startDate=${startDate-6m}"));
 
 		dsd.addColumn("Deno", "Total Patients who have RDV(Appointments) within the review period",
 				new Mapped(patientWithOncologyVisitDatesIndicatorNumerator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
@@ -160,18 +161,25 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 
 		SqlCohortDefinition patientLostToFollowUpOncologyNume=getpatientLostToFollowupWithOncologyVisitsRDV(visitDates,encounterTypes);
 
+		SqlCohortDefinition patientWithVisitInSixMonth=getpatientWithVisit(visitDates,encounterTypes);
+
 		CompositionCohortDefinition patientLostToFollowUpOncology = new CompositionCohortDefinition();
 		patientLostToFollowUpOncology.setName("patientLostToFollowUpOncology");
 		patientLostToFollowUpOncology.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientLostToFollowUpOncology.addParameter(new Parameter("endDate", "endDate", Date.class));
-		patientLostToFollowUpOncology.getSearches().put("1", new Mapped<CohortDefinition>(patientLostToFollowUpOncologyNume, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-		patientLostToFollowUpOncology.setCompositionString("1");
+		patientLostToFollowUpOncology.addParameter(new Parameter("from", "From", Date.class));
+		patientLostToFollowUpOncology.addParameter(new Parameter("to", "To", Date.class));
+		patientLostToFollowUpOncology.getSearches().put("1", new Mapped<CohortDefinition>(patientWithOncologyVisitDatesDeno, ParameterizableUtil.createParameterMappings("startDate=${startDate-6m},endDate=${endDate-6m}")));
+		patientLostToFollowUpOncology.getSearches().put("2", new Mapped<CohortDefinition>(patientWithVisitInSixMonth, ParameterizableUtil.createParameterMappings("from=${from},to=${to}")));
+		patientLostToFollowUpOncology.setCompositionString("1 and not 2");
 
-		CohortIndicator patientLostToFollowUpOncologyIndicatorNumerator = Indicators.newCountIndicator("Total Patients who have RDV(Appointments) within the review period", patientLostToFollowUpOncology,
-				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}"));
+		CohortIndicator patientLostToFollowUpOncologyIndicatorDenomurator = Indicators.newCountIndicator("Total Patients who have RDV(Appointments) within the review period", patientLostToFollowUpOncology,
+				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate},from=${endDate-6m},to=${endDate}"));
 
 		dsd.addColumn("Nume", "Total Patients who have RDV(Appointments) within the review period and have not shown up until six months after",
-				new Mapped(patientLostToFollowUpOncologyIndicatorNumerator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+				new Mapped(patientLostToFollowUpOncologyIndicatorDenomurator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
 
 
 	}
@@ -228,7 +236,7 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		SqlCohortDefinition patientWithVisitsDate=new SqlCohortDefinition();
 		qStr.append("select o.person_id from obs o where o.voided=0 and o.concept_id in (");
 		qStr.append(visitsDate);
-		qStr.append(") and o.value_datetime>=:startDate and o.value_datetime<=:endDate order by o.value_datetime;");
+		qStr.append(") and o.value_datetime>=:startDate and o.value_datetime<=:endDate");
 		System.out.println("Rebaaaaaaaaaaaaaa" + qStr);
 		patientWithVisitsDate.setQuery(qStr.toString());
 		patientWithVisitsDate.setName("patientWithVisitsDate");
@@ -280,6 +288,43 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		patientLosts.setName("patientWithVisitsDate");
 		patientLosts.addParameter(new Parameter("startDate", "startDate", Date.class));
 		patientLosts.addParameter(new Parameter("endDate", "endDate", Date.class));
+
+		return patientLosts;
+
+	}
+	private SqlCohortDefinition getpatientWithVisit(List<Concept> visits, List<EncounterType> encounterTypes){
+
+
+		StringBuilder visitsDate = new StringBuilder();
+		int y = 0;
+		for (Concept c : visits) {
+			if (y > 0) {
+				visitsDate.append(",");
+			}
+			visitsDate.append(c.getConceptId());
+
+			y++;
+		}
+		StringBuilder encounters = new StringBuilder();
+		int i = 0;
+		for (EncounterType e : encounterTypes) {
+			if (i > 0) {
+				encounters.append(",");
+			}
+			encounters.append(e.getEncounterTypeId());
+
+			i++;
+		}
+
+
+		StringBuilder qStr = new StringBuilder();
+		SqlCohortDefinition patientLosts=new SqlCohortDefinition();
+		qStr.append("select e.patient_id from encounter e where e.encounter_type IN ("+encounters+") and e.encounter_datetime>=:from and e.encounter_datetime<=:to and e.voided=0");
+		System.out.println("lostttttttttttttttttttttttt" + qStr);
+		patientLosts.setQuery(qStr.toString());
+		patientLosts.setName("patientWithVisitsDate");
+		patientLosts.addParameter(new Parameter("from", "From", Date.class));
+		patientLosts.addParameter(new Parameter("to", "To", Date.class));
 
 		return patientLosts;
 
