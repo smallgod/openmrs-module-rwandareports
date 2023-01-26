@@ -34,7 +34,7 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 
 
 	private Program oncologyProgram;
-
+	private List<Program> oncologyPrograms = new ArrayList<Program>();
 	private ProgramWorkflow diagnosis;
 	private Concept pathologyResultVisit;
 
@@ -52,6 +52,8 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 	private EncounterType outPatientOncology;
 	private EncounterType inPatientOncology;
 	private EncounterType externalOncology;
+
+	private EncounterType vitals;
 
 
 	private List<Concept> visitDates = new ArrayList<Concept>();
@@ -91,6 +93,17 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		//MonthlyRd.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByStartEndDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 
 
+		ProgramEnrollmentCohortDefinition patientEnrolledInOncologyProgram = new ProgramEnrollmentCohortDefinition();
+		patientEnrolledInOncologyProgram.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+		patientEnrolledInOncologyProgram.setPrograms(oncologyPrograms);
+
+
+
+		MonthlyRd.setBaseCohortDefinition(patientEnrolledInOncologyProgram,
+				ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
+
+
+
 		Helper.saveReportDefinition(MonthlyRd);
 
 
@@ -101,6 +114,7 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		MonthlyProps.put("sortWeight", "5000");
 		quarterlyDesign.setProperties(MonthlyProps);
 		Helper.saveReportDesign(quarterlyDesign);
+
 
 	}
 
@@ -187,6 +201,7 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 
 	private void setUpProperties() {
 		oncologyProgram = gp.getProgram(GlobalPropertiesManagement.ONCOLOGY_PROGRAM);
+		oncologyPrograms.add(oncologyProgram);
 
 		scheduledVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_SCHEDULED_OUTPATIENT_VISIT);
 		biopsyResultVisit = gp.getConcept(GlobalPropertiesManagement.ONCOLOGY_BIOPSY_RESULT_VISIT);
@@ -200,6 +215,7 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		outPatientOncology=Context.getEncounterService().getEncounterTypeByUuid("ff319885-3f20-4ae5-8663-3ad5678cba41");
 		inPatientOncology=Context.getEncounterService().getEncounterTypeByUuid("0b3925f9-0336-47a6-931e-5c356e9cc82f");
 		externalOncology=Context.getEncounterService().getEncounterTypeByUuid("570556f2-7080-49f6-9ef3-301feb313896");
+		vitals=Context.getEncounterService().getEncounterTypeByUuid("daf32375-d293-4e27-a68d-2a58494c96e1");
 
 		visitDates.add(scheduledVisit);
 		visitDates.add(biopsyResultVisit);
@@ -214,6 +230,7 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		encounterTypes.add(outPatientOncology);
 		encounterTypes.add(inPatientOncology);
 		encounterTypes.add(externalOncology);
+		encounterTypes.add(vitals);
 
 
 	}
