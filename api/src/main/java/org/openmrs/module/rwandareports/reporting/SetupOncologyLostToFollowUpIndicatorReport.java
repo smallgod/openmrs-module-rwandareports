@@ -174,7 +174,7 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		patientLostToFollowUpOncology.setCompositionString("1 and not 2");
 
 		CohortIndicator patientLostToFollowUpOncologyIndicatorDenomurator = Indicators.newCountIndicator("Total Patients who have RDV(Appointments) within the review period", patientLostToFollowUpOncology,
-				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate},from=${endDate-6m},to=${endDate}"));
+				ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate},from=${endDate-9m},to=${endDate}"));
 
 		dsd.addColumn("Nume", "Total Patients who have RDV(Appointments) within the review period and have not shown up until six months after",
 				new Mapped(patientLostToFollowUpOncologyIndicatorDenomurator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
