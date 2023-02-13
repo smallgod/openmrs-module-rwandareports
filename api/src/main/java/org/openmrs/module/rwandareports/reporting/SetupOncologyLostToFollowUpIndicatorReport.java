@@ -71,26 +71,21 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 		log.info("Setting up report: " + getReportName());
 		setUpProperties();
 
-		//Monthly report set-up
-
-
 		Properties properties = new Properties();
 		properties.setProperty("hierarchyFields", "countyDistrict:District");
 
+		
+		ReportDefinition LostRd = new ReportDefinition();
+		LostRd.addParameter(new Parameter("startDate", "Start Date", Date.class));
+		LostRd.addParameter(new Parameter("endDate", "End Date", Date.class));
 
-		// ANC Report Definition: Start
+		LostRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
 
-		ReportDefinition MonthlyRd = new ReportDefinition();
-		MonthlyRd.addParameter(new Parameter("startDate", "Start Date", Date.class));
-		MonthlyRd.addParameter(new Parameter("endDate", "End Date", Date.class));
+		LostRd.setName(getReportName());
 
-		MonthlyRd.addParameter(new Parameter("location", "Location", AllLocation.class, properties));
-
-		MonthlyRd.setName(getReportName());
-
-		MonthlyRd.addDataSetDefinition(createMonthlyLocationDataSet(),
+		LostRd.addDataSetDefinition(createMonthlyLocationDataSet(),
 				ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
-		//MonthlyRd.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByStartEndDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+		//LostRd.setBaseCohortDefinition(Cohorts.createInProgramParameterizableByStartEndDate("Oncology", oncologyProgram), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 
 
 		ProgramEnrollmentCohortDefinition patientEnrolledInOncologyProgram = new ProgramEnrollmentCohortDefinition();
@@ -99,15 +94,15 @@ public class SetupOncologyLostToFollowUpIndicatorReport extends SingleSetupRepor
 
 
 
-		MonthlyRd.setBaseCohortDefinition(patientEnrolledInOncologyProgram,
+		LostRd.setBaseCohortDefinition(patientEnrolledInOncologyProgram,
 				ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
 
 
 
-		Helper.saveReportDefinition(MonthlyRd);
+		Helper.saveReportDefinition(LostRd);
 
 
-		ReportDesign quarterlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(MonthlyRd,
+		ReportDesign quarterlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(LostRd,
 				"OncologyLostToFollowupReport.xls", "ONC-Oncology Lost to FollowUp Indicator Report (Excel)", null);
 		Properties MonthlyProps = new Properties();
 		MonthlyProps.put("repeatingSections", "sheet:1,dataset:OncologyLTFIndicator");

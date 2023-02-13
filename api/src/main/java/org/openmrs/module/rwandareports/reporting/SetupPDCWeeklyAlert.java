@@ -97,9 +97,9 @@ public class SetupPDCWeeklyAlert extends SingleSetupReport {
 		
 		//Add filters
 		dataSetDefinition.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+PDCProgram.getName(), PDCProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
-		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisitAndFollowUp(referralAndVisitForms), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
+		dataSetDefinition.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(referralAndVisitForms), ParameterizableUtil.createParameterMappings("end=${endDate+7d},start=${endDate}"));
 		dataSetDefinition1.addFilter(Cohorts.createInProgramParameterizableByDate("Patients in "+PDCProgram.getName(), PDCProgram), ParameterizableUtil.createParameterMappings("onDate=${endDate}"));
-		dataSetDefinition1.addFilter(Cohorts.getMondayToSundayPatientReturnVisitAndFollowUp(referralAndVisitForms), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
+		dataSetDefinition1.addFilter(Cohorts.getMondayToSundayPatientReturnVisit(referralAndVisitForms), ParameterizableUtil.createParameterMappings("end=${endDate},start=${endDate}"));
 
 
 		//Add Columns
