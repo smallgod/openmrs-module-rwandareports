@@ -366,7 +366,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_NCDsHMISReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="26" class="tabletd">Oncology</td>
+<td rowspan="27" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -536,6 +536,12 @@ $(document).ready(function(){
 <td>central</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_OncologyCancerCenterAppointmentList.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyCancerCenterAppointmentList.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC-Oncology Lost to FollowUp Indicator Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_OncologyLostToFollowUpIndicatorReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_OncologyLostToFollowUpIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
 <tr>
