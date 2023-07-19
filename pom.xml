@@ -1,5 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openmrs.maven.parents</groupId>
+		<artifactId>maven-parent-openmrs-module</artifactId>
+		<version>1.1.1</version>
+	</parent>
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>rwandareports</artifactId>
@@ -7,6 +14,8 @@
 	<packaging>pom</packaging>
 	<name>Rwanda Reports</name>
 	<description>Rwanda Reports Module</description>
+
+	<url>https://wiki.openmrs.org/x/FQ4z</url>
 
 	<modules>
 		<module>api</module>
@@ -30,7 +39,29 @@
 		<MODULE_NAME>Rwanda Reports</MODULE_NAME>
 		<MODULE_VERSION>${project.parent.version}</MODULE_VERSION>
 		<MODULE_PACKAGE>${project.parent.groupId}.${project.parent.artifactId}</MODULE_PACKAGE>
+		<legacyUIomodVersion>1.8.2</legacyUIomodVersion>
+		<junit5Version>5.7.2</junit5Version>
+		<junit4Version>4.13.1</junit4Version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>org.openmrs.ohri</groupId>
+				<artifactId>ohri-mamba-core</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>legacyui-omod</artifactId>
+				<version>${legacyUIomodVersion}</version>
+				<scope>provided</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -39,6 +70,16 @@
 			<version>${openMRSVersion}</version>
 			<type>pom</type>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.powermock</groupId>
+					<artifactId>powermock-module-junit4</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.powermock</groupId>
+					<artifactId>powermock-api-mockito2</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.openmrs.api</groupId>
@@ -165,6 +206,12 @@
 			<name>OpenMRS Nexus Repository</name>
 			<url>https://openmrs.jfrog.io/artifactory/public/</url>
 		</repository>
+		<repository>
+			<id>central</id>
+			<name>Maven Repository Switchboard</name>
+			<layout>default</layout>
+			<url>http://repo1.maven.org/maven2</url>
+		</repository>
 	</repositories>
 
 
@@ -182,6 +229,9 @@
 
 
 	<build>
+
+		<finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
+
 		<plugins>
 			<plugin>
 				<groupId>org.openmrs.maven.plugins</groupId>
@@ -201,7 +251,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.7</version>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<phase>generate-test-resources</phase>
@@ -223,14 +273,158 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
 					<configuration>
-						<target>1.6</target>
-						<source>1.6</source>
+						<target>1.8</target>
+						<source>1.8</source>
 					</configuration>
 				</plugin>
+				<!-- 1. Unpack the dependency jar first -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.8</version>
+					<version>3.2.0</version>
+					<executions>
+						<execution>
+							<id>unpack-scripts</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>unpack</goal>
+							</goals>
+							<configuration>
+								<artifactItems>
+									<artifactItem>
+										<groupId>org.openmrs.ohri</groupId>
+										<artifactId>ohri-mamba-core</artifactId>
+										<version>1.0.0-SNAPSHOT</version>
+										<type>jar</type>
+										<outputDirectory>${project.build.directory}/mamba-etl</outputDirectory>
+										<includes>_core/**</includes>
+									</artifactItem>
+								</artifactItems>
+							</configuration>
+						</execution>
+						<execution>
+							<id>Expand resources</id>
+							<goals>
+								<goal>unpack-dependencies</goal>
+							</goals>
+							<phase>generate-resources</phase>
+							<configuration>
+								<includeGroupIds>${project.parent.groupId}</includeGroupIds>
+								<includeArtifactIds>${project.parent.artifactId}-api</includeArtifactIds>
+								<includeScope>compile</includeScope>
+								<includes>**\/*.xml,**\/*.properties</includes>
+								<outputDirectory>${project.build.directory}/classes</outputDirectory>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- Step 2 & the last step-->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.2.0</version>
+					<executions>
+
+						<!-- 2. Copy contents of the resources directory of the dependency jar to a target location -->
+						<execution>
+							<id>copy-scripts</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<resources>
+									<resource>
+										<directory>${project.basedir}/src/main/resources/_etl</directory>
+										<filtering>true</filtering>
+									</resource>
+								</resources>
+								<outputDirectory>${project.build.directory}/mamba-etl/_etl</outputDirectory>
+							</configuration>
+						</execution>
+
+						<!-- This should execute last - to copy the build script to a location liquibase.xml can access-->
+						<execution>
+							<id>copy-final-build-script</id>
+							<phase>install</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<resources>
+									<resource>
+										<directory>
+											${project.build.directory}/mamba-etl/_core/database/mysql/build
+										</directory>
+										<filtering>true</filtering>
+									</resource>
+								</resources>
+								<outputDirectory>${project.parent.basedir}/api/src/main/resources/mamba
+								</outputDirectory>
+							</configuration>
+						</execution>
+
+					</executions>
+				</plugin>
+
+				<!-- 3. Make the compiler scripts executable & then run the compiler -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>3.0.0</version>
+					<executions>
+
+						<execution>
+							<id>set-executable-permission</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>exec</goal>
+							</goals>
+							<configuration>
+								<executable>/bin/sh</executable>
+								<arguments>
+									<argument>-c</argument>
+									<argument>chmod -R +x ${project.build.directory}/mamba-etl/_core/compiler</argument>
+								</arguments>
+							</configuration>
+						</execution>
+
+						<execution>
+							<id>run-script</id>
+							<phase>package</phase>
+							<goals>
+								<goal>exec</goal>
+							</goals>
+							<configuration>
+								<executable>/bin/sh</executable>
+								<workingDirectory>${project.build.directory}/mamba-etl/_core/compiler/linux
+								</workingDirectory>
+								<arguments>
+									<!-- the Engine compiler script -->
+									<argument>compile.sh</argument>
+									<!-- Database the created stored procedures will run on -->
+									<argument>-d analysis </argument>
+									<!-- File with a list of all files with stored procedures -->
+									<!-- Remove this argument after automating core to auto-read this -->
+									<argument>-s ../../database/mysql/sp_makefile</argument>
+									<!-- a JSON configuration path/folder for all config files for db flattening -->
+									<!-- Folder containing configs folder, derived folders and any other ETL related folders -->
+									<argument>-t ${project.build.directory}/mamba-etl/_etl/config</argument>
+									<!-- Database Vendor/Engine targeted in this ETL -->
+									<argument>-n mysql</argument>
+									<!-- Set 1 to recompile/build the scripts else 0 - not to. If 1 - don't forget to change the liquibase changeset ID -->
+									<argument>-b 1</argument>
+									<!-- add any other arguments below -->
+									<argument></argument>
+									<argument></argument>
+									<argument></argument>
+									<argument></argument>
+								</arguments>
+							</configuration>
+						</execution>
+
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -288,11 +482,7 @@
 					<artifactId>versions-maven-plugin</artifactId>
 					<version>2.1</version>
 				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.1.0</version>
-				</plugin>
+
 			</plugins>
 		</pluginManagement>
 

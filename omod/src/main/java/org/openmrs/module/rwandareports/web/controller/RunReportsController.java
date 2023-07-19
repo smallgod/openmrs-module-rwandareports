@@ -38,13 +38,12 @@ public class RunReportsController {
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
 	
-    @RequestMapping("/module/rwandaReports/printReport.form") 
-    public void viewIndex(ModelMap model, 
-                            @RequestParam(value="report", required=true) String report,
-                            @RequestParam(value="parameters", required=true) String parameters,
-                            HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	
-    	ReportService rs = Context.getService(ReportService.class);
+	@RequestMapping("/module/rwandaReports/printReport.form")
+	public void viewIndex(ModelMap model, @RequestParam(value = "report", required = true) String report,
+	        @RequestParam(value = "parameters", required = true) String parameters, HttpSession session,
+	        HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		ReportService rs = Context.getService(ReportService.class);
 		
 		ReportRequest rr = new ReportRequest();
 		
@@ -53,8 +52,8 @@ public class RunReportsController {
 		String[] paramNames = parameters.split(",");
 		
 		Map<String, Object> params = new LinkedHashMap<String, Object>();
-		for (String param: paramNames) {
-			params.put(param, request.getParameter(param));			
+		for (String param : paramNames) {
+			params.put(param, request.getParameter(param));
 		}
 		
 		rr.setReportDefinition(new Mapped<ReportDefinition>(reportDef, params));
@@ -62,8 +61,8 @@ public class RunReportsController {
 		List<RenderingMode> modes = rs.getRenderingModes(reportDef);
 		RenderingMode rm = modes.get(0);
 		
-	    rr.setRenderingMode(rm);
-	    rr.setPriority(Priority.HIGHEST);
+		rr.setRenderingMode(rm);
+		rr.setPriority(Priority.HIGHEST);
 		
 		Report rep = rs.runReport(rr);
 		
@@ -75,20 +74,18 @@ public class RunReportsController {
 			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 			response.setHeader("Pragma", "no-cache");
 			IOUtils.write(data, response.getOutputStream());
-		}
-		else {
+		} else {
 			response.getWriter().write("There was an error retrieving the report");
 		}
 		
-    }
-    
-    @RequestMapping("/module/rwandaReports/printReportAndRegister.form") 
-    public void printReportAndRegister(ModelMap model, 
-                            @RequestParam(value="report", required=true) String report,
-                            @RequestParam(value="parameters", required=true) String parameters,
-                            HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	
-    	ReportService rs = Context.getService(ReportService.class);
+	}
+	
+	@RequestMapping("/module/rwandaReports/printReportAndRegister.form")
+	public void printReportAndRegister(ModelMap model, @RequestParam(value = "report", required = true) String report,
+	        @RequestParam(value = "parameters", required = true) String parameters, HttpSession session,
+	        HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		ReportService rs = Context.getService(ReportService.class);
 		
 		ReportRequest rr = new ReportRequest();
 		
@@ -97,12 +94,11 @@ public class RunReportsController {
 		String[] paramNames = parameters.split(",");
 		
 		Map<String, Object> params = new LinkedHashMap<String, Object>();
-		for (String param: paramNames) {
-			params.put(param, request.getParameter(param));	
+		for (String param : paramNames) {
+			params.put(param, request.getParameter(param));
 			
 			//for this report we want to create an observation when printed
-			if(param.equals("patientId"))
-			{
+			if (param.equals("patientId")) {
 				Patient patient = Context.getPatientService().getPatient(new Integer(request.getParameter(param)));
 				
 				Obs o = new Obs();
@@ -120,8 +116,8 @@ public class RunReportsController {
 		List<RenderingMode> modes = rs.getRenderingModes(reportDef);
 		RenderingMode rm = modes.get(0);
 		
-	    rr.setRenderingMode(rm);
-	    rr.setPriority(Priority.HIGHEST);
+		rr.setRenderingMode(rm);
+		rr.setPriority(Priority.HIGHEST);
 		
 		Report rep = rs.runReport(rr);
 		
@@ -133,19 +129,18 @@ public class RunReportsController {
 			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 			response.setHeader("Pragma", "no-cache");
 			IOUtils.write(data, response.getOutputStream());
-		}
-		else {
+		} else {
 			response.getWriter().write("There was an error retrieving the report");
 		}
 		
-    }
-		
-    @RequestMapping("/module/rwandareports/renderCalendarWebRenderer")
-	public ModelAndView renderIndicatorReport() {     	
-	    return new ModelAndView("/module/rwandareports/renderCalendarWebRenderer");    	
 	}
-    
-    public String showReport(Model model, HttpSession session) {
+	
+	@RequestMapping("/module/rwandareports/renderCalendarWebRenderer")
+	public ModelAndView renderIndicatorReport() {
+		return new ModelAndView("/module/rwandareports/renderCalendarWebRenderer");
+	}
+	
+	public String showReport(Model model, HttpSession session) {
 		String renderArg = (String) session.getAttribute(ReportingConstants.OPENMRS_REPORT_ARGUMENT);
 		ReportData data = null;
 		try {
@@ -160,8 +155,8 @@ public class RunReportsController {
 		MapDataSet dataSet = (MapDataSet) data.getDataSets().get(renderArg);
 		model.addAttribute("columns", dataSet.getMetaData());
 		//List<Regimen> regimens = RwandaReportsUtil.createRegimenList(Context.getService(Cd4CountReportingService.class).getAllRegimens());  
-	//	model.addAttribute("regimens", regimens);
+		//	model.addAttribute("regimens", regimens);
 		return null;
 	}
-    
+	
 }

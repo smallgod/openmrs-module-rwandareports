@@ -42,16 +42,17 @@ import org.springframework.stereotype.Controller;
 public class RegimenHeaderPortletController extends PortletController {
 	
 	GlobalPropertiesManagement gp = new GlobalPropertiesManagement();
+	
 	/**
 	 * @see PortletController#populateModel(HttpServletRequest, Map)
 	 */
 	@Override
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
-
+		
 		List<Concept> iv = gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT);
 		Concept chemotherapy = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY);
 		Patient patient = Context.getPatientService().getPatient((Integer) model.get("patientId"));
-    	
+		
 		List<DrugOrder> allDrugOrders = OrderEntryUtil.getDrugOrdersByPatient(patient);
 		List<DrugRegimen> regimens = new ArrayList<DrugRegimen>();
 		List<DrugRegimen> allRegimens = new ArrayList<DrugRegimen>();
@@ -62,13 +63,12 @@ public class RegimenHeaderPortletController extends PortletController {
 		for (DrugOrder drugOrder : allDrugOrders) {
 			OrderGroup orderGroup = OrderEntryUtil.getOrderGroup(drugOrder);
 			if (orderGroup != null && orderGroup instanceof DrugRegimen) {
-				DrugRegimen regimen = (DrugRegimen)orderGroup;
+				DrugRegimen regimen = (DrugRegimen) orderGroup;
 				if (!regimens.contains(regimen)) {
-					for (DrugOrder order: regimen.getMembers()) {
-						if (order.getEffectiveStartDate().after(compareDate.getTime()) &&
-								order.getRoute() != null && iv.contains(order.getRoute()) &&
-								order.getOrderReason() != null && chemotherapy.equals(order.getOrderReason())
-						) {
+					for (DrugOrder order : regimen.getMembers()) {
+						if (order.getEffectiveStartDate().after(compareDate.getTime()) && order.getRoute() != null
+						        && iv.contains(order.getRoute()) && order.getOrderReason() != null
+						        && chemotherapy.equals(order.getOrderReason())) {
 							regimens.add(regimen);
 							break;
 						}
@@ -77,11 +77,9 @@ public class RegimenHeaderPortletController extends PortletController {
 			}
 		}
 		
-		if(regimens.size() > 0)
-		{
-			List<RegimenDTO> regimenDTOs = new ArrayList<RegimenDTO>(); 
-			for(DrugRegimen reg: regimens)
-			{
+		if (regimens.size() > 0) {
+			List<RegimenDTO> regimenDTOs = new ArrayList<RegimenDTO>();
+			for (DrugRegimen reg : regimens) {
 				RegimenDTO dto = new RegimenDTO();
 				dto.setDrugRegimen(reg);
 				dto.setStartDates(getRegimenCycleDays(reg));
@@ -89,13 +87,13 @@ public class RegimenHeaderPortletController extends PortletController {
 			}
 			model.put("regimens", regimenDTOs);
 		}
-
+		
 		for (DrugOrder drugOrder : allDrugOrders) {
 			OrderGroup orderGroup = OrderEntryUtil.getOrderGroup(drugOrder);
 			if (orderGroup != null && orderGroup instanceof DrugRegimen) {
 				DrugRegimen regimen = (DrugRegimen) orderGroup;
 				if (!allRegimens.contains(regimen)) {
-					for (DrugOrder order: regimen.getMembers()) {
+					for (DrugOrder order : regimen.getMembers()) {
 						if (order.getOrderReason() != null && chemotherapy.equals(order.getOrderReason())) {
 							allRegimens.add(regimen);
 							break;
@@ -105,11 +103,9 @@ public class RegimenHeaderPortletController extends PortletController {
 			}
 		}
 		
-		if(allRegimens.size() > 0)
-		{
-			List<RegimenDTO> regimenDTOs = new ArrayList<RegimenDTO>(); 
-			for(DrugRegimen reg: allRegimens)
-			{
+		if (allRegimens.size() > 0) {
+			List<RegimenDTO> regimenDTOs = new ArrayList<RegimenDTO>();
+			for (DrugRegimen reg : allRegimens) {
 				RegimenDTO dto = new RegimenDTO();
 				dto.setDrugRegimen(reg);
 				dto.setStartDates(getRegimenCycleDays(reg));
@@ -118,34 +114,34 @@ public class RegimenHeaderPortletController extends PortletController {
 			model.put("allRegimens", regimenDTOs);
 		}
 		
-    	model.put("patient", patient);
+		model.put("patient", patient);
 	}
 	
 	private List<StartDateDTO> getRegimenCycleDays(DrugRegimen regimen) {
 		List<Concept> iv = gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT);
 		Set<Date> ivDates = new HashSet<Date>();
-		for(DrugOrder order: regimen.getMembers()) {
-			if(order.getRoute() != null && iv.contains(order.getRoute())) {
+		for (DrugOrder order : regimen.getMembers()) {
+			if (order.getRoute() != null && iv.contains(order.getRoute())) {
 				ivDates.add(order.getEffectiveStartDate());
 			}
 		}
 		
 		List<StartDateDTO> cycleDays = new ArrayList<StartDateDTO>();
-		for(Date date: ivDates) {
+		for (Date date : ivDates) {
 			long cycleDay = date.getTime() - regimen.getFirstDrugOrderStartDate().getTime();
-			if(cycleDay > 0) {
-				cycleDay = cycleDay/86400000;
+			if (cycleDay > 0) {
+				cycleDay = cycleDay / 86400000;
 			}
 			StartDateDTO dto = new StartDateDTO();
 			dto.setStartDate(date);
-			dto.setStartDay((int)cycleDay);
+			dto.setStartDay((int) cycleDay);
 			cycleDays.add(dto);
 			Collections.sort(cycleDays, new Comparator<StartDateDTO>() {
-
+				
 				@Override
-                public int compare(StartDateDTO o1, StartDateDTO o2) {
-	                return o1.getStartDay().compareTo(o2.getStartDay());
-                }
+				public int compare(StartDateDTO o1, StartDateDTO o2) {
+					return o1.getStartDay().compareTo(o2.getStartDay());
+				}
 				
 			});
 		}

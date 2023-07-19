@@ -25,20 +25,20 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 
 public class SetupGenericEncounterReport extends SingleSetupReport {
-		
+	
 	protected final static Log log = LogFactory.getLog(SetupGenericEncounterReport.class);
-
+	
 	@Override
 	public String getReportName() {
 		return "Generic Encounter Report";
 	}
-
+	
 	public void setup() throws Exception {
 		log.info("Setting up report: " + getReportName());
-		ReportDefinition rd =createReportDefinition();
-		ReportDesign designExcel = Helper.createExcelDesign(rd,"Generic Encounter Report.xls_",true);
-		ReportDesign designCSV = Helper.createCsvReportDesign(rd,"Generic Encounter Report.csv_");
-
+		ReportDefinition rd = createReportDefinition();
+		ReportDesign designExcel = Helper.createExcelDesign(rd, "Generic Encounter Report.xls_", true);
+		ReportDesign designCSV = Helper.createCsvReportDesign(rd, "Generic Encounter Report.csv_");
+		
 		Helper.saveReportDesign(designExcel);
 		Helper.saveReportDesign(designCSV);
 	}
@@ -47,23 +47,23 @@ public class SetupGenericEncounterReport extends SingleSetupReport {
 		
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName(getReportName());
-		reportDefinition.addParameter(new Parameter("startDate", "From Date", Date.class));	
+		reportDefinition.addParameter(new Parameter("startDate", "From Date", Date.class));
 		reportDefinition.addParameter(new Parameter("endDate", "To Date", Date.class));
 		//reportDefinition.addParameter(new Parameter("location", "Health Facility", Location.class));
 		Parameter location = new Parameter("location", "Health Facility", Location.class);
 		location.setRequired(false);
-
+		
 		Parameter encouterType = new Parameter("encounterTypes", "Encounter Type", EncounterType.class);
 		Parameter form = new Parameter("forms", "Form", Form.class);
 		encouterType.setRequired(false);
 		form.setRequired(false);
-
+		
 		reportDefinition.addParameter(location);
 		reportDefinition.addParameter(encouterType);
 		reportDefinition.addParameter(form);
 		
 		createDataSetDefinition(reportDefinition);
-
+		
 		Helper.saveReportDefinition(reportDefinition);
 		
 		return reportDefinition;
@@ -73,12 +73,12 @@ public class SetupGenericEncounterReport extends SingleSetupReport {
 		EncounterAndObsDataSetDefinition dsd = new EncounterAndObsDataSetDefinition();
 		dsd.setName("dsd");
 		dsd.setParameters(getParameters());
-
+		
 		BasicEncounterQuery rowFilter = new BasicEncounterQuery();
 		rowFilter.addParameter(new Parameter("onOrAfter", "On Or After", Date.class));
 		rowFilter.addParameter(new Parameter("onOrBefore", "On Or Before", Date.class));
 		//rowFilter.addParameter(new Parameter("location", "Health Facility", Location.class));
-
+		
 		Parameter locationList = new Parameter("locationList", "Health Facility", Location.class);
 		locationList.setRequired(false);
 		Parameter encouterType = new Parameter("encounterTypes", "Encounter Type", EncounterType.class);
@@ -88,32 +88,36 @@ public class SetupGenericEncounterReport extends SingleSetupReport {
 		rowFilter.addParameter(encouterType);
 		rowFilter.addParameter(form);
 		rowFilter.addParameter(locationList);
-
-		BuiltInPatientDataLibrary patientData=new BuiltInPatientDataLibrary();
-
+		
+		BuiltInPatientDataLibrary patientData = new BuiltInPatientDataLibrary();
+		
 		dsd.addColumn("SYSTEM_PATIENT_ID", patientData.getPatientId(), "");
 		dsd.addColumn("AGE", patientData.getAgeOnDateYears(), "");
 		dsd.addColumn("GENDER", patientData.getGender(), "");
 		dsd.addColumn("FAMILY NAME", patientData.getPreferredFamilyName(), "");
 		dsd.addColumn("GIVEN NAME", patientData.getPreferredGivenName(), "");
-
-		BuiltInEncounterDataLibrary encounterData=new BuiltInEncounterDataLibrary();
-
+		
+		BuiltInEncounterDataLibrary encounterData = new BuiltInEncounterDataLibrary();
+		
 		dsd.addColumn("ENCOUNTER_ID", encounterData.getEncounterId(), "");
 		dsd.addColumn("ENCOUNTER_TYPE", encounterData.getEncounterTypeName(), "");
 		dsd.addColumn("ENCOUNTER_DATETIME", encounterData.getEncounterDatetime(), "");
 		dsd.addColumn("LOCATION", encounterData.getLocationName(), "");
-
-		ConvertedEncounterDataDefinition encounterCreatorGivenName=new ConvertedEncounterDataDefinition(new AuditInfoEncounterDataDefinition(),new PropertyConverter(AuditInfo.class, "creator.givenName"));
+		
+		ConvertedEncounterDataDefinition encounterCreatorGivenName = new ConvertedEncounterDataDefinition(
+		        new AuditInfoEncounterDataDefinition(), new PropertyConverter(AuditInfo.class, "creator.givenName"));
 		dsd.addColumn("CREATOR_GIVEN_NAME", encounterCreatorGivenName, "");
-		ConvertedEncounterDataDefinition encounterCreatorFamillynName=new ConvertedEncounterDataDefinition(new AuditInfoEncounterDataDefinition(),new PropertyConverter(AuditInfo.class, "creator.familyName"));
+		ConvertedEncounterDataDefinition encounterCreatorFamillynName = new ConvertedEncounterDataDefinition(
+		        new AuditInfoEncounterDataDefinition(), new PropertyConverter(AuditInfo.class, "creator.familyName"));
 		dsd.addColumn("CREATOR_FAMILLY_NAME", encounterCreatorFamillynName, "");
-
-		MappedParametersEncounterQuery q = new MappedParametersEncounterQuery(rowFilter, ObjectUtil.toMap("onOrAfter=${startDate},onOrBefore=${endDate},locationList=${location},encounterTypes=${encounterTypes},forms=${forms}"));
+		
+		MappedParametersEncounterQuery q = new MappedParametersEncounterQuery(
+		        rowFilter,
+		        ObjectUtil
+		                .toMap("onOrAfter=${startDate},onOrBefore=${endDate},locationList=${location},encounterTypes=${encounterTypes},forms=${forms}"));
 		dsd.addRowFilter(Mapped.mapStraightThrough(q));
-
-
-		reportDefinition.addDataSetDefinition("dsd",Mapped.mapStraightThrough(dsd));
+		
+		reportDefinition.addDataSetDefinition("dsd", Mapped.mapStraightThrough(dsd));
 		
 	}
 	

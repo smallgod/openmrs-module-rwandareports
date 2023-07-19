@@ -23,6 +23,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.Task;
+import org.openmrs.module.rwandareports.task.FlattenTableTask;
+import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
 
 /**
@@ -36,15 +38,39 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 	public void started() {
 		log.info("Started Rwanda Report Module Config");
 		registerTask("Register Reports", "Registers report definitions", RegisterReportsTask.class, 60 * 60 * 24l);
+		
+		log.info("Started OHRI-Mamba");
+		System.out.println("Adding mamba flattening Task...");
+		
+		String taskName = "Mamba - database Flattening Task";
+		Long repeatInterval = 300L; //second
+		String taskClassName = FlattenTableTask.class.getName();
+		String description = "Mamba - Flatten the OpenMRS data-models (Database) Task";
+		
+		addTask(taskName, taskClassName, repeatInterval, description);
 	}
-
+	
 	@Override
 	public void stopped() {
 		log.info("Stopped Rwanda Report Module");
 	}
 	
+	void addTask(String name, String className, Long repeatInterval, String description) {
+		
+		SchedulerService scheduler = Context.getSchedulerService();
+		TaskDefinition taskDefinition = scheduler.getTaskByName(name);
+		if (taskDefinition == null) {
+			
+			taskDefinition = new TaskDefinition(null, name, description, className);
+			taskDefinition.setStartOnStartup(Boolean.TRUE);
+			taskDefinition.setRepeatInterval(repeatInterval);
+			scheduler.saveTaskDefinition(taskDefinition);
+		}
+	}
+	
 	/**
 	 * Register a new OpenMRS task
+	 * 
 	 * @param name the name
 	 * @param description the description
 	 * @param clazz the task class
@@ -55,7 +81,7 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 	private static boolean registerTask(String name, String description, Class<? extends Task> clazz, long interval) {
 		try {
 			Context.addProxyPrivilege("Manage Scheduler");
-		
+			
 			TaskDefinition taskDef = Context.getSchedulerService().getTaskByName(name);
 			if (taskDef == null) {
 				Calendar cal = Calendar.getInstance();
@@ -67,15 +93,17 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 				taskDef.setStarted(true);
 				taskDef.setStartTime(cal.getTime());
 				taskDef.setName(name);
-				taskDef.setUuid(UUID.randomUUID().toString()); 
+				taskDef.setUuid(UUID.randomUUID().toString());
 				taskDef.setDescription(description);
 				Context.getSchedulerService().scheduleTask(taskDef);
 			}
 			
-		} catch (SchedulerException ex) {
+		}
+		catch (SchedulerException ex) {
 			log.warn("Unable to register task '" + name + "' with scheduler", ex);
 			return false;
-		} finally {
+		}
+		finally {
 			Context.removeProxyPrivilege("Manage Scheduler");
 		}
 		return true;
