@@ -1,5 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+		<groupId>org.openmrs.module</groupId>
+		<artifactId>rwandareports</artifactId>
+		<version>3.0.0-SNAPSHOT</version>
+	</parent>
+
+    <artifactId>rwandareports-api</artifactId>
+	<packaging>jar</packaging>
+	<name>Rwanda Reports API</name>
+	<description>API project for Rwanda Reports</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.ohri</groupId>
+            <artifactId>ohri-mamba-core</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -12,14 +36,6 @@
             </plugin>
         </plugins>
     </build>
-    <parent>
-		<groupId>org.openmrs.module</groupId>
-		<artifactId>rwandareports</artifactId>
-		<version>3.0.0-SNAPSHOT</version>
-	</parent>
-	<artifactId>rwandareports-api</artifactId>
-	<packaging>jar</packaging>
-	<name>Rwanda Reports API</name>
-	<description>API project for Rwanda Reports</description>
+
 
 </project>
