@@ -80,6 +80,62 @@ END~
 
         
 -- ---------------------------------------------------------------------------------------------
+-- ----------------------  fn_mamba_age_calculator  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP FUNCTION IF EXISTS fn_mamba_age_calculator;
+
+~
+CREATE FUNCTION fn_mamba_age_calculator (birthdate DATE,deathDate DATE) RETURNS  Integer
+    DETERMINISTIC
+BEGIN
+    DECLARE onDate DATE;
+    DECLARE today DATE;
+    DECLARE bday DATE;
+    DECLARE age INT;
+    DECLARE todaysMonth INT;
+    DECLARE bdayMonth INT;
+    DECLARE todaysDay INT;
+    DECLARE bdayDay INT;
+
+    SET onDate = NULL ;
+
+    IF birthdate IS NULL THEN
+        RETURN NULL;
+    ELSE
+        SET today = CURDATE();
+
+        IF onDate IS NOT NULL THEN
+            SET today = onDate;
+        END IF;
+
+        IF deathDate IS NOT NULL AND today > deathDate THEN
+            SET today = deathDate;
+        END IF;
+
+        SET bday = birthdate;
+        SET age = YEAR(today) - YEAR(bday);
+        SET todaysMonth = MONTH(today);
+        SET bdayMonth = MONTH(bday);
+        SET todaysDay = DAY(today);
+        SET bdayDay = DAY(bday);
+
+        IF todaysMonth < bdayMonth THEN
+            SET age = age - 1;
+        ELSEIF todaysMonth = bdayMonth AND todaysDay < bdayDay THEN
+            SET age = age - 1;
+        END IF;
+
+        RETURN age;
+    END IF;
+END;
+
+
+
+
+        
+-- ---------------------------------------------------------------------------------------------
 -- ----------------------  sp_xf_system_drop_all_functions_in_schema  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
@@ -768,6 +824,7 @@ CREATE TABLE mamba_dim_patient_identifier_type
     patient_identifier_type_id INT         NOT NULL,
     name                       VARCHAR(50) NOT NULL,
     description                TEXT        NULL,
+    uuid                       CHAR(38)    NOT NULL,
 
     PRIMARY KEY (id)
 )
@@ -778,6 +835,9 @@ CREATE INDEX mamba_dim_patient_identifier_type_id_index
 
 CREATE INDEX mamba_dim_patient_identifier_type_name_index
     ON mamba_dim_patient_identifier_type (name);
+
+CREATE INDEX mamba_dim_patient_identifier_type_uuid_index
+    ON mamba_dim_patient_identifier_type (uuid);
 
 -- $END
 END~
@@ -798,11 +858,13 @@ BEGIN
 
 INSERT INTO mamba_dim_patient_identifier_type (patient_identifier_type_id,
                                                name,
-                                               description)
+                                               description,
+                                               uuid)
 SELECT patient_identifier_type_id,
        name,
-       description
-FROM patient_identifier_type c;
+       description,
+       uuid
+FROM patient_identifier_type;
 
 -- $END
 END~
@@ -1482,129 +1544,7 @@ BEGIN
   -- $BEGIN
 
   SET @report_data = '{"flat_report_metadata":[
-  {
-  "report_name": "ART_Register",
-  "flat_table_name": "mamba_flat_encounter_art_card",
-  "encounter_type_uuid": "8d5b2be0-c2cc-11de-8d13-0010c6dffd0f" ,
-  "concepts_locale": "en",
-  "table_columns": {
-    "return_date": "dcac04cf-30ab-102d-86b0-7a5022ba4115",
-    "current_regimen": "dd2b0b4d-30ab-102d-86b0-7a5022ba4115",
-    "who_stage": "dcdff274-30ab-102d-86b0-7a5022ba4115",
-    "no_of_days": "7593ede6-6574-4326-a8a6-3d742e843659",
-    "no_of_pills": "b0e53f0a-eaca-49e6-b663-d0df61601b70",
-    "tb_status": "dce02aa1-30ab-102d-86b0-7a5022ba4115",
-    "dsdm": "73312fee-c321-11e8-a355-529269fb1459",
-    "pregnant": "dcda5179-30ab-102d-86b0-7a5022ba4115",
-    "emtct": "dcd7e8e5-30ab-102d-86b0-7a5022ba4115",
-    "cotrim": "c3d744f6-00ef-4774-b9a7-d33c58f5b017"
-  }
-},
-  {
-  "report_name": "HTS Report",
-  "flat_table_name": "mamba_flat_encounter_hts",
-  "encounter_type_uuid": "79c1f50f-f77d-42e2-ad2a-d29304dde2fe",
-  "concepts_locale": "en",
-  "table_columns": {
-    "test_setting": "13abe5c9-6de2-4970-b348-36d352ee8eeb",
-    "community_service_point": "74a3b695-30f7-403b-8f63-3f766461e104",
-    "facility_service_point": "80bcc9c1-e328-47e8-affe-6d1bffe4adf1",
-    "hts_approach": "9641ead9-8821-4898-b633-a8e96c0933cf",
-    "pop_type": "166432AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "key_pop_type": "d3d4ae96-8c8a-43db-a9dc-dac951f5dcb3",
-    "key_pop_migrant_worker": "63ea75cb-205f-4e7b-9ede-5f9b8a4dda9f",
-    "key_pop_uniformed_forces": "b282bb08-62a7-42c2-9bea-8751c267d13e",
-    "key_pop_transgender": "22b202fc-67de-4af9-8c88-46e22559d4b2",
-    "key_pop_AGYW": "678f3144-302f-493e-ba22-7ec60a84732a",
-    "key_pop_fisher_folk": "def00c73-f6d5-42fb-bcec-0b192b5be22d",
-    "key_pop_prisoners": "8da9bf92-22f6-40be-b468-1ad08de7d457",
-    "key_pop_refugees": "dc1058ea-4edd-4780-aeaa-a474f7f3a437",
-    "key_pop_msm": "160578AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "key_pop_fsw": "160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "key_pop_truck_driver": "162198AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "key_pop_pwd": "365371fd-0106-4a53-abc4-575e3d65d372",
-    "key_pop_pwid": "c038bff0-8e33-408c-b51f-7fb6448d2f6c",
-    "sexually_active": "160109AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "unprotected_sex_last_12mo": "159218AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "sti_last_6mo": "156660AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "ever_tested_hiv": "1492AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "duration_since_last_test": "e7947a45-acff-49e1-ba1c-33e43a710e0d",
-    "last_test_result": "159427AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "reason_for_test": "ce3816e7-082d-496b-890b-a2b169922c22",
-    "pretest_counselling": "de32152d-93b0-412a-908a-20af0c46f215",
-    "type_pretest_counselling": "0473ec07-2f34-4447-9c58-e35a1c491b6f",
-    "consent_provided": "1710AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "test_conducted": "164401AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "date_test_conducted": "164400AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "initial_kit_name": "afa64df8-50af-4bc3-8135-6e6603f62068",
-    "initial_test_result": "e767ba5d-7560-43ba-a746-2b0ff0a2a513",
-    "confirmatory_kit_name": "b78d89e7-08aa-484f-befb-1e3e70cd6985",
-    "tiebreaker_kit_name": "73434a78-e4fc-42f7-a812-f30f3b3cabe3",
-    "tiebreaker_test_result": "bfc5fbb9-2b23-422e-a741-329bb2597032",
-    "final_test_result": "e16b0068-b6a2-46b7-aba9-e3be00a7b4ab",
-    "syphilis_test_result": "165303AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "given_result": "164848AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "date_given_result": "160082AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "result_received_couple": "445846e9-b929-4519-bc83-d51c051918f5",
-    "couple_result": "5f38bc97-d6ca-43f8-a019-b9a9647d0c6a",
-    "recency_consent": "976ca997-fb2b-4bef-a299-f7c9e16b50a8",
-    "recency_test_done": "4fe5857e-c804-41cf-b3c9-0acc1f516ab7",
-    "recency_test_type": "05112308-79ba-4e00-802e-a7576733b98e",
-    "recency_rtri_result": "165092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "recency_vl_result": "856AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "tb_symptoms": "159800AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "tb_symptoms_fever": "1494AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "tb_symptoms_cough": "159799AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "tb_symptoms_hemoptysis": "138905AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "tb_symptoms_nightsweats": "133027AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "sti_symptoms": "c4f81292-61a3-4561-a4ae-78be7d16d928",
-    "sti_symptoms_female_genitalulcers": "153872AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "sti_symptoms_genitalsores": "faf06026-fce9-4d2c-9ef2-24fb45343804",
-    "sti_symptoms_lower_abdominalpain": "06be8996-ef55-438b-bbb9-5bebeb18e779",
-    "sti_symptoms_scrotalmass": "d8e46cc0-4d08-45d9-a46d-bd083db63057",
-    "sti_symptoms_male_genitalulcers": "123861AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "sti_symptoms_urethral_discharge": "60817acb-90f1-4d46-be87-2c47e150770b",
-    "sti_symptomsVaginal_discharge": "9a24bedc-d42c-422e-9f5d-371b59af0660",
-    "client_linked_care": "e8e8fe71-adbb-48e7-b531-589985094d30",
-    "facility_referred_care": "161562AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_for_services": "494117dd-c763-4374-8402-5ed91bd9b8d0",
-    "is_referred_prevention_services": "5832db34-152d-4ead-a591-c627683c7f05",
-    "is_referred_srh_services": "7ea48919-1cfd-46fd-9ea0-8255d596e463",
-    "is_referred_clinical_services": "ca0b979e-d69a-43d3-bbea-9b24290b021e",
-    "referred_support_services": "fbe382b6-6f01-49ff-a6c9-19c1cb50b916",
-    "referred_prevention_services": "5f394708-ca7d-4558-8d23-a73de181b02d",
-    "referred_preexposure_services": "88cdde2b-753b-48ac-a51a-ae5e1ab24846",
-    "referred_postexposure_services": "1691AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_vmmc_services": "162223AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_harmreduction_services": "da0238c1-0ddd-49cc-b10d-c552391b6332",
-    "referred_behavioural_services": "ac2e75dc-fceb-4591-9ffb-3f852c0750d9",
-    "referred_postgbv_services": "0be6a668-b4ff-4fc5-bbae-0e2a86af1bd1",
-    "referred_prevention_info_services": "e7ee9ec2-3cc7-4e59-8172-9fd08911e8c5",
-    "referred_other_prevention_services": "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_srh_services": "bf634be9-197a-433b-8e4e-7a04242a4e1d",
-    "referred_hiv_partner_kpcontacts_testing": "a56cdd43-f2eb-49d6-88fd-113aaea2e85f",
-    "referred_hiv_partner_testing": "f0589be1-d457-4138-b244-bfb115cdea21",
-    "referred_sti_testing_tx": "46da10c7-49e3-45e5-8e82-7c529d52a1a8",
-    "referred_analcancer_screening": "9d4c029a-2ac3-44c3-9a20-fb32c81a9ba2",
-    "referred_cacx_screening_tx": "060dd5b2-2d65-4db5-85f0-cd1ba809350f",
-    "referred_pregnancy_check": "0097d9b1-6758-4754-8713-91638efe12ea",
-    "referred_contraception_fp": "6488e62a-314b-49da-b8d4-ca9c7a6941fc",
-    "referred_srh_other": "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_clinical_services": "960f2980-35e2-4677-88ed-79424fe0fc91",
-    "referred_tb_program": "160541AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_ipt_rogram": "164128AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_ctx_services": "858f0f06-bc62-4b04-b864-cef98a2f3845",
-    "referred_vaccinations_services": "0cf2ce2c-cd3f-478b-89b7-542018674dba",
-    "referred_other_clinical_services": "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_other_support": "b5afd495-00fc-4d94-9e26-8f6c8cc8caa0",
-    "referred_psychosocial_support": "5490AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_mentalhealth_support": "5489AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "referred_violence_support": "ea08440d-41d4-4795-bb4d-4639cf32645c",
-    "referred_legal_support": "a046ce31-e0d9-4044-a384-ecc429dc4035",
-    "referred_disclosure_support": "846a63c0-4530-4008-b6a1-12201b9e0b88",
-    "is_referred_other_support": "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-  }
-}]}';
+  ]}';
 
   CALL sp_mamba_extract_report_metadata(@report_data, 'mamba_dim_concept_metadata');
 
@@ -1686,23 +1626,29 @@ BEGIN
 
 CREATE TABLE mamba_dim_person
 (
-    id                  INT          NOT NULL AUTO_INCREMENT,
-    person_id           INT          NOT NULL,
-    birthdate           VARCHAR(255) NULL,
-    birthdate_estimated TINYINT   NOT NULL,
-    dead                TINYINT   NOT NULL,
-    death_date          DATETIME     NULL,
-    deathdate_estimated TINYINT   NOT NULL,
+    id                  INT      NOT NULL AUTO_INCREMENT,
+    person_id           INT      NOT NULL,
+    birthdate           DATE NULL,
+    birthdate_estimated TINYINT  NOT NULL,
+    age                 INT NULL,
+    dead                TINYINT  NOT NULL,
+    death_date          DATETIME NULL,
+    deathdate_estimated TINYINT  NOT NULL,
     gender              VARCHAR(255) NULL,
-    date_created        DATETIME     NOT NULL,
-    voided              TINYINT   NOT NULL,
+    date_created        DATETIME NOT NULL,
+    person_name_short   VARCHAR(255) NULL,
+    person_name_long    TEXT NULL,
+    uuid                CHAR(38) NOT NULL,
+    voided              TINYINT  NOT NULL,
 
     PRIMARY KEY (id)
-)
-    CHARSET = UTF8MB4;
+) CHARSET = UTF8MB4;
 
 CREATE INDEX mamba_dim_person_person_id_index
     ON mamba_dim_person (person_id);
+
+CREATE INDEX mamba_dim_person_uuid_index
+    ON mamba_dim_person (uuid);
 
 -- $END
 END~
@@ -1721,25 +1667,40 @@ CREATE PROCEDURE sp_mamba_dim_person_insert()
 BEGIN
 -- $BEGIN
 
-INSERT INTO mamba_dim_person (person_id,
-                              birthdate,
-                              birthdate_estimated,
-                              dead,
-                              death_date,
-                              deathdate_estimated,
-                              gender,
-                              date_created,
-                              voided)
-SELECT psn.person_id,
-       psn.birthdate,
-       psn.birthdate_estimated,
-       psn.dead,
-       psn.death_date,
-       psn.deathdate_estimated,
-       psn.gender,
-       psn.date_created,
-       psn.voided
-FROM person psn;
+INSERT INTO mamba_dim_person
+    (
+        person_id,
+        birthdate,
+        birthdate_estimated,
+        age,
+        dead,
+        death_date,
+        deathdate_estimated,
+        gender,
+        date_created,
+        person_name_short,
+        person_name_long,
+        uuid,
+        voided
+    )
+
+    SELECT psn.person_id,
+           psn.birthdate,
+           psn.birthdate_estimated,
+           fn_mamba_age_calculator(birthdate,death_date) AS age,
+           psn.dead,
+           psn.death_date,
+           psn.deathdate_estimated,
+           psn.gender,
+           psn.date_created,
+           CONCAT_WS(' ',prefix,given_name,middle_name,family_name) AS person_name_short,
+           CONCAT_WS(' ', prefix,given_name, middle_name,family_name_prefix, family_name,family_name2,family_name_suffix, degree)
+            AS person_name_long,
+            psn.uuid,
+            psn.voided
+    FROM person psn
+     INNER JOIN  person_name pn
+         on psn.person_id = pn.person_id;
 
 -- $END
 END~
@@ -1788,6 +1749,7 @@ CREATE TABLE mamba_dim_patient_identifier
     preferred             TINYINT     NOT NULL,
     location_id           INT         NULL,
     date_created          DATETIME    NOT NULL,
+    uuid                  CHAR(38)    NOT NULL,
     voided                TINYINT     NOT NULL,
 
     PRIMARY KEY (id)
@@ -1805,6 +1767,9 @@ CREATE INDEX mamba_dim_patient_identifier_identifier_index
 
 CREATE INDEX mamba_dim_patient_identifier_identifier_type_index
     ON mamba_dim_patient_identifier (identifier_type);
+
+CREATE INDEX mamba_dim_patient_identifier_uuid_index
+    ON mamba_dim_patient_identifier (uuid);
 
 -- $END
 END~
@@ -1829,6 +1794,7 @@ INSERT INTO mamba_dim_patient_identifier (patient_id,
                                           preferred,
                                           location_id,
                                           date_created,
+                                          uuid,
                                           voided)
 SELECT patient_id,
        identifier,
@@ -1836,6 +1802,7 @@ SELECT patient_id,
        preferred,
        location_id,
        date_created,
+       uuid,
        voided
 FROM patient_identifier;
 
@@ -2097,6 +2064,132 @@ BEGIN
 CALL sp_mamba_dim_person_address_create();
 CALL sp_mamba_dim_person_address_insert();
 
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_user_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_user_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_user_create()
+BEGIN
+-- $BEGIN
+    CREATE TABLE mamba_dim_users
+    (
+        id            INT          NOT NULL AUTO_INCREMENT,
+        user_id       INT          NOT NULL,
+        system_id     VARCHAR(50)  NOT NULL,
+        username      VARCHAR(50)  NULL,
+        creator       INT          NOT NULL,
+        date_created  DATETIME     NOT NULL,
+        changed_by    INT          NULL,
+        date_changed  DATETIME     NULL,
+        person_id     INT          NOT NULL,
+        retired       TINYINT(1)   NOT NULL,
+        retired_by    INT          NULL,
+        date_retired  DATETIME     NULL,
+        retire_reason VARCHAR(255) NULL,
+        uuid          CHAR(38)     NOT NULL,
+        email         VARCHAR(255) NULL,
+
+        PRIMARY KEY (id)
+    )
+        CHARSET = UTF8MB4;
+
+    CREATE INDEX mamba_dim_users_user_id_index
+        ON mamba_dim_users (user_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_user_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_user_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_user_insert()
+BEGIN
+-- $BEGIN
+    INSERT INTO mamba_dim_users
+        (
+            user_id,
+            system_id,
+            username,
+            creator,
+            date_created,
+            changed_by,
+            date_changed,
+            person_id,
+            retired,
+            retired_by,
+            date_retired,
+            retire_reason,
+            uuid,
+            email
+        )
+        SELECT
+            user_id,
+            system_id,
+            username,
+            creator,
+            date_created,
+            changed_by,
+            date_changed,
+            person_id,
+            retired,
+            retired_by,
+            date_retired,
+            retire_reason,
+            uuid,
+            email
+        FROM users c;
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_user_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_user_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_user_update()
+BEGIN
+-- $BEGIN
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_user  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_user;
+
+~
+CREATE PROCEDURE sp_mamba_dim_user()
+BEGIN
+-- $BEGIN
+    CALL sp_mamba_dim_user_create();
+    CALL sp_mamba_dim_user_insert();
+    CALL sp_mamba_dim_user_update();
 -- $END
 END~
 
@@ -2400,7 +2493,7 @@ DROP PROCEDURE IF EXISTS sp_mamba_data_processing_flatten;
 CREATE PROCEDURE sp_mamba_data_processing_flatten()
 BEGIN
 -- $BEGIN
--- CALL sp_xf_system_drop_all_tables_in_schema('analysis');
+-- CALL sp_xf_system_drop_all_tables_in_schema($target_database);
 CALL sp_xf_system_drop_all_tables_in_schema();
 
 CALL sp_mamba_dim_location;
@@ -2427,6 +2520,8 @@ CALL sp_mamba_dim_person_name;
 
 CALL sp_mamba_dim_person_address;
 
+CALL sp_mamba_dim_user;
+
 CALL sp_mamba_dim_patient_identifier;
 
 CALL sp_mamba_dim_agegroup;
@@ -2442,36 +2537,40 @@ END~
 
         
 -- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_data_processing_derived_covid  ----------------------------
+-- ----------------------  sp_mamba_data_processing_derived_billing  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
 
-DROP PROCEDURE IF EXISTS sp_mamba_data_processing_derived_covid;
+DROP PROCEDURE IF EXISTS sp_mamba_data_processing_derived_billing;
 
 ~
-CREATE PROCEDURE sp_mamba_data_processing_derived_covid()
+CREATE PROCEDURE sp_mamba_data_processing_derived_billing()
 BEGIN
 -- $BEGIN
-CALL sp_mamba_dim_client_covid;
-CALL sp_mamba_fact_encounter_covid;
--- $END
-END~
 
+    -- Dimensions
+    CALL sp_mamba_dim_admission;
+    CALL sp_mamba_dim_beneficiary;
+    CALL sp_mamba_dim_bill_payment;
+    CALL sp_mamba_dim_billable_service;
+    CALL sp_mamba_dim_consommation;
+    CALL sp_mamba_dim_department;
+    CALL sp_mamba_dim_facility_service_price;
+    CALL sp_mamba_dim_global_bill;
+    CALL sp_mamba_dim_hop_service;
+    CALL sp_mamba_dim_insurance_rate;
+    CALL sp_mamba_dim_insurance;
+    CALL sp_mamba_dim_insurance_bill;
+    CALL sp_mamba_dim_insurance_policy;
+    CALL sp_mamba_dim_paid_service_bill;
+    CALL sp_mamba_dim_patient_bill;
+    CALL sp_mamba_dim_patient_service_bill;
+    CALL sp_mamba_dim_service_category;
+    CALL sp_mamba_dim_third_party_bill;
+    CALL sp_mamba_dim_thirdparty;
 
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_data_processing_derived_hts  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_data_processing_derived_hts;
-
-~
-CREATE PROCEDURE sp_mamba_data_processing_derived_hts()
-BEGIN
--- $BEGIN
-CALL sp_mamba_dim_client_hts;
-CALL sp_mamba_fact_encounter_hts;
+    -- Facts
+    CALL sp_mamba_fact_patient_service_bill;
 -- $END
 END~
 
@@ -2494,473 +2593,2240 @@ BEGIN
 CALL sp_mamba_data_processing_flatten();
 
 -- Call the ETL process
--- CALL sp_mamba_data_processing_derived_hts();
--- CALL sp_mamba_data_processing_derived_covid();
+ CALL sp_mamba_data_processing_derived_billing();
 -- $END
 END~
 
 
         
 -- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_dim_client_covid_create  ----------------------------
+-- ----------------------  sp_mamba_dim_thirdparty_create  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
 
-DROP PROCEDURE IF EXISTS sp_mamba_dim_client_covid_create;
+DROP PROCEDURE IF EXISTS sp_mamba_dim_thirdparty_create;
 
 ~
-CREATE PROCEDURE sp_mamba_dim_client_covid_create()
+CREATE PROCEDURE sp_mamba_dim_thirdparty_create()
 BEGIN
 -- $BEGIN
-CREATE TABLE dim_client_covid
+CREATE TABLE IF NOT EXISTS mamba_dim_third_party
 (
-    id            INT auto_increment,
-    client_id     INT           NULL,
-    date_of_birth DATE          NULL,
-    ageattest     INT           NULL,
-    sex           NVARCHAR(50)  NULL,
-    county        NVARCHAR(255) NULL,
-    sub_county    NVARCHAR(255) NULL,
-    ward          NVARCHAR(255) NULL,
-    PRIMARY KEY (id)
-);
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_dim_client_covid_insert  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_dim_client_covid_insert;
-
-~
-CREATE PROCEDURE sp_mamba_dim_client_covid_insert()
-BEGIN
--- $BEGIN
-INSERT INTO dim_client_covid
-    (
-        client_id,
-        date_of_birth,
-        ageattest,
-        sex,
-        county,
-        sub_county,
-        ward
-    )
-    SELECT
-        c.client_id,
-        date_of_birth,
-        FLOOR(DATEDIFF(CAST(cd.order_date AS DATE), CAST(date_of_birth as DATE)) / 365) AS ageattest,
-        sex,
-        county,
-        sub_county,
-        ward
-    FROM
-        mamba_dim_client c
-    INNER JOIN
-        mamba_flat_encounter_covid cd
-            ON c.client_id = cd.client_id;
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_dim_client_covid_update  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_dim_client_covid_update;
-
-~
-CREATE PROCEDURE sp_mamba_dim_client_covid_update()
-BEGIN
--- $BEGIN
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_dim_client_covid  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_dim_client_covid;
-
-~
-CREATE PROCEDURE sp_mamba_dim_client_covid()
-BEGIN
--- $BEGIN
-CALL sp_mamba_dim_client_covid_create();
-CALL sp_mamba_dim_client_covid_insert();
-CALL sp_mamba_dim_client_covid_update();
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_encounter_covid_create  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_encounter_covid_create;
-
-~
-CREATE PROCEDURE sp_mamba_fact_encounter_covid_create()
-BEGIN
--- $BEGIN
-CREATE TABLE IF NOT EXISTS fact_encounter_covid
-(
-    encounter_id                      INT           NULL,
-    client_id                         INT           NULL,
-    covid_test                        NVARCHAR(255) NULL,
-    order_date                        DATE          NULL,
-    result_date                       DATE          NULL,
-    date_assessment                   DATE          NULL,
-    assessment_presentation           NVARCHAR(255) NULL,
-    assessment_contact_case           INT           NULL,
-    assessment_entry_country          INT           NULL,
-    assessment_travel_out_country     INT           NULL,
-    assessment_follow_up              INT           NULL,
-    assessment_voluntary              INT           NULL,
-    assessment_quarantine             INT           NULL,
-    assessment_symptomatic            INT           NULL,
-    assessment_surveillance           INT           NULL,
-    assessment_health_worker          INT           NULL,
-    assessment_frontline_worker       INT           NULL,
-    assessment_rdt_confirmatory       INT           NULL,
-    assessment_post_mortem            INT           NULL,
-    assessment_other                  INT           NULL,
-    date_onset_symptoms               DATE          NULL,
-    symptom_cough                     INT           NULL,
-    symptom_headache                  INT           NULL,
-    symptom_red_eyes                  INT           NULL,
-    symptom_sneezing                  INT           NULL,
-    symptom_diarrhoea                 INT           NULL,
-    symptom_sore_throat               INT           NULL,
-    symptom_tiredness                 INT           NULL,
-    symptom_chest_pain                INT           NULL,
-    symptom_joint_pain                INT           NULL,
-    symptom_loss_smell                INT           NULL,
-    symptom_loss_taste                INT           NULL,
-    symptom_runny_nose                INT           NULL,
-    symptom_fever_chills              INT           NULL,
-    symptom_muscular_pain             INT           NULL,
-    symptom_general_weakness          INT           NULL,
-    symptom_shortness_breath          INT           NULL,
-    symptom_nausea_vomiting           INT           NULL,
-    symptom_abdominal_pain            INT           NULL,
-    symptom_irritability_confusion    INT           NULL,
-    symptom_disturbance_consciousness INT           NULL,
-    symptom_other                     INT           NULL,
-    comorbidity_present               INT           NULL,
-    comorbidity_tb                    INT           NULL,
-    comorbidity_liver                 INT           NULL,
-    comorbidity_renal                 INT           NULL,
-    comorbidity_diabetes              INT           NULL,
-    comorbidity_hiv_aids              INT           NULL,
-    comorbidity_malignancy            INT           NULL,
-    comorbidity_chronic_lung          INT           NULL,
-    comorbidity_hypertension          INT           NULL,
-    comorbidity_former_smoker         INT           NULL,
-    comorbidity_cardiovascular        INT           NULL,
-    comorbidity_current_smoker        INT           NULL,
-    comorbidity_immunodeficiency      INT           NULL,
-    comorbidity_chronic_neurological  INT           NULL,
-    comorbidity_other                 INT           NULL,
-    diagnostic_pcr_test               NVARCHAR(255) NULL,
-    diagnostic_pcr_result             NVARCHAR(255) NULL,
-    rapid_antigen_test                NVARCHAR(255) NULL,
-    rapid_antigen_result              NVARCHAR(255) NULL,
-    long_covid_description            NVARCHAR(255) NULL,
-    patient_outcome                   NVARCHAR(255) NULL,
-    date_recovered                    DATE          NULL,
-    date_died                         DATE          NULL
-);
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_encounter_covid_insert  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_encounter_covid_insert;
-
-~
-CREATE PROCEDURE sp_mamba_fact_encounter_covid_insert()
-BEGIN
--- $BEGIN
-INSERT INTO fact_encounter_covid (encounter_id,
-                                  client_id,
-                                  covid_test,
-                                  order_date,
-                                  result_date,
-                                  date_assessment,
-                                  assessment_presentation,
-                                  assessment_contact_case,
-                                  assessment_entry_country,
-                                  assessment_travel_out_country,
-                                  assessment_follow_up,
-                                  assessment_voluntary,
-                                  assessment_quarantine,
-                                  assessment_symptomatic,
-                                  assessment_surveillance,
-                                  assessment_health_worker,
-                                  assessment_frontline_worker,
-                                  assessment_rdt_confirmatory,
-                                  assessment_post_mortem,
-                                  assessment_other,
-                                  date_onset_symptoms,
-                                  symptom_cough,
-                                  symptom_headache,
-                                  symptom_red_eyes,
-                                  symptom_sneezing,
-                                  symptom_diarrhoea,
-                                  symptom_sore_throat,
-                                  symptom_tiredness,
-                                  symptom_chest_pain,
-                                  symptom_joint_pain,
-                                  symptom_loss_smell,
-                                  symptom_loss_taste,
-                                  symptom_runny_nose,
-                                  symptom_fever_chills,
-                                  symptom_muscular_pain,
-                                  symptom_general_weakness,
-                                  symptom_shortness_breath,
-                                  symptom_nausea_vomiting,
-                                  symptom_abdominal_pain,
-                                  symptom_irritability_confusion,
-                                  symptom_disturbance_consciousness,
-                                  symptom_other,
-                                  comorbidity_present,
-                                  comorbidity_tb,
-                                  comorbidity_liver,
-                                  comorbidity_renal,
-                                  comorbidity_diabetes,
-                                  comorbidity_hiv_aids,
-                                  comorbidity_malignancy,
-                                  comorbidity_chronic_lung,
-                                  comorbidity_hypertension,
-                                  comorbidity_former_smoker,
-                                  comorbidity_cardiovascular,
-                                  comorbidity_current_smoker,
-                                  comorbidity_immunodeficiency,
-                                  comorbidity_chronic_neurological,
-                                  comorbidity_other,
-                                  diagnostic_pcr_test,
-                                  diagnostic_pcr_result,
-                                  rapid_antigen_test,
-                                  rapid_antigen_result,
-                                  long_covid_description,
-                                  patient_outcome,
-                                  date_recovered,
-                                  date_died)
-SELECT encounter_id,
-       client_id,
-       covid_test,
-       cast(order_date AS DATE)          order_date,
-       cast(result_date AS DATE)         result_date,
-       cast(date_assessment AS DATE)     date_assessment,
-       assessment_presentation,
-       assessment_contact_case,
-       assessment_entry_country,
-       assessment_travel_out_country,
-       assessment_follow_up,
-       assessment_voluntary,
-       assessment_quarantine,
-       assessment_symptomatic,
-       assessment_surveillance,
-       assessment_health_worker,
-       assessment_frontline_worker,
-       assessment_rdt_confirmatory,
-       assessment_post_mortem,
-       assessment_other,
-       cast(date_onset_symptoms AS DATE) date_onset_symptoms,
-       symptom_cough,
-       symptom_headache,
-       symptom_red_eyes,
-       symptom_sneezing,
-       symptom_diarrhoea,
-       symptom_sore_throat,
-       symptom_tiredness,
-       symptom_chest_pain,
-       symptom_joint_pain,
-       symptom_loss_smell,
-       symptom_loss_taste,
-       symptom_runny_nose,
-       symptom_fever_chills,
-       symptom_muscular_pain,
-       symptom_general_weakness,
-       symptom_shortness_breath,
-       symptom_nausea_vomiting,
-       symptom_abdominal_pain,
-       symptom_irritability_confusion,
-       symptom_disturbance_consciousness,
-       symptom_other,
-       CASE
-           WHEN comorbidity_present IN ('Yes', 'True') THEN 1
-           WHEN comorbidity_present IN ('False', 'No') THEN 0
-           END AS                        comorbidity_present,
-       comorbidity_tb,
-       comorbidity_liver,
-       comorbidity_renal,
-       comorbidity_diabetes,
-       comorbidity_hiv_aids,
-       comorbidity_malignancy,
-       comorbidity_chronic_lung,
-       comorbidity_hypertension,
-       comorbidity_former_smoker,
-       comorbidity_cardiovascular,
-       comorbidity_current_smoker,
-       comorbidity_immunodeficiency,
-       comorbidity_chronic_neurological,
-       comorbidity_other,
-       diagnostic_pcr_test,
-       diagnostic_pcr_result,
-       rapid_antigen_test,
-       rapid_antigen_result,
-       long_covid_description,
-       patient_outcome,
-       cast(date_recovered AS DATE)      date_recovered,
-       cast(date_died AS DATE)           date_died
-FROM flat_encounter_covid;
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_encounter_covid_update  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_encounter_covid_update;
-
-~
-CREATE PROCEDURE sp_mamba_fact_encounter_covid_update()
-BEGIN
--- $BEGIN
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_encounter_covid  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_encounter_covid;
-
-~
-CREATE PROCEDURE sp_mamba_fact_encounter_covid()
-BEGIN
--- $BEGIN
-CALL sp_mamba_fact_encounter_covid_create();
-CALL sp_mamba_fact_encounter_covid_insert();
-CALL sp_mamba_fact_encounter_covid_update();
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_data_processing_derived_covid  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_data_processing_derived_covid;
-
-~
-CREATE PROCEDURE sp_mamba_data_processing_derived_covid()
-BEGIN
--- $BEGIN
-CALL sp_mamba_dim_client_covid;
-CALL sp_mamba_fact_encounter_covid;
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_dim_client_hts_create  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_dim_client_hts_create;
-
-~
-CREATE PROCEDURE sp_mamba_dim_client_hts_create()
-BEGIN
--- $BEGIN
-CREATE TABLE IF NOT EXISTS mamba_dim_client_hts
-(
-    id            INT           NOT NULL AUTO_INCREMENT,
-    client_id     INT           NOT NULL,
-    date_of_birth DATE          NULL,
-    age_at_test   INT           NULL,
-    sex           NVARCHAR(25)  NULL,
-    county        NVARCHAR(255) NULL,
-    sub_county    NVARCHAR(255) NULL,
-    ward          NVARCHAR(255) NULL,
+    id             INT          NOT NULL AUTO_INCREMENT,
+    third_party_id INT          NOT NULL,
+    name           VARCHAR(150) NOT NULL,
+    rate           FLOAT        NOT NULL,
+    created_date   DATE         NOT NULL,
 
     PRIMARY KEY (id)
 )
     CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_third_party_third_party_id_index
+    ON mamba_dim_third_party (third_party_id);
+
 -- $END
 END~
 
 
         
 -- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_dim_client_hts_insert  ----------------------------
+-- ----------------------  sp_mamba_dim_thirdparty_insert  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
 
-DROP PROCEDURE IF EXISTS sp_mamba_dim_client_hts_insert;
+DROP PROCEDURE IF EXISTS sp_mamba_dim_thirdparty_insert;
 
 ~
-CREATE PROCEDURE sp_mamba_dim_client_hts_insert()
+CREATE PROCEDURE sp_mamba_dim_thirdparty_insert()
 BEGIN
 -- $BEGIN
-INSERT INTO mamba_dim_client_hts
+
+INSERT INTO mamba_dim_third_party (third_party_id,
+                                   name,
+                                   rate,
+                                   created_date)
+SELECT third_party_id,
+       name,
+       rate,
+       created_date
+FROM moh_bill_third_party;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_thirdparty_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_thirdparty_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_thirdparty_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_thirdparty  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_thirdparty;
+
+~
+CREATE PROCEDURE sp_mamba_dim_thirdparty()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_thirdparty_create();
+CALL sp_mamba_dim_thirdparty_insert();
+CALL sp_mamba_dim_thirdparty_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_department_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_department_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_department_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_department
+(
+    id            INT         NOT NULL AUTO_INCREMENT,
+    department_id INT         NOT NULL,
+    name          varchar(50) null,
+    description   varchar(50) null,
+    created_date  datetime    not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_department_department_id_index
+    ON mamba_dim_department (department_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_department_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_department_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_department_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_department (department_id,
+                                  name,
+                                  description,
+                                  created_date)
+SELECT department_id,
+       name,
+       description,
+       created_date
+FROM moh_bill_department;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_department_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_department_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_department_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_department  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_department;
+
+~
+CREATE PROCEDURE sp_mamba_dim_department()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_department_create();
+CALL sp_mamba_dim_department_insert();
+CALL sp_mamba_dim_department_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_hop_service_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_hop_service_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_hop_service_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_hop_service
+(
+    id           INT         NOT NULL AUTO_INCREMENT,
+    service_id   INT         NOT NULL,
+    name         varchar(50) null,
+    description  varchar(50) null,
+    created_date datetime    not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_hop_service_service_id_index
+    ON mamba_dim_hop_service (service_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_hop_service_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_hop_service_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_hop_service_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_hop_service (service_id,
+                                   name,
+                                   description,
+                                   created_date)
+SELECT service_id,
+       name,
+       description,
+       created_date
+FROM moh_bill_hop_service;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_hop_service_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_hop_service_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_hop_service_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_hop_service  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_hop_service;
+
+~
+CREATE PROCEDURE sp_mamba_dim_hop_service()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_hop_service_create();
+CALL sp_mamba_dim_hop_service_insert();
+CALL sp_mamba_dim_hop_service_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_create()
+BEGIN
+-- $BEGIN
+    CREATE TABLE  mamba_dim_insurance
     (
-        client_id,
-        date_of_birth,
-        age_at_test,
-        sex,
-        county,
-        sub_county,
-        ward
+        id                              INT          NOT NULL AUTO_INCREMENT,
+        insurance_id                    INT          NOT NULL,
+        current_insurance_rate          FLOAT        NULL,
+        current_insurance_rate_flat_fee FLOAT        NULL,
+        concept_id                      int          null,
+        category                        varchar(150) not null,
+        name                            varchar(50)  not null,
+        address                         varchar(150) null,
+        phone                           varchar(100) null,
+        created_date                    date         not null,
+
+        PRIMARY KEY (id)
     )
-    SELECT
-        p.person_id AS client_id,
-        birthdate AS date_of_birth,
-        FLOOR(DATEDIFF(hts.date_test_conducted, birthdate) / 365) AS age_at_test,
-        CASE `p`.`gender`
-            WHEN 'M' THEN 'Male'
-            WHEN 'F' THEN 'Female'
-            ELSE '_'
-        END AS sex,
-        pa.county_district AS county,
-        pa.city_village AS sub_county,
-        pa.address1 AS ward
-    FROM
-        mamba_dim_person p
-    INNER JOIN
-            mamba_flat_encounter_hts hts
-                ON p.person_id = hts.client_id
-    LEFT JOIN
-            mamba_dim_person_address pa
-                ON p.person_id = pa.person_id
+        CHARSET = UTF8MB4;
+
+    CREATE INDEX mamba_dim_insurance_insurance_id_index
+        ON mamba_dim_insurance (insurance_id);
+
+    CREATE INDEX mamba_dim_insurance_concept_id_index
+        ON mamba_dim_insurance (concept_id);
+
+    CREATE INDEX mamba_dim_insurance_category_index
+        ON mamba_dim_insurance (category);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_insurance (insurance_id,
+                                 concept_id,
+                                 category,
+                                 name,
+                                 address,
+                                 phone,
+                                 created_date)
+SELECT insurance_id,
+       concept_id,
+       category,
+       name,
+       address,
+       phone,
+       created_date
+FROM moh_bill_insurance;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_update()
+BEGIN
+-- $BEGIN
+-- Update the current insurance rate for this insurance
+UPDATE mamba_dim_insurance ins
+SET ins.current_insurance_rate = COALESCE(
+        (SELECT rate
+         FROM mamba_dim_insurance_rate ir
+         WHERE ir.insurance_id = ins.insurance_id
+           AND (ir.retire_date IS NULL OR ir.retire_date > NOW())
+         ORDER BY ir.retire_date ASC
+        LIMIT 1),
+        0 -- Default value when no active rate is found (you can change this to any default value)
+    );
+
+-- Update flat_rate as well -- TODO: combine this update into one update with upper update
+UPDATE mamba_dim_insurance ins
+SET ins.current_insurance_rate_flat_fee = COALESCE(
+        (SELECT flatFee
+         FROM mamba_dim_insurance_rate ir
+         WHERE ir.insurance_id = ins.insurance_id
+           AND (ir.retire_date IS NULL OR ir.retire_date > NOW())
+         ORDER BY ir.retire_date ASC
+        LIMIT 1),
+        0
+    );
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_insurance_create();
+CALL sp_mamba_dim_insurance_insert();
+CALL sp_mamba_dim_insurance_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_rate_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_rate_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_rate_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_insurance_rate
+(
+    id                INT            NOT NULL AUTO_INCREMENT,
+    insurance_rate_id INT            NOT NULL,
+    insurance_id      int            not null,
+    rate              float          not null,
+    flatFee           decimal(20, 2) null,
+    start_date        date           not null,
+    end_date          date           null,
+    created_date      date           not null,
+    retired           smallint       not null,
+    retire_date       date           null,
+
+    PRIMARY KEY (id)
+    )
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_insurance_rate_insurance_rate_id_index
+    ON mamba_dim_insurance_rate (insurance_rate_id);
+
+CREATE INDEX mamba_dim_insurance_rate_insurance_id_index
+    ON mamba_dim_insurance_rate (insurance_id);
+
+CREATE INDEX mamba_dim_insurance_rate_insurance_retired_index
+    ON mamba_dim_insurance_rate (retired);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_rate_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_rate_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_rate_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_insurance_rate (insurance_rate_id,
+                                      insurance_id,
+                                      rate,
+                                      flatFee,
+                                      start_date,
+                                      end_date,
+                                      created_date,
+                                      retired,
+                                      retire_date)
+SELECT insurance_rate_id,
+       insurance_id,
+       rate,
+       flatFee,
+       start_date,
+       end_date,
+       created_date,
+       retired,
+       retire_date
+FROM moh_bill_insurance_rate;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_rate_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_rate_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_rate_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_rate  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_rate;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_rate()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_insurance_rate_create();
+CALL sp_mamba_dim_insurance_rate_insert();
+CALL sp_mamba_dim_insurance_rate_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_service_category_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_service_category_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_service_category_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_service_category
+(
+    id                  INT          NOT NULL AUTO_INCREMENT,
+    service_category_id INT          NOT NULL,
+    insurance_id        int          not null,
+    department_id       int          null,
+    service_id          int          null,
+    name                varchar(150) not null,
+    description         varchar(250) null,
+    price               decimal      null,
+    created_date        datetime     not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_service_category_service_category_id_index
+    ON mamba_dim_service_category (service_category_id);
+
+CREATE INDEX mamba_dim_service_category_insurance_id_index
+    ON mamba_dim_service_category (insurance_id);
+
+CREATE INDEX mamba_dim_service_category_department_id_index
+    ON mamba_dim_service_category (department_id);
+
+CREATE INDEX mamba_dim_service_category_service_id_index
+    ON mamba_dim_service_category (service_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_service_category_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_service_category_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_service_category_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_service_category (service_category_id,
+                                        insurance_id,
+                                        department_id,
+                                        service_id,
+                                        name,
+                                        description,
+                                        price,
+                                        created_date)
+SELECT service_category_id,
+       insurance_id,
+       department_id,
+       service_id,
+       name,
+       description,
+       price,
+       created_date
+FROM moh_bill_service_category;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_service_category_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_service_category_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_service_category_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_service_category  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_service_category;
+
+~
+CREATE PROCEDURE sp_mamba_dim_service_category()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_service_category_create();
+CALL sp_mamba_dim_service_category_insert();
+CALL sp_mamba_dim_service_category_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_policy_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_policy_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_policy_create()
+BEGIN
+-- $BEGIN
+
+CREATE TABLE IF NOT EXISTS mamba_dim_insurance_policy
+(
+    id                  INT          NOT NULL AUTO_INCREMENT,
+    insurance_policy_id INT          NOT NULL,
+    insurance_id        int          not null,
+    third_party_id      int          null,
+    insurance_card_no   varchar(250) null,
+    owner               int          not null,
+    coverage_start_date date         not null,
+    expiration_date     date         null,
+    created_date        datetime     not null,
+
+    constraint mamba_dim_insurance_policy_insurance_card_no_UNIQUE
+        unique (insurance_card_no),
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_insurance_policy_insurance_policy_id_index
+    ON mamba_dim_insurance_policy (insurance_policy_id);
+
+CREATE INDEX mamba_dim_insurance_policy_insurance_card_no_index
+    ON mamba_dim_insurance_policy (insurance_card_no);
+
+CREATE INDEX mamba_dim_insurance_policy_owner_index
+    ON mamba_dim_insurance_policy (owner);
+
+CREATE INDEX mamba_dim_insurance_policy_coverage_start_date_index
+    ON mamba_dim_insurance_policy (coverage_start_date);
+
+CREATE INDEX mamba_dim_insurance_policy_expiration_date_index
+    ON mamba_dim_insurance_policy (expiration_date);
+
+CREATE INDEX mamba_dim_insurance_policy_insurance_id_index
+    ON mamba_dim_insurance_policy (insurance_id);
+
+CREATE INDEX mamba_dim_insurance_policy_third_party_id_index
+    ON mamba_dim_insurance_policy (third_party_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_policy_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_policy_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_policy_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_insurance_policy (insurance_policy_id,
+                                        insurance_id,
+                                        third_party_id,
+                                        insurance_card_no,
+                                        owner,
+                                        coverage_start_date,
+                                        expiration_date,
+                                        created_date)
+SELECT insurance_policy_id,
+       insurance_id,
+       third_party_id,
+       insurance_card_no,
+       owner,
+       coverage_start_date,
+       expiration_date,
+       created_date
+FROM moh_bill_insurance_policy;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_policy_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_policy_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_policy_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_policy  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_policy;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_policy()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_insurance_policy_create();
+CALL sp_mamba_dim_insurance_policy_insert();
+CALL sp_mamba_dim_insurance_policy_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_beneficiary_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_beneficiary_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_beneficiary_create()
+BEGIN
+-- $BEGIN
+
+CREATE TABLE IF NOT EXISTS mamba_dim_beneficiary
+(
+    id                  INT          NOT NULL AUTO_INCREMENT,
+    beneficiary_id      INT          NOT NULL,
+    patient_id          INT          NOT NULL,
+    insurance_policy_id INT          NOT NULL,
+    policy_id_number    VARCHAR(250) NULL,
+    created_date        DATE         NOT NULL,
+    creator             INT          NOT NULL,
+    owner_name          VARCHAR(150) NULL,
+    owner_code          VARCHAR(150) NULL,
+    level               INT          NULL,
+    company             VARCHAR(100) NULL,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_beneficiary_beneficiary_id_index
+    ON mamba_dim_beneficiary (beneficiary_id);
+
+CREATE INDEX mamba_dim_beneficiary_patient_id_index
+    ON mamba_dim_beneficiary (patient_id);
+
+CREATE INDEX mamba_dim_beneficiary_insurance_policy_id_index
+    ON mamba_dim_beneficiary (insurance_policy_id);
+
+CREATE INDEX mamba_dim_beneficiary_policy_id_number_index
+    ON mamba_dim_beneficiary (policy_id_number);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_beneficiary_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_beneficiary_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_beneficiary_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_beneficiary (beneficiary_id,
+                                   patient_id,
+                                   insurance_policy_id,
+                                   policy_id_number,
+                                   created_date,
+                                   creator,
+                                   owner_name,
+                                   owner_code,
+                                   level,
+                                   company)
+SELECT beneficiary_id,
+       patient_id,
+       insurance_policy_id,
+       policy_id_number,
+       created_date,
+       creator,
+       owner_name,
+       owner_code,
+       level,
+       company
+FROM moh_bill_beneficiary;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_beneficiary_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_beneficiary_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_beneficiary_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_beneficiary  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_beneficiary;
+
+~
+CREATE PROCEDURE sp_mamba_dim_beneficiary()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_beneficiary_create();
+CALL sp_mamba_dim_beneficiary_insert();
+CALL sp_mamba_dim_beneficiary_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_admission_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_admission_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_admission_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_admission
+(
+    id                  INT          NOT NULL AUTO_INCREMENT,
+    admission_id        INT          NOT NULL,
+    insurance_policy_id int          not null,
+    is_admitted         tinyint(1)   not null,
+    admission_date      datetime     not null,
+    discharging_date    datetime     null,
+    discharged_by       int          null,
+    disease_type        varchar(100) null,
+    admission_type      tinyint(1)   null,
+    created_date        datetime     not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_admission_admission_id_index
+    ON mamba_dim_admission (admission_id);
+
+CREATE INDEX mamba_dim_admission_insurance_policy_id_index
+    ON mamba_dim_admission (insurance_policy_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_admission_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_admission_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_admission_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_admission (admission_id,
+                                 insurance_policy_id,
+                                 is_admitted,
+                                 admission_date,
+                                 discharging_date,
+                                 discharged_by,
+                                 disease_type,
+                                 admission_type,
+                                 created_date)
+SELECT admission_id,
+       insurance_policy_id,
+       is_admitted,
+       admission_date,
+       discharging_date,
+       discharged_by,
+       disease_type,
+       admission_type,
+       created_date
+FROM moh_bill_admission;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_admission_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_admission_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_admission_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_admission  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_admission;
+
+~
+CREATE PROCEDURE sp_mamba_dim_admission()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_admission_create();
+CALL sp_mamba_dim_admission_insert();
+CALL sp_mamba_dim_admission_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_facility_service_price_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_facility_service_price_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_facility_service_price_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_facility_service_price
+(
+    id                        INT            NOT NULL AUTO_INCREMENT,
+    facility_service_price_id INT            NOT NULL,
+    location_id               int            not null,
+    concept_id                int            null,
+    name                      varchar(150)   not null,
+    short_name                varchar(100)   null,
+    description               varchar(250)   null,
+    category                  varchar(150)   null,
+    full_price                decimal(20, 2) not null,
+    start_date                date           not null,
+    end_date                  date           null,
+    item_type                 tinyint(1)     null,
+    hide_item                 tinyint(1)     null,
+    created_date              date           not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_facility_service_price_facility_service_price_id_index
+    ON mamba_dim_facility_service_price (facility_service_price_id);
+
+CREATE INDEX mamba_dim_facility_service_price_concept_id_index
+    ON mamba_dim_facility_service_price (concept_id);
+
+CREATE INDEX mamba_dim_facility_service_price_location_id_index
+    ON mamba_dim_facility_service_price (location_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_facility_service_price_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_facility_service_price_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_facility_service_price_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_facility_service_price (facility_service_price_id,
+                                              location_id,
+                                              concept_id,
+                                              name,
+                                              short_name,
+                                              description,
+                                              category,
+                                              full_price,
+                                              start_date,
+                                              end_date,
+                                              item_type,
+                                              hide_item,
+                                              created_date)
+SELECT facility_service_price_id,
+       location_id,
+       concept_id,
+       name,
+       short_name,
+       description,
+       category,
+       full_price,
+       start_date,
+       end_date,
+       item_type,
+       hide_item,
+       created_date
+FROM moh_bill_facility_service_price;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_facility_service_price_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_facility_service_price_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_facility_service_price_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_facility_service_price  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_facility_service_price;
+
+~
+CREATE PROCEDURE sp_mamba_dim_facility_service_price()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_facility_service_price_create();
+CALL sp_mamba_dim_facility_service_price_insert();
+CALL sp_mamba_dim_facility_service_price_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_billable_service_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_billable_service_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_billable_service_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_billable_service
+(
+    id                        INT            NOT NULL AUTO_INCREMENT,
+    billable_service_id       INT            NOT NULL,
+    insurance_id              int            null,
+    facility_service_price_id int            not null,
+    service_category_id       int            null,
+    maxima_to_pay             decimal(20, 2) null,
+    start_date                date           not null,
+    end_date                  date           null,
+    created_date              datetime       not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_billable_service_billable_service_id_index
+    ON mamba_dim_billable_service (billable_service_id);
+
+CREATE INDEX mamba_dim_billable_service_insurance_id_index
+    ON mamba_dim_billable_service (insurance_id);
+
+CREATE INDEX mamba_dim_billable_service_service_category_id_index
+    ON mamba_dim_billable_service (service_category_id);
+
+CREATE INDEX mamba_dim_billable_service_facility_service_price_id_index
+    ON mamba_dim_billable_service (facility_service_price_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_billable_service_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_billable_service_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_billable_service_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_billable_service (billable_service_id,
+                                        insurance_id,
+                                        facility_service_price_id,
+                                        service_category_id,
+                                        maxima_to_pay,
+                                        start_date,
+                                        end_date,
+                                        created_date)
+SELECT billable_service_id,
+       insurance_id,
+       facility_service_price_id,
+       service_category_id,
+       maxima_to_pay,
+       start_date,
+       end_date,
+       created_date
+FROM moh_bill_billable_service;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_billable_service_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_billable_service_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_billable_service_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_billable_service  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_billable_service;
+
+~
+CREATE PROCEDURE sp_mamba_dim_billable_service()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_billable_service_create();
+CALL sp_mamba_dim_billable_service_insert();
+CALL sp_mamba_dim_billable_service_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_bill_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_bill_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_bill_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_insurance_bill
+(
+    id                INT      NOT NULL AUTO_INCREMENT,
+    insurance_bill_id INT      NOT NULL,
+    amount            decimal  not null,
+    created_date      datetime not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_insurance_bill_insurance_bill_id_index
+    ON mamba_dim_insurance_bill (insurance_bill_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_bill_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_bill_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_bill_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_insurance_bill (insurance_bill_id,
+                                      amount,
+                                      created_date)
+SELECT insurance_bill_id,
+       amount,
+       created_date
+FROM moh_bill_insurance_bill;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_bill_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_bill_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_bill_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_insurance_bill  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_insurance_bill;
+
+~
+CREATE PROCEDURE sp_mamba_dim_insurance_bill()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_insurance_bill_create();
+CALL sp_mamba_dim_insurance_bill_insert();
+CALL sp_mamba_dim_insurance_bill_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_third_party_bill_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_third_party_bill_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_third_party_bill_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_third_party_bill
+(
+    id                  INT      NOT NULL AUTO_INCREMENT,
+    third_party_bill_id INT      NOT NULL,
+    amount              decimal  not null,
+    created_date        datetime not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_third_party_bill_third_party_bill_id_index
+    ON mamba_dim_third_party_bill (third_party_bill_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_third_party_bill_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_third_party_bill_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_third_party_bill_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_third_party_bill (third_party_bill_id,
+                                        amount,
+                                        created_date)
+SELECT third_party_bill_id,
+       amount,
+       created_date
+FROM moh_bill_third_party_bill;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_third_party_bill_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_third_party_bill_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_third_party_bill_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_third_party_bill  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_third_party_bill;
+
+~
+CREATE PROCEDURE sp_mamba_dim_third_party_bill()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_third_party_bill_create();
+CALL sp_mamba_dim_third_party_bill_insert();
+CALL sp_mamba_dim_third_party_bill_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_global_bill_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_global_bill_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_global_bill_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_global_bill
+(
+    id              INT          NOT NULL AUTO_INCREMENT,
+    global_bill_id  INT          NOT NULL,
+    admission_id    int          not null,
+    insurance_id    int          null,
+    bill_identifier varchar(250) not null,
+    global_amount   decimal      not null,
+    closing_date    datetime     null,
+    closed          TINYINT(1)     not null,
+    closed_by_id    int          null,
+    closed_by_name  varchar(255) null,
+    closed_reason   varchar(150) null,
+    edited_by       int          null,
+    edit_reason     varchar(150) null,
+    created_date    datetime     not null,
+
+    PRIMARY KEY (id)
+    )
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_global_bill_global_bill_id_index
+    ON mamba_dim_global_bill (global_bill_id);
+
+CREATE INDEX mamba_dim_global_bill_admission_id_index
+    ON mamba_dim_global_bill (admission_id);
+
+CREATE INDEX mamba_dim_global_bill_insurance_id_index
+    ON mamba_dim_global_bill (insurance_id);
+
+CREATE INDEX mamba_dim_global_bill_closed_index
+    ON mamba_dim_global_bill (closed);
+
+CREATE INDEX mamba_dim_global_bill_closed_by_id_index
+    ON mamba_dim_global_bill (closed_by_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_global_bill_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_global_bill_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_global_bill_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_global_bill (global_bill_id,
+                                   admission_id,
+                                   insurance_id,
+                                   bill_identifier,
+                                   global_amount,
+                                   closing_date,
+                                   closed,
+                                   closed_by_id,
+                                   closed_reason,
+                                   edited_by,
+                                   edit_reason,
+                                   created_date)
+SELECT global_bill_id,
+       admission_id,
+       insurance_id,
+       bill_identifier,
+       global_amount,
+       closing_date,
+       closed,
+       closed_by as closed_by_id,
+       closed_reason,
+       edited_by,
+       edit_reason,
+       created_date
+FROM moh_bill_global_bill;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_global_bill_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_global_bill_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_global_bill_update()
+BEGIN
+-- $BEGIN
+
+    -- update the user who closed this bill - in this case it is a doctor
+    UPDATE mamba_dim_global_bill gb
+        INNER JOIN mamba_dim_users u ON u.user_id = gb.closed_by_id
+        INNER JOIN mamba_dim_person_name psn ON psn.person_id = u.person_id
+        SET gb.closed_by_name = CONCAT(psn.family_name, ' ', psn.given_name)
+    WHERE gb.closed = 1;
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_global_bill  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_global_bill;
+
+~
+CREATE PROCEDURE sp_mamba_dim_global_bill()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_global_bill_create();
+CALL sp_mamba_dim_global_bill_insert();
+CALL sp_mamba_dim_global_bill_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_patient_bill_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_patient_bill_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_patient_bill_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_patient_bill
+(
+    id              INT            NOT NULL AUTO_INCREMENT,
+    patient_bill_id INT            NOT NULL,
+    amount          decimal(20, 2) not null,
+    is_paid         smallint       null,
+    status          varchar(150)   null,
+    created_date    datetime       null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_patient_bill_patient_bill_id_index
+    ON mamba_dim_patient_bill (patient_bill_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_patient_bill_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_patient_bill_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_patient_bill_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_patient_bill (patient_bill_id,
+                                    amount,
+                                    is_paid,
+                                    status)
+SELECT patient_bill_id,
+       amount,
+       is_paid,
+       status
+FROM moh_bill_patient_bill;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_patient_bill_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_patient_bill_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_patient_bill_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_patient_bill  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_patient_bill;
+
+~
+CREATE PROCEDURE sp_mamba_dim_patient_bill()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_patient_bill_create();
+CALL sp_mamba_dim_patient_bill_insert();
+CALL sp_mamba_dim_patient_bill_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_consommation_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_consommation_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_consommation_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_consommation
+(
+    id                  INT      NOT NULL AUTO_INCREMENT,
+    consommation_id     INT      NOT NULL,
+    global_bill_id      INT      NULL,
+    department_id       INT      NULL,
+    beneficiary_id      INT      NOT NULL,
+    patient_bill_id     INT      NOT NULL,
+    insurance_bill_id   INT      NULL,
+    third_party_bill_id INT      NULL,
+    created_date        DATETIME NOT NULL,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_consommation_consommation_id_index
+    ON mamba_dim_consommation (consommation_id);
+
+CREATE INDEX mamba_dim_consommation_global_bill_id_index
+    ON mamba_dim_consommation (global_bill_id);
+
+CREATE INDEX mamba_dim_consommation_department_id_index
+    ON mamba_dim_consommation (department_id);
+
+CREATE INDEX mamba_dim_consommation_beneficiary_id_index
+    ON mamba_dim_consommation (beneficiary_id);
+
+CREATE INDEX mamba_dim_consommation_patient_bill_id_index
+    ON mamba_dim_consommation (patient_bill_id);
+
+CREATE INDEX mamba_dim_consommation_insurance_bill_id_index
+    ON mamba_dim_consommation (insurance_bill_id);
+
+CREATE INDEX mamba_dim_consommation_third_party_bill_id_index
+    ON mamba_dim_consommation (third_party_bill_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_consommation_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_consommation_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_consommation_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_consommation (consommation_id,
+                                    global_bill_id,
+                                    department_id,
+                                    beneficiary_id,
+                                    patient_bill_id,
+                                    insurance_bill_id,
+                                    third_party_bill_id,
+                                    created_date)
+SELECT consommation_id,
+       global_bill_id,
+       department_id,
+       beneficiary_id,
+       patient_bill_id,
+       insurance_bill_id,
+       third_party_bill_id,
+       created_date
+FROM moh_bill_consommation;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_consommation_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_consommation_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_consommation_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_consommation  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_consommation;
+
+~
+CREATE PROCEDURE sp_mamba_dim_consommation()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_consommation_create();
+CALL sp_mamba_dim_consommation_insert();
+CALL sp_mamba_dim_consommation_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_patient_service_bill_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_patient_service_bill_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_patient_service_bill_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_patient_service_bill
+(
+    id                        INT            NOT NULL AUTO_INCREMENT,
+    patient_service_bill_id   INT            NOT NULL,
+    consommation_id           int            not null,
+    billable_service_id       int            null,
+    service_id                int            null,
+    service_date              date           not null,
+    unit_price                decimal(20, 2) not null,
+    quantity                  decimal(20, 2) null,
+    paid_quantity             decimal(20, 2) null,
+    service_other             varchar(100)   null,
+    service_other_description varchar(250)   null,
+    is_paid                   smallint       not null,
+    drug_frequency            varchar(255)   null,
+    item_type                 tinyint(1)     null,
+    voided                    smallint       not null,
+    created_date              datetime       null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_patient_service_bill_patient_service_bill_id_index
+    ON mamba_dim_patient_service_bill (patient_service_bill_id);
+
+CREATE INDEX mamba_dim_patient_service_bill_consommation_id_index
+    ON mamba_dim_patient_service_bill (consommation_id);
+
+CREATE INDEX mamba_dim_patient_service_bill_billable_service_id_index
+    ON mamba_dim_patient_service_bill (billable_service_id);
+
+CREATE INDEX mamba_dim_patient_service_bill_service_id_index
+    ON mamba_dim_patient_service_bill (service_id);
+
+CREATE INDEX mamba_dim_patient_service_bill_voided_index
+    ON mamba_dim_patient_service_bill (voided);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_patient_service_bill_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_patient_service_bill_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_patient_service_bill_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_patient_service_bill (patient_service_bill_id,
+                                            consommation_id,
+                                            billable_service_id,
+                                            service_id,
+                                            service_date,
+                                            unit_price,
+                                            quantity,
+                                            paid_quantity,
+                                            service_other,
+                                            service_other_description,
+                                            is_paid,
+                                            drug_frequency,
+                                            item_type,
+                                            voided,
+                                            created_date)
+
+SELECT patient_service_bill_id,
+       consommation_id,
+       billable_service_id,
+       service_id,
+       service_date,
+       unit_price,
+       quantity,
+       paid_quantity,
+       service_other,
+       service_other_description,
+       is_paid,
+       drug_frequency,
+       item_type,
+       voided,
+       created_date
+FROM moh_bill_patient_service_bill;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_patient_service_bill_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_patient_service_bill_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_patient_service_bill_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_patient_service_bill  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_patient_service_bill;
+
+~
+CREATE PROCEDURE sp_mamba_dim_patient_service_bill()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_patient_service_bill_create();
+CALL sp_mamba_dim_patient_service_bill_insert();
+CALL sp_mamba_dim_patient_service_bill_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_bill_payment_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_bill_payment_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_bill_payment_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_bill_payment
+(
+    id              INT            NOT NULL AUTO_INCREMENT,
+    bill_payment_id INT            NOT NULL,
+    patient_bill_id int            not null,
+    amount_paid     decimal(20, 2) not null,
+    date_received   datetime       null,
+    collector       int            not null,
+    created_date    datetime       not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_bill_payment_bill_payment_id_index
+    ON mamba_dim_bill_payment (bill_payment_id);
+
+CREATE INDEX mamba_dim_bill_payment_patient_bill_id_index
+    ON mamba_dim_bill_payment (patient_bill_id);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_bill_payment_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_bill_payment_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_bill_payment_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_bill_payment (bill_payment_id,
+                                  patient_bill_id,
+                                  amount_paid,
+                                  date_received,
+                                  collector,
+                                  created_date)
+SELECT bill_payment_id,
+       patient_bill_id,
+       amount_paid,
+       date_received,
+       collector,
+       created_date
+FROM moh_bill_payment;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_bill_payment_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_bill_payment_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_bill_payment_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_bill_payment  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_bill_payment;
+
+~
+CREATE PROCEDURE sp_mamba_dim_bill_payment()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_bill_payment_create();
+CALL sp_mamba_dim_bill_payment_insert();
+CALL sp_mamba_dim_bill_payment_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_paid_service_bill_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_paid_service_bill_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_paid_service_bill_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE IF NOT EXISTS mamba_dim_paid_service_bill
+(
+    id                      INT      NOT NULL AUTO_INCREMENT,
+    paid_service_bill_id    INT      NOT NULL,
+    bill_payment_id         int      not null,
+    patient_service_bill_id int      not null,
+    paid_quantity           decimal  not null,
+    voided                  smallint not null,
+    created_date            datetime not null,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_dim_paid_service_bill_paid_service_bill_id_index
+    ON mamba_dim_paid_service_bill (paid_service_bill_id);
+
+CREATE INDEX mamba_dim_paid_service_bill_bill_payment_id_index
+    ON mamba_dim_paid_service_bill (bill_payment_id);
+
+CREATE INDEX mamba_dim_paid_service_bill_patient_service_bill_id_index
+    ON mamba_dim_paid_service_bill (patient_service_bill_id);
+
+CREATE INDEX mamba_dim_paid_service_bill_voided_index
+    ON mamba_dim_paid_service_bill (voided);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_paid_service_bill_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_paid_service_bill_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_paid_service_bill_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_paid_service_bill (paid_service_bill_id,
+                                         bill_payment_id,
+                                         patient_service_bill_id,
+                                         paid_quantity,
+                                         voided,
+                                         created_date)
+SELECT paid_service_bill_id,
+       bill_payment_id,
+       patient_service_bill_id,
+       paid_quantity,
+       voided,
+       created_date
+FROM moh_bill_paid_service_bill;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_paid_service_bill_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_paid_service_bill_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_paid_service_bill_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_paid_service_bill  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_paid_service_bill;
+
+~
+CREATE PROCEDURE sp_mamba_dim_paid_service_bill()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_paid_service_bill_create();
+CALL sp_mamba_dim_paid_service_bill_insert();
+CALL sp_mamba_dim_paid_service_bill_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_fact_patient_service_bill_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_create;
+
+~
+CREATE PROCEDURE sp_mamba_fact_patient_service_bill_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE mamba_fact_insurance
+(
+    id                              INT            NOT NULL AUTO_INCREMENT,
+    admission_date                  DATE           NULL,
+    closing_date                    DATE           NULL,
+    beneficiary_name                TEXT           NULL,
+    household_head_name             VARCHAR(255)   NULL,
+    family_code                     VARCHAR(255)   NULL,
+    beneficiary_level               INT            NULL,
+    card_number                     VARCHAR(255)   NULL,
+    company_name                    VARCHAR(255)   NULL,
+    age                             INT            NULL,
+    birth_date                      DATE           NULL,
+    gender                          CHAR(1)        NULL,
+    doctor_name                     VARCHAR(255)   NULL,
+    insurance_name                  VARCHAR(255)   NULL,
+    insurance_id                    INT            NOT NULL,
+    current_insurance_rate          FLOAT          NOT NULL,
+    current_insurance_rate_flat_fee DECIMAL(20, 2) NULL,
+    hop_service_id                  INT            NULL,
+    service_bill_quantity           DECIMAL(20, 2) NULL,
+    service_bill_unit_price         DECIMAL(20, 2) NOT NULL,
+
+    PRIMARY KEY (id)
+)
+    CHARSET = UTF8MB4;
+
+CREATE INDEX mamba_fact_insurance_insurance_id_index
+    ON mamba_fact_insurance (insurance_id);
+
+CREATE INDEX mamba_fact_insurance_hop_service_id_index
+    ON mamba_fact_insurance (hop_service_id);
+
+CREATE INDEX mamba_fact_insurance_closing_date_index
+    ON mamba_fact_insurance (closing_date);
+
+CREATE INDEX mamba_fact_insurance_admission_date_index
+    ON mamba_fact_insurance (admission_date);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_fact_patient_service_bill_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_insert;
+
+~
+CREATE PROCEDURE sp_mamba_fact_patient_service_bill_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_fact_insurance(admission_date, closing_date, beneficiary_name, household_head_name, family_code,
+                                 beneficiary_level, card_number, company_name, age, birth_date, gender, doctor_name,
+                                 insurance_name, insurance_id, current_insurance_rate, current_insurance_rate_flat_fee,
+                                 hop_service_id, service_bill_quantity, service_bill_unit_price)
+
+SELECT -- DATE_FORMAT(gb.created_date, '%d/%m/%Y') AS admission_date,
+       DATE(gb.created_date)               AS admission_date,
+       DATE(gb.closing_date)               AS closing_date,
+       bps.person_name_long                AS beneficiary_name,
+       ben.owner_name                      AS household_head_name,
+       ben.owner_code                      AS family_code,
+       ben.level                           AS beneficiary_level,
+       isp.insurance_card_no               AS card_number,
+       ben.company                         AS company_name,
+       bps.age                             AS age,
+       DATE(bps.birthdate)                 AS birth_date,
+       bps.gender                          AS gender,
+       gb.closed_by_name                   AS doctor_name,
+       ins.name                            AS insurance_name,
+       ins.insurance_id                    AS insurance_id,
+       ins.current_insurance_rate          AS current_insurance_rate,
+       ins.current_insurance_rate_flat_fee AS current_insurance_rate_flat_fee,
+       psb.service_id                      AS hop_service_id,
+       psb.quantity                        AS service_bill_quantity,
+       psb.unit_price                      AS service_bill_unit_price
+
+FROM mamba_dim_patient_service_bill psb
+         INNER JOIN mamba_dim_consommation cons ON psb.consommation_id = cons.consommation_id
+         INNER JOIN mamba_dim_global_bill gb on cons.global_bill_id = gb.global_bill_id
+         INNER JOIN mamba_dim_beneficiary ben on cons.beneficiary_id = ben.beneficiary_id
+         INNER JOIN mamba_dim_insurance_policy isp on ben.insurance_policy_id = isp.insurance_policy_id
+         INNER JOIN mamba_dim_insurance ins ON ins.insurance_id = isp.insurance_id
+         INNER JOIN mamba_dim_person bps ON bps.person_id = ben.patient_id
+
+WHERE gb.closed = 1
+  AND psb.voided = 0
+-- GROUP BY cons.global_bill_id
+-- HAVING MIN(cons.consommation_id)
+ORDER BY gb.closing_date ASC
 ;
 -- $END
 END~
@@ -2968,14 +4834,14 @@ END~
 
         
 -- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_dim_client_hts_update  ----------------------------
+-- ----------------------  sp_mamba_fact_patient_service_bill_update  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
 
-DROP PROCEDURE IF EXISTS sp_mamba_dim_client_hts_update;
+DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_update;
 
 ~
-CREATE PROCEDURE sp_mamba_dim_client_hts_update()
+CREATE PROCEDURE sp_mamba_fact_patient_service_bill_update()
 BEGIN
 -- $BEGIN
 -- $END
@@ -2984,516 +4850,160 @@ END~
 
         
 -- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_dim_client_hts  ----------------------------
+-- ----------------------  sp_mamba_fact_patient_service_bill_query  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
 
-DROP PROCEDURE IF EXISTS sp_mamba_dim_client_hts;
+DROP PROCEDURE IF EXISTS sp_mamba_fact_insurance_query;
+~
+CREATE PROCEDURE sp_mamba_fact_insurance_query(
+    IN START_DATE DATETIME,
+    IN END_DATE DATETIME,
+    IN INSURANCE_ID INT)
+
+BEGIN
+    SELECT patient_service_bill_id,
+           consommation_id,
+           billable_service_id,
+           service_id,
+           service_date,
+           unit_price,
+           quantity,
+           paid_quantity,
+           service_other,
+           service_other_description,
+           is_paid,
+           drug_frequency,
+           item_type,
+           voided,
+           global_bill_id,
+           department_id,
+           beneficiary_id,
+           patient_bill_id,
+           insurance_bill_id,
+           third_party_bill_id,
+           admission_id,
+           insurance_id,
+           bill_identifier,
+           global_amount,
+           closing_date,
+           closed,
+           closed_by,
+           closed_reason,
+           edited_by,
+           edit_reason,
+           global_bill_creation_date,
+           department_name,
+           facility_service_price_id,
+           service_category_id,
+           maxima_to_pay,
+           start_date,
+           end_date,
+           beneficary_patient_id,
+           insurance_policy_id,
+           policy_id_number,
+           creator,
+           owner_name,
+           owner_code,
+           level,
+           company,
+           patient_bill_amount,
+           is_patient_bill_paid,
+           status,
+           insurance_bill_amount,
+           third_party_bill_amount,
+           third_party_id,
+           insurance_card_no,
+           insurance_policy_owner,
+           coverage_start_date,
+           expiration_date,
+           insurance_company_concept,
+           insurance_category,
+           insurance_company_name,
+           insurance_company_address,
+           insurance_company_phone,
+           owner_patient_id,
+           third_party_name,
+           third_party_rate,
+           service_category_name,
+           service_category_price,
+           facility_location_id,
+           facility_concept_id,
+           facility_name,
+           facility_full_price,
+           beneficiary_patient_id,
+           beneficiary_family_name,
+           beneficiary_middle_name,
+           beneficiary_given_name,
+           beneficiary_birth_date,
+           beneficiary_birth_date_estimated,
+           beneficiary_gender,
+           TIMESTAMPDIFF(YEAR, beneficiary_birth_date, CURRENT_DATE) AS age
+
+    FROM mamba_fact_insurance i
+
+    WHERE i.insurance_id = INSURANCE_ID
+      AND i.global_bill_creation_date BETWEEN START_DATE AND END_DATE;
+
+END~
+
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_fact_patient_service_bill  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill;
 
 ~
-CREATE PROCEDURE sp_mamba_dim_client_hts()
+CREATE PROCEDURE sp_mamba_fact_patient_service_bill()
 BEGIN
 -- $BEGIN
-CALL sp_mamba_dim_client_hts_create();
-CALL sp_mamba_dim_client_hts_insert();
-CALL sp_mamba_dim_client_hts_update();
+CALL sp_mamba_fact_patient_service_bill_create();
+CALL sp_mamba_fact_patient_service_bill_insert();
+CALL sp_mamba_fact_patient_service_bill_update();
 -- $END
 END~
 
 
         
 -- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_encounter_hts_create  ----------------------------
+-- ----------------------  sp_mamba_data_processing_derived_billing  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
 
-DROP PROCEDURE IF EXISTS sp_mamba_fact_encounter_hts_create;
+DROP PROCEDURE IF EXISTS sp_mamba_data_processing_derived_billing;
 
 ~
-CREATE PROCEDURE sp_mamba_fact_encounter_hts_create()
+CREATE PROCEDURE sp_mamba_data_processing_derived_billing()
 BEGIN
 -- $BEGIN
-CREATE TABLE mamba_fact_encounter_hts
-(
-    id                        INT AUTO_INCREMENT,
-    encounter_id              INT           NULL,
-    client_id                 INT           NULL,
-    encounter_date            DATETIME          NULL,
 
-    date_tested               DATE          NULL,
-    consent                   NVARCHAR(7)   NULL,
-    community_service_point   NVARCHAR(255) NULL,
-    pop_type                  NVARCHAR(50)  NULL,
-    keypop_category           NVARCHAR(50)  NULL,
-    priority_pop              NVARCHAR(16)  NULL,
-    test_setting              NVARCHAR(255) NULL,
-    facility_service_point    NVARCHAR(255) NULL,
-    hts_approach              NVARCHAR(255) NULL,
-    pretest_counselling       NVARCHAR(255) NULL,
-    type_pretest_counselling  NVARCHAR(255) NULL,
-    reason_for_test           NVARCHAR(255) NULL,
-    ever_tested_hiv           VARCHAR(7)    NULL,
-    duration_since_last_test  NVARCHAR(255) NULL,
-    couple_result             NVARCHAR(50)  NULL,
-    result_received_couple    NVARCHAR(255) NULL,
-    test_conducted            NVARCHAR(255) NULL,
-    initial_kit_name          NVARCHAR(255) NULL,
-    initial_test_result       NVARCHAR(50)  NULL,
-    confirmatory_kit_name     NVARCHAR(255) NULL,
-    last_test_result          NVARCHAR(50)  NULL,
-    final_test_result         NVARCHAR(50)  NULL,
-    given_result              VARCHAR(7)    NULL,
-    date_given_result         DATE          NULL,
-    tiebreaker_kit_name       NVARCHAR(255) NULL,
-    tiebreaker_test_result    NVARCHAR(50)  NULL,
-    sti_last_6mo              NVARCHAR(7)   NULL,
-    sexually_active           NVARCHAR(255) NULL,
-    syphilis_test_result      NVARCHAR(50)  NULL,
-    unprotected_sex_last_12mo NVARCHAR(255) NULL,
-    recency_consent           NVARCHAR(7)   NULL,
-    recency_test_done         NVARCHAR(7)   NULL,
-    recency_test_type         NVARCHAR(255) NULL,
-    recency_vl_result         NVARCHAR(50)  NULL,
-    recency_rtri_result       NVARCHAR(50)  NULL,
+    -- Dimensions
+    CALL sp_mamba_dim_admission;
+    CALL sp_mamba_dim_beneficiary;
+    CALL sp_mamba_dim_bill_payment;
+    CALL sp_mamba_dim_billable_service;
+    CALL sp_mamba_dim_consommation;
+    CALL sp_mamba_dim_department;
+    CALL sp_mamba_dim_facility_service_price;
+    CALL sp_mamba_dim_global_bill;
+    CALL sp_mamba_dim_hop_service;
+    CALL sp_mamba_dim_insurance_rate;
+    CALL sp_mamba_dim_insurance;
+    CALL sp_mamba_dim_insurance_bill;
+    CALL sp_mamba_dim_insurance_policy;
+    CALL sp_mamba_dim_paid_service_bill;
+    CALL sp_mamba_dim_patient_bill;
+    CALL sp_mamba_dim_patient_service_bill;
+    CALL sp_mamba_dim_service_category;
+    CALL sp_mamba_dim_third_party_bill;
+    CALL sp_mamba_dim_thirdparty;
 
-    PRIMARY KEY (id)
-)
-    CHARSET = UTF8MB4;
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_encounter_hts_insert  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_encounter_hts_insert;
-
-~
-CREATE PROCEDURE sp_mamba_fact_encounter_hts_insert()
-BEGIN
--- $BEGIN
-INSERT INTO mamba_fact_encounter_hts
-    (
-        encounter_id,
-        client_id,
-        encounter_date,
-        date_tested,
-        consent,
-        community_service_point,
-        pop_type,
-        keypop_category,
-        priority_pop,
-        test_setting,
-        facility_service_point,
-        hts_approach,
-        pretest_counselling,
-        type_pretest_counselling,
-        reason_for_test,
-        ever_tested_hiv,
-        duration_since_last_test,
-        couple_result,
-        result_received_couple,
-        test_conducted,
-        initial_kit_name,
-        initial_test_result,
-        confirmatory_kit_name,
-        last_test_result,
-        final_test_result,
-        given_result,
-        date_given_result,
-        tiebreaker_kit_name,
-        tiebreaker_test_result,
-        sti_last_6mo,
-        sexually_active,
-        syphilis_test_result,
-        unprotected_sex_last_12mo,
-        recency_consent,
-        recency_test_done,
-        recency_test_type,
-        recency_vl_result,
-        recency_rtri_result
-    )
-    SELECT
-        encounter_id,
-        client_id,
-        encounter_datetime AS encounter_date,
-        CAST(date_test_conducted AS DATE) AS date_tested,
-        CASE consent_provided
-           WHEN 'True' THEN 'Yes'
-           WHEN 'False' THEN 'No'
-           ELSE NULL END AS consent,
-        CASE community_service_point
-           WHEN 'mobile voluntary counseling and testing program' THEN 'Mobile VCT'
-           WHEN 'Home based HIV testing program' THEN 'Homebased'
-           WHEN 'Outreach Program' THEN 'Outreach'
-           WHEN 'Voluntary counseling and testing center' THEN 'VCT'
-           ELSE community_service_point
-        END AS community_service_point,
-        pop_type,
-        CASE
-           WHEN (key_pop_msm = 'Male who has sex with men') THEN 'MSM'
-           WHEN (key_pop_fsw = 'Sex worker') THEN 'FSW'
-           WHEN (key_pop_transgender = 'Transgender Persons') THEN 'TRANS'
-           WHEN (key_pop_pwid = 'People Who Inject Drugs') THEN 'PWID'
-           WHEN (key_pop_prisoners = 'Prisoners') THEN 'Prisoner'
-           ELSE NULL
-        END AS `keypop_category`,
-        CASE
-           WHEN (key_pop_AGYW = 'Adolescent Girls & Young Women') THEN 'AGYW'
-           WHEN (key_pop_fisher_folk = 'Fisher Folk') THEN 'Fisher_folk'
-           WHEN (key_pop_migrant_worker = 'Migrant Workers') THEN 'Migrant_worker'
-           WHEN (key_pop_refugees = 'Refugees') THEN 'Refugees'
-           WHEN (key_pop_truck_driver = 'Long distance truck driver') THEN 'Truck_driver'
-           WHEN (key_pop_uniformed_forces = 'Uniformed Forces') THEN 'Uniformed_forces'
-           ELSE NULL
-        END AS `priority_pop`,
-        test_setting,
-        CASE facility_service_point
-           WHEN 'Post Natal Program' THEN 'PNC'
-           WHEN 'Family Planning Clinic' THEN 'FP Clinic'
-           WHEN 'Antenatal program' THEN 'ANC'
-           WHEN 'Sexually transmitted infection program/clinic' THEN 'STI Clinic'
-           WHEN 'Tuberculosis treatment program' THEN 'TB Clinic'
-           WHEN 'Labor and delivery unit' THEN 'L&D'
-           WHEN 'Other' THEN 'Other Clinics'
-           ELSE facility_service_point
-        END  AS facility_service_point,
-        CASE hts_approach
-           WHEN 'Client Initiated Testing and Counselling' THEN 'CITC'
-           WHEN 'Provider-initiated HIV testing and counseling' THEN 'PITC'
-           ELSE hts_approach
-        END AS hts_approach,
-        pretest_counselling,
-        type_pretest_counselling,
-        reason_for_test,
-        CASE ever_tested_hiv
-           WHEN 'True' THEN 'Yes'
-           WHEN 'False' THEN 'No'
-           ELSE ever_tested_hiv
-        END AS ever_tested_hiv,
-        duration_since_last_test,
-        couple_result,
-        result_received_couple,
-        test_conducted,
-        initial_kit_name,
-        initial_test_result,
-        confirmatory_kit_name,
-        last_test_result,
-        CASE
-           WHEN final_test_result IN ('+', 'POS','Positive') THEN 'Positive'
-           WHEN final_test_result IN ('-', 'NEG','Negative') THEN 'Negative'
-           WHEN final_test_result IN  ('Indeterminate','Inconclusive') THEN 'Indeterminate'
-           ELSE final_test_result
-        END AS final_test_result,
-        CASE
-           WHEN given_result IN ('True', 'Yes') THEN 'Yes'
-           WHEN given_result IN ('No', 'False') THEN 'No'
-           WHEN given_result = 'Unknown' THEN 'Unknown'
-           ELSE given_result
-        END AS given_result,
-        CAST(date_given_result AS DATE) AS date_given_result,
-        tiebreaker_kit_name,
-        tiebreaker_test_result,
-        sti_last_6mo,
-        sexually_active,
-        syphilis_test_result,
-        unprotected_sex_last_12mo,
-        recency_consent,
-        recency_test_done,
-        recency_test_type,
-        recency_vl_result,
-        recency_rtri_result
-    FROM
-        `mamba_flat_encounter_hts` `hts`
-;
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_encounter_hts_update  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_encounter_hts_update;
-
-~
-CREATE PROCEDURE sp_mamba_fact_encounter_hts_update()
-BEGIN
--- $BEGIN
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_encounter_hts  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_encounter_hts;
-
-~
-CREATE PROCEDURE sp_mamba_fact_encounter_hts()
-BEGIN
--- $BEGIN
-CALL sp_mamba_fact_encounter_hts_create();
-CALL sp_mamba_fact_encounter_hts_insert();
-CALL sp_mamba_fact_encounter_hts_update();
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_txcurr_create  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_txcurr_create;
-
-~
-CREATE PROCEDURE sp_mamba_fact_txcurr_create()
-BEGIN
--- $BEGIN
-CREATE TABLE mamba_fact_txcurr
-(
-    id                        INT AUTO_INCREMENT,
-    encounter_id              INT           NULL,
-    client_id                 INT           NULL,
-    date_tested               DATE          NULL,
-    consent                   NVARCHAR(7)   NULL,
-    community_service_point   NVARCHAR(255) NULL,
-    pop_type                  NVARCHAR(50)  NULL,
-    keypop_category           NVARCHAR(50)  NULL,
-    priority_pop              NVARCHAR(16)  NULL,
-    test_setting              NVARCHAR(255) NULL,
-    facility_service_point    NVARCHAR(255) NULL,
-    hts_approach              NVARCHAR(255) NULL,
-    pretest_counselling       NVARCHAR(255) NULL,
-    type_pretest_counselling  NVARCHAR(255) NULL,
-    reason_for_test           NVARCHAR(255) NULL,
-    ever_tested_hiv           VARCHAR(7)    NULL,
-    duration_since_last_test  NVARCHAR(255) NULL,
-    couple_result             NVARCHAR(50)  NULL,
-    result_received_couple    NVARCHAR(255) NULL,
-    test_conducted            NVARCHAR(255) NULL,
-    initial_kit_name          NVARCHAR(255) NULL,
-    initial_test_result       NVARCHAR(50)  NULL,
-    confirmatory_kit_name     NVARCHAR(255) NULL,
-    last_test_result          NVARCHAR(50)  NULL,
-    final_test_result         NVARCHAR(50)  NULL,
-    given_result              VARCHAR(7)    NULL,
-    date_given_result         DATE          NULL,
-    tiebreaker_kit_name       NVARCHAR(255) NULL,
-    tiebreaker_test_result    NVARCHAR(50)  NULL,
-    sti_last_6mo              NVARCHAR(7)   NULL,
-    sexually_active           NVARCHAR(255) NULL,
-    syphilis_test_result      NVARCHAR(50)  NULL,
-    unprotected_sex_last_12mo NVARCHAR(255) NULL,
-    recency_consent           NVARCHAR(7)   NULL,
-    recency_test_done         NVARCHAR(7)   NULL,
-    recency_test_type         NVARCHAR(255) NULL,
-    recency_vl_result         NVARCHAR(50)  NULL,
-    recency_rtri_result       NVARCHAR(50)  NULL,
-    PRIMARY KEY (id)
-);
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_txcurr_insert  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_txcurr_insert;
-
-~
-CREATE PROCEDURE sp_mamba_fact_txcurr_insert()
-BEGIN
--- $BEGIN
-INSERT INTO mamba_fact_txcurr (encounter_id,
-                                    client_id,
-                                    date_tested,
-                                    consent,
-                                    community_service_point,
-                                    pop_type,
-                                    keypop_category,
-                                    priority_pop,
-                                    test_setting,
-                                    facility_service_point,
-                                    hts_approach,
-                                    pretest_counselling,
-                                    type_pretest_counselling,
-                                    reason_for_test,
-                                    ever_tested_hiv,
-                                    duration_since_last_test,
-                                    couple_result,
-                                    result_received_couple,
-                                    test_conducted,
-                                    initial_kit_name,
-                                    initial_test_result,
-                                    confirmatory_kit_name,
-                                    last_test_result,
-                                    final_test_result,
-                                    given_result,
-                                    date_given_result,
-                                    tiebreaker_kit_name,
-                                    tiebreaker_test_result,
-                                    sti_last_6mo,
-                                    sexually_active,
-                                    syphilis_test_result,
-                                    unprotected_sex_last_12mo,
-                                    recency_consent,
-                                    recency_test_done,
-                                    recency_test_type,
-                                    recency_vl_result,
-                                    recency_rtri_result)
-SELECT hts.encounter_id,
-       `hts`.`client_id`                    AS `client_id`,
-       CAST(date_test_conducted as DATE)    AS date_tested,
-       CASE consent_provided
-           WHEN 'True' THEN 'Yes'
-           WHEN 'False' THEN 'No'
-           ELSE NULL END                    AS consent,
-       CASE community_service_point
-           WHEN 'mobile voluntary counseling and testing program' THEN 'Mobile VCT'
-           WHEN 'Home based HIV testing program' THEN 'Homebased'
-           WHEN 'Outreach Program' THEN 'Outreach'
-           WHEN 'Voluntary counseling and testing center' THEN 'VCT'
-
-           ELSE community_service_point END as community_service_point,
-       pop_type,
-       CASE
-           WHEN (`hts`.`key_pop_msm` = 1) THEN 'MSM'
-           WHEN (`hts`.`key_pop_fsw` = 1) THEN 'FSW'
-           WHEN (`hts`.`key_pop_transgender` = 1) THEN 'TRANS'
-           WHEN (`hts`.`key_pop_pwid` = 1) THEN 'PWID'
-           WHEN (`hts`.`key_pop_prisoners` = 1) THEN 'Prisoner'
-           ELSE NULL END                    AS `keypop_category`,
-       CASE
-           WHEN (key_pop_AGYW = 1) THEN 'AGYW'
-           WHEN (key_pop_fisher_folk = 1) THEN 'Fisher_folk'
-           WHEN (key_pop_migrant_worker = 1) THEN 'Migrant_worker'
-           WHEN (key_pop_refugees = 1) THEN 'Refugees'
-           WHEN (key_pop_truck_driver = 1) THEN 'Truck_driver'
-           WHEN (key_pop_uniformed_forces = 1) THEN 'Uniformed_forces'
-           ELSE NULL END                    AS `priority_pop`,
-       test_setting,
-       CASE facility_service_point
-           WHEN 'Post Natal Program' THEN 'PNC'
-           WHEN 'Family Planning Clinic' THEN 'FP Clinic'
-           WHEN 'Antenatal program' THEN 'ANC'
-           WHEN 'Sexually transmitted infection program/clinic' THEN 'STI Clinic'
-           WHEN 'Tuberculosis treatment program' THEN 'TB Clinic'
-           WHEN 'Labor and delivery unit' THEN 'L&D'
-           WHEN 'Other' THEN 'Other Clinics'
-           ELSE facility_service_point END  as facility_service_point,
-       CASE hts_approach
-           WHEN 'Client Initiated Testing and Counselling' THEN 'CITC'
-           WHEN 'Provider-initiated HIV testing and counseling' THEN 'PITC'
-           ELSE hts_approach END            AS hts_approach,
-       pretest_counselling,
-       type_pretest_counselling,
-       reason_for_test,
-       CASE ever_tested_hiv
-           WHEN 'True' THEN 'Yes'
-           WHEN 'False' THEN 'No'
-           ELSE NULL END                    AS ever_tested_hiv,
-       duration_since_last_test,
-       couple_result,
-       result_received_couple,
-       test_conducted,
-       initial_kit_name,
-       initial_test_result,
-       confirmatory_kit_name,
-       last_test_result,
-       final_test_result,
-       CASE
-           WHEN given_result IN ('True', 'Yes') THEN 'Yes'
-           WHEN given_result IN ('No', 'False') THEN 'No'
-           WHEN given_result = 'Unknown' THEN 'Unknown'
-           ELSE NULL END                    as given_result,
-       CAST(date_given_result as DATE)      AS date_given_result,
-       tiebreaker_kit_name,
-       tiebreaker_test_result,
-       sti_last_6mo,
-       sexually_active,
-       syphilis_test_result,
-       unprotected_sex_last_12mo,
-       recency_consent,
-       recency_test_done,
-       recency_test_type,
-       recency_vl_result,
-       recency_rtri_result
-FROM `flat_encounter_hts` `hts`;
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_txcurr_update  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_txcurr_update;
-
-~
-CREATE PROCEDURE sp_mamba_fact_txcurr_update()
-BEGIN
--- $BEGIN
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_txcurr  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_fact_txcurr;
-
-~
-CREATE PROCEDURE sp_mamba_fact_txcurr()
-BEGIN
--- $BEGIN
-CALL sp_mamba_fact_txcurr_create();
-CALL sp_mamba_fact_txcurr_insert();
-CALL sp_mamba_fact_txcurr_update();
--- $END
-END~
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_fact_txcurr_query  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-
-
-        
--- ---------------------------------------------------------------------------------------------
--- ----------------------  sp_mamba_data_processing_derived_hts  ----------------------------
--- ---------------------------------------------------------------------------------------------
-
-
-DROP PROCEDURE IF EXISTS sp_mamba_data_processing_derived_hts;
-
-~
-CREATE PROCEDURE sp_mamba_data_processing_derived_hts()
-BEGIN
--- $BEGIN
-CALL sp_mamba_dim_client_hts;
-CALL sp_mamba_fact_encounter_hts;
+    -- Facts
+    CALL sp_mamba_fact_patient_service_bill;
 -- $END
 END~
 
