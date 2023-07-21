@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS mamba_dim_billable_service
     maxima_to_pay             decimal(20, 2) null,
     start_date                date           not null,
     end_date                  date           null,
-    created_date              datetime       not null,
+    created_date              DATETIME       not null,
 
     PRIMARY KEY (id)
 )

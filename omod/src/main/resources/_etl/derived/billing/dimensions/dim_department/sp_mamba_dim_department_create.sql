@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS mamba_dim_department
     department_id INT         NOT NULL,
     name          varchar(50) null,
     description   varchar(50) null,
-    created_date  datetime    not null,
+    created_date  DATETIME    not null,
 
     PRIMARY KEY (id)
 )

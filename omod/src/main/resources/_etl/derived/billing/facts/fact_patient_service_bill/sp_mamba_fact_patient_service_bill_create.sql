@@ -3,8 +3,8 @@
 CREATE TABLE mamba_fact_patient_service_bill
 (
     id                      INT            NOT NULL AUTO_INCREMENT,
-    admission_date          DATE           NOT NULL,
-    closing_date            DATE           NULL,
+    admission_date          DATETIME       NOT NULL,
+    closing_date            DATETIME       NULL,
     beneficiary_name        TEXT           NULL,
     household_head_name     VARCHAR(255)   NULL,
     family_code             VARCHAR(255)   NULL,
@@ -22,6 +22,7 @@ CREATE TABLE mamba_fact_patient_service_bill
     hop_service_id          INT            NULL,
     global_bill_id          INT            NOT NULL,
     hop_service_name        VARCHAR(50)    NULL,
+    global_bill_identifier  VARCHAR(250)   NULL,
 
     PRIMARY KEY (id)
 )

@@ -17,7 +17,7 @@ CREATE TABLE mamba_dim_patient_service_bill
     drug_frequency            varchar(255)   null,
     item_type                 tinyint(1)     null,
     voided                    smallint       not null,
-    created_date              datetime       null,
+    created_date              DATETIME       null,
 
     PRIMARY KEY (id)
 )
