@@ -6,12 +6,12 @@ CREATE TABLE IF NOT EXISTS mamba_dim_admission
     admission_id        INT          NOT NULL,
     insurance_policy_id int          not null,
     is_admitted         tinyint(1)   not null,
-    admission_date      datetime     not null,
-    discharging_date    datetime     null,
+    admission_date      DATETIME     not null,
+    discharging_date    DATETIME     null,
     discharged_by       int          null,
     disease_type        varchar(100) null,
     admission_type      tinyint(1)   null,
-    created_date        datetime     not null,
+    created_date        DATETIME     not null,
 
     PRIMARY KEY (id)
 )

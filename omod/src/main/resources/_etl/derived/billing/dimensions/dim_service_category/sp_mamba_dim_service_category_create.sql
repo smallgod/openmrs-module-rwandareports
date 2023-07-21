@@ -10,7 +10,7 @@ CREATE TABLE mamba_dim_service_category
     name                varchar(150) not null,
     description         varchar(250) null,
     price               decimal      null,
-    created_date        datetime     not null,
+    created_date        DATETIME     not null,
 
     PRIMARY KEY (id)
 )

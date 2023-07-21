@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS mamba_dim_bill_payment
     bill_payment_id INT            NOT NULL,
     patient_bill_id int            not null,
     amount_paid     decimal(20, 2) not null,
-    date_received   datetime       null,
+    date_received   DATETIME       null,
     collector       int            not null,
-    created_date    datetime       not null,
+    created_date    DATETIME       not null,
 
     PRIMARY KEY (id)
 )
