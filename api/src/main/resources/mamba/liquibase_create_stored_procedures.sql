@@ -4821,6 +4821,8 @@ INSERT INTO mamba_fact_patient_service_bill(admission_date, closing_date, benefi
 
 SELECT -- DATE(DATE_FORMAT(gb.created_date, '%d/%m/%Y')) AS admission_date,
        -- DATE(gb.created_date) AS admission_date,
+       -- DATE(bps.birthdate)                            AS birth_date,
+       -- DATE(DATE_FORMAT(bps.birthdate, '%d/%m/%Y')) AS birth_date,
        gb.created_date       AS admission_date,
        gb.closing_date       AS closing_date,
        bps.person_name_long  AS beneficiary_name,
@@ -4830,8 +4832,6 @@ SELECT -- DATE(DATE_FORMAT(gb.created_date, '%d/%m/%Y')) AS admission_date,
        isp.insurance_card_no AS card_number,
        ben.company           AS company_name,
        bps.age               AS age,
-       -- DATE(bps.birthdate)                            AS birth_date,
-       -- DATE(DATE_FORMAT(bps.birthdate, '%d/%m/%Y')) AS birth_date,
        bps.birthdate         AS birth_date,
        bps.gender            AS gender,
        gb.closed_by_name     AS doctor_name,
@@ -4889,8 +4889,8 @@ DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_query;
 ~
 CREATE PROCEDURE sp_mamba_fact_patient_service_bill_query(
     IN insurance_id INT,
-    IN start_date DATE,
-    IN end_date DATE)
+    IN start_date DATETIME,
+    IN end_date DATETIME)
 
 BEGIN
 
