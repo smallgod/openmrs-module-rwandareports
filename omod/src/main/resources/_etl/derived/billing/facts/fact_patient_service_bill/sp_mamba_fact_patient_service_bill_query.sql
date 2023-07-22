@@ -4,8 +4,8 @@ DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_query;
 
 CREATE PROCEDURE sp_mamba_fact_patient_service_bill_query(
     IN insurance_id INT,
-    IN start_date DATE,
-    IN end_date DATE)
+    IN start_date DATETIME,
+    IN end_date DATETIME)
 
 BEGIN
 

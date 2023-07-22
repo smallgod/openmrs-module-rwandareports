@@ -2711,7 +2711,7 @@ CREATE TABLE IF NOT EXISTS mamba_dim_department
     department_id INT         NOT NULL,
     name          varchar(50) null,
     description   varchar(50) null,
-    created_date  datetime    not null,
+    created_date  DATETIME    not null,
 
     PRIMARY KEY (id)
 )
@@ -2805,7 +2805,7 @@ CREATE TABLE mamba_dim_hop_service
     service_id   INT         NOT NULL,
     name         varchar(50) null,
     description  varchar(50) null,
-    created_date datetime    not null,
+    created_date DATETIME    not null,
 
     PRIMARY KEY (id)
 )
@@ -3154,7 +3154,7 @@ CREATE TABLE mamba_dim_service_category
     name                varchar(150) not null,
     description         varchar(250) null,
     price               decimal      null,
-    created_date        datetime     not null,
+    created_date        DATETIME     not null,
 
     PRIMARY KEY (id)
 )
@@ -3269,7 +3269,7 @@ CREATE TABLE mamba_dim_insurance_policy
     owner               int          not null,
     coverage_start_date date         not null,
     expiration_date     date         null,
-    created_date        datetime     not null,
+    created_date        DATETIME     not null,
 
     constraint mamba_dim_insurance_policy_insurance_card_no_UNIQUE
         unique (insurance_card_no),
@@ -3513,12 +3513,12 @@ CREATE TABLE IF NOT EXISTS mamba_dim_admission
     admission_id        INT          NOT NULL,
     insurance_policy_id int          not null,
     is_admitted         tinyint(1)   not null,
-    admission_date      datetime     not null,
-    discharging_date    datetime     null,
+    admission_date      DATETIME     not null,
+    discharging_date    DATETIME     null,
     discharged_by       int          null,
     disease_type        varchar(100) null,
     admission_type      tinyint(1)   null,
-    created_date        datetime     not null,
+    created_date        DATETIME     not null,
 
     PRIMARY KEY (id)
 )
@@ -3756,7 +3756,7 @@ CREATE TABLE IF NOT EXISTS mamba_dim_billable_service
     maxima_to_pay             decimal(20, 2) null,
     start_date                date           not null,
     end_date                  date           null,
-    created_date              datetime       not null,
+    created_date              DATETIME       not null,
 
     PRIMARY KEY (id)
 )
@@ -3866,7 +3866,7 @@ CREATE TABLE mamba_dim_insurance_bill
     id                INT      NOT NULL AUTO_INCREMENT,
     insurance_bill_id INT      NOT NULL,
     amount            decimal  not null,
-    created_date      datetime not null,
+    created_date      DATETIME not null,
 
     PRIMARY KEY (id)
 )
@@ -3957,7 +3957,7 @@ CREATE TABLE mamba_dim_third_party_bill
     id                  INT      NOT NULL AUTO_INCREMENT,
     third_party_bill_id INT      NOT NULL,
     amount              decimal  not null,
-    created_date        datetime not null,
+    created_date        DATETIME not null,
 
     PRIMARY KEY (id)
 )
@@ -4047,18 +4047,18 @@ CREATE TABLE mamba_dim_global_bill
 (
     id              INT          NOT NULL AUTO_INCREMENT,
     global_bill_id  INT          NOT NULL,
-    admission_id    int          not null,
-    insurance_id    int          null,
-    bill_identifier varchar(250) not null,
-    global_amount   decimal      not null,
-    closing_date    datetime     null,
-    closed          TINYINT(1)   not null,
-    closed_by_id    int          null,
-    closed_by_name  varchar(255) null,
-    closed_reason   varchar(150) null,
-    edited_by       int          null,
-    edit_reason     varchar(150) null,
-    created_date    datetime     not null,
+    admission_id    INT          NOT NULL,
+    insurance_id    INT          null,
+    bill_identifier varchar(250) NOT NULL,
+    global_amount   DECIMAL      NOT NULL,
+    closing_date    DATETIME     NULL,
+    closed          TINYINT(1)   NOT NULL,
+    closed_by_id    INT          NULL,
+    closed_by_name  varchar(255) NULL,
+    closed_reason   varchar(150) NULL,
+    edited_by       INT          NULL,
+    edit_reason     varchar(150) NULL,
+    created_date    DATETIME     NOT NULL,
 
     PRIMARY KEY (id)
 )
@@ -4189,7 +4189,7 @@ CREATE TABLE mamba_dim_patient_bill
     amount          decimal(20, 2) not null,
     is_paid         smallint       null,
     status          varchar(150)   null,
-    created_date    datetime       null,
+    created_date    DATETIME       null,
 
     PRIMARY KEY (id)
 )
@@ -4418,7 +4418,7 @@ CREATE TABLE mamba_dim_patient_service_bill
     drug_frequency            varchar(255)   null,
     item_type                 tinyint(1)     null,
     voided                    smallint       not null,
-    created_date              datetime       null,
+    created_date              DATETIME       null,
 
     PRIMARY KEY (id)
 )
@@ -4547,9 +4547,9 @@ CREATE TABLE IF NOT EXISTS mamba_dim_bill_payment
     bill_payment_id INT            NOT NULL,
     patient_bill_id int            not null,
     amount_paid     decimal(20, 2) not null,
-    date_received   datetime       null,
+    date_received   DATETIME       null,
     collector       int            not null,
-    created_date    datetime       not null,
+    created_date    DATETIME       not null,
 
     PRIMARY KEY (id)
 )
@@ -4652,7 +4652,7 @@ CREATE TABLE mamba_dim_paid_service_bill
     patient_service_bill_id int      not null,
     paid_quantity           decimal  not null,
     voided                  smallint not null,
-    created_date            datetime not null,
+    created_date            DATETIME not null,
 
     PRIMARY KEY (id)
 )
@@ -4756,8 +4756,8 @@ BEGIN
 CREATE TABLE mamba_fact_patient_service_bill
 (
     id                      INT            NOT NULL AUTO_INCREMENT,
-    admission_date          DATE           NOT NULL,
-    closing_date            DATE           NULL,
+    admission_date          DATETIME       NOT NULL,
+    closing_date            DATETIME       NULL,
     beneficiary_name        TEXT           NULL,
     household_head_name     VARCHAR(255)   NULL,
     family_code             VARCHAR(255)   NULL,
@@ -4775,6 +4775,7 @@ CREATE TABLE mamba_fact_patient_service_bill
     hop_service_id          INT            NULL,
     global_bill_id          INT            NOT NULL,
     hop_service_name        VARCHAR(50)    NULL,
+    global_bill_identifier  VARCHAR(250)   NULL,
 
     PRIMARY KEY (id)
 )
@@ -4815,26 +4816,32 @@ BEGIN
 INSERT INTO mamba_fact_patient_service_bill(admission_date, closing_date, beneficiary_name, household_head_name,
                                             family_code, beneficiary_level, card_number, company_name, age, birth_date,
                                             gender, doctor_name, service_bill_quantity, service_bill_unit_price,
-                                            insurance_id, hop_service_id, global_bill_id, hop_service_name)
+                                            insurance_id, hop_service_id, global_bill_id, hop_service_name,
+                                            global_bill_identifier)
 
-SELECT DATE(DATE_FORMAT(gb.created_date, '%m/%d/%Y')) AS admission_date,
-       DATE(DATE_FORMAT(gb.closing_date, '%m/%d/%Y')) AS closing_date,
-       bps.person_name_long                           AS beneficiary_name,
-       ben.owner_name                                 AS household_head_name,
-       ben.owner_code                                 AS family_code,
-       ben.level                                      AS beneficiary_level,
-       isp.insurance_card_no                          AS card_number,
-       ben.company                                    AS company_name,
-       bps.age                                        AS age,
-       DATE(DATE_FORMAT(bps.birthdate, '%m/%d/%Y'))   AS birth_date,
-       bps.gender                                     AS gender,
-       gb.closed_by_name                              AS doctor_name,
-       psb.quantity                                   AS service_bill_quantity,
-       psb.unit_price                                 AS service_bill_unit_price,
-       ins.insurance_id                               AS insurance_id,
-       psb.service_id                                 AS hop_service_id,
-       gb.global_bill_id                              AS global_bill_id,
-       hp.name                                        AS hop_service_name
+SELECT -- DATE(DATE_FORMAT(gb.created_date, '%d/%m/%Y')) AS admission_date,
+       -- DATE(gb.created_date) AS admission_date,
+       gb.created_date       AS admission_date,
+       gb.closing_date       AS closing_date,
+       bps.person_name_long  AS beneficiary_name,
+       ben.owner_name        AS household_head_name,
+       ben.owner_code        AS family_code,
+       ben.level             AS beneficiary_level,
+       isp.insurance_card_no AS card_number,
+       ben.company           AS company_name,
+       bps.age               AS age,
+       -- DATE(bps.birthdate)                            AS birth_date,
+       -- DATE(DATE_FORMAT(bps.birthdate, '%d/%m/%Y')) AS birth_date,
+       bps.birthdate         AS birth_date,
+       bps.gender            AS gender,
+       gb.closed_by_name     AS doctor_name,
+       psb.quantity          AS service_bill_quantity,
+       psb.unit_price        AS service_bill_unit_price,
+       ins.insurance_id      AS insurance_id,
+       psb.service_id        AS hop_service_id,
+       gb.global_bill_id     AS global_bill_id,
+       hp.name               AS hop_service_name,
+       gb.bill_identifier    AS global_bill_identifier
 
 FROM mamba_dim_patient_service_bill psb
          INNER JOIN mamba_dim_consommation cons ON psb.consommation_id = cons.consommation_id
