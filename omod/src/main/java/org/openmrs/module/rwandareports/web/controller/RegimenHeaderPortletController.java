@@ -13,6 +13,18 @@
  */
 package org.openmrs.module.rwandareports.web.controller;
 
+import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
+import org.openmrs.OrderGroup;
+import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.orderextension.DrugRegimen;
+import org.openmrs.module.orderextension.util.OrderEntryUtil;
+import org.openmrs.module.orderextension.web.controller.WebUtils;
+import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
+import org.openmrs.web.controller.PortletController;
+import org.springframework.stereotype.Controller;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,17 +35,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.openmrs.Concept;
-import org.openmrs.DrugOrder;
-import org.openmrs.OrderGroup;
-import org.openmrs.Patient;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.orderextension.DrugRegimen;
-import org.openmrs.module.orderextension.util.OrderEntryUtil;
-import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
-import org.openmrs.web.controller.PortletController;
-import org.springframework.stereotype.Controller;
 
 /**
  * The main controller.
@@ -52,7 +53,7 @@ public class RegimenHeaderPortletController extends PortletController {
 		Concept chemotherapy = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY);
 		Patient patient = Context.getPatientService().getPatient((Integer) model.get("patientId"));
     	
-		List<DrugOrder> allDrugOrders = OrderEntryUtil.getDrugOrdersByPatient(patient);
+		List<DrugOrder> allDrugOrders = WebUtils.getDrugOrdersByPatient(patient, model);
 		List<DrugRegimen> regimens = new ArrayList<DrugRegimen>();
 		List<DrugRegimen> allRegimens = new ArrayList<DrugRegimen>();
 		
