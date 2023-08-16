@@ -87,7 +87,7 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "    healthcenter.name as patientHealthCenter,\n" +
                 "    enc.encounter_id as encounterId,\n" +
                 "    enc.uuid as encounterUuid,\n" +
-                "    DATE_FORMAT(enc.encounter_datetime, \"%d/%m/%Y\") as encounterDatetime, \n" +
+                "    DATE_FORMAT(enc.encounter_datetime, \"%Y/%m/%d\") as encounterDatetime, \n" +
                 "    (select cn.name from obs o left join concept_name cn on o.value_coded=cn.concept_id  \n" +
                 "\t\t\t\t\twhere o.concept_id= " + sampleStatusConcept.getConceptId() + " and cn.concept_name_type=\"FULLY_SPECIFIED\" and o.voided=0 and cn.voided=0 and locale=\"en\" and o.encounter_id = enc.encounter_id order by obs_id desc limit 1 ) as sampleStatusObs, \n" +
                 "    (select o.uuid from obs o left join concept_name cn on o.value_coded=cn.concept_id  \n" +
@@ -109,7 +109,7 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "    (select approvalObs.uuid from obs approvalObs where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
                 "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0 order by obs_id DESC LIMIT 1) as approvalObsUuid,  " +
-                "    (select DATE_FORMAT(approvalObs.date_created, \"%d/%m/%Y\")  from obs approvalObs left join users user on approvalObs.creator=user.user_id left join person_name pn on user.person_id=pn.person_id where  encounter_id = ( \n" +
+                "    (select DATE_FORMAT(approvalObs.date_created, \"%Y/%m/%d\")  from obs approvalObs left join users user on approvalObs.creator=user.user_id left join person_name pn on user.person_id=pn.person_id where  encounter_id = ( \n" +
                 "\t\t       select encounter_id from obs o where o.concept_id= "+pathologyRequestEncounterUUID.getConceptId() + " and o.voided=0 and enc.uuid=value_text order by obs_id desc limit 1 \n" +
                 "\t     ) and approvalObs.concept_id="+PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId()+" and approvalObs.voided=0 order by obs_id DESC LIMIT 1) as approvedDate,  " +
                 "    (select group_concat(distinct cn.name) from obs pathologicDiagnosis left join concept_name cn on pathologicDiagnosis.value_coded=cn.concept_id where  encounter_id = ( \n" +
