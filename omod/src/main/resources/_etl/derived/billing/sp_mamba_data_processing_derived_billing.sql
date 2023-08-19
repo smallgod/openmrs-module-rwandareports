@@ -20,6 +20,7 @@ CALL sp_mamba_dim_patient_service_bill;
 CALL sp_mamba_dim_service_category;
 CALL sp_mamba_dim_third_party_bill;
 CALL sp_mamba_dim_thirdparty;
+CALL sp_mamba_dim_billing_report_columns;
 
 -- Facts
 CALL sp_mamba_fact_patient_service_bill;

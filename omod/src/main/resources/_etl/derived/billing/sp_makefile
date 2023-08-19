@@ -96,6 +96,11 @@ dimensions/dim_paid_service_bill/sp_mamba_dim_paid_service_bill_insert.sql
 dimensions/dim_paid_service_bill/sp_mamba_dim_paid_service_bill_update.sql
 dimensions/dim_paid_service_bill/sp_mamba_dim_paid_service_bill.sql
 
+dimensions/dim_billing_report_columns/sp_mamba_dim_billing_report_columns_create.sql
+dimensions/dim_billing_report_columns/sp_mamba_dim_billing_report_columns_insert.sql
+dimensions/dim_billing_report_columns/sp_mamba_dim_billing_report_columns_update.sql
+dimensions/dim_billing_report_columns/sp_mamba_dim_billing_report_columns.sql
+
 #############################################################################
 ##################### Billing Assessment Fact Table SPs  ######################
 #############################################################################

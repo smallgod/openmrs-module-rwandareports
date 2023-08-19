@@ -87,7 +87,7 @@ END~
 DROP FUNCTION IF EXISTS fn_mamba_age_calculator;
 
 ~
-CREATE FUNCTION fn_mamba_age_calculator (birthdate DATE,deathDate DATE) RETURNS  Integer
+CREATE FUNCTION fn_mamba_age_calculator(birthdate DATE, deathDate DATE) RETURNS Integer
     DETERMINISTIC
 BEGIN
     DECLARE onDate DATE;
@@ -99,7 +99,7 @@ BEGIN
     DECLARE todaysDay INT;
     DECLARE bdayDay INT;
 
-    SET onDate = NULL ;
+    SET onDate = NULL;
 
     IF birthdate IS NULL THEN
         RETURN NULL;
@@ -1190,7 +1190,7 @@ CREATE TABLE mamba_dim_concept_name
     concept_name_id   INT          NOT NULL,
     concept_id        INT,
     name              VARCHAR(255) NOT NULL,
-    locale            VARCHAR(50)  not null,
+    locale            VARCHAR(50)  NOT NULL,
     locale_preferred  TINYINT,
     concept_name_type VARCHAR(255),
 
@@ -1244,7 +1244,8 @@ SELECT cn.concept_name_id,
        cn.concept_name_type
 FROM concept_name cn
  WHERE cn.locale = 'en'
-  AND cn.locale_preferred = 1;
+  AND cn.locale_preferred = 1
+    AND cn.voided = 0;
 
 -- $END
 END~
@@ -1576,6 +1577,7 @@ SET md.concept_datatype = c.datatype,
 WHERE md.id > 0
   AND cn.locale = md.concepts_locale
   AND IF(cn.locale_preferred = 1, cn.locale_preferred = 1, cn.concept_name_type = 'FULLY_SPECIFIED');
+
 -- Use locale preferred or Fully specified name
 
 -- Update to True if this field is an obs answer to an obs Question
@@ -1707,6 +1709,29 @@ END~
 
         
 -- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_person_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_person_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_person_update()
+BEGIN
+-- $BEGIN
+UPDATE mamba_dim_person dp
+    INNER JOIN person psn  on psn.person_id = dp.person_id
+    INNER JOIN  person_name pn on psn.person_id = pn.person_id
+    SET   person_name_short = CONCAT_WS(' ',prefix,given_name,middle_name,family_name),
+        person_name_long = CONCAT_WS(' ',prefix,given_name, middle_name,family_name_prefix, family_name,family_name2,family_name_suffix, degree)
+WHERE  pn.preferred=1
+;
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
 -- ----------------------  sp_mamba_dim_person  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
@@ -1720,7 +1745,7 @@ BEGIN
 
 CALL sp_mamba_dim_person_create();
 CALL sp_mamba_dim_person_insert();
-
+CALL sp_mamba_dim_person_update();
 -- $END
 END~
 
@@ -2195,6 +2220,136 @@ END~
 
         
 -- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_relationship_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_relationship_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_relationship_create()
+BEGIN
+-- $BEGIN
+CREATE TABLE mamba_dim_relationship
+(
+    relationship_id INT                  NOT NULL AUTO_INCREMENT,
+    person_a        INT                  NOT NULL,
+    relationship    INT                  NOT NULL,
+    person_b        INT                  NOT NULL,
+    start_date      DATETIME             NULL,
+    end_date        DATETIME             NULL,
+    creator         INT                  NOT NULL,
+    date_created    DATETIME             NOT NULL,
+    date_changed    DATETIME             NULL,
+    changed_by      INT                  NULL,
+    voided          TINYINT(1)           NOT NULL ,
+    voided_by       INT                  NULL,
+    date_voided     DATETIME             NULL,
+    void_reason     VARCHAR(255)         NULL,
+    uuid            CHAR(38)             NOT NULL,
+
+    PRIMARY KEY (relationship_id)
+)
+
+    CHARSET = UTF8MB3;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_relationship_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_relationship_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_relationship_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_relationship
+    (
+        relationship_id,
+        person_a,
+        relationship,
+        person_b,
+        start_date,
+        end_date,
+        creator,
+        date_created,
+        date_changed,
+        changed_by,
+        voided,
+        voided_by,
+        date_voided,
+        void_reason,
+        uuid
+    )
+SELECT
+    relationship_id,
+    person_a,
+    relationship,
+    person_b,
+    start_date,
+    end_date,
+    creator,
+    date_created,
+    date_changed,
+    changed_by,
+    voided,
+    voided_by,
+    date_voided,
+    void_reason,
+    uuid
+FROM relationship;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_relationship_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_relationship_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_relationship_update()
+BEGIN
+-- $BEGIN
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_relationship  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_relationship;
+
+~
+CREATE PROCEDURE sp_mamba_dim_relationship()
+BEGIN
+-- $BEGIN
+
+CALL sp_mamba_dim_relationship_create();
+CALL sp_mamba_dim_relationship_insert();
+CALL sp_mamba_dim_relationship_update();
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
 -- ----------------------  sp_mamba_dim_agegroup_create  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
@@ -2453,7 +2608,8 @@ UPDATE mamba_z_encounter_obs z
     ON z.obs_value_coded = c.concept_id
 SET z.obs_value_text       = cn.name,
     z.obs_value_coded_uuid = c.uuid
-WHERE z.obs_value_coded IS NOT NULL;
+WHERE z.obs_value_coded IS NOT NULL
+;
 
 -- $END
 END~
@@ -2520,6 +2676,8 @@ CALL sp_mamba_dim_person_name;
 CALL sp_mamba_dim_person_address;
 
 CALL sp_mamba_dim_user;
+
+CALL sp_mamba_dim_relationship;
 
 CALL sp_mamba_dim_patient_identifier;
 
