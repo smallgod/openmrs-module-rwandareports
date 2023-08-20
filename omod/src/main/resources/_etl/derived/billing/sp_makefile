@@ -1,5 +1,5 @@
 #############################################################################
-######################### Billing Clients Dimension SPs  ######################
+######################### Billing Clients Dimension SPs  ####################
 #############################################################################
 dimensions/dim_thirdparty/sp_mamba_dim_thirdparty_create.sql
 dimensions/dim_thirdparty/sp_mamba_dim_thirdparty_insert.sql
@@ -102,13 +102,18 @@ dimensions/dim_billing_report_columns/sp_mamba_dim_billing_report_columns_update
 dimensions/dim_billing_report_columns/sp_mamba_dim_billing_report_columns.sql
 
 #############################################################################
-##################### Billing Assessment Fact Table SPs  ######################
+##################### Billing Assessment Fact Table SPs  ####################
 #############################################################################
 facts/fact_patient_service_bill/sp_mamba_fact_patient_service_bill_create.sql
 facts/fact_patient_service_bill/sp_mamba_fact_patient_service_bill_insert.sql
 facts/fact_patient_service_bill/sp_mamba_fact_patient_service_bill_update.sql
 facts/fact_patient_service_bill/sp_mamba_fact_patient_service_bill_query.sql
 facts/fact_patient_service_bill/sp_mamba_fact_patient_service_bill.sql
+
+facts/fact_patient_service_bill_flat/sp_mamba_fact_patient_service_bill_flat_create.sql
+facts/fact_patient_service_bill_flat/sp_mamba_fact_patient_service_bill_flat_insert.sql
+facts/fact_patient_service_bill_flat/sp_mamba_fact_patient_service_bill_flat_update.sql
+facts/fact_patient_service_bill_flat/sp_mamba_fact_patient_service_bill_flat.sql
 
 #############################################################################
 ######## A single stored procedure that invokes (CALLs) the above SPs #######

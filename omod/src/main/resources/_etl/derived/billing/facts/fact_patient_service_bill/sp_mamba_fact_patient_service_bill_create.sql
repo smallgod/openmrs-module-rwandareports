@@ -15,7 +15,7 @@ CREATE TABLE mamba_fact_patient_service_bill
     birth_date              DATE           NULL,
     gender                  CHAR(1)        NULL,
     doctor_name             VARCHAR(255)   NULL,
-    service_bill_quantity   DECIMAL(20, 2) NULL,
+    service_bill_quantity   DECIMAL(20, 2) DEFAULT 0,
     service_bill_unit_price DECIMAL(20, 2) NOT NULL,
 
     insurance_id            INT            NOT NULL,
