@@ -15,6 +15,7 @@ BEGIN
     INTO @service_columns_case
     FROM mamba_fact_patient_service_bill;
 
+    -- TODO: see if first inserting into a sub-query table helps before joining. But also other reports that use hte service revenues but have different base columns can benefit from having a shared services revenue table instead of just sub-querying it here. It can just be a table of its own to be joined on
     SET @insert_stmt = CONCAT('INSERT INTO mamba_fact_patient_service_bill_flat
     SELECT
         b.insurance_id,
