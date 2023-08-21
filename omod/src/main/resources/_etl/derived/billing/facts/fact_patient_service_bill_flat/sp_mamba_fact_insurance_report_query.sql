@@ -57,8 +57,8 @@ BEGIN
            (', @imaging_report_columns, ') AS `IMAGING`,
            (', @proced_report_columns, ') AS `PROCED.`
         FROM mamba_fact_patient_service_bill_flat bill
-    WHERE bill.insurance_id = insurance_id
-      AND bill.admission_date BETWEEN start_date AND end_date;');
+    WHERE bill.insurance_id = ', insurance_id,
+                              ' AND bill.admission_date BETWEEN ''', start_date, ''' AND ''', end_date, ''';');
 
     PREPARE select_stmt FROM @select_stmt;
     EXECUTE select_stmt;

@@ -1544,7 +1544,7 @@ BEGIN
   -- $BEGIN
 
   SET @report_data = '{"flat_report_metadata":[
-  ]}';
+  {}]}';
 
   CALL sp_mamba_extract_report_metadata(@report_data, 'mamba_dim_concept_metadata');
 
@@ -2725,9 +2725,11 @@ CALL sp_mamba_dim_patient_service_bill;
 CALL sp_mamba_dim_service_category;
 CALL sp_mamba_dim_third_party_bill;
 CALL sp_mamba_dim_thirdparty;
+CALL sp_mamba_dim_billing_report_columns;
 
 -- Facts
 CALL sp_mamba_fact_patient_service_bill;
+CALL sp_mamba_fact_patient_service_bill_flat;
 
 -- $END
 END~
@@ -4900,6 +4902,112 @@ END~
 
         
 -- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_billing_report_columns_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_billing_report_columns_create;
+
+~
+CREATE PROCEDURE sp_mamba_dim_billing_report_columns_create()
+BEGIN
+-- $BEGIN
+
+CREATE TABLE IF NOT EXISTS mamba_dim_billing_report_columns
+(
+    id                INT         NOT NULL AUTO_INCREMENT,
+    report_type       VARCHAR(50) NOT NULL,
+    hop_service_id    INT         NOT NULL,
+    column_name       VARCHAR(50) NOT NULL,
+    group_column_name VARCHAR(50) DEFAULT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (`hop_service_id`) REFERENCES `mamba_dim_hop_service` (`service_id`)
+)
+    CHARSET = UTF8MB4;
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_billing_report_columns_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_billing_report_columns_insert;
+
+~
+CREATE PROCEDURE sp_mamba_dim_billing_report_columns_insert()
+BEGIN
+-- $BEGIN
+
+INSERT INTO mamba_dim_billing_report_columns (report_type,
+                                              hop_service_id,
+                                              column_name)
+SELECT "INSURANCE",
+       service_id,
+       name
+FROM mamba_dim_hop_service h
+WHERE h.service_id in (11, 21, 6, 8, 5, 23, 2, 14, 4, 16, 19, 1, 9, 17, 12, 7)
+ORDER BY FIND_IN_SET(h.service_id, '11,21,6,8,5,23,2,14,4,16,19,1,9,17,12,7');
+-- heps preserve order of insertion (use on small datasets)
+
+-- insert another type here
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_billing_report_columns_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_billing_report_columns_update;
+
+~
+CREATE PROCEDURE sp_mamba_dim_billing_report_columns_update()
+BEGIN
+-- $BEGIN
+
+-- IMAGING group service name
+UPDATE mamba_dim_billing_report_columns
+SET group_column_name = 'IMAGING'
+WHERE hop_service_id IN (4, 16);
+
+-- PROCEDURES group service name
+UPDATE mamba_dim_billing_report_columns
+SET group_column_name = 'PROCED.'
+WHERE hop_service_id IN (19, 1, 9, 17, 12, 7);
+
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_dim_billing_report_columns  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_dim_billing_report_columns;
+
+~
+CREATE PROCEDURE sp_mamba_dim_billing_report_columns()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_dim_billing_report_columns_create();
+CALL sp_mamba_dim_billing_report_columns_insert();
+CALL sp_mamba_dim_billing_report_columns_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
 -- ----------------------  sp_mamba_fact_patient_service_bill_create  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
@@ -4926,7 +5034,7 @@ CREATE TABLE mamba_fact_patient_service_bill
     birth_date              DATE           NULL,
     gender                  CHAR(1)        NULL,
     doctor_name             VARCHAR(255)   NULL,
-    service_bill_quantity   DECIMAL(20, 2) NULL,
+    service_bill_quantity   DECIMAL(20, 2) DEFAULT 0,
     service_bill_unit_price DECIMAL(20, 2) NOT NULL,
 
     insurance_id            INT            NOT NULL,
@@ -5082,6 +5190,270 @@ END~
 
         
 -- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_fact_patient_service_bill_flat_create  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_flat_create;
+
+~
+CREATE PROCEDURE sp_mamba_fact_patient_service_bill_flat_create()
+BEGIN
+
+    SET session group_concat_max_len = 20000;
+    SET @service_columns := NULL;
+
+    SELECT GROUP_CONCAT(DISTINCT CONCAT('`', hop_service_id, '` DECIMAL(20, 2)'))
+    INTO @service_columns
+    FROM mamba_fact_patient_service_bill;
+
+    IF @service_columns IS NULL THEN
+        SET @create_table = CONCAT(
+                'CREATE TABLE mamba_fact_patient_service_bill_flat (
+
+                    insurance_id            INT            NOT NULL,
+                    global_bill_identifier  VARCHAR(250)    NULL,
+                    admission_date          DATETIME       NOT NULL,
+                    closing_date            DATETIME       NULL,
+                    beneficiary_name        TEXT            NULL,
+                    household_head_name     VARCHAR(255)   NULL,
+                    family_code             VARCHAR(255)   NULL,
+                    beneficiary_level       INT             NULL,
+                    card_number             VARCHAR(255)   NULL,
+                    company_name            VARCHAR(255)   NULL,
+                    age                     INT            NULL,
+                    birth_date              DATE           NULL,
+                    gender                  CHAR(1)        NULL,
+                    doctor_name             VARCHAR(255)   NULL,
+                    first_closing_date_id    INT            NOT NULL,
+                    global_bill_id          INT            NOT NULL,
+
+                    -- Unique constraints
+                    constraint first_closing_date_id unique (first_closing_date_id),
+                    constraint global_bill_id unique (global_bill_id),
+
+                    -- Indexes
+                    INDEX mamba_fact_patient_service_bill_flat_global_bill_index (global_bill_id),
+                    INDEX mamba_fact_patient_service_bill_flat_closing_date_index (closing_date),
+                    INDEX mamba_fact_patient_service_bill_flat_insurance_id_index (insurance_id),
+                    INDEX mamba_fact_patient_service_bill_flat_first_closing_date_id_index (first_closing_date_id))'
+            );
+
+    ELSE
+        SET @create_table = CONCAT(
+                'CREATE TABLE mamba_fact_patient_service_bill_flat (
+
+                    insurance_id            INT            NOT NULL,
+                    global_bill_identifier  VARCHAR(250)    NULL,
+                    admission_date          DATETIME       NOT NULL,
+                    closing_date            DATETIME       NULL,
+                    beneficiary_name        TEXT            NULL,
+                    household_head_name     VARCHAR(255)   NULL,
+                    family_code             VARCHAR(255)   NULL,
+                    beneficiary_level       INT             NULL,
+                    card_number             VARCHAR(255)   NULL,
+                    company_name            VARCHAR(255)   NULL,
+                    age                     INT            NULL,
+                    birth_date              DATE           NULL,
+                    gender                  CHAR(1)        NULL,
+                    doctor_name             VARCHAR(255)   NULL,
+                    first_closing_date_id    INT            NOT NULL,
+                    global_bill_id          INT            NOT NULL,
+                    ', @service_columns, ',
+                -- full_100%               DECIMAL(12, 2) NULL,
+                -- insurance_90%           DECIMAL(12, 2) NULL,
+                -- patient_10%             DECIMAL(12, 2) NULL
+
+                -- Unique constraints
+                constraint first_closing_date_id unique (first_closing_date_id),
+                constraint global_bill_id unique (global_bill_id),
+
+                -- Indexes
+                INDEX mamba_fact_patient_service_bill_flat_global_bill_index (global_bill_id),
+                INDEX mamba_fact_patient_service_bill_flat_closing_date_index (closing_date),
+                INDEX mamba_fact_patient_service_bill_flat_insurance_id_index (insurance_id),
+                INDEX mamba_fact_patient_service_bill_flat_first_closing_date_id_index (first_closing_date_id))'
+            );
+    END IF;
+
+    DROP TABLE IF EXISTS `mamba_fact_patient_service_bill_flat`;
+
+    PREPARE createtb FROM @create_table;
+    EXECUTE createtb;
+    DEALLOCATE PREPARE createtb;
+
+END~
+
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_fact_patient_service_bill_flat_insert  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_flat_insert;
+
+~
+CREATE PROCEDURE sp_mamba_fact_patient_service_bill_flat_insert()
+BEGIN
+
+    SET session group_concat_max_len = 20000;
+    SET @service_columns_case := NULL;
+
+    SELECT GROUP_CONCAT(DISTINCT
+                        CONCAT('SUM(CASE WHEN hop_service_id = "', hop_service_id,
+                               '" THEN service_bill_quantity*service_bill_unit_price ELSE 0 END) AS "',
+                               hop_service_id, '"'))
+    INTO @service_columns_case
+    FROM mamba_fact_patient_service_bill;
+
+    -- TODO: see if first inserting into a sub-query table helps before joining. But also other reports that use hte service revenues but have different base columns can benefit from having a shared services revenue table instead of just sub-querying it here. It can just be a table of its own to be joined on
+    SET @insert_stmt = CONCAT('INSERT INTO mamba_fact_patient_service_bill_flat
+    SELECT
+        b.insurance_id,
+        b.global_bill_identifier,
+        b.admission_date,
+        b.closing_date,
+        b.beneficiary_name,
+        b.household_head_name,
+        b.family_code,
+        b.beneficiary_level,
+        b.card_number,
+        b.company_name,
+        b.age,
+        b.birth_date,
+        b.gender,
+        b.doctor_name,
+        s.*
+    FROM (
+        SELECT MIN(id) as first_closing_date_id, global_bill_id, ', @service_columns_case, '
+        FROM mamba_fact_patient_service_bill
+        GROUP BY global_bill_id
+    ) AS s
+    LEFT JOIN mamba_fact_patient_service_bill b
+        on s.global_bill_id = b.global_bill_id AND s.first_closing_date_id = b.id;');
+
+    PREPARE inserttbl FROM @insert_stmt;
+    EXECUTE inserttbl;
+    DEALLOCATE PREPARE inserttbl;
+
+END~
+
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_fact_patient_service_bill_flat_update  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_flat_update;
+
+~
+CREATE PROCEDURE sp_mamba_fact_patient_service_bill_flat_update()
+BEGIN
+-- $BEGIN
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_fact_patient_service_bill_flat  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_flat;
+
+~
+CREATE PROCEDURE sp_mamba_fact_patient_service_bill_flat()
+BEGIN
+-- $BEGIN
+CALL sp_mamba_fact_patient_service_bill_flat_create();
+CALL sp_mamba_fact_patient_service_bill_flat_insert();
+CALL sp_mamba_fact_patient_service_bill_flat_update();
+-- $END
+END~
+
+
+        
+-- ---------------------------------------------------------------------------------------------
+-- ----------------------  sp_mamba_fact_insurance_report_query  ----------------------------
+-- ---------------------------------------------------------------------------------------------
+
+
+DROP PROCEDURE IF EXISTS sp_mamba_fact_insurance_report_query;
+
+~
+CREATE PROCEDURE sp_mamba_fact_insurance_report_query(
+    IN insurance_id INT,
+    IN start_date DATETIME,
+    IN end_date DATETIME)
+
+BEGIN
+
+    SET session group_concat_max_len = 20000;
+    SET @insurance_report_columns := NULL;
+    SET @imaging_report_columns := NULL;
+    SET @proced_report_columns := NULL;
+
+    SELECT GROUP_CONCAT(DISTINCT CONCAT('IFNULL (bill.`', hop_service_id, '`, 0) AS ', '`', column_name, '`') ORDER BY
+                        id ASC SEPARATOR ', ')
+    INTO @insurance_report_columns
+    FROM mamba_dim_billing_report_columns
+    WHERE report_type = 'INSURANCE'
+      AND (group_column_name IS NULL OR group_column_name = '');
+
+    -- Imaging Columns TODO: improve this area
+    SELECT (GROUP_CONCAT(DISTINCT CONCAT('IFNULL (bill.`', hop_service_id, '`, 0)') ORDER BY
+                         id ASC SEPARATOR ' + ')) AS 'group_column_name'
+    INTO @imaging_report_columns
+    FROM mamba_dim_billing_report_columns
+    WHERE report_type = 'INSURANCE'
+      AND group_column_name = 'IMAGING';
+
+    -- Proceed Columns TODO: improve this area
+    SELECT GROUP_CONCAT(DISTINCT CONCAT('IFNULL (bill.`', hop_service_id, '`, 0)') ORDER BY
+                        id ASC SEPARATOR ' + ')
+    INTO @proced_report_columns
+    FROM mamba_dim_billing_report_columns
+    WHERE report_type = 'INSURANCE'
+      AND group_column_name = 'PROCED.';
+
+    SET @select_stmt = CONCAT('SELECT bill.first_closing_date_id,
+           bill.admission_date,
+           bill.closing_date,
+           bill.beneficiary_name,
+           bill.household_head_name,
+           bill.family_code,
+           bill.beneficiary_level,
+           bill.card_number,
+           bill.company_name,
+           bill.age,
+           bill.birth_date,
+           bill.gender,
+           bill.doctor_name,
+           bill.insurance_id,
+           bill.global_bill_id,
+           bill.global_bill_identifier,
+           ', @insurance_report_columns, ',
+           (', @imaging_report_columns, ') AS `IMAGING`,
+           (', @proced_report_columns, ') AS `PROCED.`
+        FROM mamba_fact_patient_service_bill_flat bill
+    WHERE bill.insurance_id = ', insurance_id,
+                              ' AND bill.admission_date BETWEEN ', start_date, ' AND ', end_date, ';');
+
+    PREPARE select_stmt FROM @select_stmt;
+    EXECUTE select_stmt;
+    DEALLOCATE PREPARE select_stmt;
+
+END~
+
+
+
+        
+-- ---------------------------------------------------------------------------------------------
 -- ----------------------  sp_mamba_data_processing_derived_billing  ----------------------------
 -- ---------------------------------------------------------------------------------------------
 
@@ -5113,9 +5485,11 @@ CALL sp_mamba_dim_patient_service_bill;
 CALL sp_mamba_dim_service_category;
 CALL sp_mamba_dim_third_party_bill;
 CALL sp_mamba_dim_thirdparty;
+CALL sp_mamba_dim_billing_report_columns;
 
 -- Facts
 CALL sp_mamba_fact_patient_service_bill;
+CALL sp_mamba_fact_patient_service_bill_flat;
 
 -- $END
 END~
