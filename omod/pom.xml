@@ -58,12 +58,11 @@
 			<version>${legacyuiVersion}</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>orderextension-omod</artifactId>
-			<version>${orderextensionVersion}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>ohrimamba-core-omod</artifactId>
+            <version>${mambaETLversion}</version>
+        </dependency>
 	</dependencies>
 
 	<build>
