@@ -10,7 +10,8 @@ SET ins.current_insurance_rate = COALESCE(
          ORDER BY ir.retire_date ASC
          LIMIT 1),
         0 -- Default value when no active rate is found (you can change this to any default value)
-    );
+    )
+WHERE id > 0;
 
 -- Update flat_rate as well -- TODO: combine this update into one update with upper update
 UPDATE mamba_dim_insurance ins
@@ -22,6 +23,7 @@ SET ins.current_insurance_rate_flat_fee = COALESCE(
          ORDER BY ir.retire_date ASC
          LIMIT 1),
         0
-    );
+    )
+WHERE id > 0;
 
 -- $END
