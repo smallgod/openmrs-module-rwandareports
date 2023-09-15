@@ -1,5 +1,6 @@
 package org.openmrs.module.rwandareports.api.dao.impl;
 
+import org.openmrs.Obs;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.rwandareports.api.dao.FlattenDatabaseDao;
 
@@ -13,7 +14,6 @@ public class HibernateFlattenDatabaseDao implements FlattenDatabaseDao {
 	
 	@Override
 	public void executeFlatteningScript() {
-		
 		sessionFactory.getCurrentSession().createSQLQuery("CALL sp_mamba_data_processing_etl()").executeUpdate();
 	}
 	

@@ -345,6 +345,7 @@
 							</configuration>
 						</execution>
 
+<<<<<<< HEAD
 						<!-- This should execute last - to copy the build script to a location liquibase.xml can access-->
 						<execution>
 							<id>copy-final-build-script</id>
@@ -365,6 +366,41 @@
 								</outputDirectory>
 							</configuration>
 						</execution>
+=======
+                        <execution>
+                            <id>run-script</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <configuration>
+                                <executable>/bin/sh</executable>
+                                <workingDirectory>${project.build.directory}/mamba-etl/_core/compiler/linux
+                                </workingDirectory>
+                                <arguments>
+                                    <!-- the Engine compiler script -->
+                                    <argument>compile.sh</argument>
+                                    <!-- Database the created stored procedures will run on -->
+                                    <argument>-d kibagabaga_db</argument>
+                                    <!-- File with a list of all files with stored procedures -->
+                                    <!-- Remove this argument after automating core to auto-read this -->
+                                    <argument>-s ../../database/mysql/sp_makefile</argument>
+                                    <!-- a JSON configuration path/folder for all config files for db flattening -->
+                                    <!-- Folder containing configs folder, derived folders and any other ETL related folders -->
+                                    <argument>-t ${project.build.directory}/mamba-etl/_etl/config</argument>
+                                    <!-- Database Vendor/Engine targeted in this ETL -->
+                                    <argument>-n mysql</argument>
+                                    <!-- Set 1 to recompile/build the scripts else 0 - not to. If 1 - don't forget to change the liquibase changeset ID -->
+                                    <argument>-b 1</argument>
+                                    <!-- add any other arguments below -->
+                                    <argument></argument>
+                                    <argument></argument>
+                                    <argument></argument>
+                                    <argument></argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+>>>>>>> d7306ec (Adds lab encounter type to flatten)
 
 					</executions>
 				</plugin>
