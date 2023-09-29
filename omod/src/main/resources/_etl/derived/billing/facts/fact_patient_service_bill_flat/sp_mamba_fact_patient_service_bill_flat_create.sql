@@ -34,7 +34,7 @@ BEGIN
                     global_bill_id          INT            NOT NULL,
 
                     -- Unique constraints
-                    constraint first_closing_date_id unique (first_closing_date_id),
+                    -- constraint first_closing_date_id unique (first_closing_date_id),
                     constraint global_bill_id unique (global_bill_id),
 
                     -- Indexes
@@ -70,7 +70,7 @@ BEGIN
                 -- patient_10%             DECIMAL(12, 2) NULL
 
                 -- Unique constraints
-                constraint first_closing_date_id unique (first_closing_date_id),
+                -- constraint first_closing_date_id unique (first_closing_date_id),
                 constraint global_bill_id unique (global_bill_id),
 
                 -- Indexes

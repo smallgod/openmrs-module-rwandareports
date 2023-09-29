@@ -16,6 +16,6 @@ SELECT consommation_id,
        insurance_bill_id,
        third_party_bill_id,
        created_date
-FROM moh_bill_consommation;
+FROM mamba_source_db.moh_bill_consommation;
 
 -- $END

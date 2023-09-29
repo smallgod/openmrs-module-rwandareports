@@ -16,6 +16,6 @@ SELECT insurance_policy_id,
        coverage_start_date,
        expiration_date,
        created_date
-FROM moh_bill_insurance_policy;
+FROM mamba_source_db.moh_bill_insurance_policy;
 
 -- $END

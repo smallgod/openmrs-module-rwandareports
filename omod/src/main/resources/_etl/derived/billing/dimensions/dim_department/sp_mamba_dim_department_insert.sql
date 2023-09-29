@@ -8,6 +8,6 @@ SELECT department_id,
        name,
        description,
        created_date
-FROM moh_bill_department;
+FROM mamba_source_db.moh_bill_department;
 
 -- $END

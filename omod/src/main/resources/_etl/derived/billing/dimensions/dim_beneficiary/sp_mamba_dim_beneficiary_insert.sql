@@ -20,6 +20,6 @@ SELECT beneficiary_id,
        owner_code,
        level,
        company
-FROM moh_bill_beneficiary;
+FROM mamba_source_db.moh_bill_beneficiary;
 
 -- $END

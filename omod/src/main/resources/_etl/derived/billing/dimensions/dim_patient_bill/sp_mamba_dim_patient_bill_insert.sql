@@ -8,6 +8,6 @@ SELECT patient_bill_id,
        amount,
        is_paid,
        status
-FROM moh_bill_patient_bill;
+FROM mamba_source_db.moh_bill_patient_bill;
 
 -- $END

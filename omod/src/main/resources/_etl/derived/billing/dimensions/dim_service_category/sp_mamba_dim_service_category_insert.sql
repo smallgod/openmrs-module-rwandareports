@@ -16,6 +16,6 @@ SELECT service_category_id,
        description,
        price,
        created_date
-FROM moh_bill_service_category;
+FROM mamba_source_db.moh_bill_service_category;
 
 -- $END

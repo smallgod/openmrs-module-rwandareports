@@ -2,7 +2,9 @@ package org.openmrs.module.rwandareports.api.dao.impl;
 
 import org.openmrs.Obs;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.openmrs.module.ohrimambacore.db.AnalysisDbSessionFactory;
 import org.openmrs.module.rwandareports.api.dao.FlattenDatabaseDao;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author smallGod
@@ -10,18 +12,19 @@ import org.openmrs.module.rwandareports.api.dao.FlattenDatabaseDao;
  */
 public class HibernateFlattenDatabaseDao implements FlattenDatabaseDao {
 	
-	private DbSessionFactory sessionFactory;
+	@Autowired
+	private AnalysisDbSessionFactory sessionFactory;
 	
 	@Override
 	public void executeFlatteningScript() {
 		sessionFactory.getCurrentSession().createSQLQuery("CALL sp_mamba_data_processing_etl()").executeUpdate();
 	}
 	
-	public DbSessionFactory getSessionFactory() {
+	public AnalysisDbSessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
 	
-	public void setSessionFactory(DbSessionFactory sessionFactory) {
+	public void setSessionFactory(AnalysisDbSessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 }

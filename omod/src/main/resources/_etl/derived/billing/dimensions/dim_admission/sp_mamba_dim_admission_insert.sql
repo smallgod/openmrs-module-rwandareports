@@ -18,6 +18,6 @@ SELECT admission_id,
        disease_type,
        admission_type,
        created_date
-FROM moh_bill_admission;
+FROM mamba_source_db.moh_bill_admission;
 
 -- $END
