@@ -26,6 +26,6 @@ SELECT facility_service_price_id,
        item_type,
        hide_item,
        created_date
-FROM moh_bill_facility_service_price;
+FROM mamba_source_db.moh_bill_facility_service_price;
 
 -- $END

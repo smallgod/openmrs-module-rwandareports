@@ -12,6 +12,6 @@ SELECT bill_payment_id,
        date_received,
        collector,
        created_date
-FROM moh_bill_payment;
+FROM mamba_source_db.moh_bill_payment;
 
 -- $END

@@ -31,6 +31,6 @@ SELECT patient_service_bill_id,
        item_type,
        voided,
        created_date
-FROM moh_bill_patient_service_bill;
+FROM mamba_source_db.moh_bill_patient_service_bill;
 
 -- $END

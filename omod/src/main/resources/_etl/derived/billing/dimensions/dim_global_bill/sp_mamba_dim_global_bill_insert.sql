@@ -24,7 +24,7 @@ SELECT global_bill_id,
        edited_by,
        edit_reason,
        created_date
-FROM moh_bill_global_bill;
+FROM mamba_source_db.moh_bill_global_bill;
 
 -- $END
 

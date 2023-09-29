@@ -12,6 +12,6 @@ SELECT paid_service_bill_id,
        paid_quantity,
        voided,
        created_date
-FROM moh_bill_paid_service_bill;
+FROM mamba_source_db.moh_bill_paid_service_bill;
 
 -- $END

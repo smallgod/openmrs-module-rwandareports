@@ -16,6 +16,6 @@ SELECT billable_service_id,
        start_date,
        end_date,
        created_date
-FROM moh_bill_billable_service;
+FROM mamba_source_db.moh_bill_billable_service;
 
 -- $END

@@ -14,6 +14,6 @@ SELECT insurance_id,
        address,
        phone,
        created_date
-FROM moh_bill_insurance;
+FROM mamba_source_db.moh_bill_insurance;
 
 -- $END

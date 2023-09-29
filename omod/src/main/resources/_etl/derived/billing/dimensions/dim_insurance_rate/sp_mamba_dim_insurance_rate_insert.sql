@@ -18,6 +18,6 @@ SELECT insurance_rate_id,
        created_date,
        retired,
        retire_date
-FROM moh_bill_insurance_rate;
+FROM mamba_source_db.moh_bill_insurance_rate;
 
 -- $END
