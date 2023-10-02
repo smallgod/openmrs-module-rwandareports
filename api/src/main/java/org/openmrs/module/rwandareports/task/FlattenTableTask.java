@@ -26,7 +26,7 @@ public class FlattenTableTask extends AbstractTask {
 				getService().flattenDatabase();
 			}
 			catch (Exception e) {
-				System.err.println("Error while running QueryLabResultsTask: " + e.getMessage());
+				System.err.println("Error while running FlattenTableTask: " + e.getMessage());
 				e.printStackTrace();
 			}
 			finally {
