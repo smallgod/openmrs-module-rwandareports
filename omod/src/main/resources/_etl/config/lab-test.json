@@ -1,0 +1,7 @@
+{
+  "report_name": "Lab Test",
+  "flat_table_name": "mamba_flat_encounter_lab_test",
+  "encounter_type_uuid": "38a350d1-ef63-4bc0-80d7-391f56b22682",
+  "concepts_locale": "en",
+  "table_columns": {}
+}

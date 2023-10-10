@@ -10,7 +10,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class RwandaRemoveAllReportsFormController {
 	
 	@RequestMapping("/module/rwandareports/remove_all")
-	public ModelAndView removeAllReports() throws Exception{
+	public ModelAndView removeAllReports() throws Exception {
 		ReportSetup.cleanTables();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
