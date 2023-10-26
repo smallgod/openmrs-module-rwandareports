@@ -13,19 +13,17 @@
  */
 package org.openmrs.module.rwandareports;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.scheduler.SchedulerException;
-import org.openmrs.scheduler.Task;
-import org.openmrs.module.rwandareports.task.FlattenTableTask;
 import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
+
+import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * This class contains the logic that is run every time this module is either started or shutdown
@@ -38,11 +36,6 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 	public void started() {
 		log.info("Started Rwanda Report Module Config");
 		registerTask("Register Reports", "Registers report definitions", RegisterReportsTask.class, 60 * 60 * 24l);
-		
-		log.info("Started OHRI-MambaETL");
-		System.out.println("Adding mamba flattening Task...");
-		registerTask("MambaETL Reporting Task", "MambaETL - flatten data models & Prepare Reporting data",
-		    FlattenTableTask.class, 60 * 60 * 24l);
 	}
 	
 	@Override

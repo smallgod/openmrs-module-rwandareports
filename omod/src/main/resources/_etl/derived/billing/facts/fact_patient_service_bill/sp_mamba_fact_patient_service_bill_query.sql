@@ -1,6 +1,6 @@
-DELIMITER //
-
 DROP PROCEDURE IF EXISTS sp_mamba_fact_patient_service_bill_query;
+
+DELIMITER //
 
 CREATE PROCEDURE sp_mamba_fact_patient_service_bill_query(
     IN insurance_id INT,

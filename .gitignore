@@ -25,3 +25,5 @@ omod/target/*
 */liquibase_create_stored_procedures.sql
 
 api/src/main/resources/mamba/*
+
+*.DS_Store
