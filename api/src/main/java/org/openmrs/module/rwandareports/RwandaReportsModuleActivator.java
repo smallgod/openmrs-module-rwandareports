@@ -36,12 +36,12 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 	@Override
 	public void started() {
 		log.info("Started Rwanda Report Module Config");
-		registerTask("Register Reports", "Registers report definitions", RegisterReportsTask.class, 60 * 60 * 24L);
+		registerTask("Register Reports", "Registers report definitions", RegisterReportsTask.class, 60 * 60 * 24L, true);
 		
 		log.info("Adding MambaETL flattening Task...");
 		System.out.println("Adding mamba flattening Task...");
 		registerTask("MambaETL Task", "MambaETL - Task to Flatten and Prepare Reporting Data", FlattenTableTask.class,
-		    60 * 60 * 12L);
+		    60 * 60 * 12L, false);
 	}
 	
 	@Override
@@ -72,7 +72,8 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 	 * @return boolean true if successful, else false
 	 * @throws SchedulerException if task could not be scheduled
 	 */
-	private static boolean registerTask(String name, String description, Class<? extends Task> clazz, long interval) {
+	private static boolean registerTask(String name, String description, Class<? extends Task> clazz, long interval,
+	        boolean startOnStartup) {
 		try {
 			Context.addProxyPrivilege("Manage Scheduler");
 			
@@ -82,7 +83,7 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 				cal.add(Calendar.MINUTE, 20);
 				taskDef = new TaskDefinition();
 				taskDef.setTaskClass(clazz.getCanonicalName());
-				taskDef.setStartOnStartup(true);
+				taskDef.setStartOnStartup(startOnStartup);
 				taskDef.setRepeatInterval(interval);
 				taskDef.setStarted(true);
 				taskDef.setStartTime(cal.getTime());
