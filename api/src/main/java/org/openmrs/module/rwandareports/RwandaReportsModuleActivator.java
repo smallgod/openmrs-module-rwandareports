@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
+import org.openmrs.module.ohrimambacore.task.FlattenTableTask;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.Task;
@@ -35,7 +36,12 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 	@Override
 	public void started() {
 		log.info("Started Rwanda Report Module Config");
-		registerTask("Register Reports", "Registers report definitions", RegisterReportsTask.class, 60 * 60 * 24l);
+		registerTask("Register Reports", "Registers report definitions", RegisterReportsTask.class, 60 * 60 * 24L);
+		
+		log.info("Adding MambaETL flattening Task...");
+		System.out.println("Adding mamba flattening Task...");
+		registerTask("MambaETL Task", "MambaETL - Task to Flatten and Prepare Reporting Data", FlattenTableTask.class,
+		    60 * 60 * 12L);
 	}
 	
 	@Override
