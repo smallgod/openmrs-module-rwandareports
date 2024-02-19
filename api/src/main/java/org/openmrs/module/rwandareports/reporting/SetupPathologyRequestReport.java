@@ -10,10 +10,6 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
-
-
-
-
 public class SetupPathologyRequestReport implements SetupReport {
 
     protected final Log log = LogFactory.getLog(getClass());
@@ -22,7 +18,7 @@ public class SetupPathologyRequestReport implements SetupReport {
 
     private EncounterType pathologyEncounterType;
     private PersonAttributeType healthCenterPersonAttributeType;
-    //    private PersonAttributeType phoneNumberPersonAttributeType;
+//    private PersonAttributeType phoneNumberPersonAttributeType;
     private Form pathologyRequestForm;
     private Concept sampleStatusConcept;
     private Concept referralStatusConcept;
@@ -60,8 +56,14 @@ public class SetupPathologyRequestReport implements SetupReport {
         reportDefinition.setName("Pathology Request Report");
         reportDefinition.setUuid("996cf192-ff54-11eb-a63a-080027ce9ca0");
         Parameter location = new Parameter("location", "Location", Location.class);
+        // Parameter baseEnc = new Parameter("baseEnc","Base Encounter",String.class);
+        // Parameter limitNumber = new Parameter("limitNumber", "Limit Number", String.class);
         location.setRequired(false);
+        // baseEnc.setRequired(false);
+        //limitNumber.setRequired(false);
         reportDefinition.addParameter(location);
+        // reportDefinition.addParameter(baseEnc);
+        // reportDefinition.addParameter(limitNumber);
 
         createDataSetDefinition(reportDefinition);
 
@@ -78,7 +80,14 @@ public class SetupPathologyRequestReport implements SetupReport {
         SqlDataSetDefinition sqldsd=new SqlDataSetDefinition();
 
         sqldsd.setSqlQuery("select \n" +
-                "\tp.person_id as personId,\n" +
+               " (select count(*) from encounter enc \n" +
+                    "\t left join person p on enc.patient_id=p.person_id\n" +
+                    "    left join (select person_id,name,location_id,retired from person_attribute pat left join location l on pat.value=l.location_id where person_attribute_type_id= "+ healthCenterPersonAttributeType.getPersonAttributeTypeId() +" and pat.voided=0 group by person_id) \n" +
+                    "\t\t\t\thealthcenter on enc.patient_id=healthcenter.person_id\n" +
+                    "where enc.voided=0 and p.voided=0 and enc.form_id= " + pathologyRequestForm.getFormId() +
+                    " and p.dead=0 and IF( :location IS NULL, true, healthcenter.location_id= :location) ) as totalRows, " +
+
+                "\t p.person_id as personId,\n" +
                 "\tp.uuid as patientUuid,\n" +
                 "\tp.birthdate as personBirthdate,\n" +
                 "\tp.gender as personGender,\n" +
@@ -132,15 +141,15 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "    and enc.form_id= " + pathologyRequestForm.getFormId() +
                 " and p.dead=0" +
                 " and IF( :location IS NULL, true, healthcenter.location_id= :location) " +
-//                " and TIMESTAMPDIFF(MONTH, enc.encounter_datetime, now()) <= 6 " +
+//                " and IF( :baseEnc IS NULL , true, enc.encounter_id < :baseEnc)  " +
+                " and enc.encounter_datetime >= (CURDATE() - INTERVAL 6 MONTH) "+
+//                " and TIMESTAMPDIFF(MONTH, enc.encounter_datetime, now()) <= 6" +
 
-//                " order by enc.encounter_id desc  limit 50"
-
-                " order by enc.encounter_id desc limit 5000 ");
-
-
+                " order by enc.encounter_id desc " );
 
         sqldsd.addParameter(new Parameter("location", "Location", Location.class));
+        sqldsd.addParameter(new Parameter("baseEnc", "baseEnc", String.class));
+        sqldsd.addParameter(new Parameter("limitNumber", "limitNumber", String.class));
 
 
 //        Map<String, Object> mappings = new HashMap<String, Object>();
