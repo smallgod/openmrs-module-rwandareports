@@ -10,6 +10,10 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.rwandareports.util.GlobalPropertiesManagement;
 
+
+
+
+
 public class SetupPathologyRequestReport implements SetupReport {
 
     protected final Log log = LogFactory.getLog(getClass());
@@ -18,7 +22,7 @@ public class SetupPathologyRequestReport implements SetupReport {
 
     private EncounterType pathologyEncounterType;
     private PersonAttributeType healthCenterPersonAttributeType;
-//    private PersonAttributeType phoneNumberPersonAttributeType;
+    //    private PersonAttributeType phoneNumberPersonAttributeType;
     private Form pathologyRequestForm;
     private Concept sampleStatusConcept;
     private Concept referralStatusConcept;
@@ -31,7 +35,7 @@ public class SetupPathologyRequestReport implements SetupReport {
 
 
     /**
-     * @return 
+     * @return
      */
     @Override
     public String getReportName() {
@@ -128,8 +132,13 @@ public class SetupPathologyRequestReport implements SetupReport {
                 "    and enc.form_id= " + pathologyRequestForm.getFormId() +
                 " and p.dead=0" +
                 " and IF( :location IS NULL, true, healthcenter.location_id= :location) " +
+//                " and TIMESTAMPDIFF(MONTH, enc.encounter_datetime, now()) <= 6 " +
 
-                " order by enc.encounter_id desc ");
+//                " order by enc.encounter_id desc  limit 50"
+
+                " order by enc.encounter_id desc limit 5000 ");
+
+
 
         sqldsd.addParameter(new Parameter("location", "Location", Location.class));
 
