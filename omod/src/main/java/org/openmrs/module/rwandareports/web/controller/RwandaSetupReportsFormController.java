@@ -1052,5 +1052,14 @@ public class RwandaSetupReportsFormController {
 		new SetupOncologyLostToFollowUpIndicatorReport().delete();
 		return new ModelAndView(new RedirectView("rwandareports.form"));
 	}
-
+	@RequestMapping("/module/rwandareports/register_IncomeGroupedByInsurance")
+	public ModelAndView registerIncomeGroupedByInsurance() throws Exception{
+		new SetupIncomeGroupedByInsurance().setup();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
+	@RequestMapping("/module/rwandareports/remove_IncomeGroupedByInsurance")
+	public ModelAndView removeIncomeGroupedByInsurance() throws Exception{
+		new SetupIncomeGroupedByInsurance().delete();
+		return new ModelAndView(new RedirectView("rwandareports.form"));
+	}
 }

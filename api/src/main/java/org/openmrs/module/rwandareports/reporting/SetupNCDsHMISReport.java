@@ -8,11 +8,9 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.aspectj.asm.IProgramElement;
-import org.openmrs.Concept;
+import org.openmrs.*;
 import org.openmrs.Form;
 import org.openmrs.Location;
-import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.*;
 import org.openmrs.module.reporting.common.DurationUnit;
@@ -31,18 +29,13 @@ import org.openmrs.module.rwandareports.util.Indicators;
 import org.openmrs.module.rwandareports.widget.AllLocation;
 import org.openmrs.module.rwandareports.widget.LocationHierarchy;
 
-public class SetupNCDsHMISReport extends SingleSetupReport implements SetupReport {
+public class SetupNCDsHMISReport extends SingleSetupReport implements SetupReport{
 
     protected final Log log = LogFactory.getLog(getClass());
 
 
     private int ICDConceptClassId;
 
-    private Program asthmaProgram;
-    private Program diabetesProgram;
-    private Program hypertensionProgram;
-    private Program heartFailureProgram;
-    private List<Program> asthmaPrograms = new ArrayList<Program>();
     private Concept ICD11Concepts;
 
     private Concept asthma;
@@ -148,6 +141,20 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
     private List<Concept> conceptOtherChronicKidneyDisease = new ArrayList<Concept>();
     private List<Concept> conceptOtherEndocrineAndMetabolicDisease = new ArrayList<Concept>();
     private List<Concept> conceptDiabetesCongenital = new ArrayList<Concept>();
+    private List<Concept> conceptBronchitis  = new ArrayList<Concept>();
+    private Program asthmaProgram;
+    private Program diabetesProgram;
+    private Program hypertensionProgram;
+    private Program heartFailureProgram;
+    private  Program ckdProgram;
+    private EncounterType asthmaEncounter;
+    private EncounterType hypertensionEncounter;
+    private EncounterType heartFailureEncounter;
+    private EncounterType diabetesEncounter;
+    private EncounterType ckdEncounter;
+
+
+
 
 
     Properties properties = new Properties();
@@ -167,20 +174,10 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
 
         // Monthly Report Definition
 
-       ReportDefinition ncdRd =createReportDefinition("Chronic Diseases HMIS Monthly Indicator Report",properties);
+        ReportDefinition ncdRd =createReportDefinition("Chronic Diseases HMIS Monthly Indicator Report",properties);
 
-       ncdRd.addDataSetDefinition(createCohortMonthlyBaseDataSet(),
+        ncdRd.addDataSetDefinition(createCohortMonthlyBaseDataSet(),
                 ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
-
-//        //Set program enrollment
-//
-//        ProgramEnrollmentCohortDefinition patientEnrolledInAsthmaProgram = new ProgramEnrollmentCohortDefinition();
-//        patientEnrolledInAsthmaProgram.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
-//        patientEnrolledInAsthmaProgram.setPrograms(asthmaPrograms);
-//
-//        ncdRd.setBaseCohortDefinition(patientEnrolledInAsthmaProgram,
-//                ParameterizableUtil.createParameterMappings("enrolledOnOrBefore=${endDate}"));
-
         Helper.saveReportDefinition(ncdRd);
 
         // Monthly Report Design
@@ -193,23 +190,20 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
         ncdProps.put("sortWeight","5000");
         ncdDesign.setProperties(ncdProps);
         Helper.saveReportDesign(ncdDesign);
-
-
-
     }
     public ReportDefinition createReportDefinition(String name, Properties properties){
 
         ReportDefinition reportDefinition = new ReportDefinition();
         reportDefinition.addParameter(new Parameter("startDate","From",Date.class));
         reportDefinition.addParameter(new Parameter("endDate","To",Date.class));
-        reportDefinition.addParameter(new Parameter("location", "Health facility", Location.class));
+        reportDefinition.addParameter(new Parameter("location","Health Facility", Location.class, properties));
 
-        SqlCohortDefinition location = new SqlCohortDefinition();
-        location.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat,patient_program pp where p.patient_id = pa.person_id and p.patient_id = pp.patient_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and pa.value = :location");
-        location.setName("Location");
-        location.addParameter(new Parameter("location", "location", Location.class));
+//        SqlCohortDefinition location = new SqlCohortDefinition();
+//        location.setQuery("select p.patient_id from patient p, person_attribute pa, person_attribute_type pat where p.patient_id = pa.person_id and pat.format ='org.openmrs.Location' and pa.voided = 0 and pat.person_attribute_type_id = pa.person_attribute_type_id and pa.value = :location");
+//        location.setName("Location");
+//        location.addParameter(new Parameter("location", "location", Location.class));
 
-        reportDefinition.setBaseCohortDefinition(location, ParameterizableUtil.createParameterMappings("location=${location}"));
+//        reportDefinition.setBaseCohortDefinition(location, ParameterizableUtil.createParameterMappings("location=${location}"));
         reportDefinition.addDataSetDefinition(createCohortMonthlyBaseDataSet(), ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},location=${location}"));
         reportDefinition.setName(name);
         return reportDefinition;
@@ -284,12 +278,19 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
 
         onOrAfterOnOrBefore.add("onOrAfter");
         onOrAfterOnOrBefore.add("onOrBefore");
-
         asthmaProgram = gp.getProgram(GlobalPropertiesManagement.CHRONIC_RESPIRATORY_PROGRAM);
         diabetesProgram = gp.getProgram(GlobalPropertiesManagement.DM_PROGRAM);
         hypertensionProgram = gp.getProgram(GlobalPropertiesManagement.HYPERTENSION_PROGRAM);
         heartFailureProgram = gp.getProgram(GlobalPropertiesManagement.HEART_FAILURE_PROGRAM_NAME);
-        asthmaPrograms.add(asthmaProgram);
+        ckdProgram = gp.getProgram(GlobalPropertiesManagement.CHRONIC_KIDNEY_DISEASE_PROGRAM);
+
+        asthmaEncounter = Context.getEncounterService().getEncounterTypeByUuid("820004cd-5f2b-40a9-bf26-bf6f5a945790");
+        hypertensionEncounter = Context.getEncounterService().getEncounterTypeByUuid("2f75f29f-454d-4e91-915c-ec3fd49532b1");
+        diabetesEncounter = Context.getEncounterService().getEncounterTypeByUuid("d8327a41-a0cc-49c5-af0e-63f0ba960330");
+        ckdEncounter = Context.getEncounterService().getEncounterTypeByUuid("710c8487-9831-4063-a79d-bf07f27653b2");
+        heartFailureEncounter = Context.getEncounterService().getEncounterTypeByUuid("d889bcb3-c99d-4648-a3ea-b373335b9efd");
+
+
         ICD11Concepts = Context.getConceptService().getConceptByUuid("c30d9cfc-ef2c-46f1-88c9-eabb86f9fe58");
         asthma = Context.getConceptService().getConceptByUuid("3d762b82-f951-4d13-b147-6aaba63b25d1");
         bronchitis = Context.getConceptService().getConceptByUuid("8eee36e3-1aaa-0244-7029-815f6cd3460f");
@@ -320,7 +321,7 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
         metabolicUnspecified = Context.getConceptService().getConceptByUuid("09be2849-e30b-2171-9caa-c7211c2177b3");
         heartFailureDiagnosis = Context.getConceptService().getConceptByUuid("e6bb1491-43b5-46b8-ba55-bd1ad188123c");
         chronicCareDiagnosis = Context.getConceptService().getConceptByUuid("bb7e04d8-3355-4fe8-9c87-98642eafab93");
-        coronaryArteryDisease = Context.getConceptService().getConceptByUuid("92e917d0-baa0-55d5-ee06-bd79bba7c031");
+        coronaryArteryDisease = Context.getConceptService().getConceptByUuid("41f36354-7886-6d2d-c67a-c7fcd720747e");
         icd11DiabetesType1 = Context.getConceptService().getConceptByUuid("f2bb570d-78c6-73db-3ad5-707959938924");
         icd11DiabetesType2 = Context.getConceptService().getConceptByUuid("5bd8e2bf-d41f-539b-e3b5-e353d3e8eb4a");
         icd11OtherEndocrineAndMetabolicDisease = Context.getConceptService().getConceptByUuid("d9e647e7-5ebe-c47f-150f-6e7fe60600d6");
@@ -426,14 +427,15 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
 
         combinedOtherEndocrineAndMetabolicDisease.add(metabolicUnspecified);
         combinedOtherEndocrineAndMetabolicDisease.add(icd11OtherEndocrineAndMetabolicDisease);
-        
-        
+
+
         //concepts that classify the above value_coded
 
         conceptAsthma.add(ICD11Concepts);
         conceptAsthma.add(respiratoryDiseaseAsthma);
 //        conceptAsthma.add(primaryICDDiagnosis);
 //        conceptAsthma.add(secondaryICDDiagnosis);
+        conceptBronchitis.add(ICD11Concepts);
 
         conceptDiabetesType.add(typesOfDiabetes);
         conceptDiabetesType.add(ICD11Concepts);
@@ -532,14 +534,7 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
 
 
 
-        SqlCohortDefinition newAsthma= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptAsthma,combinedAsthma);
-
-        //New Asthma Enrolled
-        ProgramEnrollmentCohortDefinition newlyEnrolledInAsthma = new ProgramEnrollmentCohortDefinition();
-        newlyEnrolledInAsthma.setName("newlyEnrolledInAsthma");
-        newlyEnrolledInAsthma.addProgram(asthmaProgram);
-        newlyEnrolledInAsthma.addParameter(new Parameter("enrolledOnOrAfter", "enrolledOnOrAfter", Date.class));
-        newlyEnrolledInAsthma.addParameter(new Parameter("enrolledOnOrBefore", "enrolledOnOrBefore", Date.class));
+        SqlCohortDefinition newAsthma= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptAsthma,combinedAsthma,asthmaProgram);
 
         // 0-39
 
@@ -552,9 +547,8 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
         maleBetween0And39withAsthma.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         maleBetween0And39withAsthma.getSearches().put("1", new Mapped<CohortDefinition>(newAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         maleBetween0And39withAsthma.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndThirtyNineYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        maleBetween0And39withAsthma.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        maleBetween0And39withAsthma.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        maleBetween0And39withAsthma.setCompositionString("1 and 2 and 3 and 4");
+        maleBetween0And39withAsthma.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        maleBetween0And39withAsthma.setCompositionString("1 and 2 and 3");
 
 
         CohortIndicator maleBetween0And39AsthmaNewCasePatientIndicator = Indicators.newCohortIndicator("maleBetween0And39AsthmaNewCasePatientIndicator",
@@ -573,9 +567,9 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
         femaleBetween0And39withAsthma.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         femaleBetween0And39withAsthma.getSearches().put("1", new Mapped<CohortDefinition>(newAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         femaleBetween0And39withAsthma.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndThirtyNineYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        femaleBetween0And39withAsthma.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        femaleBetween0And39withAsthma.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        femaleBetween0And39withAsthma.setCompositionString("1 and 2 and 3 and 4");
+        femaleBetween0And39withAsthma.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        femaleBetween0And39withAsthma.setCompositionString("1 and 2 and (not 3)");
+
 
         CohortIndicator femaleBetween0And39withAsthmaIndicator = Indicators.newCohortIndicator("femaleBetween0And39withAsthmaIndicator",
                 femaleBetween0And39withAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
@@ -593,16 +587,13 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
         malepatientsAbove40YearsWithAsthma.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         malepatientsAbove40YearsWithAsthma.getSearches().put("1", new Mapped<CohortDefinition>(newAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         malepatientsAbove40YearsWithAsthma.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        malepatientsAbove40YearsWithAsthma.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        malepatientsAbove40YearsWithAsthma.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        malepatientsAbove40YearsWithAsthma.setCompositionString("1 and 2 and 3 and 4");
+        malepatientsAbove40YearsWithAsthma.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        malepatientsAbove40YearsWithAsthma.setCompositionString("1 and 2 and 3");
 
 
         CohortIndicator malepatientsAbove40YearsWithAsthmaIndicator = Indicators.newCohortIndicator("malepatientsAbove40YearsWithAsthmaIndicator",
                 malepatientsAbove40YearsWithAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
         dsd.addColumn("A.N.M.40", "New case Asthma Male above 40", new Mapped(malepatientsAbove40YearsWithAsthmaIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-
-
 
 
         CompositionCohortDefinition femalepatientsAbove40YearsWithAsthma = new CompositionCohortDefinition();
@@ -614,9 +605,8 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
         femalepatientsAbove40YearsWithAsthma.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         femalepatientsAbove40YearsWithAsthma.getSearches().put("1", new Mapped<CohortDefinition>(newAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         femalepatientsAbove40YearsWithAsthma.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        femalepatientsAbove40YearsWithAsthma.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        femalepatientsAbove40YearsWithAsthma.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        femalepatientsAbove40YearsWithAsthma.setCompositionString("1 and 2 and 3 and 4");
+        femalepatientsAbove40YearsWithAsthma.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        femalepatientsAbove40YearsWithAsthma.setCompositionString("1 and 2 and (not 3)");
 
 
         CohortIndicator femalepatientsAbove40YearsWithAsthmaIndicator = Indicators.newCohortIndicator("femalepatientsAbove40YearsWithAsthmaIndicator",
@@ -626,48 +616,61 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
 
         // 1.1 Old case patient with Asthma
 
-        SqlCohortDefinition oldAsthma =oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptAsthma,combinedAsthma);
-
-
 // 0-39
+
+        SqlCohortDefinition oldAsthma =oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptAsthma,combinedAsthma);
+
+        InProgramCohortDefinition inChronicDisProg = Cohorts.createInProgramParameterizableByDate("In "+ asthmaProgram.getName() +" Program", asthmaProgram);
+
+        SqlCohortDefinition asthmaVisits= new SqlCohortDefinition();
+        asthmaVisits.setName("asthmaVisits");
+        asthmaVisits.setQuery("select e.patient_id from encounter e where e.encounter_type = "+asthmaEncounter.getEncounterTypeId()+" and e.encounter_datetime between :from and :to and e.voided=0");
+        asthmaVisits.addParameter(new Parameter("from","From",Date.class));
+        asthmaVisits.addParameter(new Parameter("to","To",Date.class));
+        System.out.println("Visits in last three months" + asthmaVisits.getQuery());
+
 
         CompositionCohortDefinition maleBetween0And39withAsthmaOldCasePatient = new CompositionCohortDefinition();
         maleBetween0And39withAsthmaOldCasePatient.setName("maleBetween0And39withAsthmaOldCasePatient");
         maleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
         maleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
         maleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-        maleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-        maleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        maleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("onDate","onDate", Date.class));
+        maleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("from", "From", Date.class));
+        maleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("to", "To", Date.class));
         maleBetween0And39withAsthmaOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         maleBetween0And39withAsthmaOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndThirtyNineYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        maleBetween0And39withAsthmaOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        maleBetween0And39withAsthmaOldCasePatient.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        maleBetween0And39withAsthmaOldCasePatient.setCompositionString("1 and 2 and 3 and 4");
+        maleBetween0And39withAsthmaOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        maleBetween0And39withAsthmaOldCasePatient.getSearches().put("4", new Mapped<CohortDefinition>(inChronicDisProg, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+        maleBetween0And39withAsthmaOldCasePatient.getSearches().put("5", new Mapped<CohortDefinition>(asthmaVisits, ParameterizableUtil.createParameterMappings("from=${from},to=${to}")));
+
+        maleBetween0And39withAsthmaOldCasePatient.setCompositionString("1 and 2 and 3 and 4 and 5");
 
 
         CohortIndicator maleBetween0And39AsthmaOldCasePatientIndicator = Indicators.newCohortIndicator("maleBetween0And39AsthmaOldCasePatientIndicator",
-                maleBetween0And39withAsthmaOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+                maleBetween0And39withAsthmaOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},from=${endDate-3m},to=${endDate}"));
         dsd.addColumn("A.O.M.039", "Old case Asthma Male", new Mapped(maleBetween0And39AsthmaOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-
-
 
 
         CompositionCohortDefinition femaleBetween0And39withAsthmaOldCasePatient = new CompositionCohortDefinition();
         femaleBetween0And39withAsthmaOldCasePatient.setName("femaleBetween0And39AsthmaOldCasePatient");
         femaleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
         femaleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("startDate", "startDate", Date.class));
+        femaleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("onDate","onDate", Date.class));
         femaleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("endDate", "endDate", Date.class));
-        femaleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-        femaleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        femaleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("from", "From", Date.class));
+        femaleBetween0And39withAsthmaOldCasePatient.addParameter(new Parameter("to", "To", Date.class));
         femaleBetween0And39withAsthmaOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         femaleBetween0And39withAsthmaOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndThirtyNineYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        femaleBetween0And39withAsthmaOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        femaleBetween0And39withAsthmaOldCasePatient.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        femaleBetween0And39withAsthmaOldCasePatient.setCompositionString("1 and 2 and 3 and 4");
+        femaleBetween0And39withAsthmaOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        femaleBetween0And39withAsthmaOldCasePatient.getSearches().put("4", new Mapped<CohortDefinition>(inChronicDisProg, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+        femaleBetween0And39withAsthmaOldCasePatient.getSearches().put("5", new Mapped<CohortDefinition>(asthmaVisits, ParameterizableUtil.createParameterMappings("from=${from},to=${to}")));
+
+        femaleBetween0And39withAsthmaOldCasePatient.setCompositionString("1 and 2 and (not 3) and 4 and 5");
 
 
         CohortIndicator femaleBetween0And39withAsthmaOldCasePatientIndicator = Indicators.newCohortIndicator("femaleBetween0And39withAsthmaOldCasePatientIndicator",
-                femaleBetween0And39withAsthmaOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+                femaleBetween0And39withAsthmaOldCasePatient, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},from=${endDate-3m},to=${endDate}"));
         dsd.addColumn("A.O.F.039", "Old case Asthma Female", new Mapped(femaleBetween0And39withAsthmaOldCasePatientIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
         // 40 +
@@ -676,21 +679,22 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
         maleOldCasepatientsAbove40YearsWithAsthma.setName("maleOldCasepatientsAbove40YearsWithAsthma");
         maleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
         maleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("startDate", "startDate", Date.class));
+        maleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("onDate","onDate", Date.class));
         maleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("endDate", "endDate", Date.class));
-        maleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-        maleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        maleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("from", "From", Date.class));
+        maleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("to", "To", Date.class));
         maleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("1", new Mapped<CohortDefinition>(oldAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         maleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        maleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        maleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        maleOldCasepatientsAbove40YearsWithAsthma.setCompositionString("1 and 2 and 3 and 4");
+        maleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        maleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("4", new Mapped<CohortDefinition>(inChronicDisProg, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+        maleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("5", new Mapped<CohortDefinition>(asthmaVisits, ParameterizableUtil.createParameterMappings("from=${from},to=${to}")));
+
+        maleOldCasepatientsAbove40YearsWithAsthma.setCompositionString("1 and 2 and 3 and 4 and 5");
 
 
         CohortIndicator maleOldCasepatientsAbove40YearsWithAsthmaIndicator = Indicators.newCohortIndicator("maleOldCasepatientsAbove40YearsWithAsthmaIndicator",
-                maleOldCasepatientsAbove40YearsWithAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+                maleOldCasepatientsAbove40YearsWithAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},from=${endDate-3m},to=${endDate}"));
         dsd.addColumn("A.O.M.40", "Old case Asthma Male above 40", new Mapped(maleOldCasepatientsAbove40YearsWithAsthmaIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
-
-
 
 
         CompositionCohortDefinition femaleOldCasepatientsAbove40YearsWithAsthma = new CompositionCohortDefinition();
@@ -698,16 +702,21 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
         femaleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
         femaleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("startDate", "startDate", Date.class));
         femaleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("endDate", "endDate", Date.class));
-        femaleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("onOrAfter", "onOrAfter", Date.class));
-        femaleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
+        femaleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("onDate","onDate", Date.class));
+        femaleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("from", "From", Date.class));
+        femaleOldCasepatientsAbove40YearsWithAsthma.addParameter(new Parameter("to", "To", Date.class));
         femaleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("1", new Mapped<CohortDefinition>(oldAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         femaleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        femaleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        femaleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        femaleOldCasepatientsAbove40YearsWithAsthma.setCompositionString("1 and 2 and 3 and 4");
+        femaleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        femaleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("4", new Mapped<CohortDefinition>(inChronicDisProg, ParameterizableUtil.createParameterMappings("onDate=${endDate}")));
+        femaleOldCasepatientsAbove40YearsWithAsthma.getSearches().put("5", new Mapped<CohortDefinition>(asthmaVisits, ParameterizableUtil.createParameterMappings("from=${from},to=${to}")));
+
+        femaleOldCasepatientsAbove40YearsWithAsthma.setCompositionString("1 and 2 and (not 3) and 4 and 5");
+
+
 
         CohortIndicator femaleOldCasepatientsAbove40YearsWithAsthmaIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsAbove40YearsWithAsthmaIndicator",
-                femaleOldCasepatientsAbove40YearsWithAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+                femaleOldCasepatientsAbove40YearsWithAsthma, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},from=${endDate-3m},to=${endDate}"));
         dsd.addColumn("A.O.F.40", "Old case Asthma Female above 40", new Mapped(femaleOldCasepatientsAbove40YearsWithAsthmaIndicator, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")), "");
 
 
@@ -718,7 +727,7 @@ public class SetupNCDsHMISReport extends SingleSetupReport implements SetupRepor
 
 
 
-SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,icd11Bronchitis);
+        SqlCohortDefinition newBronchitis=newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptBronchitis,combinedBronchitis,asthmaProgram);
 
 // 0-39
 
@@ -802,7 +811,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // 2.1 Old case patient with Bronchitis/Bronchite
 
-        SqlCohortDefinition oldBronchitis=oldPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,icd11Bronchitis);
+        SqlCohortDefinition oldBronchitis=oldPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,bronchitis);
 
 
 // 0-39
@@ -888,7 +897,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
 
 
-        SqlCohortDefinition newOtherChronicRespiratoryDiseases=newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptAsthma,combinedOtheChronicrRespiratoryDisease);
+        SqlCohortDefinition newOtherChronicRespiratoryDiseases=newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptAsthma,combinedOtheChronicrRespiratoryDisease,asthmaProgram);
 
 // 0-39
 
@@ -901,9 +910,8 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         maleBetween0And39OtherChronicRespiratoryDiseases.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         maleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("1", new Mapped<CohortDefinition>(newOtherChronicRespiratoryDiseases, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         maleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndThirtyNineYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        maleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        maleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        maleBetween0And39OtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and 3 and 4");
+        maleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        maleBetween0And39OtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and 3");
 
 
         CohortIndicator maleBetween0And39OtherChronicRespiratoryDiseasesIndicator = Indicators.newCohortIndicator("maleBetween0And39OtherChronicRespiratoryDiseasesIndicator",
@@ -922,9 +930,9 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         femaleBetween0And39OtherChronicRespiratoryDiseases.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         femaleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("1", new Mapped<CohortDefinition>(newOtherChronicRespiratoryDiseases, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         femaleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndThirtyNineYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        femaleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        femaleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        femaleBetween0And39OtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and 3 and 4");
+        femaleBetween0And39OtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        femaleBetween0And39OtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and (not 3)");
+
 
         CohortIndicator femaleBetween0And39OtherChronicRespiratoryDiseasesIndicator = Indicators.newCohortIndicator("femaleBetween0And39OtherChronicRespiratoryDiseasesIndicator",
                 femaleBetween0And39OtherChronicRespiratoryDiseases, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
@@ -943,9 +951,9 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .getSearches().put("1", new Mapped<CohortDefinition>(newOtherChronicRespiratoryDiseases, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and 3 and 4");
+        malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .setCompositionString("1 and 2 and 3");
+
 
         CohortIndicator malepatientsAbove40YearsWithOtherChronicRespiratoryDiseasesIndicator = Indicators.newCohortIndicator("malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases Indicator",
                 malepatientsAbove40YearsWithOtherChronicRespiratoryDiseases , ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
@@ -963,9 +971,9 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .getSearches().put("1", new Mapped<CohortDefinition>(newOtherChronicRespiratoryDiseases, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and 3 and 4");
+        femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseases .setCompositionString("1 and 2 and (not 3)");
+
 
         CohortIndicator femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseasesIndicator = Indicators.newCohortIndicator("femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseasesIndicator",
                 femalepatientsAbove40YearsWithOtherChronicRespiratoryDiseases , ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
@@ -974,7 +982,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 2 Old case patient with Other Chronic respiratory diseases
 
-        SqlCohortDefinition oldOtherChronicRespiratoryDiseases=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptAsthma,combinedOtheChronicrRespiratoryDisease);
+        SqlCohortDefinition oldOtherChronicRespiratoryDiseases=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptAsthma,combinedOtheChronicrRespiratoryDisease);
 
 
 // 0-39
@@ -988,9 +996,8 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldOtherChronicRespiratoryDiseases, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndThirtyNineYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.setCompositionString("1 and 2 and 3 and 4");
+        maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.setCompositionString("1 and 2 and 3");
 
 
         CohortIndicator maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatientIndicator = Indicators.newCohortIndicator("maleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatientIndicator",
@@ -1009,9 +1016,8 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("1", new Mapped<CohortDefinition>(oldOtherChronicRespiratoryDiseases, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("2", new Mapped<CohortDefinition>(patientBetweenZeroAndThirtyNineYears, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.setCompositionString("1 and 2 and 3 and 4");
+        femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatient.setCompositionString("1 and 2 and (not 3)");
 
 
         CohortIndicator femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatientIndicator = Indicators.newCohortIndicator("femaleBetween0And39OtherChronicRespiratoryDiseasesOldCasePatientIndicator",
@@ -1030,9 +1036,8 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("1", new Mapped<CohortDefinition>(oldOtherChronicRespiratoryDiseases, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and 3 and 4");
+        maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and 3");
 
 
         CohortIndicator maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseasesIndicator = Indicators.newCohortIndicator("maleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseasesIndicator",
@@ -1051,9 +1056,8 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.addParameter(new Parameter("onOrBefore", "onOrBefore", Date.class));
         femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("1", new Mapped<CohortDefinition>(oldOtherChronicRespiratoryDiseases, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
         femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("2", new Mapped<CohortDefinition>(patientAbove40Years, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-        femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(newlyEnrolledInAsthma, ParameterizableUtil.createParameterMappings("enrolledOnOrAfter=${enrolledOnOrAfter},enrolledOnOrBefore=${enrolledOnOrBefore}")));
-        femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("4", new Mapped<CohortDefinition>(male, null));
-        femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and 3 and 4");
+        femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.getSearches().put("3", new Mapped<CohortDefinition>(male, null));
+        femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseases.setCompositionString("1 and 2 and (not 3)");
 
 
         CohortIndicator femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseasesIndicator = Indicators.newCohortIndicator("femaleOldCasepatientsAbove40YearsWithOtherChronicRespiratoryDiseasesIndicator",
@@ -1065,7 +1069,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
 
 
-        SqlCohortDefinition newDiabetesTypeOne=newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptDiabetesType,combinedDiabetesType1);
+        SqlCohortDefinition newDiabetesTypeOne=newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptDiabetesType,combinedDiabetesType1,diabetesProgram);
 
 // 0-39
 
@@ -1239,7 +1243,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
 
 
-        SqlCohortDefinition newDiabetesTypeTwo=newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptDiabetesType,combinedDiabetesType2);
+        SqlCohortDefinition newDiabetesTypeTwo=newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptDiabetesType,combinedDiabetesType2,diabetesProgram);
 
 // 0-39
 
@@ -1412,7 +1416,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
 
 
-        SqlCohortDefinition newDiabetesGestational=newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptDiabetesType,combinedDiabetesCongenital);
+        SqlCohortDefinition newDiabetesGestational=newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptDiabetesType,combinedDiabetesCongenital,diabetesProgram);
 
 // 0-39
 
@@ -1584,7 +1588,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
 
 
-        SqlCohortDefinition newPatientWithHypertension= newPatientWithNCDDiagnosisObsByStartDateAndEndDateHypertension(combinedHypertension);
+        SqlCohortDefinition newPatientWithHypertension= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptHypertension,combinedHypertension,hypertensionProgram);
 
 // 0-39
 
@@ -1669,7 +1673,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with Hypertension
 
-        SqlCohortDefinition oldHypertension=oldPatientWithNCDDiagnosisObsByStartDateAndEndDateHypertension(combinedHypertension,hypertensionProgram);
+        SqlCohortDefinition oldHypertension=oldPatientWithNCDDiagnosisObsByStartDateAndEndDateHypertension(combinedHypertension);
 
 
 // 0-39
@@ -1755,7 +1759,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // New patients with cardiomyopathies
 
-        SqlCohortDefinition newPatientWithcardiomyopathies= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptCardiomyophaties,combinedCardiomyophaties);
+        SqlCohortDefinition newPatientWithcardiomyopathies= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptCardiomyophaties,combinedCardiomyophaties,heartFailureProgram);
 
 // 0-39
 
@@ -1840,7 +1844,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with cardiomyopathies
 
-        SqlCohortDefinition oldcardiomyopathies=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptCardiomyophaties,combinedCardiomyophaties);
+        SqlCohortDefinition oldcardiomyopathies=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptCardiomyophaties,combinedCardiomyophaties);
 
 
 // 0-39
@@ -1925,7 +1929,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // New Patients with Pericardial Disease
 
-        SqlCohortDefinition newPatientWithpericardialDisease= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptPericardialDisease,combinedPericardialDisease);
+        SqlCohortDefinition newPatientWithpericardialDisease= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptPericardialDisease,combinedPericardialDisease,heartFailureProgram);
 
 // 0-39
 
@@ -2010,7 +2014,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with pericardialDisease
 
-        SqlCohortDefinition oldpericardialDisease=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptPericardialDisease,combinedPericardialDisease);
+        SqlCohortDefinition oldpericardialDisease=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptPericardialDisease,combinedPericardialDisease);
 
 
 // 0-39
@@ -2095,7 +2099,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // New patients with Heart failure
 
-        SqlCohortDefinition newPatientWithHeartFailure= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptHeartFailure,combinedHeartFailure);
+        SqlCohortDefinition newPatientWithHeartFailure= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptHeartFailure,combinedHeartFailure,heartFailureProgram);
 
 // 0-39
 
@@ -2266,7 +2270,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // New patients with Stroke
 
-        SqlCohortDefinition newPatientWithStroke= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptStroke,combinedStroke);
+        SqlCohortDefinition newPatientWithStroke= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptStroke,combinedStroke,heartFailureProgram);
 
 // 0-39
 
@@ -2351,7 +2355,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with Stroke
 
-        SqlCohortDefinition oldStroke=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptStroke,combinedStroke);
+        SqlCohortDefinition oldStroke=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptStroke,combinedStroke);
 
 
 // 0-39
@@ -2435,7 +2439,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
 
         // New patients with Rheumatic Heart Disease
-        SqlCohortDefinition newPatientWithRheumaticHeartDisease= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptRheumaticHeart,combinedRheumaticHeart);
+        SqlCohortDefinition newPatientWithRheumaticHeartDisease= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptRheumaticHeart,combinedRheumaticHeart,heartFailureProgram);
 
 // 0-39
 
@@ -2520,7 +2524,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with RheumaticHeartDisease
 
-        SqlCohortDefinition oldRheumaticHeartDisease=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptRheumaticHeart,combinedRheumaticHeart);
+        SqlCohortDefinition oldRheumaticHeartDisease=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptRheumaticHeart,combinedRheumaticHeart);
 
 
 // 0-39
@@ -2605,7 +2609,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // New patients with congenital heart diseases
 
-        SqlCohortDefinition newPatientWithCongenitalHeartDisease= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptCongenitalHeart,combinedCongenitalHeart);
+        SqlCohortDefinition newPatientWithCongenitalHeartDisease= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptCongenitalHeart,combinedCongenitalHeart,heartFailureProgram);
 
 // 0-39
 
@@ -2690,7 +2694,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with CongenitalHeartDisease
 
-        SqlCohortDefinition oldCongenitalHeartDisease=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptCongenitalHeart,combinedCongenitalHeart);
+        SqlCohortDefinition oldCongenitalHeartDisease=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptCongenitalHeart,combinedCongenitalHeart);
 
 
 // 0-39
@@ -2775,7 +2779,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // New patient with Other Cardiovascular diseases
 
-        SqlCohortDefinition newPatientWithOtherCardiovasculardiseases= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptOtherCardiovasculardiseases,combinedOtherCardiovasculardiseases);
+        SqlCohortDefinition newPatientWithOtherCardiovasculardiseases= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptOtherCardiovasculardiseases,combinedOtherCardiovasculardiseases,heartFailureProgram);
 
 // 0-39
 
@@ -2860,7 +2864,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with OtherCardiovasculardiseases
 
-        SqlCohortDefinition oldOtherCardiovasculardiseases=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptOtherCardiovasculardiseases,combinedOtherCardiovasculardiseases);
+        SqlCohortDefinition oldOtherCardiovasculardiseases=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptOtherCardiovasculardiseases,combinedOtherCardiovasculardiseases);
 
 
 // 0-39
@@ -2944,7 +2948,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
 
         // New patients with Deep Vein Thrombosis
-        SqlCohortDefinition newPatientWithDeepVeinThrombosis= newPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,icd11Deepveinusthrombosis);
+        SqlCohortDefinition newPatientWithDeepVeinThrombosis= newPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,deepVeinThrombosis);
 
 // 0-39
 
@@ -3029,7 +3033,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with DeepVeinThrombosis
 
-        SqlCohortDefinition oldDeepVeinThrombosis=oldPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,icd11Deepveinusthrombosis);
+        SqlCohortDefinition oldDeepVeinThrombosis=oldPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,deepVeinThrombosis);
 
 
 // 0-39
@@ -3114,7 +3118,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // New patients with Renal failure
 
-        SqlCohortDefinition newPatientWithRenalFailure= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptRenalFailure,combinedRenalFailure);
+        SqlCohortDefinition newPatientWithRenalFailure= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptRenalFailure,combinedRenalFailure,heartFailureProgram);
 
 // 0-39
 
@@ -3199,7 +3203,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with RenalFailure
 
-        SqlCohortDefinition oldRenalFailure=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptRenalFailure,combinedRenalFailure);
+        SqlCohortDefinition oldRenalFailure=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptRenalFailure,combinedRenalFailure);
 
 
 // 0-39
@@ -3285,7 +3289,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // New patients with OtherChronicKidney
 
-        SqlCohortDefinition newPatientWithOtherChronicKidney= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptOtherChronicKidneyDisease,combinedOtherChronicKidneyDisease);
+        SqlCohortDefinition newPatientWithOtherChronicKidney= newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptOtherChronicKidneyDisease,combinedOtherChronicKidneyDisease,ckdProgram);
 
 // 0-39
 
@@ -3370,7 +3374,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with OtherChronicKidney
 
-        SqlCohortDefinition oldOtherChronicKidney=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(conceptOtherChronicKidneyDisease,combinedOtherChronicKidneyDisease);
+        SqlCohortDefinition oldOtherChronicKidney=oldPatientWithNCDsDiagnosisObsByStartDateAndEndDate(conceptOtherChronicKidneyDisease,combinedOtherChronicKidneyDisease);
 
 
 // 0-39
@@ -3456,7 +3460,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // New patients with MetabolicUnspecified
 
-        SqlCohortDefinition newPatientWithMetabolicUnspecified= newPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,icd11OtherEndocrineAndMetabolicDisease);
+        SqlCohortDefinition newPatientWithMetabolicUnspecified= newPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,metabolicUnspecified);
 
 // 0-39
 
@@ -3541,7 +3545,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         // IV.R. 4 Old case patient with MetabolicUnspecified
 
-        SqlCohortDefinition oldMetabolicUnspecified=oldPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,icd11OtherEndocrineAndMetabolicDisease);
+        SqlCohortDefinition oldMetabolicUnspecified=oldPatientWithNCDDiagnosisObsByStartDateAndEndDate(ICD11Concepts,metabolicUnspecified);
 
 
 // 0-39
@@ -3841,7 +3845,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         return patientWithNCDsObs;
 
     }
-    private SqlCohortDefinition oldPatientWithNCDDiagnosisObsByStartDateAndEndDateHypertension(List<Concept> NcdDiagnosis, Program program){
+    private SqlCohortDefinition oldPatientWithNCDDiagnosisObsByStartDateAndEndDateHypertension(List<Concept> NcdDiagnosis){
         StringBuilder ncdDia = new StringBuilder();
         int y = 0;
         for (Concept c : NcdDiagnosis) {
@@ -3857,8 +3861,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         qStr.append("select o.person_id from obs o inner JOIN patient_program pp on pp.patient_id=o.person_id");
         qStr.append(" where o.voided= 0 and o.concept_id in (");
         qStr.append(ncdDia);
-        qStr.append(") and pp.program_id="+program.getProgramId()+" ");
-        qStr.append("and pp.voided=0 and pp.date_completed is null and pp.date_enrolled<:startDate");
+        qStr.append(") and pp.voided=0 and pp.date_completed is null and pp.date_enrolled<:startDate");
         System.out.println("Queryyyyyy: "+qStr);
         patientWithNCDsObs.setQuery(qStr.toString());
         patientWithNCDsObs.setName("patientWithNCDsObs");
@@ -3884,7 +3887,7 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
     }
 
-    private SqlCohortDefinition newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(List<Concept> NcdDiagnosis, List<Concept> NcdAnswers){
+    private SqlCohortDefinition newPatientWithNCDsDiagnosisObsByStartDateAndEndDate(List<Concept> NcdDiagnosis, List<Concept> NcdAnswers, Program program){
 
         StringBuilder ncdDia = new StringBuilder();
         int y = 0;
@@ -3910,13 +3913,13 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
 
         StringBuilder qStr = new StringBuilder();
         SqlCohortDefinition patientWithNCDsObs=new SqlCohortDefinition();
-                qStr.append("select o.person_id from obs o inner JOIN patient_program pp on pp.patient_id=o.person_id");
-                qStr.append(" where o.voided= 0 and o.concept_id in (");
-                qStr.append(ncdDia);
-                qStr.append(") and o.value_coded in (");
-                qStr.append(ncdAns);
-                qStr.append(") and pp.voided=0 and pp.date_completed is null and pp.date_enrolled>=:startDate and pp.date_enrolled<=:endDate");
-                System.out.println("Queryyyyyy: "+qStr);
+        qStr.append("select o.person_id from obs o inner JOIN patient_program pp on pp.patient_id=o.person_id");
+        qStr.append(" where o.voided= 0 and o.concept_id in (");
+        qStr.append(ncdDia);
+        qStr.append(") and o.value_coded in (");
+        qStr.append(ncdAns);
+        qStr.append(") and pp.program_id = "+program.getProgramId()+" and pp.voided=0 and pp.date_completed is null and pp.date_enrolled>=:startDate and pp.date_enrolled<=:endDate");
+        //System.out.println("Queryyyyyy asthmaaaaaaaaaaaaaaaaaaaaaaaaa: "+qStr);
         patientWithNCDsObs.setQuery(qStr.toString());
         patientWithNCDsObs.setName("patientWithNCDsObs");
         patientWithNCDsObs.addParameter(new Parameter("startDate", "startDate", Date.class));
@@ -3957,7 +3960,6 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         qStr.append(ncdDia);
         qStr.append(") and o.value_coded in (");
         qStr.append(ncdAns);
-//        qStr.append(") and pp.program_id="+program.getProgramId()+" ");
         qStr.append(") and pp.voided=0 and pp.date_completed is null and pp.date_enrolled< :startDate group by person_id");
 
         patientWithIDCObs.setQuery(qStr.toString());
@@ -3968,48 +3970,5 @@ SqlCohortDefinition newBronchitis=newPatientWithNCDDiagnosisObsByStartDateAndEnd
         return patientWithIDCObs;
 
     }
-    private SqlCohortDefinition oldPatientWithNCDsDiagnosisObsByStartDateAndEndDateWithOutProgram(List<Concept> NcdDiagnosis, List<Concept> NcdAnswers){
-
-
-        StringBuilder ncdDia = new StringBuilder();
-        int y = 0;
-        for (Concept c : NcdDiagnosis) {
-            if (y > 0) {
-                ncdDia.append(",");
-            }
-            ncdDia.append(c.getConceptId());
-
-            y++;
-        }
-
-        StringBuilder ncdAns = new StringBuilder();
-        int i = 0;
-        for (Concept c : NcdAnswers) {
-            if (i > 0) {
-                ncdAns.append(",");
-            }
-            ncdAns.append(c.getConceptId());
-
-            i++;
-        }
-
-        StringBuilder qStr = new StringBuilder();
-        SqlCohortDefinition patientWithIDCObs=new SqlCohortDefinition();
-        qStr.append("select o.person_id from obs o JOIN patient_program pp on pp.patient_id=o.person_id");
-        qStr.append(" where o.voided= 0 and o.concept_id in ( ");
-        qStr.append(ncdDia);
-        qStr.append(") and o.value_coded in (");
-        qStr.append(ncdAns);
-        qStr.append(") and pp.voided=0 and pp.date_completed is null and pp.date_enrolled< :startDate group by person_id");
-
-        patientWithIDCObs.setQuery(qStr.toString());
-        patientWithIDCObs.setName("patientWithIDCObs");
-        patientWithIDCObs.addParameter(new Parameter("startDate", "startDate", Date.class));
-        patientWithIDCObs.addParameter(new Parameter("endDate", "endDate", Date.class));
-
-        return patientWithIDCObs;
-
-    }
-
 
 }

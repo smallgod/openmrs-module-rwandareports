@@ -26,15 +26,7 @@ import org.openmrs.web.controller.PortletController;
 import org.springframework.stereotype.Controller;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The main controller.
@@ -52,8 +44,8 @@ public class RegimenHeaderPortletController extends PortletController {
 		List<Concept> iv = gp.getConceptList(GlobalPropertiesManagement.IV_CONCEPT);
 		Concept chemotherapy = gp.getConcept(GlobalPropertiesManagement.CHEMOTHERAPY);
 		Patient patient = Context.getPatientService().getPatient((Integer) model.get("patientId"));
-    	
-		List<DrugOrder> allDrugOrders = WebUtils.getDrugOrdersByPatient(patient, model);
+
+		List<DrugOrder> allDrugOrders = OrderEntryUtil.getDrugOrdersByPatient(patient);
 		List<DrugRegimen> regimens = new ArrayList<DrugRegimen>();
 		List<DrugRegimen> allRegimens = new ArrayList<DrugRegimen>();
 		
