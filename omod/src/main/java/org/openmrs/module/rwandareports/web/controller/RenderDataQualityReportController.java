@@ -59,7 +59,7 @@ public class RenderDataQualityReportController {
 	protected final Log log = LogFactory.getLog(getClass());
 
 	
-	@RequestMapping("/module/rwandareports/renderDataQualityDataSet")
+	@RequestMapping("/module/rwandareports/renderDataQualityDataSet.form")
 	public String showReport(Model model, HttpSession session) throws Exception {
 		String renderArg = (String) session
 				.getAttribute(ReportingConstants.OPENMRS_REPORT_ARGUMENT);

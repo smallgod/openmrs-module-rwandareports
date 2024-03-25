@@ -115,6 +115,7 @@ public class SetupLabResultReports {
 				"ods.date_activated as 'Sample date'," +
 				"ods.accession_number as 'Sample Code'," +
 				"o.obs_datetime as 'Date of result' ," +
+				"TIMESTAMPDIFF(MINUTE,ods.date_activated, o.obs_datetime) AS 'Waiting Time',"+
 				"(select name from concept_name where concept_id=ods.concept_id limit 1) as 'Name'," +
 				"CONCAT_WS(',',(select name from concept_name where concept_id=o.value_coded limit 1),o.value_numeric,o.value_text) as 'Result'" +
 				"from orders ods,obs o " +
@@ -159,6 +160,7 @@ public class SetupLabResultReports {
 				"ods.date_activated as 'Sample date'," +
 				"ods.accession_number as 'Sample Code'," +
 				"o.obs_datetime as 'Date of result' ," +
+				"TIMESTAMPDIFF(MINUTE,ods.date_activated, o.obs_datetime) AS 'Waiting Time',"+
 				"(select name from concept_name where concept_id=ods.concept_id limit 1) as 'Name'," +
 				"CONCAT_WS(',',(select name from concept_name where concept_id=o.value_coded limit 1),o.value_numeric,o.value_text) as 'Result'" +
 				"from orders ods " +
