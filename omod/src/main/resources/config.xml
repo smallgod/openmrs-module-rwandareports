@@ -16,6 +16,7 @@
 
 	<aware_of_modules>
         <aware_of_module>org.openmrs.module.legacyui</aware_of_module>
+	 <aware_of_module>org.openmrs.module.webservices.rest</aware_of_module>
     </aware_of_modules>
 
 	<require_version>${openMRSVersion}</require_version>
