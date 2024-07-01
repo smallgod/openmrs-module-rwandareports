@@ -400,8 +400,13 @@
                                     <!-- The source database (OpenMRS database) -->
                                     <argument>-d kibagabaga</argument>
 
+<<<<<<< HEAD
                                      <!-- The target or analysis Database where the ETL data is stored -->
                                     <argument>-a analysis_db</argument>
+=======
+                                    <!-- The target or analysis Database where the ETL data is stored -->
+                                    <argument>-a kibagabaga</argument>
+>>>>>>> d342ebc (Set ETL to use same database as transactional data)
 
                                     <!-- File with a list of all files with stored procedures -->
                                     <!-- Remove this argument after automating core to auto-read this -->
