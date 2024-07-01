@@ -9,8 +9,6 @@
  */
 package org.openmrs.module.rwandareports;
 
-import org.springframework.stereotype.Component;
-
 /**
  * Contains module's config.
  */
