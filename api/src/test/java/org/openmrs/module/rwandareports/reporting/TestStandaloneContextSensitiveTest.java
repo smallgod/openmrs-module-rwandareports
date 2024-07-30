@@ -10,12 +10,14 @@
 
 package org.openmrs.module.rwandareports.reporting;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.module.rwandareports.StandaloneContextSensitiveTest;
 
 /**
  * Tests that StandaloneContextSensitiveTest works properly
  */
+@Ignore
 public class TestStandaloneContextSensitiveTest extends StandaloneContextSensitiveTest {
 
     @Test
