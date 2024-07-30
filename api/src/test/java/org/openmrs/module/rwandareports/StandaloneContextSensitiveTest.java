@@ -12,21 +12,9 @@ import java.util.Properties;
 @SkipBaseSetup
 public abstract class StandaloneContextSensitiveTest extends BaseModuleContextSensitiveTest {
 
+	private static final Properties props = new Properties();
+
 	static {
-		loadRuntimePropertiesFromSdk();
-	}
-
-	protected static void loadRuntimeProperties() {
-		System.setProperty("databaseUrl", "jdbc:mysql://localhost:3306/openmrs?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false");
-		System.setProperty("databaseUsername", "root");
-		System.setProperty("databasePassword", "root");
-		System.setProperty("databaseDriver", "com.mysql.jdbc.Driver");
-		System.setProperty("databaseDialect", "org.hibernate.dialect.MySQLDialect");
-		System.setProperty("useInMemoryDatabase", "false");
-	}
-
-	protected static void loadRuntimePropertiesFromSdk() {
-		Properties props = new Properties();
 		String serverId = System.getProperty("serverId");
 		if (serverId == null) {
 			throw new RuntimeException("serverId is required as a system property");
@@ -63,10 +51,7 @@ public abstract class StandaloneContextSensitiveTest extends BaseModuleContextSe
 	 */
 	@Override
 	public Properties getRuntimeProperties() {
-		Properties p = super.getRuntimeProperties();
-        p.setProperty("junit.username", "admin");
-        p.setProperty("junit.password", "Admin123");
-		return p;
+		return props;
 	}
 
     @Before
