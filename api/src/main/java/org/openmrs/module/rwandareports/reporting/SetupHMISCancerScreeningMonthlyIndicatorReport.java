@@ -143,6 +143,13 @@ public class SetupHMISCancerScreeningMonthlyIndicatorReport {
     private Concept biopsyperformed;
     private Concept yes;
     private  List<Concept> yesInList=new ArrayList<Concept>();
+    private  List<Concept> breastExaminationAnswers = new ArrayList<Concept>();
+    private List<Form> breastcancerScreeningAndFollowupForms = new ArrayList<Form>();
+    private Form muzimaBreastCancerFollowup;
+    private Concept radiologicDiagnosis;
+    private Concept breastMass;
+    private Concept auxillaryMass;
+    private Concept biradsFinalAssessmentCategory;
 
    /* private Form oncologyCervicalCancerScreeningTransferIn;
     private  List<Form> oncologyCervicalCancerScreeningTransferInList=new ArrayList<Form>();
@@ -152,6 +159,8 @@ public class SetupHMISCancerScreeningMonthlyIndicatorReport {
     private Concept positive;
 
     private Concept reasonsForReferralIn;
+
+    private Concept DrugPrescribed;
 
     public void setup() throws Exception {
 
@@ -719,54 +728,133 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         SqlCohortDefinition screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithThermalAblationAndLEEPTreatmentType",cervicalCancerScreeningFollowupAndExaminationForms,typeOfTreatmentPerformed, thermalAblationAndCryotherapyList);
 
-        CompositionCohortDefinition femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
-        femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.setName("femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType");
-        femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("startDate", "startDate", Date.class));
-        femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("endDate", "endDate", Date.class));
-        femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("1",new Mapped<CohortDefinition>(female,null));
-        femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-        femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.setCompositionString("1 and 2");
-
-        CohortIndicator femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator = Indicators.newCountIndicator("femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator",
-                femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+        CompositionCohortDefinition femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
+        femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.setName("femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType");
+        femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("startDate", "startDate", Date.class));
+        femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("endDate", "endDate", Date.class));
+        femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("1",new Mapped<CohortDefinition>(female,null));
+        femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("3",new Mapped<CohortDefinition>(screenedForCervicalCancerWithVIATriageAndVIAAndElligibleResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("4",new Mapped<CohortDefinition>(screenedForCervicalCancerWithPositiveHPVResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 
 
-        dsd.addColumn("C10", "Number of  screened positive women treated with thermo ablation or Cryotherapy", new Mapped(
-                femalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.setCompositionString("1 and 2 and 3 and 4");
+
+        CohortIndicator femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator = Indicators.newCountIndicator("femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator",
+                femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 
 
-        CompositionCohortDefinition hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
-        hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.setName("hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType");
-        hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("startDate", "startDate", Date.class));
-        hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("endDate", "endDate", Date.class));
-        hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("1",new Mapped<CohortDefinition>(female,null));
-        hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-        hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("3",new Mapped<CohortDefinition>(hivPositivePatient, null));
-        hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.setCompositionString("1 and 2 and 3");
-
-        CohortIndicator hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator = Indicators.newCountIndicator("hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator",
-                hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+        dsd.addColumn("C10", "Women tested  HPV positive and VIA  triage positive plus VIA screen positive treated with thermo ablation or Cryotherapy", new Mapped(
+                femalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 
-        dsd.addColumn("C10P", "HIV positive Number of  screened positive women treated with thermo ablation or Cryotherapy", new Mapped(
-                hivFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        CompositionCohortDefinition hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
+        hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.setName("hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType");
+        hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("startDate", "startDate", Date.class));
+        hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("endDate", "endDate", Date.class));
+        hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("1",new Mapped<CohortDefinition>(female,null));
+        hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("3",new Mapped<CohortDefinition>(hivPositivePatient, null));
+        hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("4",new Mapped<CohortDefinition>(screenedForCervicalCancerWithVIATriageAndVIAAndElligibleResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("5",new Mapped<CohortDefinition>(screenedForCervicalCancerWithPositiveHPVResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+        hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.setCompositionString("1 and 2 and 3 and 4 and 5");
+
+        CohortIndicator hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator = Indicators.newCountIndicator("hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator",
+                hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 
 
-        CompositionCohortDefinition hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
-        hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.setName("hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType");
-        hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("startDate", "startDate", Date.class));
-        hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("endDate", "endDate", Date.class));
-        hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("1",new Mapped<CohortDefinition>(female,null));
-        hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-        hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("3",new Mapped<CohortDefinition>(hivPositivePatient, null));
-        hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType.setCompositionString("1 and 2 and (not 3)");
-
-        CohortIndicator hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator = Indicators.newCountIndicator("hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator",
-                hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+        dsd.addColumn("C10P", "HIV positive Women tested  HPV positive and VIA  triage positive plus VIA screen positive treated with thermo ablation or Cryotherapy", new Mapped(
+                hivFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 
-        dsd.addColumn("C10N", "HIV Negative Number of  screened positive women treated with thermo ablation or Cryotherapy", new Mapped(
-                hivNegaveFemalescreenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        CompositionCohortDefinition hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
+        hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.setName("hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType");
+        hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("startDate", "startDate", Date.class));
+        hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("endDate", "endDate", Date.class));
+        hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("1",new Mapped<CohortDefinition>(female,null));
+        hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("3",new Mapped<CohortDefinition>(hivPositivePatient, null));
+        hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("4",new Mapped<CohortDefinition>(screenedForCervicalCancerWithVIATriageAndVIAAndElligibleResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("5",new Mapped<CohortDefinition>(screenedForCervicalCancerWithPositiveHPVResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+        hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType.setCompositionString("1 and 2 and (not 3) and 4 and 5");
+
+        CohortIndicator hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator = Indicators.newCountIndicator("hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator",
+                hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("C10N", "HIV Negative Women tested  HPV positive and VIA  triage positive plus VIA screen positive treated with thermo ablation or Cryotherapy", new Mapped(
+                hivNegaveFemalescreenedForCervicalCancerWithpositiveHPVandPositiveVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
+
+
+        //===========================================================C10Vianeg=================================================================
+
+
+
+
+        CompositionCohortDefinition femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
+        femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.setName("femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType");
+        femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("startDate", "startDate", Date.class));
+        femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("endDate", "endDate", Date.class));
+        femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("1",new Mapped<CohortDefinition>(female,null));
+        femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("3",new Mapped<CohortDefinition>(screenedForCervicalCancerWithVIANegativeResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("4",new Mapped<CohortDefinition>(screenedForCervicalCancerWithPositiveHPVResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+
+        femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.setCompositionString("1 and 2 and 3 and 4");
+
+        CohortIndicator femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator = Indicators.newCountIndicator("femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator",
+                femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("C10Vianeg", "Women tested  HPV positive and VIA  triage negative treated with thermo ablation or Cryotherapy", new Mapped(
+                femalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
+        CompositionCohortDefinition hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
+        hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.setName("hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType");
+        hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("startDate", "startDate", Date.class));
+        hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("endDate", "endDate", Date.class));
+        hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("1",new Mapped<CohortDefinition>(female,null));
+        hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("3",new Mapped<CohortDefinition>(hivPositivePatient, null));
+        hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("4",new Mapped<CohortDefinition>(screenedForCervicalCancerWithVIANegativeResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("5",new Mapped<CohortDefinition>(screenedForCervicalCancerWithPositiveHPVResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+        hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.setCompositionString("1 and 2 and 3 and 4 and 5");
+
+        CohortIndicator hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator = Indicators.newCountIndicator("hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator",
+                hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("C10PVianeg", "HIV positive Women tested  HPV positive and VIA  triage negative treated with thermo ablation or Cryotherapy", new Mapped(
+                hivPositivefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
+        CompositionCohortDefinition hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType=new CompositionCohortDefinition();
+        hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.setName("hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType");
+        hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("startDate", "startDate", Date.class));
+        hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.addParameter(new Parameter("endDate", "endDate", Date.class));
+        hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("1",new Mapped<CohortDefinition>(female,null));
+        hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("3",new Mapped<CohortDefinition>(hivPositivePatient, null));
+        hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("4",new Mapped<CohortDefinition>(screenedForCervicalCancerWithVIANegativeResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.getSearches().put("5",new Mapped<CohortDefinition>(screenedForCervicalCancerWithPositiveHPVResult, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+        hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType.setCompositionString("1 and 2 and (not 3) and 4 and 5");
+
+        CohortIndicator hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator = Indicators.newCountIndicator("hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator",
+                hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentType, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("C10NVianeg", "HIV Negative Women tested  HPV positive and VIA  triage negative treated with thermo ablation or Cryotherapy", new Mapped(
+                hivNegavefemalescreenedForCervicalCancerWithpositiveHPVandNegativeVIAWithThermalAblationAndCryotherapyTreatmentTypeIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
 
         //=========================================================== c11 =====================================================================
         SqlCohortDefinition screenedForCervicalCancerWithLEEPAsReasonsForReferral=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForCervicalCancerWithLEEPAsReasonsForReferral",cervicalCancerScreeningFollowupAndExaminationForms,reasonsForReferral, LEEPAndColposcopy);
@@ -1163,73 +1251,99 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         SqlCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms",breastCancerScreeningForms,reasonForBreastExam,breastSymptoms);
 
-        CompositionCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition=new CompositionCohortDefinition();
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition.setName("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition");
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition.setCompositionString("1");
-
-        CohortIndicator screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsIndicator = Indicators.newCountIndicator("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsIndicator",
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+        SqlCohortDefinition screenedForBreastCancerWithBreastFindings=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithAbnormalBreastFindings",breastCancerScreeningForms,breastExamination,breastExaminationAnswers);
 
 
-        dsd.addColumn("B1", "Number of people reporting breast symptoms received  clinical breast exam", new Mapped(
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        CompositionCohortDefinition screenedForBreastCancerWithClinicalBreastExamComposition=new CompositionCohortDefinition();
+        screenedForBreastCancerWithClinicalBreastExamComposition.setName("screenedForBreastCancerWithClinicalBreastExamComposition");
+        screenedForBreastCancerWithClinicalBreastExamComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithBreastFindings, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
 
-        CompositionCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition30=new CompositionCohortDefinition();
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition30.setName("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition");
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition30.addParameter(new Parameter("startDate", "startDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition30.addParameter(new Parameter("endDate", "endDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition30.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition30.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition30.getSearches().put("2",new Mapped<CohortDefinition>(below30Y, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+        screenedForBreastCancerWithClinicalBreastExamComposition.setCompositionString("1");
 
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition30.setCompositionString("1 and 2");
-
-        CohortIndicator screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms30Indicator = Indicators.newCountIndicator("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsIndicator",
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition30, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},effectiveDate=${endDate}"));
+        CohortIndicator screenedForBreastCancerWithClinicalBreastExamIndicator = Indicators.newCountIndicator("screenedForBreastCancerWithClinicalBreastExamIndicator",
+                screenedForBreastCancerWithClinicalBreastExamComposition, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
 
 
-        dsd.addColumn("B130", "Number of under 30 Years people reporting breast symptoms received  clinical breast exam", new Mapped(
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms30Indicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        dsd.addColumn("B1", "People received screening with clinical breast exam", new Mapped(
+                screenedForBreastCancerWithClinicalBreastExamIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+        CompositionCohortDefinition screenedForBreastCancerWithClinicalBreastExamComposition30=new CompositionCohortDefinition();
+        screenedForBreastCancerWithClinicalBreastExamComposition30.setName("screenedForBreastCancerWithClinicalBreastExamComposition30");
+        screenedForBreastCancerWithClinicalBreastExamComposition30.addParameter(new Parameter("startDate", "startDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition30.addParameter(new Parameter("endDate", "endDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition30.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition30.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithBreastFindings, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        screenedForBreastCancerWithClinicalBreastExamComposition30.getSearches().put("2",new Mapped<CohortDefinition>(below30Y, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+
+        screenedForBreastCancerWithClinicalBreastExamComposition30.setCompositionString("1 and 2");
+
+        CohortIndicator screenedForBreastCancerWithClinicalBreastExam30Indicator = Indicators.newCountIndicator("screenedForBreastCancerWithClinicalBreastExam30Indicator",
+                screenedForBreastCancerWithClinicalBreastExamComposition30, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},effectiveDate=${endDate}"));
 
 
-        CompositionCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition3049=new CompositionCohortDefinition();
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition3049.setName("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition");
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition3049.addParameter(new Parameter("startDate", "startDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition3049.addParameter(new Parameter("endDate", "endDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition3049.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition3049.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition3049.getSearches().put("2",new Mapped<CohortDefinition>(between30And49Y, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition3049.setCompositionString("1 and 2");
-
-        CohortIndicator screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms3049Indicator = Indicators.newCountIndicator("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsIndicator",
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition3049, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},effectiveDate=${endDate}"));
+        dsd.addColumn("B130", "Number of under 30 Years People received screening with clinical breast exam", new Mapped(
+                screenedForBreastCancerWithClinicalBreastExam30Indicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 
-        dsd.addColumn("B13049", "Number of between 30 and 49 Years people reporting breast symptoms received  clinical breast exam", new Mapped(
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms3049Indicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        CompositionCohortDefinition screenedForBreastCancerWithClinicalBreastExamComposition3049=new CompositionCohortDefinition();
+        screenedForBreastCancerWithClinicalBreastExamComposition3049.setName("screenedForBreastCancerWithClinicalBreastExamComposition3049");
+        screenedForBreastCancerWithClinicalBreastExamComposition3049.addParameter(new Parameter("startDate", "startDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition3049.addParameter(new Parameter("endDate", "endDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition3049.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition3049.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithBreastFindings, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        screenedForBreastCancerWithClinicalBreastExamComposition3049.getSearches().put("2",new Mapped<CohortDefinition>(between30And49Y, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+
+        screenedForBreastCancerWithClinicalBreastExamComposition3049.setCompositionString("1 and 2");
+
+        CohortIndicator screenedForBreastCancerWithClinicalBreastExam3049Indicator = Indicators.newCountIndicator("screenedForBreastCancerWithClinicalBreastExam3049Indicator",
+                screenedForBreastCancerWithClinicalBreastExamComposition3049, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},effectiveDate=${endDate}"));
 
 
-        CompositionCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50=new CompositionCohortDefinition();
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50.setName("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50");
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50.addParameter(new Parameter("startDate", "startDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50.addParameter(new Parameter("endDate", "endDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50.getSearches().put("2",new Mapped<CohortDefinition>(above50y, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
-
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50.setCompositionString("1 and 2");
-
-        CohortIndicator screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms50Indicator = Indicators.newCountIndicator("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms50Indicator",
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsComposition50, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},effectiveDate=${endDate}"));
+        dsd.addColumn("B13049", "Number of between 30 and 49 Years people received screening with clinical breast exam", new Mapped(
+                screenedForBreastCancerWithClinicalBreastExam3049Indicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 
-        dsd.addColumn("B150", "Number of people with 50 years and above reporting breast symptoms received  clinical breast exam", new Mapped(
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms50Indicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        CompositionCohortDefinition screenedForBreastCancerWithClinicalBreastExamComposition50=new CompositionCohortDefinition();
+        screenedForBreastCancerWithClinicalBreastExamComposition50.setName("screenedForBreastCancerWithClinicalBreastExamComposition50");
+        screenedForBreastCancerWithClinicalBreastExamComposition50.addParameter(new Parameter("startDate", "startDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition50.addParameter(new Parameter("endDate", "endDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition50.addParameter(new Parameter("effectiveDate", "effectiveDate", Date.class));
+        screenedForBreastCancerWithClinicalBreastExamComposition50.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithBreastFindings, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        screenedForBreastCancerWithClinicalBreastExamComposition50.getSearches().put("2",new Mapped<CohortDefinition>(above50y, ParameterizableUtil.createParameterMappings("effectiveDate=${effectiveDate}")));
+
+        screenedForBreastCancerWithClinicalBreastExamComposition50.setCompositionString("1 and 2");
+
+        CohortIndicator screenedForBreastCancerWithClinicalBreastExam50Indicator = Indicators.newCountIndicator("screenedForBreastCancerWithClinicalBreastExam50Indicator",
+                screenedForBreastCancerWithClinicalBreastExamComposition50, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate},effectiveDate=${endDate}"));
+
+
+        dsd.addColumn("B150", "Number of people with 50 years and above received screening with clinical breast exam", new Mapped(
+                screenedForBreastCancerWithClinicalBreastExam50Indicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+        // B1.B Screened people with abnormal clinical breast exam.
+
+
+
+        SqlCohortDefinition screenedForBreastCancerWithAbnormalBreastFindings=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithAbnormalBreastFindings",breastCancerScreeningForms,breastExamination,ABNORMAL);
+
+
+
+        CompositionCohortDefinition screenedForBreastCancerWithAbnormalClinicalBreastExamComposition=new CompositionCohortDefinition();
+        screenedForBreastCancerWithAbnormalClinicalBreastExamComposition.setName("screenedForBreastCancerWithAbnormalClinicalBreastExamComposition");
+        screenedForBreastCancerWithAbnormalClinicalBreastExamComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
+        screenedForBreastCancerWithAbnormalClinicalBreastExamComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
+        screenedForBreastCancerWithAbnormalClinicalBreastExamComposition.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithAbnormalBreastFindings, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+        screenedForBreastCancerWithAbnormalClinicalBreastExamComposition.setCompositionString("1");
+
+        CohortIndicator screenedForBreastCancerWithAbnormalClinicalBreastExamIndicator = Indicators.newCountIndicator("screenedForBreastCancerWithAbnormalClinicalBreastExamIndicator",
+                screenedForBreastCancerWithAbnormalClinicalBreastExamComposition, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("B1B", "Screened people with abnormal clinical breast exam.", new Mapped(
+                screenedForBreastCancerWithAbnormalClinicalBreastExamIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 
 
@@ -1310,25 +1424,30 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
 
 
-        // B3. Number of people reporting symptoms whose clinical breast exam shows abnormal breast findings
+        // B3. Cases with breast symptoms treated at this health facility
 
-        SqlCohortDefinition screenedForBreastCancerWithAbnormalBreastFindings=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("screenedForBreastCancerWithAbnormalBreastFindings",breastCancerScreeningForms,breastExamination,ABNORMAL);
-
-        CompositionCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition=new CompositionCohortDefinition();
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition.setName("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition");
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithReasonForBreastExamAsBreastSymptoms, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition.getSearches().put("2",new Mapped<CohortDefinition>(screenedForBreastCancerWithAbnormalBreastFindings, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
-
-        screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition.setCompositionString("1 and 2");
-
-        CohortIndicator screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsIndicator = Indicators.newCountIndicator("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsIndicator",
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+        SqlCohortDefinition patientsProvidedWithMedicine =Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDate("patientsProvidedWithMedicine",breastCancerScreeningForms,DrugPrescribed);
 
 
-        dsd.addColumn("B3", "Number of people reporting symptoms whose clinical breast exam shows abnormal breast findings", new Mapped(
-                screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+        CompositionCohortDefinition casesWithBreastSymptomsTreatedAtThisHealthFacility=new CompositionCohortDefinition();
+        casesWithBreastSymptomsTreatedAtThisHealthFacility.setName("casesWithBreastSymptomsTreatedAtThisHealthFacility");
+        casesWithBreastSymptomsTreatedAtThisHealthFacility.addParameter(new Parameter("startDate", "startDate", Date.class));
+        casesWithBreastSymptomsTreatedAtThisHealthFacility.addParameter(new Parameter("endDate", "endDate", Date.class));
+        casesWithBreastSymptomsTreatedAtThisHealthFacility.getSearches().put("1",new Mapped<CohortDefinition>(patientsProvidedWithMedicine, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        casesWithBreastSymptomsTreatedAtThisHealthFacility.getSearches().put("2",new Mapped<CohortDefinition>(screenedForBreastCancerWithAbnormalBreastFindings, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+        casesWithBreastSymptomsTreatedAtThisHealthFacility.setCompositionString("1 and 2");
+
+        CohortIndicator casesWithBreastSymptomsTreatedAtThisHealthFacilityIndicator = Indicators.newCountIndicator("casesWithBreastSymptomsTreatedAtThisHealthFacilityIndicator",
+                casesWithBreastSymptomsTreatedAtThisHealthFacility, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("B3", "Cases with breast symptoms treated at this health facility", new Mapped(
+                casesWithBreastSymptomsTreatedAtThisHealthFacilityIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
+        // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 
         CompositionCohortDefinition screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition30=new CompositionCohortDefinition();
         screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition30.setName("screenedForBreastCancerWithReasonForBreastExamAsBreastSymptomsAndAbnormalBreastFindingsComposition30");
@@ -1667,6 +1786,31 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         dsd.addColumn("B650", "Number of people with 50 years and above referred for further evaluation of abnormal clinical breast exam", new Mapped(
                 numberOfPeopleReferredForFurtherEvaluationOfAbnormalClinicalBreastIndicator50, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
+        // B6B. people with suspected breast cancer referred to other levels
+        SqlCohortDefinition numberOfPatientWithAuxillaryMass=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfPatientWithAuxillaryMass",breastcancerScreeningAndFollowupForms,radiologicDiagnosis,auxillaryMass);
+        SqlCohortDefinition numberOfPatientWithbreastMass=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfPatientWithbreastMass",breastcancerScreeningAndFollowupForms,radiologicDiagnosis,breastMass);
+        SqlCohortDefinition numberOfPatientsWithBirads4orabove =Cohorts.getPatientsWithObservationInFormBetweenStartAndEndDateAndObsValueGreaterThanOrEqualTo("numberOfPatientsWithBirads4orabove",breastcancerScreeningAndFollowupForms,biradsFinalAssessmentCategory,4);
+
+        CompositionCohortDefinition peopleWithSuspectedBreastCancerReferredToOtherLevels=new CompositionCohortDefinition();
+        peopleWithSuspectedBreastCancerReferredToOtherLevels.setName("peopleWithSuspectedBreastCancerReferredToOtherLevels");
+        peopleWithSuspectedBreastCancerReferredToOtherLevels.addParameter(new Parameter("startDate", "startDate", Date.class));
+        peopleWithSuspectedBreastCancerReferredToOtherLevels.addParameter(new Parameter("endDate", "endDate", Date.class));
+        peopleWithSuspectedBreastCancerReferredToOtherLevels.getSearches().put("1",new Mapped<CohortDefinition>(screenedForBreastCancerWithReferral, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        peopleWithSuspectedBreastCancerReferredToOtherLevels.getSearches().put("2",new Mapped<CohortDefinition>(numberOfPatientWithAuxillaryMass, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        peopleWithSuspectedBreastCancerReferredToOtherLevels.getSearches().put("3",new Mapped<CohortDefinition>(numberOfPatientWithbreastMass, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        peopleWithSuspectedBreastCancerReferredToOtherLevels.getSearches().put("4",new Mapped<CohortDefinition>(numberOfPatientsWithBirads4orabove, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+
+        peopleWithSuspectedBreastCancerReferredToOtherLevels.setCompositionString("1 and (2 or 3 or 4)");
+
+        CohortIndicator peopleWithSuspectedBreastCancerReferredToOtherLevelsIndicator = Indicators.newCountIndicator("casesWithBreastSymptomsTreatedAtThisHealthFacilityIndicator",
+                peopleWithSuspectedBreastCancerReferredToOtherLevels, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("B3B", "people with suspected breast cancer referred to other levels", new Mapped(
+                peopleWithSuspectedBreastCancerReferredToOtherLevelsIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
 
 
         //================================================
@@ -1934,7 +2078,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 
         // B10. Number of  women with breast biopsy performed
 
-        SqlCohortDefinition numberOfPatientWithBreastBiopsyPerformed=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfWomenWithBreastBiopsyPerformed",breastCancerScreeningForms,proceduresDone,BIOPSY);
+        SqlCohortDefinition numberOfPatientWithBreastBiopsyPerformed=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfWomenWithBreastBiopsyPerformed",breastcancerScreeningAndFollowupForms,proceduresDone,BIOPSY);
 
         CompositionCohortDefinition numberOfWomenWithBreastBiopsyPerformedComposition=new CompositionCohortDefinition();
         numberOfWomenWithBreastBiopsyPerformedComposition.setName("numberOfWomenWithBreastBiopsyPerformedComposition");
@@ -2011,7 +2155,48 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
                 numberOfWomenWithBreastBiopsyPerformedCompositionIndicator50, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
 
 
-        //B11. Number of women with suspected  breast cancer referred to other levels  (skipped)
+        // B10B Number of  people with breast biopsy performed
+
+
+
+        CompositionCohortDefinition numberOfPeopleWithBreastBiopsyPerformedComposition=new CompositionCohortDefinition();
+        numberOfPeopleWithBreastBiopsyPerformedComposition.setName("numberOfPeopleWithBreastBiopsyPerformedComposition");
+        numberOfPeopleWithBreastBiopsyPerformedComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
+        numberOfPeopleWithBreastBiopsyPerformedComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
+        numberOfPeopleWithBreastBiopsyPerformedComposition.getSearches().put("1",new Mapped<CohortDefinition>(numberOfPatientWithBreastBiopsyPerformed, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+        numberOfPeopleWithBreastBiopsyPerformedComposition.setCompositionString("1");
+
+        CohortIndicator numberOfPeopleWithBreastBiopsyPerformedIndicator = Indicators.newCountIndicator("numberOfPeopleWithBreastBiopsyPerformedIndicator",
+                numberOfPeopleWithBreastBiopsyPerformedComposition, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("B10B", "people with  breast biopsy performed", new Mapped(
+                numberOfPeopleWithBreastBiopsyPerformedIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
+
+        // B10C Number of  women with breast biopsy performed
+
+        SqlCohortDefinition numberOfPatientWithBiopsyPerformed=Cohorts.getPatientsWithObservationInEncounterBetweenStartAndEndDate("numberOfWomenWithBreastBiopsyPerformed",screeningExaminationForms,proceduresDone,BIOPSY);
+
+
+        CompositionCohortDefinition numberOfPeopleWithBiopsyPerformedComposition=new CompositionCohortDefinition();
+        numberOfPeopleWithBiopsyPerformedComposition.setName("numberOfPeopleWithBiopsyPerformedComposition");
+        numberOfPeopleWithBiopsyPerformedComposition.addParameter(new Parameter("startDate", "startDate", Date.class));
+        numberOfPeopleWithBiopsyPerformedComposition.addParameter(new Parameter("endDate", "endDate", Date.class));
+        numberOfPeopleWithBiopsyPerformedComposition.getSearches().put("1",new Mapped<CohortDefinition>(numberOfPatientWithBiopsyPerformed, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+        numberOfPeopleWithBiopsyPerformedComposition.getSearches().put("2",new Mapped<CohortDefinition>(screenedForCervicalCancerWithBiobsyPerformed, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}")));
+
+
+        numberOfPeopleWithBiopsyPerformedComposition.setCompositionString("1 or 2");
+
+        CohortIndicator numberOfPeopleWithBiopsyPerformedIndicator = Indicators.newCountIndicator("numberOfPeopleWithBiopsyPerformedIndicator",
+                numberOfPeopleWithBiopsyPerformedComposition, ParameterizableUtil.createParameterMappings("startDate=${startDate},endDate=${endDate}"));
+
+
+        dsd.addColumn("B10C", "Biopsies collected for all type of cancer of cancers", new Mapped(
+                numberOfPeopleWithBiopsyPerformedIndicator, ParameterizableUtil.createParameterMappings("endDate=${endDate},startDate=${startDate}")), "");
+
 
 
         //B12. Number of women screened for cervical cancer with  Papsmear/cytology
@@ -2434,6 +2619,7 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         screeningExaminationForms.add(mUzimaCervicalCancerScreeningFollowup);
         screeningExaminationForms.add(OncologyCervicalScreeningFollowUp);
 
+
         screeningCervicalForms.add(oncologyCervicalScreeningExamination);
         screeningCervicalForms.add(mUzimaBreastScreening);
         screeningCervicalForms.add(mUzimaCervicalScreening);
@@ -2455,6 +2641,8 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         oncologyScreeningLabResultsForms.add(OncologyCervicalScreeningFollowUp);
         oncologyScreeningLabResultsForms.add(oncologyCervicalScreeningExamination);
         oncologyScreeningLabResultsForms.add(mUzimaCervicalScreening);*/
+        screeningExaminationForms.add(oncologyScreeningLabResultsForm);
+        screeningExaminationForms.add(muzimaOncologyScreeningLabResults);
 
 
         testResult=Context.getConceptService().getConceptByUuid("bfb3eb1e-db98-4846-9915-0168511c6298");
@@ -2469,6 +2657,8 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         cervicalCancerScreeningFollowupAndExaminationForms.add(OncologyCervicalScreeningFollowUp);
         cervicalCancerScreeningFollowupAndExaminationForms.add(oncologyCervicalScreeningExamination);
         cervicalCancerScreeningFollowupAndExaminationForms.add(mUzimaCervicalScreening);
+        cervicalCancerScreeningFollowupAndExaminationForms.add(oncologyScreeningLabResultsForm);
+        cervicalCancerScreeningFollowupAndExaminationForms.add(muzimaOncologyScreeningLabResults);
 
         typeOfVIAPerformed=Context.getConceptService().getConceptByUuid("820b0e37-5d3e-46c6-9462-a8e7adaff954");
         VIATriage=Context.getConceptService().getConceptByUuid("69a0ca97-2fee-4c4a-9d84-4f2c25f70c93");
@@ -2515,9 +2705,17 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
 */
 
         mUzimaBreastCancerScreening = Context.getFormService().getForm("mUzima Breast cancer screening");
+        muzimaBreastCancerFollowup = Context.getFormService().getForm("mUzima Breast cancer screening followup");
 
         breastCancerScreeningForms.add(mUzimaBreastCancerScreening);
         breastCancerScreeningForms.add(oncologyBreastScreeningExamination);
+
+        breastcancerScreeningAndFollowupForms.add(mUzimaBreastCancerScreening);
+        breastcancerScreeningAndFollowupForms.add(oncologyBreastScreeningExamination);
+        breastcancerScreeningAndFollowupForms.add(muzimaBreastCancerFollowup);
+
+
+
 
         reasonForBreastExam = Context.getConceptService().getConceptByUuid("0483b8fa-b6d2-4551-ab4c-b141399897d7");
         breastSymptoms = Context.getConceptService().getConceptByUuid("b761e2c9-3d07-4a03-b274-c38282cc723c");
@@ -2538,6 +2736,8 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         proceduresDone = Context.getConceptService().getConceptByUuid("e44f17a3-28bd-4fe1-a4e1-1bb94779a1fd");
         PAPANICOLAOUSMEAR = Context.getConceptService().getConceptByUuid("3cd4de2e-26fe-102b-80cb-0017a47871b2");
         NORMAL = Context.getConceptService().getConceptByUuid("3cd750a0-26fe-102b-80cb-0017a47871b2");
+        breastExaminationAnswers.add(ABNORMAL);
+        breastExaminationAnswers.add(NORMAL);
 
         muzimaOncologyScreeningDiagnosis = Context.getFormService().getForm("muzima oncology screening Diagnosis");
         oncologyScreeningDiagnosis = Context.getFormService().getForm("Oncology Screening Diagnosis");
@@ -2548,12 +2748,16 @@ SqlCohortDefinition screenedForCervicalCancerWithHPVResult=Cohorts.getPatientsWi
         confirmedCancerDiagnosis = Context.getConceptService().getConceptByUuid("3dc2eb50-6981-43d3-b907-e3dd8b5ed620");
         cervicalCancer = Context.getConceptService().getConceptByUuid("36052b70-ba49-466f-a4eb-bc99581be7a2");
         breastCancer = Context.getConceptService().getConceptByUuid("e1bd83f4-e9fa-4564-b8aa-74a9b199aca8");
-
+        radiologicDiagnosis = Context.getConceptService().getConceptByUuid("16318cc8-cdd9-41be-94d2-b31c67bc6b8f");
+        breastMass = Context.getConceptService().getConceptByUuid("09e3246a-5968-4ab4-960a-6b324517dc64");
+        auxillaryMass = Context.getConceptService().getConceptByUuid("3ce9672c-26fe-102b-80cb-0017a47871b2");
+        biradsFinalAssessmentCategory = Context.getConceptService().getConceptByUuid("1ba801e8-969b-418d-8ad1-7262580ee0c0");
       /*  oncologyBreastCancerScreeningTransferIn = Context.getFormService().getForm("Oncology Breast Cancer Screening transfer in");
         oncologyBreastCancerScreeningTransferInList.add(oncologyBreastCancerScreeningTransferIn);
 */
         hivStatus=Context.getConceptService().getConceptByUuid("aec6ad18-f4dd-4cfa-b68d-3d7bb6ea908e");
 
         positive = Context.getConceptService().getConceptByUuid("3cd3a7a2-26fe-102b-80cb-0017a47871b2");
+        DrugPrescribed = Context.getConceptService().getConceptByUuid("c28bc221-065e-4716-a9b0-b959239bc102");
     }
 }

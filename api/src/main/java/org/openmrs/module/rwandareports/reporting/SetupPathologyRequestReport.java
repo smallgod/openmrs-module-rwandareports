@@ -142,7 +142,7 @@ public class SetupPathologyRequestReport implements SetupReport {
                 " and p.dead=0" +
                 " and IF( :location IS NULL, true, healthcenter.location_id= :location) " +
 //                " and IF( :baseEnc IS NULL , true, enc.encounter_id < :baseEnc)  " +
-                " and enc.encounter_datetime >= (CURDATE() - INTERVAL 6 MONTH) "+
+                " and enc.encounter_datetime >= (CURDATE() - INTERVAL 12 MONTH) "+
 //                " and TIMESTAMPDIFF(MONTH, enc.encounter_datetime, now()) <= 6" +
 
                 " order by enc.encounter_id desc " );

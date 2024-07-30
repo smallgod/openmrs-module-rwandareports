@@ -1407,7 +1407,7 @@ public class Cohorts {
 			queryStr.append(concept.getConceptId());
 			j++;
 		}
-		queryStr.append(") and o.voided=0 and e.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL or o.value_datetime is NOT NULL )");
+		queryStr.append(") and o.voided=0 and e.voided=0 and o.obs_datetime>= :startDate and o.obs_datetime<= :endDate and (o.value_numeric is NOT NULL or o.value_coded is NOT NULL or o.value_datetime is NOT NULL or o.value_text is NOT NULL )");
 		query.setQuery(queryStr.toString());
 		query.setName(name);
 		query.addParameter(new Parameter("startDate", "startDate", Date.class));
@@ -2042,7 +2042,6 @@ int i=0;
 		                + ")order by encounter_datetime desc) as ordred_enc ) as last_enc where o.encounter_id=last_enc.encounter_id and last_enc.voided=0 and o.voided=0 and o.concept_id="
 		                + returnVisitDate.getConceptId()
 		                + " and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
-		System.out.println("resultttttttttttttttttttt"+cohortquery);
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
 		cohortquery.addParameter(new Parameter("end", "end", Date.class));
 		return cohortquery;
@@ -2139,7 +2138,6 @@ int i=0;
 		        .setQuery("select o.person_id from obs o where o.voided=0 and o.concept_id="
 		                + visitDate.getConceptId()
 		                + " and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
-		System.out.println("Checkkkkkkkkkkkkkkkkkkkkk"+ cohortquery );
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
 		cohortquery.addParameter(new Parameter("end", "end", Date.class));
 		return cohortquery;
@@ -2177,7 +2175,6 @@ int i=0;
 		        .setQuery("select o.person_id from obs o where o.voided=0 and o.concept_id in ("
 		                + conceptIds.toString()
 		                + ") and o.value_datetime>= :start and o.value_datetime<= :end order by o.value_datetime");
-		System.out.println("Ndeberaaaaaaaaaa" + cohortquery);
 		cohortquery.addParameter(new Parameter("start", "start", Date.class));
 		cohortquery.addParameter(new Parameter("end", "end", Date.class));
 		return cohortquery;
@@ -2540,7 +2537,6 @@ int i=0;
 
 		sql.append(" DATEDIFF(:endDate,lastObs.value_datetime)>6 and (not last_Visit.encounter_datetime > lastObs.value_datetime) and last_Visit.patient_id=lastObs.person_id");
 
-//		System.out.println("Missedddddddddddddd"+sql);
 
 		SqlCohortDefinition lateVisit = new SqlCohortDefinition(sql.toString());
 		lateVisit.addParameter(new Parameter("endDate", "endDate", Date.class));

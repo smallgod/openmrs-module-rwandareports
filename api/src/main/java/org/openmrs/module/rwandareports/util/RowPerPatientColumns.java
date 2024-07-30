@@ -2138,6 +2138,37 @@ public class RowPerPatientColumns {
 		return mostRecent;
 
 	}
+
+	public static MostRecentObservationOfSpecificEncountertypes getMostRecentEncounterOfSpecificEncountertypeInperiod
+			(String name,Concept concept,Date startDate,Date endDate,List<EncounterType> encounterTypes,List<Form> forms,String dateFormat){
+		MostRecentObservationOfSpecificEncountertypes mostRecentInEncInperiod = new MostRecentObservationOfSpecificEncountertypes();
+		mostRecentInEncInperiod.setName(name);
+		mostRecentInEncInperiod.setConcept(concept);
+		mostRecentInEncInperiod.addParameter(new Parameter("endDate", "endDate", Date.class));
+		mostRecentInEncInperiod.addParameter(new Parameter("startDate", "startDate", Date.class));
+		mostRecentInEncInperiod.addParameter(new Parameter("encounterType", "encounterType", EncounterType.class));
+		if(forms == null) {
+			mostRecentInEncInperiod.addParameter(new Parameter("form", "form", Form.class));
+		}else {
+			mostRecentInEncInperiod.setForms(forms);
+		}
+
+//		if(encounterType == null) {
+//			mostRecentInEncInperiod.addParameter(new Parameter("encounterType", "encounterType", EncounterType.class));
+//		}else {
+//			mostRecentInEncInperiod.setEncounterType(encounterType);
+//		}
+
+		if (dateFormat != null) {
+			mostRecentInEncInperiod.setDateFormat(dateFormat);
+		}
+
+
+		return mostRecentInEncInperiod;
+
+
+	}
+
 	public static MostRecentObservationInPeriod getMostRecentInperiodHavingCodedAnswers
 			(String name,Concept question,List<Concept> answers,Date startDate,Date endDate, String dateFormat){
 		MostRecentObservationInPeriod mostRecent = new MostRecentObservationInPeriod();
@@ -2184,6 +2215,7 @@ public class RowPerPatientColumns {
 		mostRecentEncounterOfType.setEncounterTypes(encounterTypes);
 		return mostRecentEncounterOfType;
 	}
+
 
 //	public static PatientAttribute getPhoneNumber(String name) {
 //		PatientAttribute phoneNumber = new PatientAttribute();
