@@ -652,7 +652,13 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_LabResultReport.form" onclick=msgreg(this)>(Re) register</a></td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_LabResultReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
-
+<tr >
+<td class="tabletd"> Billing Reports </td>
+<td> Billing - Grouped Insurance Report </td>
+<td>At site</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_IncomeGroupedByInsurance.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_IncomeGroupedByInsurance.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
 
 
 </table>

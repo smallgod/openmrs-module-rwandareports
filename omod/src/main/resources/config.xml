@@ -4591,4 +4591,10 @@
 		<description>Concept: Scheduled Oncology Biopsy Visit date</description>
 	</globalProperty>
 
+	<globalProperty>
+		<property>reports.ckdProgram</property>
+		<defaultValue>1b48afcc-347b-4419-b481-0a6a9db1e900</defaultValue>
+		<description>Program: Chronic Kidney Disease</description>
+	</globalProperty>
+
 </module>

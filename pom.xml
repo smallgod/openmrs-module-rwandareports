@@ -15,7 +15,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<openMRSVersion>2.3.3-SNAPSHOT</openMRSVersion>
+		<openMRSVersion>2.3.3</openMRSVersion>
 		<calculationVersion>1.3.0</calculationVersion>
 		<heightweighttrackerVersion>2.1.0-SNAPSHOT</heightweighttrackerVersion>
 		<htmlwidgetsVersion>1.10.0</htmlwidgetsVersion>

@@ -140,7 +140,7 @@ public class RunReportsController {
 		
     }
 		
-    @RequestMapping("/module/rwandareports/renderCalendarWebRenderer")
+    @RequestMapping("/module/rwandareports/renderCalendarWebRenderer.form")
 	public ModelAndView renderIndicatorReport() {     	
 	    return new ModelAndView("/module/rwandareports/renderCalendarWebRenderer");    	
 	}

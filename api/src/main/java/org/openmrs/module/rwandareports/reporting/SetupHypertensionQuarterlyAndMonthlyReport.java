@@ -149,7 +149,7 @@ public class SetupHypertensionQuarterlyAndMonthlyReport extends SingleSetupRepor
 		ReportDesign quarterlyDesign = Helper.createRowPerPatientXlsOverviewReportDesign(quarterlyRd,
 		    "Hypertension_Indicator_Quarterly_Report.xls", "Hypertension Quarterly Indicator Report (Excel)", null);
 		Properties quarterlyProps = new Properties();
-		quarterlyProps.put("repeatingSections", "sheet1,dataset:Encounter Quarterly Data Set");
+		quarterlyProps.put("repeatingSections", "sheet:1,dataset:Encounter Quarterly Data Set");
 		quarterlyProps.put("sortWeight","5000");
 		quarterlyDesign.setProperties(quarterlyProps);
 		Helper.saveReportDesign(quarterlyDesign);
