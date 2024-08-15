@@ -17,7 +17,7 @@ SELECT service_id,
        CASE
            WHEN FIND_IN_SET(service_id, @insurance_property_value) THEN 'INSURANCE'
            WHEN FIND_IN_SET(service_id, @imaging_property_value) THEN 'IMAGING'
-           WHEN FIND_IN_SET(service_id, @procedures_property_value) THEN 'PROCEDURES'
+           WHEN FIND_IN_SET(service_id, @procedures_property_value) THEN 'PROCED.'
            END AS group_name
 FROM mamba_dim_hop_service
 WHERE FIND_IN_SET(service_id, @insurance_property_value)
