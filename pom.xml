@@ -55,6 +55,91 @@
                 <scope>provided</scope>
             </dependency>
 
+<<<<<<< HEAD
+=======
+            <dependency>
+                <groupId>org.openmrs.api</groupId>
+                <artifactId>openmrs-api</artifactId>
+                <version>${openMRSVersion}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.api</groupId>
+                <artifactId>openmrs-api</artifactId>
+                <type>test-jar</type>
+                <version>${openMRSVersion}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.api</groupId>
+                <artifactId>openmrs-api</artifactId>
+                <version>${openMRSVersion}</version>
+                <classifier>tests</classifier>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.web</groupId>
+                <artifactId>openmrs-web</artifactId>
+                <version>${openMRSVersion}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.web</groupId>
+                <artifactId>openmrs-web</artifactId>
+                <version>${openMRSVersion}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>webservices.rest-omod-common</artifactId>
+                <version>${webservicesRestVersion}</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>webservices.rest-omod-common</artifactId>
+                <version>${webservicesRestVersion}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>webservices.rest-omod-2.0</artifactId>
+                <version>${webservicesRestVersion}</version>
+                <type>jar</type>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javaxAnnotationVersion}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>ohrimamba-core-omod</artifactId>
+                <version>${mambaETLCoreVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>mamba-core-api</artifactId>
+                <version>${mambaETLCoreVersion}</version>
+                <type>jar</type>
+            </dependency>
+
+>>>>>>> af32fe5 (Updated module to reflect new Mamba changes)
         </dependencies>
     </dependencyManagement>
 
@@ -405,8 +490,12 @@
                                     <argument>-a analysis_db</argument>
 =======
                                     <!-- The target or analysis Database where the ETL data is stored -->
+<<<<<<< HEAD
                                     <argument>-a kibagabaga</argument>
 >>>>>>> d342ebc (Set ETL to use same database as transactional data)
+=======
+                                    <argument>-a analysis_db</argument>
+>>>>>>> af32fe5 (Updated module to reflect new Mamba changes)
 
                                     <!-- File with a list of all files with stored procedures -->
                                     <!-- Remove this argument after automating core to auto-read this -->
@@ -422,10 +511,14 @@
                                     <!-- Set 1 to recompile/build the scripts else 0 - not to. If 1 - don't forget to change the liquibase changeset ID -->
                                     <argument>-b 1</argument>
 
+<<<<<<< HEAD
                                     <!-- add any other arguments below -->
                                     <argument></argument>
 
                                     <argument></argument>
+=======
+                                    <argument/>
+>>>>>>> af32fe5 (Updated module to reflect new Mamba changes)
 
                                     <argument></argument>
 
