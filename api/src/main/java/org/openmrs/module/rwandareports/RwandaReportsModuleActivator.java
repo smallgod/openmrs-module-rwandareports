@@ -29,7 +29,7 @@ public class RwandaReportsModuleActivator extends BaseModuleActivator {
 	@Override
 	public void started() {
 		log.info("Started Rwanda Report Module Config");
-		log.info("MambaETL Deploying scripts...");
+		System.out.println("MambaETL Deploying scripts...");
 		Context.getService(FlattenDatabaseService.class).setupEtl();
 	}
 	
