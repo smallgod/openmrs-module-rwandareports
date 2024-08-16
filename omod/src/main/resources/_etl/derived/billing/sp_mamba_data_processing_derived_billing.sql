@@ -26,4 +26,7 @@ CALL sp_mamba_dim_billing_report_columns;
 CALL sp_mamba_fact_patient_service_bill;
 CALL sp_mamba_fact_patient_service_bill_flat;
 
+-- Create View
+CALL sp_mamba_view_fact_insurance_report;
+
 -- $END
