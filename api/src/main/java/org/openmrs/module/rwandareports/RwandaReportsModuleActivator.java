@@ -23,18 +23,19 @@ import org.openmrs.module.mambacore.api.FlattenDatabaseService;
  * This class contains the logic that is run every time this module is either started or shutdown
  */
 public class RwandaReportsModuleActivator extends BaseModuleActivator {
-	
-	private static Log log = LogFactory.getLog(RwandaReportsModuleActivator.class);
-	
-	@Override
-	public void started() {
-		log.info("Started Rwanda Report Module Config");
-		System.out.println("MambaETL Deploying scripts...");
-		Context.getService(FlattenDatabaseService.class).setupEtl();
-	}
-	
-	@Override
-	public void stopped() {
-		log.info("Stopped Rwanda Report Module");
-	}
+
+    private static Log log = LogFactory.getLog(RwandaReportsModuleActivator.class);
+
+    @Override
+    public void started() {
+        log.info("Started Rwanda Report Module Config");
+        log.info("MambaETL Deploying scripts...");
+        Context.getService(FlattenDatabaseService.class).setupEtl();
+    }
+
+    @Override
+    public void stopped() {
+        log.info("Stopped Rwanda Report Module");
+        Context.getService(FlattenDatabaseService.class).shutdownEtlThread();
+    }
 }
