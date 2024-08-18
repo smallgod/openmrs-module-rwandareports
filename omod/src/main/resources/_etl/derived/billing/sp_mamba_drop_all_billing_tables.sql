@@ -27,7 +27,7 @@ BEGIN
     DROP TABLE IF EXISTS mamba_dim_patient_service_bill;
     DROP TABLE IF EXISTS mamba_dim_service_category;
     DROP TABLE IF EXISTS mamba_dim_third_party_bill;
-    DROP TABLE IF EXISTS mamba_dim_thirdparty;
+    DROP TABLE IF EXISTS mamba_dim_third_party;
     DROP TABLE IF EXISTS mamba_fact_patient_service_bill;
     DROP TABLE IF EXISTS mamba_fact_patient_service_bill_flat;
 

@@ -128,7 +128,7 @@
 
             <dependency>
                 <groupId>org.openmrs.module</groupId>
-                <artifactId>ohrimamba-core-omod</artifactId>
+                <artifactId>mamba-core-omod</artifactId>
                 <version>${mambaETLCoreVersion}</version>
             </dependency>
 
@@ -465,7 +465,7 @@
                                     <argument>-d kibagabaga</argument>
 
                                     <!-- The target or analysis Database where the ETL data is stored -->
-                                    <argument>-a analysis_db</argument>
+                                    <argument>-a analysis_kibagabaga</argument>
 
                                     <!-- File with a list of all files with stored procedures -->
                                     <!-- Remove this argument after automating core to auto-read this -->
