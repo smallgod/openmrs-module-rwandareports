@@ -366,7 +366,7 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_NCDsHMISReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td rowspan="27" class="tabletd">Oncology</td>
+<td rowspan="29" class="tabletd">Oncology</td>
 <td>ONC-Chemotherapy Treatment Administration Plan</td>
 <td>At site</td>
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/register_treatmentAdministrationPlan.form" onclick=msgreg(this)>(Re) register</a></td>
@@ -494,10 +494,16 @@ $(document).ready(function(){
 <td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningProgramIndicatorReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
-<td>ONC - Cancer Screening Consultation sheet and Missed visit Report</td>
+<td>ONC - Breast Cancer Screening Consultation sheet and Missed visit Report</td>
 <td>central</td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgreg(this)>(Re) register</a></td>
-<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgrem(this)>Remove</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_BreastCancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_BreastCancerScreeningConsultationSheetAndMissedVisitReport.form" onclick=msgrem(this)>Remove</a></td>
+</tr>
+<tr>
+<td>ONC - Cervical Cancer Screening Consultation sheet and Missed visit Report</td>
+<td>central</td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/register_CervicalCancerScreeningConsultAndMissedVisitReport.form" onclick=msgreg(this)>(Re) register</a></td>
+<td><a href="${pageContext.request.contextPath}/module/rwandareports/remove_CervicalCancerScreeningConsultAndMissedVisitReport.form" onclick=msgrem(this)>Remove</a></td>
 </tr>
 <tr>
 <td>ONC - Cancer Screening SMS Report</td>

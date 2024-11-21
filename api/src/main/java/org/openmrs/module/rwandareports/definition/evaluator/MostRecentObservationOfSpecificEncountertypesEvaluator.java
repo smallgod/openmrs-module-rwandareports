@@ -36,42 +36,25 @@ public class MostRecentObservationOfSpecificEncountertypesEvaluator implements R
         Concept c = pd.getConcept();
         Date startDate = pd.getStartDate();
         Date endDate = pd.getEndDate();
-//        EncounterType encounterType = pd.getEncounterTypes();
 
 
         List<Form> forms = pd.getForms();
-//        System.out.printf("encounter type 11111111111111111111111: " + encounterType);
-//        if(pd.getStartDate() == null) {
-//            startDate = (Date) context.getParameterValue("startDate");
-//        }
-//        if(pd.getEndDate() == null){
-//            endDate = (Date)context.getParameterValue("endDate");
-//            }
-//        if(((EncounterType) context.getParameterValue("encounterType"))!=null) {
-//            pd.addEncounterType((EncounterType) context.getParameterValue("encounterType"));
-//        }
-//        if(pd.getForms().isEmpty()) {
-//            forms.add((Form) context.getParameterValue("form"));
-//        }
-        System.out.println("encounter type sizeeeeeeeeeeeeeeeeee: " + pd.getEncounterTypes().size());
 
-        System.out.println("dateeeeeeeeeeeeeeeeeeeeeeeeee : " + endDate);
+
         List<Person> personList = new ArrayList<Person>();
         personList.add(pd.getPatient());
-//        List<EncounterType> encounterTypes = new ArrayList<>();
-//        encounterTypes.add(encounterType);
+
         List<Concept> conceptsList = new ArrayList<Concept>();
         conceptsList.add(pd.getConcept());
 
-//        EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteria(pd.getPatient(),null,startDate,endDate,
-//                null,forms,encounterTypes,null,null,null,false);
+
         EncounterSearchCriteriaBuilder builder = new EncounterSearchCriteriaBuilder();
         builder.setPatient(pd.getPatient()).setEncounterTypes(pd.getEncounterTypes()).setIncludeVoided(false).setToDate(endDate);
         List<Encounter> encounters = Context.getEncounterService().getEncounters(builder.createEncounterSearchCriteria());
 
 //        List<Obs> obs =  Context.getObsService().getObservations( personList,null,conceptsList,null,null,null,null,null,null,startDate,endDate,false);
 
-        List<Obs> obs = Context.getObsService().getObservations(personList,encounters,conceptsList,null,null,null,null,null,null,startDate,endDate,false);
+        List<Obs> obs = Context.getObsService().getObservations(personList,encounters,conceptsList,null,null,null,null,null,null,null,endDate,false);
         Obs ob = null;
         if(obs != null)
         {
@@ -87,9 +70,7 @@ public class MostRecentObservationOfSpecificEncountertypesEvaluator implements R
                         }
                     }
                 }
-//                System.out.println("observationnnnnnnnnnnnnnnnnnnnnndateDatetimeeeeee: " + o.getObsDatetime());
-//                System.out.println("observationnnnnnnnnnnnnnnnnnnnnnvalueDatetime: " + o.getValueDate());
-//                System.out.println("observationnnnnnnnnnnnnnnnnnnnnnEncounterType: " + o.getEncounter().getEncounterType().getName());
+
 
             }
         }

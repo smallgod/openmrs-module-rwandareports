@@ -22,8 +22,9 @@ public class HighestValueDateTimeUptoDate implements ResultFilter {
 
         List<Obs> allObs = (List<Obs>)value;
 
-        if(allObs != null)
+        if(!allObs.isEmpty())
         {
+
             Collections.sort(allObs, new ObsValueDatetimeComparatorDesc());
         }
 
@@ -34,9 +35,11 @@ public class HighestValueDateTimeUptoDate implements ResultFilter {
 
             for (int i = 0; i < allObs.size(); i++)
             {
-                if((new Date()).after(allObs.get(i).getValueDatetime())){
-                    beforeEndDateObs.add(allObs.get(i));
-                    Collections.sort(beforeEndDateObs, new ObsValueDatetimeComparatorDesc());
+                if(allObs.get(i).getValueDatetime() !=null){
+                    if((new Date()).after(allObs.get(i).getValueDatetime())){
+                        beforeEndDateObs.add(allObs.get(i));
+                        Collections.sort(beforeEndDateObs, new ObsValueDatetimeComparatorDesc());
+                    }
                 }
             }
 

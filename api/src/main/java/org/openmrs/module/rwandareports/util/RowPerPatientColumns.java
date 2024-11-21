@@ -2153,11 +2153,11 @@ public class RowPerPatientColumns {
 			mostRecentInEncInperiod.setForms(forms);
 		}
 
-//		if(encounterType == null) {
-//			mostRecentInEncInperiod.addParameter(new Parameter("encounterType", "encounterType", EncounterType.class));
-//		}else {
-//			mostRecentInEncInperiod.setEncounterType(encounterType);
-//		}
+		if(encounterTypes == null) {
+			mostRecentInEncInperiod.addParameter(new Parameter("encounterType", "encounterType", EncounterType.class));
+		}else {
+			mostRecentInEncInperiod.setEncounterTypes(encounterTypes);
+		}
 
 		if (dateFormat != null) {
 			mostRecentInEncInperiod.setDateFormat(dateFormat);
