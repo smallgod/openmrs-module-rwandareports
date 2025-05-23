@@ -1,8 +1,8 @@
 DELIMITER //
 
-DROP PROCEDURE IF EXISTS sp_mamba_fact_thirdparty_report_query;
+DROP PROCEDURE IF EXISTS sp_mamba_view_fact_thirdparty_report;
 
-CREATE PROCEDURE sp_mamba_fact_thirdparty_report_query()
+CREATE PROCEDURE sp_mamba_view_fact_thirdparty_report()
 BEGIN
     -- Drop the view if it exists
     DROP VIEW IF EXISTS mamba_view_fact_thirdparty_report;
