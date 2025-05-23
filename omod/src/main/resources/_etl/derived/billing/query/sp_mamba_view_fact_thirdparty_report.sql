@@ -6,9 +6,12 @@ CREATE PROCEDURE sp_mamba_view_fact_thirdparty_report()
 BEGIN
     -- Drop the view if it exists
     DROP VIEW IF EXISTS mamba_view_fact_thirdparty_report;
-
-    CREATE VIEW mamba_view_fact_thirdparty_report AS
-    SELECT
+    
+    -- Create a temporary table to calculate row numbers
+    DROP TEMPORARY TABLE IF EXISTS temp_thirdparty_report;
+    
+    CREATE TEMPORARY TABLE temp_thirdparty_report AS
+    SELECT 
         t.*,
         @row_number:=IF(@current_third_party = t.third_party_id, @row_number + 1, 1) AS rn,
         @current_third_party:=t.third_party_id
@@ -26,6 +29,19 @@ BEGIN
         ORDER BY dtp.third_party_id, dtpb.created_date DESC
     ) t,
     (SELECT @row_number:=0, @current_third_party:=0) AS vars;
+    
+    -- Now create the view based on the temporary table
+    CREATE VIEW mamba_view_fact_thirdparty_report AS
+    SELECT 
+        third_party_id,
+        third_party_name,
+        third_party_rate,
+        third_party_created_date,
+        third_party_bill_id,
+        billed_amount,
+        bill_created_date,
+        rn
+    FROM temp_thirdparty_report;
 
 END //
 
