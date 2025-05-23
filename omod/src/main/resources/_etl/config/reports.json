@@ -70,7 +70,7 @@
       "report_name": "Payment Refund Report",
       "report_id": "payment_refund_report",
       "report_sql": {
-        "sql_query": "SELECT refund_id, CASE WHEN rn = 1 THEN payment_id ELSE NULL END AS payment_id, CASE WHEN rn = 1 THEN cashier_name ELSE NULL END AS cashier_name, CASE WHEN rn = 1 THEN submitted_on ELSE NULL END AS submitted_on, CASE WHEN rn = 1 THEN approvedby ELSE NULL END AS approvedby, CASE WHEN rn = 1 THEN confirmed_by ELSE NULL END AS confirmed_by, service_name, qty_paid, refund_qty, unit_price, refund_reason FROM (SELECT * FROM mamba_view_fact_paymentrefunds_report WHERE cashier_name = collector AND submitted_on BETWEEN start_date AND end_date) AS refund_data ORDER BY refund_id, rn",
+        "sql_query": "SELECT refund_id, CASE WHEN rn = 1 THEN payment_id ELSE NULL END AS payment_id, CASE WHEN rn = 1 THEN cashier_name ELSE NULL END AS cashier_name, CASE WHEN rn = 1 THEN submitted_on ELSE NULL END AS submitted_on, CASE WHEN rn = 1 THEN approvedby ELSE NULL END AS approvedby, CASE WHEN rn = 1 THEN confirmed_by ELSE NULL END AS confirmed_by, service_name, qty_paid, refund_qty, unit_price, refund_reason FROM mamba_view_fact_paymentrefunds_report WHERE cashier_name = collector AND submitted_on BETWEEN start_date AND end_date ORDER BY refund_id, rn",
         "query_params": [
           {
             "name": "collector",
@@ -127,7 +127,7 @@
       "report_name": "Third party name Report",
       "report_id": "third_party_name",
       "report_sql": {
-        "sql_query": "SELECT third_party_id, name, rate, created_date, voided FROM mamba_dim_third_party;",
+        "sql_query": "SELECT third_party_id, name, rate, created_date, voided FROM mamba_dim_third_party",
         "query_params": [],
         "paginate": false
       }
