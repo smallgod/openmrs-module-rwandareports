@@ -5,9 +5,10 @@ DROP PROCEDURE IF EXISTS sp_mamba_view_fact_paymentrefunds_report;
 CREATE PROCEDURE sp_mamba_view_fact_paymentrefunds_report()
 BEGIN
 
-    SET SESSION group_concat_max_len = 20000;
-    -- Drop the view if it exists
-    DROP VIEW IF EXISTS mamba_view_fact_paymentrefunds_report;
+    SET SESSION group_concat_max_len = 20000; -- Retained, though not directly used by this view's SELECT part
+
+    -- Drop the existing table if it exists (changed from DROP VIEW)
+    DROP TABLE IF EXISTS mamba_view_fact_paymentrefunds_report;
     
     -- Create a temporary table to store the data with row numbers
     DROP TEMPORARY TABLE IF EXISTS temp_payment_refunds;
@@ -36,13 +37,14 @@ BEGIN
         LEFT JOIN mamba_dim_patient_service_bill mdps ON mdps.patient_service_bill_id = mdpsb.patient_service_bill_id
         LEFT JOIN mamba_dim_billable_service mdbs ON mdbs.billable_service_id = mdps.billable_service_id
         LEFT JOIN mamba_dim_facility_service_price mdfsp ON mdfsp.facility_service_price_id = mdbs.facility_service_price_id,
-        (SELECT @row_number := 0, @current_refund := 0) AS t
+        (SELECT @row_number := 0, @current_refund := 0) AS t -- Initialize user variables
     ORDER BY 
         mdpr.refund_id, 
         mdpsbr.refund_quantity DESC;
     
-    -- Now create the view from the temporary table
-    CREATE VIEW mamba_view_fact_paymentrefunds_report AS
+    -- Create a new table with the data from the temporary table (changed from CREATE VIEW)
+    -- This acts as a materialized view.
+    CREATE TABLE mamba_view_fact_paymentrefunds_report AS
     SELECT
         refund_id,
         payment_id,
