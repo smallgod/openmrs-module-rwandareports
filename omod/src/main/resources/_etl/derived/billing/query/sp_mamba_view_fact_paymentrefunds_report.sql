@@ -44,7 +44,9 @@ BEGIN
     
     -- Create a new table with the data from the temporary table (changed from CREATE VIEW)
     -- This acts as a materialized view.
-    CREATE TABLE mamba_view_fact_paymentrefunds_report AS
+    CREATE TABLE mamba_view_fact_paymentrefunds_report (
+        INDEX idx_cashier_submitted (cashier_name, submitted_on)
+    ) AS
     SELECT
         refund_id,
         payment_id,

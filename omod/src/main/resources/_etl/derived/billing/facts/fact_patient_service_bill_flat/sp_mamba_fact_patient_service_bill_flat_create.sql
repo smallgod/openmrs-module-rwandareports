@@ -41,6 +41,7 @@ BEGIN
                     INDEX mamba_fact_patient_service_bill_flat_global_bill_index (global_bill_id),
                     INDEX mamba_fact_patient_service_bill_flat_closing_date_index (closing_date),
                     INDEX mamba_fact_patient_service_bill_flat_insurance_id_index (insurance_id),
+                    INDEX mamba_fact_patient_service_bill_flat_admission_date_index (admission_date),
                     INDEX mamba_fact_patient_service_bill_flat_first_closing_date_id_index (first_closing_date_id))'
             );
 

@@ -14,7 +14,7 @@ SET @select_stmt =
                 username collector,
                 mdp.person_name_short,
                 mdt.amount,
-                transaction_reason reason
+                mdt.transaction_reason reason
             FROM mamba_dim_deposit_payment mddp
             LEFT JOIN mamba_dim_transaction mdt ON mdt.transaction_id = mddp.transaction_id
             LEFT JOIN mamba_dim_patient_account mdpa ON mdpa.patient_account_id = mdt.patient_account_id
