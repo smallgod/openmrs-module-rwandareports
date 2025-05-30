@@ -32,4 +32,10 @@
     CREATE INDEX mamba_dim_transaction_voided_index
         ON mamba_dim_transaction (voided);
 
+    CREATE INDEX mamba_dim_transaction_transaction_reason_index
+        ON mamba_dim_transaction (transaction_reason);
+
+    CREATE INDEX mamba_dim_transaction_transaction_date_index
+        ON mamba_dim_transaction (transaction_date);
+
 -- $END

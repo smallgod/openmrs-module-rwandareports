@@ -36,4 +36,7 @@ CREATE INDEX mamba_dim_global_bill_closed_index
 CREATE INDEX mamba_dim_global_bill_closed_by_id_index
     ON mamba_dim_global_bill (closed_by_id);
 
+CREATE INDEX mamba_dim_global_bill_created_date_index
+    ON mamba_dim_global_bill (created_date);
+
 -- $END
