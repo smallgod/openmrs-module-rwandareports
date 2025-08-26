@@ -20,4 +20,7 @@ CREATE INDEX mamba_dim_bill_payment_bill_payment_id_index
 CREATE INDEX mamba_dim_bill_payment_patient_bill_id_index
   ON mamba_dim_bill_payment (patient_bill_id);
 
+CREATE INDEX mamba_dim_bill_payment_patient_collector_index
+  ON mamba_dim_bill_payment (collector);
+
 -- $END
