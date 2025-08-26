@@ -15,7 +15,7 @@ CREATE TABLE mamba_dim_global_bill
   closed_reason  varchar(150) NULL,
   edited_by    INT     NULL,
   edit_reason   varchar(150) NULL,
-  created_date  DATETIME   NOT NULL DEFAULT '1900-01-01 00:00:00',
+  created_date  DATETIME   NOT NULL DEFAULT '1970-01-01 00:00:00',
 
   PRIMARY KEY (id)
 );
@@ -35,5 +35,8 @@ CREATE INDEX mamba_dim_global_bill_closed_index
 
 CREATE INDEX mamba_dim_global_bill_closed_by_id_index
   ON mamba_dim_global_bill (closed_by_id);
+
+CREATE INDEX mamba_dim_global_bill_created_date_index
+  ON mamba_dim_global_bill (created_date);
 
 -- $END
