@@ -33,4 +33,10 @@ CREATE INDEX mamba_dim_beneficiary_policy_id_number_index
 CREATE INDEX mamba_dim_beneficiary_company_index
   ON mamba_dim_beneficiary (company);
 
+CREATE INDEX mamba_dim_beneficiary_policy_index
+  ON mamba_dim_beneficiary (patient_id, insurance_policy_id);
+
+CREATE INDEX idx_beneficiary_company
+    ON mamba_dim_beneficiary (company, insurance_policy_id, patient_id);
+
 -- $END

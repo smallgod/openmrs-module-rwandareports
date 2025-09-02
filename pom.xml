@@ -462,9 +462,9 @@
                                     <argument>compile.sh</argument>
 
                                     <!-- The source database (OpenMRS database) -->
-                                    <argument>-d openmrs</argument>
+                                    <argument>-d kibagabaga</argument>
 
-                                    <!-- The target or analysis Database where the ETL data is stored -->
+                                    <!-- The target orcd - analysis Database where the ETL data is stored -->
                                     <argument>-a analysis_db</argument>
 
                                     <!-- File with a list of all files with stored procedures -->

@@ -3,7 +3,6 @@
 -- Dimensions
 CALL sp_mamba_dim_admission;
 CALL sp_mamba_dim_beneficiary;
-CALL sp_mamba_dim_bill_payment;
 CALL sp_mamba_dim_billable_service;
 CALL sp_mamba_dim_consommation;
 CALL sp_mamba_dim_department;
@@ -17,6 +16,7 @@ CALL sp_mamba_dim_insurance_policy;
 CALL sp_mamba_dim_paid_service_bill;
 CALL sp_mamba_dim_patient_bill;
 CALL sp_mamba_dim_patient_service_bill;
+CALL sp_mamba_dim_bill_payment;
 CALL sp_mamba_dim_service_category;
 CALL sp_mamba_dim_third_party_bill;
 CALL sp_mamba_dim_third_party;
@@ -39,7 +39,8 @@ CALL sp_mamba_fact_service_revenue_report;
 
 -- Create View
 CALL sp_mamba_view_fact_insurance_report;
-CALL sp_mamba_view_fact_consommation_report;
+-- CALL sp_mamba_view_fact_consommation_report;
+CALL sp_mamba_fact_consommation_report;
 CALL sp_mamba_view_fact_paymentrefunds_report;
 CALL sp_mamba_view_fact_deposits_report;
 CALL sp_mamba_view_fact_service_report;

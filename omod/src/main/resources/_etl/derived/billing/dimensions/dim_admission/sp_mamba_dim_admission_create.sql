@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS mamba_dim_admission
   discharged_by    int     null,
   disease_type    varchar(100) null,
   admission_type   tinyint(1)  null,
-  created_date    DATETIME   not null DEFAULT '1900-01-01 00:00:00',
+  created_date    DATETIME   not null DEFAULT '1970-01-01 00:00:00',
 
   PRIMARY KEY (id)
 );
@@ -22,5 +22,8 @@ CREATE INDEX mamba_dim_admission_admission_id_index
 
 CREATE INDEX mamba_dim_admission_insurance_policy_id_index
   ON mamba_dim_admission (insurance_policy_id);
+
+CREATE INDEX mamba_admission_ins_policy_admitted_index
+  ON mamba_dim_admission (insurance_policy_id, is_admitted);
 
 -- $END

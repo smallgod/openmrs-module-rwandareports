@@ -16,4 +16,7 @@ CREATE TABLE mamba_dim_patient_bill
 CREATE INDEX mamba_dim_patient_bill_patient_bill_id_index
   ON mamba_dim_patient_bill (patient_bill_id);
 
+CREATE INDEX idx_patientbill
+    ON mamba_dim_patient_bill (patient_bill_id, status);
+
 -- $END

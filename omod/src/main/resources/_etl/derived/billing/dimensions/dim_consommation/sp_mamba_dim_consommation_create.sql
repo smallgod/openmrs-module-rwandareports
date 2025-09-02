@@ -14,27 +14,20 @@ CREATE TABLE IF NOT EXISTS mamba_dim_consommation
 
   PRIMARY KEY (id)
 );
-  
-
-CREATE INDEX mamba_dim_consommation_consommation_id_index
-  ON mamba_dim_consommation (consommation_id);
 
 CREATE INDEX mamba_dim_consommation_global_bill_id_index
   ON mamba_dim_consommation (global_bill_id);
 
-CREATE INDEX mamba_dim_consommation_department_id_index
-  ON mamba_dim_consommation (department_id);
-
 CREATE INDEX mamba_dim_consommation_beneficiary_id_index
   ON mamba_dim_consommation (beneficiary_id);
-
-CREATE INDEX mamba_dim_consommation_patient_bill_id_index
-  ON mamba_dim_consommation (patient_bill_id);
 
 CREATE INDEX mamba_dim_consommation_insurance_bill_id_index
   ON mamba_dim_consommation (insurance_bill_id);
 
-CREATE INDEX mamba_dim_consommation_third_party_bill_id_index
-  ON mamba_dim_consommation (third_party_bill_id);
+CREATE INDEX mamba_dim_consommation_composite_bills_index
+  ON mamba_dim_consommation (patient_bill_id, global_bill_id, beneficiary_id);
+
+CREATE INDEX idx_consommation_dept
+    ON mamba_dim_consommation (department_id, global_bill_id, beneficiary_id);
 
 -- $END

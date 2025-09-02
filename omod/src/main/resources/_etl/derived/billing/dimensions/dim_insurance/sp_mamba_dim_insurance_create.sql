@@ -26,4 +26,7 @@ CREATE INDEX mamba_dim_insurance_concept_id_index
 CREATE INDEX mamba_dim_insurance_category_index
   ON mamba_dim_insurance (category);
 
+CREATE INDEX mamba_dim_insurance_rate_index
+  ON mamba_dim_insurance (insurance_id, current_insurance_rate);
+
 -- $END

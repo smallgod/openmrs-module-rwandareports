@@ -39,4 +39,10 @@ CREATE INDEX mamba_dim_global_bill_closed_by_id_index
 CREATE INDEX mamba_dim_global_bill_created_date_index
   ON mamba_dim_global_bill (created_date);
 
+CREATE INDEX idx_globalbill_date_desc
+    ON mamba_dim_global_bill (created_date DESC);
+
+CREATE INDEX idx_globalbill_date
+    ON mamba_dim_global_bill (created_date, insurance_id, global_bill_id);
+
 -- $END
