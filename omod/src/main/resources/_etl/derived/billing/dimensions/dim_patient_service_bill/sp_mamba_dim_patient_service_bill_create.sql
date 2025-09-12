@@ -39,6 +39,6 @@ CREATE INDEX mamba_dim_patient_service_bill_voided_index
     ON mamba_dim_patient_service_bill (voided);
 
 CREATE INDEX mamba_dim_patient_service_consommation_voided
-    ON mamba_dim_patient_service_bill (consommation_id, voided);
+    ON mamba_dim_patient_service_bill (consommation_id, voided);                                                                                                             
 
 -- $END

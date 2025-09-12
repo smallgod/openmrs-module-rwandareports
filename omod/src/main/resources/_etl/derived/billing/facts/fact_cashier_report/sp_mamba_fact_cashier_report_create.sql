@@ -31,4 +31,10 @@ CREATE INDEX mamba_fact_cashier_report_date_index
 CREATE INDEX mamba_fact_cashier_report_hop_service_name_index
   ON mamba_fact_cashier_report (hop_service_name);
 
+CREATE INDEX idx_paid_service_bill_join ON mamba_dim_paid_service_bill(patient_service_bill_id, bill_payment_id);
+CREATE INDEX idx_patient_service_bill_join ON mamba_dim_patient_service_bill(patient_service_bill_id, consommation_id, service_id, voided);
+CREATE INDEX idx_consommation_join ON mamba_dim_consommation(consommation_id, global_bill_id, beneficiary_id);
+CREATE INDEX idx_beneficiary_patient ON mamba_dim_beneficiary(beneficiary_id, patient_id);
+CREATE INDEX idx_global_bill_closed ON mamba_dim_global_bill(global_bill_id, closed);
+
 -- $END

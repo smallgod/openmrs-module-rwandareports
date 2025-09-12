@@ -40,9 +40,18 @@ CREATE INDEX mamba_dim_global_bill_created_date_index
   ON mamba_dim_global_bill (created_date);
 
 CREATE INDEX idx_globalbill_date_desc
-    ON mamba_dim_global_bill (created_date DESC);
+  ON mamba_dim_global_bill (created_date DESC);
 
 CREATE INDEX idx_globalbill_date
-    ON mamba_dim_global_bill (created_date, insurance_id, global_bill_id);
+  ON mamba_dim_global_bill (created_date, insurance_id, global_bill_id);
+
+CREATE INDEX idx_closed_update 
+  ON mamba_dim_global_bill (closed, closed_by_id, closed_by_name);
+
+CREATE INDEX idx_user_lookup 
+  ON mamba_dim_users (user_id, person_id);
+
+CREATE INDEX idx_person_name_lookup 
+  ON mamba_dim_person_name (person_id, family_name, given_name);
 
 -- $END

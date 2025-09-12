@@ -43,6 +43,6 @@ WHERE gb.closed = 1
  AND psb.voided = 0
 -- GROUP BY cons.global_bill_id
 -- HAVING MIN(cons.consommation_id)
-ORDER BY gb.closing_date ASC
+-- ORDER BY gb.closing_date ASC
 ;
 -- $END

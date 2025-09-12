@@ -465,7 +465,7 @@
                                     <argument>-d kibagabaga</argument>
 
                                     <!-- The target orcd - analysis Database where the ETL data is stored -->
-                                    <argument>-a analysis_db</argument>
+                                    <argument>-a analyse_db</argument>
 
                                     <!-- File with a list of all files with stored procedures -->
                                     <!-- Remove this argument after automating core to auto-read this -->
