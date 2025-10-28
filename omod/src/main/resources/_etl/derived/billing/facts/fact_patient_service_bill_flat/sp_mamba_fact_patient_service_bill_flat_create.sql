@@ -8,9 +8,20 @@ BEGIN
   SET session group_concat_max_len = 20000;
   SET @service_columns := NULL;
 
-  SELECT GROUP_CONCAT(DISTINCT CONCAT('`', hop_service_id, '` DECIMAL(20, 2)'))
+  -- Configuration-driven column generation (dimension + actual data)
+  -- Ensures all configured INSURANCE and THIRDPARTY services get columns,
+  -- even if no billing data exists yet (will default to 0.00)
+  SELECT GROUP_CONCAT(DISTINCT CONCAT('`', service_id, '` DECIMAL(20, 2) DEFAULT 0.00')
+                      ORDER BY service_id)
   INTO @service_columns
-  FROM mamba_fact_patient_service_bill;
+  FROM (
+    SELECT DISTINCT hop_service_id AS service_id
+    FROM mamba_dim_billing_report_columns
+    WHERE report_type IN ('INSURANCE', 'THIRDPARTY')
+    UNION
+    SELECT DISTINCT hop_service_id AS service_id
+    FROM mamba_fact_patient_service_bill
+  ) AS all_services;
 
   IF @service_columns IS NULL THEN
     SET @create_table = CONCAT(

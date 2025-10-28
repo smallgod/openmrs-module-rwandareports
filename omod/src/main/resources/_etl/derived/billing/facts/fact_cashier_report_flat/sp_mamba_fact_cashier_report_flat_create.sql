@@ -8,9 +8,20 @@ BEGIN
 SET session group_concat_max_len = 20000;
 SET @service_columns := NULL;
 
-SELECT GROUP_CONCAT(DISTINCT CONCAT('`', hop_service_id, '` DECIMAL(25, 2)'))
+-- Configuration-driven column generation (dimension + actual data)
+-- Ensures all configured CASHIER services get columns,
+-- even if no payment data exists yet (will default to 0.00)
+SELECT GROUP_CONCAT(DISTINCT CONCAT('`', service_id, '` DECIMAL(25, 2) DEFAULT 0.00')
+                    ORDER BY service_id)
 INTO @service_columns
-FROM mamba_fact_cashier_report;
+FROM (
+  SELECT DISTINCT hop_service_id AS service_id
+  FROM mamba_dim_billing_report_columns
+  WHERE report_type = 'CASHIER'
+  UNION
+  SELECT DISTINCT hop_service_id AS service_id
+  FROM mamba_fact_cashier_report
+) AS all_services;
 
 IF @service_columns IS NULL THEN
     SET @create_table = CONCAT(
