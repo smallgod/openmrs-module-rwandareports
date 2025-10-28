@@ -54,15 +54,15 @@ public class SetupPathologyRequestReport implements SetupReport {
 	
 	/**
 	 * Sets up pathology request report Creates report definition and CSV design
-	 *
+	 * 
 	 * @throws Exception if report setup fails
 	 */
 	public void setup() throws Exception {
 		log.info("Setting up Pathology Request Report...");
-
+		
 		try {
 			setupProperties();
-
+			
 			ReportDefinition rd = createReportDefinition();
 			ReportDesign designCSV = Helper.createCsvReportDesign(rd, ReportingConstants.DESIGN_PATHOLOGY_REQUEST_CSV);
 			Helper.saveReportDesign(designCSV);
@@ -73,7 +73,7 @@ public class SetupPathologyRequestReport implements SetupReport {
 			throw e;
 		}
 	}
-
+	
 	/**
 	 * Deletes pathology request report definition and design
 	 */
@@ -85,34 +85,30 @@ public class SetupPathologyRequestReport implements SetupReport {
 	
 	/**
 	 * Creates Pathology Request Report definition
-	 *
+	 * 
 	 * @return configured ReportDefinition
 	 */
 	private ReportDefinition createReportDefinition() {
 		log.debug("Creating Pathology Request Report definition...");
-
+		
 		ReportDefinition reportDefinition = new ReportDefinition();
 		reportDefinition.setName(ReportingConstants.REPORT_PATHOLOGY_REQUEST);
 		reportDefinition.setUuid("996cf192-ff54-11eb-a63a-080027ce9ca0");
-
-		Parameter location = new Parameter(
-			ReportingConstants.PARAM_LOCATION,
-			"Location",
-			Location.class
-		);
+		
+		Parameter location = new Parameter(ReportingConstants.PARAM_LOCATION, "Location", Location.class);
 		location.setRequired(false);
 		reportDefinition.addParameter(location);
-
+		
 		createDataSetDefinition(reportDefinition);
 		Helper.saveReportDefinition(reportDefinition);
-
+		
 		return reportDefinition;
 	}
 	
 	/**
 	 * Creates dataset definition for Pathology Request Report Uses external SQL file with JOIN
 	 * optimization Validates parameters before use to prevent SQL injection
-	 *
+	 * 
 	 * @param reportDefinition the report definition to add dataset to
 	 */
 	private void createDataSetDefinition(ReportDefinition reportDefinition) {
@@ -182,52 +178,51 @@ public class SetupPathologyRequestReport implements SetupReport {
 
 		reportDefinition.addDataSetDefinition("dsd", Mapped.mapStraightThrough(sqldsd));
 	}
-
+	
 	/**
 	 * Validates required configuration is present Prevents NullPointerException and provides clear
 	 * error messages
-	 *
+	 * 
 	 * @throws IllegalStateException if required configuration is missing
 	 */
 	private void validateConfiguration() {
-
+		
 		if (telephoneNumberConcept == null || telephoneNumberConcept.getConceptId() == null) {
 			throw new IllegalStateException("Telephone number concept not configured");
 		}
-
+		
 		if (sampleStatusConcept == null || sampleStatusConcept.getConceptId() == null) {
 			throw new IllegalStateException("Sample status concept not configured");
 		}
-
+		
 		if (referralStatusConcept == null || referralStatusConcept.getConceptId() == null) {
 			throw new IllegalStateException("Referral status concept not configured");
 		}
-
+		
 		if (sampleDropOffConcept == null || sampleDropOffConcept.getConceptId() == null) {
 			throw new IllegalStateException("Sample drop-off concept not configured");
 		}
-
+		
 		if (pathologyRequestEncounterUUID == null || pathologyRequestEncounterUUID.getConceptId() == null) {
 			throw new IllegalStateException("Pathology request encounter UUID concept not configured");
 		}
-
+		
 		if (PATHOLOGYREQUESTRESULTSAPPROVED == null || PATHOLOGYREQUESTRESULTSAPPROVED.getConceptId() == null) {
 			throw new IllegalStateException("Pathology results approved concept not configured");
 		}
-
+		
 		if (pathologicDiagnoisis == null || pathologicDiagnoisis.getConceptId() == null) {
 			throw new IllegalStateException("Pathologic diagnosis concept not configured");
 		}
-
-		if (healthCenterPersonAttributeType == null
-		        || healthCenterPersonAttributeType.getPersonAttributeTypeId() == null) {
+		
+		if (healthCenterPersonAttributeType == null || healthCenterPersonAttributeType.getPersonAttributeTypeId() == null) {
 			throw new IllegalStateException("Health center person attribute type not configured");
 		}
-
+		
 		if (pathologyRequestForm == null || pathologyRequestForm.getFormId() == null) {
 			throw new IllegalStateException("Pathology request form not configured");
 		}
-
+		
 		log.debug("Pathology Request Report configuration validated successfully");
 	}
 	
