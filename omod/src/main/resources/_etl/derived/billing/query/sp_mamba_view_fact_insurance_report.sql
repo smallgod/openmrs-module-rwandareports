@@ -6,7 +6,7 @@ CREATE PROCEDURE sp_mamba_view_fact_insurance_report()
 
 BEGIN
 
-  SET session group_concat_max_len = 20000;
+  SET session group_concat_max_len = 20000; 
   SET @insurance_report_columns := NULL;
   SET @imaging_report_columns := NULL;
   SET @proced_report_columns := NULL;

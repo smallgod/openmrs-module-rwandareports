@@ -7,29 +7,50 @@ CREATE PROCEDURE sp_mamba_view_fact_cashier_report()
 
 BEGIN
 
-SET session group_concat_max_len = 20000;
-SET @insurance_report_columns := NULL;
+  SET session group_concat_max_len = 20000;
+  SET @cashier_report_columns := NULL;
+  SET @imaging_report_columns := NULL;
+  SET @proced_report_columns := NULL;
 
-
-SELECT GROUP_CONCAT(DISTINCT CONCAT('IFNULL (cashier.`', hop_service_id, '`, 0) AS ', '`', column_name, '`') ORDER BY
+  -- Individual Cashier Columns (non-aggregated services)
+  SELECT GROUP_CONCAT(DISTINCT CONCAT('IFNULL (cashier.`', hop_service_id, '`, 0) AS ', '`', column_name, '`') ORDER BY
             id ASC SEPARATOR ', ')
-INTO @insurance_report_columns
-FROM mamba_dim_billing_report_columns;
+  INTO @cashier_report_columns
+  FROM mamba_dim_billing_report_columns
+  WHERE report_type = 'CASHIER'
+   AND group_column_name = 'CASHIER';
 
+  -- Imaging Columns (aggregated into single IMAGING column)
+  SELECT (GROUP_CONCAT(DISTINCT CONCAT('IFNULL (cashier.`', hop_service_id, '`, 0)') ORDER BY
+             id ASC SEPARATOR ' + ')) AS 'group_column_name'
+  INTO @imaging_report_columns
+  FROM mamba_dim_billing_report_columns
+  WHERE report_type = 'CASHIER'
+   AND group_column_name = 'IMAGING';
 
-SET @select_stmt = CONCAT('CREATE OR REPLACE VIEW mamba_view_fact_cashier_report AS
-    SELECT cashier.first_date_id,
+  -- Procedure Columns (aggregated into single PROCED. column)
+  SELECT GROUP_CONCAT(DISTINCT CONCAT('IFNULL (cashier.`', hop_service_id, '`, 0)') ORDER BY
+            id ASC SEPARATOR ' + ')
+  INTO @proced_report_columns
+  FROM mamba_dim_billing_report_columns
+  WHERE report_type = 'CASHIER'
+   AND group_column_name = 'PROCED.';
+
+  SET @select_stmt = CONCAT('CREATE OR REPLACE VIEW mamba_view_fact_cashier_report AS
+SELECT cashier.first_date_id,
       cashier.date,
       cashier.bill_payment_id,
       cashier.patient_bill_id,
       cashier.patient_name,
       cashier.global_bill_id,
-      ', @insurance_report_columns, '
+      ', @cashier_report_columns, ',
+      (', @imaging_report_columns, ') AS `IMAGING`,
+      (', @proced_report_columns, ') AS `PROCED.`
     FROM mamba_fact_cashier_report_flat cashier;');
 
-PREPARE select_stmt FROM @select_stmt;
-EXECUTE select_stmt;
-DEALLOCATE PREPARE select_stmt;
+  PREPARE select_stmt FROM @select_stmt;
+  EXECUTE select_stmt;
+  DEALLOCATE PREPARE select_stmt;
 
 END //
 

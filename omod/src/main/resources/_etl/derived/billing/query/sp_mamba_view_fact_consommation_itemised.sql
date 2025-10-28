@@ -4,7 +4,7 @@ DROP PROCEDURE IF EXISTS sp_mamba_view_fact_paymentrefunds_report;
 
 CREATE PROCEDURE sp_mamba_view_fact_paymentrefunds_report()
 BEGIN
-
+ 
   SET SESSION group_concat_max_len = 20000;
   -- Create or Replace View
   SET @select_stmt =
