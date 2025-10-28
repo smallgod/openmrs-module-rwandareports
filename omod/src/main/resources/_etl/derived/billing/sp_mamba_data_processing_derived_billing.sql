@@ -34,15 +34,16 @@ CALL sp_mamba_fact_patient_service_bill;
 CALL sp_mamba_fact_patient_service_bill_flat;
 CALL sp_mamba_fact_cashier_report;
 CALL sp_mamba_fact_cashier_report_flat;
-CALL sp_mamba_fact_third_party_report;
 CALL sp_mamba_fact_service_revenue_report;
+CALL sp_mamba_fact_consommation_report;
+-- CALL sp_mamba_fact_clinical_detailed_report;
 
 -- Create View
 CALL sp_mamba_view_fact_insurance_report;
--- CALL sp_mamba_view_fact_consommation_report;
-CALL sp_mamba_fact_consommation_report;
+CALL sp_mamba_view_fact_thirdparty_report;
+CALL sp_mamba_view_fact_cashier_report;
 CALL sp_mamba_view_fact_paymentrefunds_report;
 CALL sp_mamba_view_fact_deposits_report;
 CALL sp_mamba_view_fact_service_report;
-CALL sp_mamba_view_fact_cashier_report;
+-- CALL sp_mamba_view_fact_consommation_report;
 -- $END
