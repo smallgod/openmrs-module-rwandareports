@@ -3,22 +3,52 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS sp_mamba_view_fact_service_report;
 
 CREATE PROCEDURE sp_mamba_view_fact_service_report()
+
 BEGIN
 
-  SET SESSION group_concat_max_len = 20000;
-  -- Create or Replace View
-  SET @select_stmt =
-      'CREATE OR REPLACE VIEW mamba_view_fact_service_report AS
-        SELECT
-          DISTINCT patient_service_bill_id,
-          mdhs.service_id,service_date,
-          mdhs.name service,
-          paid_quantity * unit_price Amount
-        FROM mamba_dim_patient_service_bill mdpsb
-        INNER JOIN mamba_dim_hop_service mdhs ON mdpsb.service_id = mdhs.service_id
-        LEFT JOIN mamba_dim_service_category mdsc ON mdsc.service_id = mdhs.service_id;';
+  SET session group_concat_max_len = 20000;
+  SET @servicerevenue_report_columns := NULL;
+  SET @imaging_report_columns := NULL;
+  SET @proced_report_columns := NULL;
 
-    -- Execute the dynamic SQL statement
+  -- Individual Service Revenue Columns (non-aggregated services)
+  SELECT GROUP_CONCAT(DISTINCT CONCAT('IFNULL (srv.`', hop_service_id, '`, 0) AS ', '`', column_name, '`') ORDER BY
+            id ASC SEPARATOR ', ')
+  INTO @servicerevenue_report_columns
+  FROM mamba_dim_billing_report_columns
+  WHERE report_type = 'SERVICE_REVENUE'
+   AND group_column_name = 'SERVICE_REVENUE';
+
+  -- Imaging Columns (aggregated into single IMAGING column)
+  SELECT (GROUP_CONCAT(DISTINCT CONCAT('IFNULL (srv.`', hop_service_id, '`, 0)') ORDER BY
+             id ASC SEPARATOR ' + ')) AS 'group_column_name'
+  INTO @imaging_report_columns
+  FROM mamba_dim_billing_report_columns
+  WHERE report_type = 'SERVICE_REVENUE'
+   AND group_column_name = 'IMAGING';
+
+  -- Procedure Columns (aggregated into single PROCED. column)
+  SELECT GROUP_CONCAT(DISTINCT CONCAT('IFNULL (srv.`', hop_service_id, '`, 0)') ORDER BY
+            id ASC SEPARATOR ' + ')
+  INTO @proced_report_columns
+  FROM mamba_dim_billing_report_columns
+  WHERE report_type = 'SERVICE_REVENUE'
+   AND group_column_name = 'PROCED.';
+
+  SET @select_stmt = CONCAT('CREATE OR REPLACE VIEW mamba_view_fact_service_report AS
+SELECT srv.id,
+      srv.global_bill_id,
+      srv.service_date,
+      srv.patient_name,
+      -- srv.patient_service_bill_id,
+      -- srv.first_service_bill_id,
+      ', COALESCE(@servicerevenue_report_columns, 'NULL AS no_service_revenue_data'), ',
+      srv.total_due,
+      srv.total_paid
+      -- (', COALESCE(@imaging_report_columns, '0'), ') AS `IMAGING`,
+      -- (', COALESCE(@proced_report_columns, '0'), ') AS `PROCED.`
+    FROM mamba_fact_service_revenue_report_flat srv;');
+
   PREPARE select_stmt FROM @select_stmt;
   EXECUTE select_stmt;
   DEALLOCATE PREPARE select_stmt;

@@ -51,9 +51,9 @@ SELECT bill.first_closing_date_id,
       bill.insurance_id,
       bill.global_bill_id,
       bill.global_bill_identifier,
-      ', @insurance_report_columns, ',
-      (', @imaging_report_columns, ') AS `IMAGING`,
-      (', @proced_report_columns, ') AS `PROCED.`
+      ', COALESCE(@insurance_report_columns, 'NULL AS no_insurance_data'), ',
+      (', COALESCE(@imaging_report_columns, '0'), ') AS `IMAGING`,
+      (', COALESCE(@proced_report_columns, '0'), ') AS `PROCED.`
     FROM mamba_fact_patient_service_bill_flat bill;');
 
   PREPARE select_stmt FROM @select_stmt;

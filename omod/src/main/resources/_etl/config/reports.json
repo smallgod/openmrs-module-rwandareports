@@ -70,7 +70,7 @@
       "report_name": "Billing Insurance firms Report",
       "report_id": "insurance_firm_report",
       "report_sql": {
-        "sql_query": " SELECT insurance_id, mamba_dim_insurance.current_insurance_rate, mamba_dim_insurance.current_insurance_rate_flat_fee, category, name FROM mamba_dim_insurance",
+        "sql_query": "SELECT insurance_id, mamba_dim_insurance.current_insurance_rate, mamba_dim_insurance.current_insurance_rate_flat_fee, category, name FROM mamba_dim_insurance",
         "query_params": [],
         "paginate": false
       }
@@ -127,7 +127,7 @@
       "report_name": "Service Revenue Report",
       "report_id": "servicerevenue_report",
       "report_sql": {
-        "sql_query": "SELECT * FROM mamba_fact_service_revenue WHERE service_date BETWEEN start_date AND end_date",
+        "sql_query": "SELECT * FROM mamba_view_fact_service_report WHERE service_date BETWEEN start_date AND end_date",
         "query_params": [
           {
             "name": "start_date",

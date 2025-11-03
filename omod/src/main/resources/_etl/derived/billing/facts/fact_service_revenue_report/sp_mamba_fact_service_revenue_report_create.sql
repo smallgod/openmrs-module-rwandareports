@@ -8,82 +8,67 @@ BEGIN
 SET session group_concat_max_len = 20000;
 SET @service_columns := NULL;
 
-SELECT GROUP_CONCAT(DISTINCT CONCAT('`', hop_service_id, '` DECIMAL(20, 2)'))
+-- Configuration-driven column generation (dimension + actual data)
+-- Ensures all configured SERVICE_REVENUE services get columns,
+-- even if no payment data exists yet (will default to 0.00)
+SELECT GROUP_CONCAT(DISTINCT CONCAT('`', service_id, '` DECIMAL(25, 2) DEFAULT 0.00')
+                    ORDER BY service_id)
 INTO @service_columns
-FROM mamba_fact_patient_service_bill;
+FROM (
+  SELECT DISTINCT hop_service_id AS service_id
+  FROM mamba_dim_billing_report_columns
+  WHERE report_type = 'SERVICE_REVENUE'
+  UNION
+  SELECT DISTINCT service_id
+  FROM mamba_dim_patient_service_bill
+  WHERE service_id IS NOT NULL
+) AS all_services;
 
 IF @service_columns IS NULL THEN
-        SET @create_table = CONCAT(
-                'CREATE TABLE mamba_fact_service_revenue (
-                        patient_service_bill_id INT NOT NULL,
-                        service_id INT NULL,
-                        service_date DATE NULL,
-                        service VARCHAR(150) NULL,
-                        AMBULANCE DECIMAL(25,2),
-                        APPAREILLAGE_ORTHOPEDIQUE DECIMAL(25,2),
-                        CHIRURGIE  DECIMAL(25,2),
-                        CONSOMMABLES  DECIMAL(25,2),
-                        ANESTHESIE  DECIMAL(25,2),
-                        CONSULTATION  DECIMAL(25,2),
-                        DERMATOLOGY  DECIMAL(25,2),
-                        INTERNAL_MEDECINE  DECIMAL(25,2),
-                        OBSTETRICS_GYNECOLOGY  DECIMAL(25,2),
-                        OPHTHALMOLOGY  DECIMAL(25,2),
-                        OTORHINOLARYNGOLOGIE  DECIMAL(25,2),
-                        PEDIATRICS  DECIMAL(25,2),
-                        STOMATOLOGY  DECIMAL(25,2),
-                        SURGERY  DECIMAL(25,2),
-                        ECHOGRAPHIE  DECIMAL(25,2),
-                        LABORATOIRE  DECIMAL(25,2),
-                        MEDICAMENTS  DECIMAL(25,2),
-                        OPHTALMOLOGIE DECIMAL(25,2)
+    SET @create_table = CONCAT(
+        'CREATE TABLE mamba_fact_service_revenue_report_flat (
+          id                    INT         AUTO_INCREMENT PRIMARY KEY,
+          service_date          DATE        NULL,
+          patient_name          VARCHAR(255) NULL,
+          patient_service_bill_id INT       NULL,
+          first_service_bill_id INT         NOT NULL,
+          global_bill_id        INT         NOT NULL,
+          total_due             DECIMAL(25, 2) DEFAULT 0.00,
+          total_paid            DECIMAL(25, 2) DEFAULT 0.00,
 
-                    -- Unique constraints
-                    -- constraint first_closing_date_id unique (first_closing_date_id),
+          -- Unique constraints
+          CONSTRAINT uq_service_revenue_global_bill_null UNIQUE (global_bill_id),
 
-                    -- Indexes
-                    -- INDEX mamba_fact_service_revenue_patient_service_bill_id_index (patient_service_bill_id)),
-                    -- INDEX mamba_fact_service_revenue_service_id_index (service_id)
-                )'
-            );
+          -- Indexes
+          INDEX mamba_fact_service_revenue_flat_global_bill_index (global_bill_id),
+          INDEX mamba_fact_service_revenue_flat_service_date_index (service_date),
+          INDEX mamba_fact_service_revenue_flat_first_service_bill_id_index (first_service_bill_id))'
+     );
 
 ELSE
-        SET @create_table = CONCAT(
-                 'CREATE TABLE mamba_fact_service_revenue (
-                        patient_service_bill_id INT NOT NULL,
-                        service_id INT NULL,
-                        service_date DATE NULL,
-                        service VARCHAR(150) NULL,
-                        AMBULANCE DECIMAL(25,2),
-                        APPAREILLAGE_ORTHOPEDIQUE DECIMAL(25,2),
-                        CHIRURGIE  DECIMAL(25,2),
-                        CONSOMMABLES  DECIMAL(25,2),
-                        ANESTHESIE  DECIMAL(25,2),
-                        CONSULTATION  DECIMAL(25,2),
-                        DERMATOLOGY  DECIMAL(25,2),
-                        INTERNAL_MEDECINE  DECIMAL(25,2),
-                        OBSTETRICS_GYNECOLOGY  DECIMAL(25,2),
-                        OPHTHALMOLOGY  DECIMAL(25,2),
-                        OTORHINOLARYNGOLOGIE  DECIMAL(25,2),
-                        PEDIATRICS  DECIMAL(25,2),
-                        STOMATOLOGY  DECIMAL(25,2),
-                        SURGERY  DECIMAL(25,2),
-                        ECHOGRAPHIE  DECIMAL(25,2),
-                        LABORATOIRE  DECIMAL(25,2),
-                        MEDICAMENTS  DECIMAL(25,2),
-                        OPHTALMOLOGIE DECIMAL(25,2)
+    SET @create_table = CONCAT(
+        'CREATE TABLE mamba_fact_service_revenue_report_flat (
+          id                    INT         AUTO_INCREMENT PRIMARY KEY,
+          service_date          DATE        NULL,
+          patient_name          VARCHAR(255) NULL,
+          patient_service_bill_id INT       NULL,
+          first_service_bill_id INT         NOT NULL,
+          global_bill_id        INT         NOT NULL,
+          total_due             DECIMAL(25, 2) DEFAULT 0.00,
+          total_paid            DECIMAL(25, 2) DEFAULT 0.00,
+          ', @service_columns, ',
 
-                    -- Unique constraints
-                    -- constraint patient_service_bill_id unique (patient_service_bill_id),
+        -- Unique constraints
+        CONSTRAINT uq_service_revenue_global_bill UNIQUE (global_bill_id),
 
-                    -- Indexes
-                    -- INDEX mamba_fact_service_revenue_patient_service_bill_id_index (patient_service_bill_id)),
-                    -- INDEX mamba_fact_service_revenue_service_id_index (service_id)
-                )'
-            );
+        -- Indexes
+        INDEX mamba_fact_service_revenue_flat_global_bill_index (global_bill_id),
+        INDEX mamba_fact_service_revenue_flat_service_date_index (service_date),
+        INDEX mamba_fact_service_revenue_flat_first_service_bill_id_index (first_service_bill_id))'
+     );
 END IF;
 
-DROP TABLE IF EXISTS mamba_fact_service_revenue;
+DROP TABLE IF EXISTS mamba_fact_service_revenue_report_flat;
 
 PREPARE createtb FROM @create_table;
 EXECUTE createtb;

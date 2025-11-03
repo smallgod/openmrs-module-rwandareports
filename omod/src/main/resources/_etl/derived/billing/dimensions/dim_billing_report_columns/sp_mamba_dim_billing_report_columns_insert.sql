@@ -4,7 +4,7 @@
 -- Comprehensive Insert for All Report Types
 -- Populates: mamba_dim_billing_report_columns
 -- Strategy: Service categorization with order preservation
--- Supports: INSURANCE, CASHIER, THIRDPARTY report types
+-- Supports: INSURANCE, CASHIER, THIRDPARTY, SERVICE REVENUE report types
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -26,6 +26,12 @@ SET @thirdparty_columns = (
     SELECT property_value
     FROM mamba_source_db.global_property
     WHERE property = 'mohbilling.thirdPartyReportColumns'
+);
+
+SET @servicerevenue_columns = (
+    SELECT property_value
+    FROM mamba_source_db.global_property
+    WHERE property = 'mohbilling.servicesReportColumns'
 );
 
 SET @imaging_services = (
@@ -108,7 +114,24 @@ WHERE FIND_IN_SET(h.service_id, @thirdparty_columns)
 ORDER BY FIND_IN_SET(h.service_id, @thirdparty_columns);
 
 -- -----------------------------------------------------------------------------
--- 6. Cleanup Temporary Objects
+-- 6. Insert SERVICE_REVENUE Report Columns
+-- Expected: 18 rows (mohbilling.servicesReportColumns)
+-- Grouping: SERVICE_REVENUE (individual), IMAGING (aggregate), PROCED. (aggregate)
+-- -----------------------------------------------------------------------------
+INSERT INTO mamba_dim_billing_report_columns
+(report_type, hop_service_id, column_name, group_column_name)
+SELECT
+    'SERVICE_REVENUE' AS report_type,
+    h.service_id AS hop_service_id,
+    COALESCE(NULLIF(TRIM(h.name), ''), CONCAT('SERVICE_', h.service_id)) AS column_name,
+    COALESCE(tsc.service_category, 'SERVICE_REVENUE') AS group_column_name
+FROM mamba_dim_hop_service h
+         LEFT JOIN temp_service_categories tsc ON h.service_id = tsc.service_id
+WHERE FIND_IN_SET(h.service_id, @servicerevenue_columns)
+ORDER BY FIND_IN_SET(h.service_id, @servicerevenue_columns);
+
+-- -----------------------------------------------------------------------------
+-- 7. Cleanup Temporary Objects
 -- -----------------------------------------------------------------------------
 DROP TEMPORARY TABLE IF EXISTS temp_service_categories;
 

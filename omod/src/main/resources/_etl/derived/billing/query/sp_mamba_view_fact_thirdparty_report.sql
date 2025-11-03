@@ -45,9 +45,9 @@ BEGIN
           bill.company_name, 
           c.rate AS insurace_rate,
           (100 - c.rate) AS patient_rate,',
-          @thirdparty_report_columns, ',
-          (', @imaging_report_columns, ') AS IMAGING,
-          (', @proced_report_columns, ') AS PROCED,
+          COALESCE(@thirdparty_report_columns, 'NULL AS no_thirdparty_data'), ',
+          (', COALESCE(@imaging_report_columns, '0'), ') AS IMAGING,
+          (', COALESCE(@proced_report_columns, '0'), ') AS PROCED,
           d.amount AS amount_100_percent,
           (d.amount * c.rate) / 100 AS insurance_amount,
           (d.amount * (100 - c.rate)) / 100 AS third_party_amount

@@ -43,9 +43,9 @@ SELECT cashier.first_date_id,
       cashier.patient_bill_id,
       cashier.patient_name,
       cashier.global_bill_id,
-      ', @cashier_report_columns, ',
-      (', @imaging_report_columns, ') AS `IMAGING`,
-      (', @proced_report_columns, ') AS `PROCED.`
+      ', COALESCE(@cashier_report_columns, 'NULL AS no_cashier_data'), ',
+      (', COALESCE(@imaging_report_columns, '0'), ') AS `IMAGING`,
+      (', COALESCE(@proced_report_columns, '0'), ') AS `PROCED.`
     FROM mamba_fact_cashier_report_flat cashier;');
 
   PREPARE select_stmt FROM @select_stmt;
