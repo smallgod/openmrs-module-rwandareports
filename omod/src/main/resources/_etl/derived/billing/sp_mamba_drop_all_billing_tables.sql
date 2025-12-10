@@ -42,7 +42,7 @@ BEGIN
     DROP TABLE IF EXISTS mamba_fact_cashier_report_flat;
     DROP TABLE IF EXISTS mamba_fact_service_revenue_report;
     DROP TABLE IF EXISTS mamba_fact_consommation_report;
-    -- DROP TABLE IF EXISTS mamba_fact_clinical_detailed_report;
+    DROP TABLE IF EXISTS mamba_fact_clinical_detailed_report;
 
 END //
 

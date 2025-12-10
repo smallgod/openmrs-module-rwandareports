@@ -32,45 +32,131 @@ INSERT INTO mamba_fact_clinical_detailed_report(patient_id,
                                                 type_of_discharge,
                                                 department)
 
-SELECT bps.person_id         AS patient_id,
-       bps.person_name_short AS given_name,
-       bps.person_name_long  AS family_name,
-       ben.owner_name        AS household_name,
-       bps.gender            AS gender,
-       bps.birthdate         AS birth_date,
-       bps.age               AS age,
-       NULL                  AS age_at_encounter,      -- Calculate from encounter_datetime and birthdate
-       NULL                  AS weight,                -- Get from obs/vitals dimension
-       NULL                  AS height,                -- Get from obs/vitals dimension
-       NULL                  AS temperature,           -- Get from obs/vitals dimension
-       pa.country            AS country,               -- Verify person_address availability
-       pa.state_province     AS province,              -- Verify person_address availability
-       pa.county_district    AS district,              -- Verify person_address availability
-       pa.address3           AS sector,                -- Verify person_address availability
-       pa.address1           AS cell,                  -- Verify person_address availability
-       pa.address2           AS umudugudu,             -- Verify person_address availability
-       NULL                  AS case_status,           -- Identify source table
-       NULL                  AS catchment_area,        -- Identify source table
-       NULL                  AS encounter_datetime,    -- Join with encounter dimension
-       NULL                  AS chief_complaint,       -- Get from obs dimension
-       NULL                  AS treatment,             -- Get from obs dimension
-       NULL                  AS provider_name,         -- Get from encounter/provider dimension
-       NULL                  AS visit_type,            -- Get from visit dimension
-       NULL                  AS primary_diagnosis,     -- Get from obs/diagnosis dimension
-       NULL                  AS secondary_diagnosis,   -- Get from obs/diagnosis dimension
-       NULL                  AS presumptive_diagnosis, -- Get from obs/diagnosis dimension
-       adm.admission_service AS admission_service,     -- From dim_admission
-       ins.name              AS insurance,             -- Insurance name, not ID
-       adm.discharge_type    AS type_of_discharge,     -- From dim_admission
-       dept.name             AS department             -- From dim_department
+SELECT DISTINCT
+       p.person_id                                           AS patient_id,
+       pn.given_name                                         AS given_name,
+       pn.family_name                                        AS family_name,
+       ben.owner_name                                        AS household_name,
+       p.gender                                              AS gender,
+       p.birthdate                                           AS birth_date,
+       TIMESTAMPDIFF(YEAR, p.birthdate, CURDATE())           AS age,
+       TIMESTAMPDIFF(YEAR, p.birthdate, e.encounter_datetime) AS age_at_encounter,
 
-FROM mamba_dim_beneficiary ben
-         INNER JOIN mamba_dim_person bps ON bps.person_id = ben.patient_id
-         LEFT JOIN mamba_dim_person_address pa ON pa.person_id = bps.person_id AND pa.voided = 0 AND pa.preferred = 1
-         INNER JOIN mamba_dim_insurance_policy isp ON ben.insurance_policy_id = isp.insurance_policy_id
-         INNER JOIN mamba_dim_insurance ins ON ins.insurance_id = isp.insurance_id
-         LEFT JOIN mamba_dim_admission adm ON adm.patient_id = bps.person_id
-         LEFT JOIN mamba_dim_department dept ON dept.department_id = adm.department_id
-WHERE ben.voided = 0;
+       -- Vitals from flat table (FAST!)
+       vitals.weight                                         AS weight,
+       vitals.height                                         AS height,
+       vitals.temperature                                    AS temperature,
+
+       -- Address info
+       pa.country                                            AS country,
+       pa.state_province                                     AS province,
+       pa.county_district                                    AS district,
+       pa.address3                                           AS sector,
+       pa.address1                                           AS cell,
+       pa.address2                                           AS umudugudu,
+
+       -- Clinical data - coded values resolved
+       cn_case_status.name                                   AS case_status,
+       cn_catchment.name                                     AS catchment_area,
+
+       e.encounter_datetime                                  AS encounter_datetime,
+
+       -- Clinical data from diagnosis flat table (text fields)
+       diag.chief_complaint                                  AS chief_complaint,
+       diag.treatment                                        AS treatment,
+
+       -- Provider info
+       COALESCE(prov.name, CONCAT(prov_person_name.given_name, ' ', prov_person_name.family_name)) AS provider_name,
+
+       -- Visit type
+       vt.name                                               AS visit_type,
+
+       -- Diagnoses - coded values resolved
+       cn_prim_diag.name                                     AS primary_diagnosis,
+       cn_sec_diag.name                                      AS secondary_diagnosis,
+       cn_presump_diag.name                                  AS presumptive_diagnosis,
+
+       -- Billing/admission info (derived and joined)
+       CASE adm.is_admitted
+           WHEN 0 THEN 'OPD'
+           WHEN 1 THEN 'IPD'
+           ELSE NULL
+       END                                                   AS admission_service,
+       ins.name                                              AS insurance,
+       CASE
+           WHEN adm.discharging_date IS NOT NULL THEN 'DISCHARGED'
+           WHEN adm.is_admitted = 0 THEN 'DISCHARGED'
+           ELSE NULL
+       END                                                   AS type_of_discharge,
+       dept.name                                             AS department
+
+FROM mamba_dim_person p
+         INNER JOIN mamba_dim_person_name pn ON pn.person_id = p.person_id AND pn.preferred = 1
+         LEFT JOIN mamba_dim_person_address pa ON pa.person_id = p.person_id AND pa.voided = 0 AND pa.preferred = 1
+         LEFT JOIN mamba_dim_beneficiary ben ON ben.patient_id = p.person_id
+         LEFT JOIN mamba_dim_insurance_policy isp ON ben.insurance_policy_id = isp.insurance_policy_id
+         LEFT JOIN mamba_dim_insurance ins ON ins.insurance_id = isp.insurance_id
+         LEFT JOIN mamba_dim_admission adm ON adm.insurance_policy_id = ben.insurance_policy_id
+         LEFT JOIN mamba_dim_consommation cons ON cons.beneficiary_id = ben.beneficiary_id
+         LEFT JOIN mamba_dim_department dept ON dept.department_id = cons.department_id
+
+         -- Join encounters for each patient
+         INNER JOIN mamba_dim_encounter e ON e.patient_id = p.person_id AND e.voided = 0
+
+         -- *** FLAT TABLE JOINS (MUCH FASTER THAN 15+ obs JOINS!) ***
+
+         -- Join vitals flat table by encounter_id
+         LEFT JOIN mamba_flat_encounter_vital_signs vitals
+             ON vitals.encounter_id = e.encounter_id
+
+         -- Join diagnosis flat table by encounter_id
+         LEFT JOIN mamba_flat_encounter_diagnosis diag
+             ON diag.encounter_id = e.encounter_id
+
+         -- *** RESOLVE CODED VALUES (from flat table concept IDs → names) ***
+
+         -- Case status (coded value)
+         LEFT JOIN mamba_dim_concept_name cn_case_status
+             ON cn_case_status.concept_id = diag.case_status
+             AND cn_case_status.locale = 'en'
+
+         -- Catchment area (coded value)
+         LEFT JOIN mamba_dim_concept_name cn_catchment
+             ON cn_catchment.concept_id = diag.catchment_area
+             AND cn_catchment.locale = 'en'
+
+         -- Main/Primary diagnosis (coded value - fully specified name)
+         LEFT JOIN mamba_dim_concept_name cn_prim_diag
+             ON cn_prim_diag.concept_id = diag.main_diagnosis
+             AND cn_prim_diag.locale = 'en'
+             AND cn_prim_diag.concept_name_type = 'FULLY_SPECIFIED'
+
+         -- Secondary diagnosis (coded value - fully specified name)
+         LEFT JOIN mamba_dim_concept_name cn_sec_diag
+             ON cn_sec_diag.concept_id = diag.secondary_diagnosis
+             AND cn_sec_diag.locale = 'en'
+             AND cn_sec_diag.concept_name_type = 'FULLY_SPECIFIED'
+
+         -- Presumptive diagnosis (coded value - fully specified name)
+         LEFT JOIN mamba_dim_concept_name cn_presump_diag
+             ON cn_presump_diag.concept_id = diag.presumptive_diagnosis
+             AND cn_presump_diag.locale = 'en'
+             AND cn_presump_diag.concept_name_type = 'FULLY_SPECIFIED'
+
+         -- *** PROVIDER AND VISIT INFO (from source tables) ***
+
+         -- Join provider via encounter_provider bridge table
+         LEFT JOIN mamba_source_db.encounter_provider ep ON ep.encounter_id = e.encounter_id AND ep.voided = 0
+         LEFT JOIN mamba_source_db.provider prov ON prov.provider_id = ep.provider_id AND prov.retired = 0
+         LEFT JOIN mamba_source_db.person_name prov_person_name
+             ON prov_person_name.person_id = prov.person_id
+             AND prov_person_name.voided = 0
+             AND prov_person_name.preferred = 1
+
+         -- Join visit and visit_type
+         LEFT JOIN mamba_source_db.visit v ON v.visit_id = e.visit_id AND v.voided = 0
+         LEFT JOIN mamba_source_db.visit_type vt ON vt.visit_type_id = v.visit_type_id AND vt.retired = 0
+
+WHERE p.voided = 0;
 
 -- $END
