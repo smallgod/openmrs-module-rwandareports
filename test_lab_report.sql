@@ -1,19 +1,45 @@
 -- ================================================================================
--- Lab Exam Report Query
+-- Lab Results Report Query - TEST VERSION
 -- ================================================================================
--- Description: Retrieves all lab orders (with or without results) by patient location
--- Performance: Optimized with JOINs instead of correlated subqueries
--- MySQL Compatibility: Works with MySQL 5.x and above
--- Key Difference: Uses LEFT JOIN on obs (results may not exist yet)
---                 Filters by patient location instead of result location
--- Parameters:
---   :startDate  - Filter orders from this date (inclusive)
---   :endDate    - Filter orders to this date (inclusive)
---   :location   - Optional patient location filter (NULL = all locations)
---   :concept    - Optional exam type filter (NULL = all exam types)
--- Placeholders (replaced before execution):
---   {orderTypeId}            - Laboratory order type ID
---   {healthFacilityTypeId}   - Person attribute type ID for health facility
+-- Instructions:
+-- 1. Connect to MySQL: mysql -u root -p'4#edRmgaF+k?'
+-- 2. Select database: USE openmrs;  (or your database name)
+-- 3. Run this script: source test_lab_report.sql;
+--    OR paste the entire SELECT statement below
+-- ================================================================================
+
+-- STEP 1: Find the correct IDs for your database
+-- Run these queries first to get the actual values:
+
+-- Find Lab order type ID:
+SELECT order_type_id, name, description
+FROM order_type
+WHERE name LIKE '%Lab%' OR name LIKE '%Test%';
+
+-- Find Health Facility attribute type ID:
+SELECT person_attribute_type_id, name
+FROM person_attribute_type
+WHERE name LIKE '%Health%' OR name LIKE '%Facility%' OR name LIKE '%Location%';
+
+-- ================================================================================
+-- STEP 2: Update the placeholders below with the IDs from STEP 1
+-- Then run the SELECT query
+-- ================================================================================
+
+-- Set variables (adjust these based on STEP 1 results)
+SET @orderTypeId = 2;  -- CHANGE THIS: typically 2 for "Test Order" or "Lab Order"
+SET @healthFacilityTypeId = 8;  -- CHANGE THIS: typically 7 or 8 for health facility
+
+-- Set date range (adjust as needed)
+SET @startDate = '2025-01-01';  -- CHANGE THIS to match your data
+SET @endDate = '2025-10-31';    -- CHANGE THIS to match your data
+
+-- Optional filters (set to NULL to show all)
+SET @location = NULL;  -- Or specific location_id like: 3
+SET @concept = NULL;   -- Or specific concept_id for exam type
+
+-- ================================================================================
+-- STEP 3: Run the main query
 -- ================================================================================
 
 SELECT
@@ -38,57 +64,56 @@ SELECT
         o.value_numeric,
         o.value_text
     ) AS 'Result',
+    -- *** NEW COLUMNS ***
     COALESCE(CONCAT(prov_name.given_name, ' ', prov_name.family_name), '') AS 'Ordered By',
     COALESCE(CONCAT(result_user_name.given_name, ' ', result_user_name.family_name), '') AS 'Result Entered By'
 FROM orders ods
 
--- LEFT JOIN with observations (results may not exist yet)
-LEFT JOIN obs o ON o.order_id = ods.order_id
-AND o.concept_id = ods.concept_id
-AND o.voided = 0
+-- Join with observations (results)
+INNER JOIN obs o ON ods.order_id = o.order_id AND o.voided = 0
 
 -- Patient identification (deterministic: smallest patient_identifier_id)
-LEFT JOIN patient_identifier pi ON pi.patient_id = ods.patient_id
+LEFT JOIN patient_identifier pi ON pi.patient_id = o.person_id
 AND pi.voided = 0
 AND pi.patient_identifier_id = (
     SELECT MIN(pi2.patient_identifier_id)
     FROM patient_identifier pi2
     WHERE
-        pi2.patient_id = ods.patient_id
+        pi2.patient_id = o.person_id
         AND pi2.voided = 0
 )
 
 -- Patient demographics (deterministic: smallest person_name_id)
-LEFT JOIN person_name pn ON pn.person_id = ods.patient_id
+LEFT JOIN person_name pn ON pn.person_id = o.person_id
 AND pn.voided = 0
 AND pn.person_name_id = (
     SELECT MIN(pn2.person_name_id)
     FROM person_name pn2
     WHERE
-        pn2.person_id = ods.patient_id
+        pn2.person_id = o.person_id
         AND pn2.voided = 0
 )
 
 -- Person details
-LEFT JOIN person p ON p.person_id = ods.patient_id AND p.voided = 0
+LEFT JOIN person p ON p.person_id = o.person_id AND p.voided = 0
 
 -- Patient location (health facility from person attributes)
 LEFT JOIN person_attribute pa
-  ON pa.person_id = ods.patient_id
-  AND pa.person_attribute_type_id = {healthFacilityTypeId}
+  ON pa.person_id = o.person_id
+  AND pa.person_attribute_type_id = @healthFacilityTypeId
   AND pa.voided = 0
   AND pa.person_attribute_id = (
     SELECT MIN(pa2.person_attribute_id)
     FROM person_attribute pa2
-    WHERE pa2.person_id = ods.patient_id
-      AND pa2.person_attribute_type_id = {healthFacilityTypeId}
+    WHERE pa2.person_id = o.person_id
+      AND pa2.person_attribute_type_id = @healthFacilityTypeId
       AND pa2.voided = 0
   )
 
 -- Location name for patient
 LEFT JOIN location l ON l.location_id = pa.value
 
--- Result location (may be NULL if no results yet)
+-- Result location
 LEFT JOIN location rl ON rl.location_id = o.location_id
 
 -- Concept name for exam (deterministic: smallest concept_name_id)
@@ -102,7 +127,7 @@ AND cn_exam.concept_name_id = (
         AND cn2.voided = 0
 )
 
--- Concept name for coded results (deterministic: smallest concept_name_id, may be NULL)
+-- Concept name for coded results (deterministic: smallest concept_name_id)
 LEFT JOIN concept_name cn_result ON cn_result.concept_id = o.value_coded
 AND cn_result.voided = 0
 AND cn_result.concept_name_id = (
@@ -113,7 +138,7 @@ AND cn_result.concept_name_id = (
         AND cn2.voided = 0
 )
 
--- Provider who ordered the test
+-- *** NEW: Provider who ordered the test ***
 LEFT JOIN provider prov
   ON prov.provider_id = ods.orderer
   AND prov.retired = 0
@@ -129,7 +154,7 @@ LEFT JOIN person_name prov_name
       AND pn3.voided = 0
   )
 
--- User who entered the result (may be NULL if no results yet)
+-- *** NEW: User who entered the result ***
 LEFT JOIN users result_user
   ON result_user.user_id = o.creator
 
@@ -145,13 +170,31 @@ LEFT JOIN person_name result_user_name
   )
 
 -- Filters
-
-WHERE ods.order_type_id = {orderTypeId}
-  AND ods.date_activated >= :startDate
-  AND ods.date_activated <= :endDate
+WHERE ods.order_type_id = @orderTypeId
+  AND o.obs_datetime >= @startDate
+  AND o.obs_datetime <= @endDate
+  AND (@location IS NULL OR o.location_id = @location)
+  AND (@concept IS NULL OR ods.concept_id = @concept)
   AND ods.voided = 0
-  AND (:location IS NULL OR pa.value = :location)
-  AND (:concept IS NULL OR ods.concept_id = :concept)
   AND ods.concept_id NOT IN (SELECT concept_set FROM concept_set)
 
 ORDER BY ods.date_activated DESC, o.obs_datetime DESC
+LIMIT 50;  -- Limit results for testing
+
+-- ================================================================================
+-- DEBUGGING QUERIES (if you get no results)
+-- ================================================================================
+
+-- Check if there are any lab orders in your date range:
+-- SELECT COUNT(*) FROM orders WHERE order_type_id = @orderTypeId;
+
+-- Check if there are observations with results:
+-- SELECT COUNT(*) FROM orders ods
+-- INNER JOIN obs o ON ods.order_id = o.order_id
+-- WHERE ods.order_type_id = @orderTypeId;
+
+-- Check providers:
+-- SELECT COUNT(*) FROM provider WHERE retired = 0;
+
+-- Check users:
+-- SELECT COUNT(*) FROM users WHERE retired = 0;

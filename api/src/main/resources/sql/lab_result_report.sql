@@ -35,7 +35,9 @@ SELECT
         cn_result.name,
         o.value_numeric,
         o.value_text
-    ) AS 'Result'
+    ) AS 'Result',
+    COALESCE(CONCAT(prov_name.given_name, ' ', prov_name.family_name), '') AS 'Ordered By',
+    COALESCE(CONCAT(result_user_name.given_name, ' ', result_user_name.family_name), '') AS 'Result Entered By'
 FROM orders ods
 
 -- Join with observations (results)
@@ -106,6 +108,37 @@ AND cn_result.concept_name_id = (
         cn2.concept_id = o.value_coded
         AND cn2.voided = 0
 )
+
+-- Provider who ordered the test
+LEFT JOIN provider prov
+  ON prov.provider_id = ods.orderer
+  AND prov.retired = 0
+
+-- Provider's name (deterministic: smallest person_name_id)
+LEFT JOIN person_name prov_name
+  ON prov_name.person_id = prov.person_id
+  AND prov_name.voided = 0
+  AND prov_name.person_name_id = (
+    SELECT MIN(pn3.person_name_id)
+    FROM person_name pn3
+    WHERE pn3.person_id = prov.person_id
+      AND pn3.voided = 0
+  )
+
+-- User who entered the result
+LEFT JOIN users result_user
+  ON result_user.user_id = o.creator
+
+-- Result enterer's name (deterministic: smallest person_name_id)
+LEFT JOIN person_name result_user_name
+  ON result_user_name.person_id = result_user.person_id
+  AND result_user_name.voided = 0
+  AND result_user_name.person_name_id = (
+    SELECT MIN(run2.person_name_id)
+    FROM person_name run2
+    WHERE run2.person_id = result_user.person_id
+      AND run2.voided = 0
+  )
 
 -- Filters
 
