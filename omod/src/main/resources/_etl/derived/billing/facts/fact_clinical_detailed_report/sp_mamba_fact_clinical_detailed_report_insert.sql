@@ -55,9 +55,9 @@ SELECT DISTINCT
        pa.address1                                           AS cell,
        pa.address2                                           AS umudugudu,
 
-       -- Clinical data - coded values resolved
-       cn_case_status.name                                   AS case_status,
-       cn_catchment.name                                     AS catchment_area,
+       -- Clinical data - already resolved in flat table
+       diag.case_status                                      AS case_status,
+       diag.catchment_area                                   AS catchment_area,
 
        e.encounter_datetime                                  AS encounter_datetime,
 
@@ -71,10 +71,10 @@ SELECT DISTINCT
        -- Visit type
        vt.name                                               AS visit_type,
 
-       -- Diagnoses - coded values resolved
-       cn_prim_diag.name                                     AS primary_diagnosis,
-       cn_sec_diag.name                                      AS secondary_diagnosis,
-       cn_presump_diag.name                                  AS presumptive_diagnosis,
+       -- Diagnoses - already resolved in flat table
+       diag.main_diagnosis                                   AS primary_diagnosis,
+       diag.secondary_diagnosis                              AS secondary_diagnosis,
+       diag.presumptive_diagnosis                            AS presumptive_diagnosis,
 
        -- Billing/admission info (derived and joined)
        CASE adm.is_admitted
@@ -112,36 +112,6 @@ FROM mamba_dim_person p
          -- Join diagnosis flat table by encounter_id
          LEFT JOIN mamba_flat_encounter_diagnosis diag
              ON diag.encounter_id = e.encounter_id
-
-         -- *** RESOLVE CODED VALUES (from flat table concept IDs → names) ***
-
-         -- Case status (coded value)
-         LEFT JOIN mamba_dim_concept_name cn_case_status
-             ON cn_case_status.concept_id = diag.case_status
-             AND cn_case_status.locale = 'en'
-
-         -- Catchment area (coded value)
-         LEFT JOIN mamba_dim_concept_name cn_catchment
-             ON cn_catchment.concept_id = diag.catchment_area
-             AND cn_catchment.locale = 'en'
-
-         -- Main/Primary diagnosis (coded value - fully specified name)
-         LEFT JOIN mamba_dim_concept_name cn_prim_diag
-             ON cn_prim_diag.concept_id = diag.main_diagnosis
-             AND cn_prim_diag.locale = 'en'
-             AND cn_prim_diag.concept_name_type = 'FULLY_SPECIFIED'
-
-         -- Secondary diagnosis (coded value - fully specified name)
-         LEFT JOIN mamba_dim_concept_name cn_sec_diag
-             ON cn_sec_diag.concept_id = diag.secondary_diagnosis
-             AND cn_sec_diag.locale = 'en'
-             AND cn_sec_diag.concept_name_type = 'FULLY_SPECIFIED'
-
-         -- Presumptive diagnosis (coded value - fully specified name)
-         LEFT JOIN mamba_dim_concept_name cn_presump_diag
-             ON cn_presump_diag.concept_id = diag.presumptive_diagnosis
-             AND cn_presump_diag.locale = 'en'
-             AND cn_presump_diag.concept_name_type = 'FULLY_SPECIFIED'
 
          -- *** PROVIDER AND VISIT INFO (from source tables) ***
 
