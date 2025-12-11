@@ -34,6 +34,8 @@ CREATE TABLE mamba_fact_clinical_detailed_report
     insurance             VARCHAR(500)   NULL,
     type_of_discharge     VARCHAR(255)   NULL,
     department            VARCHAR(255)   NULL,
+    admission_date        DATETIME       NULL,
+    insurance_id          INT            NULL,
 
     PRIMARY KEY (id)
 );

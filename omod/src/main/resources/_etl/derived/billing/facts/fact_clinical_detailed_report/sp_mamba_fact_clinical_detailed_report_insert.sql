@@ -30,7 +30,9 @@ INSERT INTO mamba_fact_clinical_detailed_report(patient_id,
                                                 admission_service,
                                                 insurance,
                                                 type_of_discharge,
-                                                department)
+                                                department,
+                                                admission_date,
+                                                insurance_id)
 
 SELECT DISTINCT
        p.person_id                                           AS patient_id,
@@ -88,7 +90,9 @@ SELECT DISTINCT
            WHEN adm.is_admitted = 0 THEN 'DISCHARGED'
            ELSE NULL
        END                                                   AS type_of_discharge,
-       dept.name                                             AS department
+       dept.name                                             AS department,
+       adm.admission_date                                    AS admission_date,
+       ins.insurance_id                                      AS insurance_id
 
 FROM mamba_dim_person p
          INNER JOIN mamba_dim_person_name pn ON pn.person_id = p.person_id AND pn.preferred = 1
