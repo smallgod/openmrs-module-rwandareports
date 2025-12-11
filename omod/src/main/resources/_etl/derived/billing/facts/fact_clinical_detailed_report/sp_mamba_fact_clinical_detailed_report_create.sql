@@ -44,4 +44,10 @@ CREATE TABLE mamba_fact_clinical_detailed_report
 CREATE INDEX mamba_clinical_detailed_report_patient_id_index
     ON mamba_fact_clinical_detailed_report (patient_id);
 
+CREATE INDEX mamba_clinical_detailed_report_insurance_id_index
+    ON mamba_fact_clinical_detailed_report (insurance_id);
+
+CREATE INDEX mamba_clinical_detailed_report_admission_date_index
+    ON mamba_fact_clinical_detailed_report (admission_date);
+
 -- $END
