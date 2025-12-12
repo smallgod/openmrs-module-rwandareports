@@ -163,7 +163,7 @@
       "report_name": "Clinical Detailed Report",
       "report_id": "clinical_detailed_report",
       "report_sql": {
-        "sql_query": "SELECT * FROM mamba_fact_clinical_detailed_report WHERE patient_id = COALESCE(patient_identifier, patient_id) AND (start_date IS NULL OR end_date IS NULL OR admission_date BETWEEN start_date AND end_date) AND insurance_id = COALESCE(insurance_identifier, insurance_id)",
+        "sql_query": "SELECT * FROM mamba_fact_clinical_detailed_report WHERE (patient_identifier IS NULL OR patient_id = patient_identifier) AND (start_date IS NULL OR end_date IS NULL OR (admission_date >= start_date AND admission_date <= end_date)) AND (insurance_identifier IS NULL OR insurance_id = insurance_identifier)",
         "query_params": [
           {
             "name": "patient_identifier",
